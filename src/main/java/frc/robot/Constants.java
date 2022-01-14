@@ -32,7 +32,7 @@ public final class Constants {
 
     }
 
-    public final class kGyro{
+    public final class kGyroSystem{
 
         public static final int CANPigeon = 0;
 

@@ -7,16 +7,16 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.Constants.kGyro;
+import frc.robot.Constants.kGyroSystem;
 
-public class Gyro extends SubsystemBase{
+public class GyroSystem extends SubsystemBase{
     
-    public final WPI_Pigeon2 gyro_pigeon;
+    public final WPI_Pigeon2 GyroSystem_pigeon;
 
 
-    public Gyro(){
-        gyro_pigeon = new WPI_Pigeon2(kGyro.CANPigeon);
-        gyro_pigeon.reset();
+    public GyroSystem(){
+        GyroSystem_pigeon = new WPI_Pigeon2(kGyroSystem.CANPigeon);
+        GyroSystem_pigeon.reset();
         
     }
 
@@ -33,31 +33,31 @@ public class Gyro extends SubsystemBase{
     }
 
     /**
-     * resets the gyro's heading 
+     * resets the GyroSystem's heading 
      */
     public void reset(){
-        gyro_pigeon.reset();
+        GyroSystem_pigeon.reset();
     }
 
     /**
-     * @return double the gyro's roll
+     * @return double the GyroSystem's roll
      */
     public double getRoll(){
-        return gyro_pigeon.getRoll();
+        return GyroSystem_pigeon.getRoll();
     }
     
     /**
-     * @return double the gyro's yaw
+     * @return double the GyroSystem's yaw
      */
     public double getYaw(){
-        return gyro_pigeon.getYaw();
+        return GyroSystem_pigeon.getYaw();
     }
 
     /**
-     * @return double the gyro's pitch
+     * @return double the GyroSystem's pitch
      */
     public double getPitch(){
-        return gyro_pigeon.getPitch();
+        return GyroSystem_pigeon.getPitch();
     }
 
     /**
@@ -66,15 +66,15 @@ public class Gyro extends SubsystemBase{
      * Note:
      *  - Follows North-East-Down convention
      * 
-     *  - Angle increases as gyro is turned clockwise as seen from the top
+     *  - Angle increases as GyroSystem is turned clockwise as seen from the top
      * 
      *  - "The angle is continuous, that is it will continue from 360 to 361 degrees. 
-     *     This allows algorithms that wouldn't want to see a discontinuity in the gyro 
+     *     This allows algorithms that wouldn't want to see a discontinuity in the GyroSystem 
      *     output as it sweeps past from 360 to 0 on the second time around."
      *      
      */
     public double getAngle(){
-        return gyro_pigeon.getAngle();
+        return GyroSystem_pigeon.getAngle();
     }
     
     /**
@@ -85,7 +85,7 @@ public class Gyro extends SubsystemBase{
      *      
      */
     public double getRate(){
-        return gyro_pigeon.getRate();
+        return GyroSystem_pigeon.getRate();
     }
 
     /**

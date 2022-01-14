@@ -77,7 +77,7 @@ public class DriveTrain extends SubsystemBase{
      * @param rightSpeed the robot's right side speed along the X axis [-1.0, 1.0]. Forward is positive.
      * 
      */
-    public void tanksDrive(double leftSpeed, double rightSpeed){
+    public void tankDrive(double leftSpeed, double rightSpeed){
         m_drive.tankDrive(leftSpeed, rightSpeed);
     }
 
@@ -96,13 +96,13 @@ public class DriveTrain extends SubsystemBase{
     private String getDriveModeString(){
         switch(driveMode){
             case kDriveTrain.AADIL_DRIVE:
-                return "ADDIL DRIVE";
+                return "AADIL DRIVE";
 
             case kDriveTrain.TANK_DRIVE:
                 return "TANK DRIVE";
 
             case kDriveTrain.ARCADE_DRIVE:
-                return "TANK DRIVE";
+                return "ARCADE DRIVE";
             default:
                 return "NONE";
         } 
@@ -131,7 +131,6 @@ public class DriveTrain extends SubsystemBase{
      * Order:
      *      AADIL_DRIVE
      *      TANK_DRIVE
-     *      ARCADE_DRIVE
      *      REPEAT
      */
     public void cycleDriveMode(){
@@ -141,13 +140,8 @@ public class DriveTrain extends SubsystemBase{
                 break; 
 
             case kDriveTrain.TANK_DRIVE:
-                driveMode = kDriveTrain.ARCADE_DRIVE;
-                break; 
-
-            case kDriveTrain.ARCADE_DRIVE:
                 driveMode = kDriveTrain.AADIL_DRIVE;
                 break; 
- 
         } 
     }
 
