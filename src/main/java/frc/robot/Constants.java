@@ -12,4 +12,30 @@ package frc.robot;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
-public final class Constants {}
+public final class Constants {
+
+    public final class kDriveTrain{
+
+        // CAN IDs 
+        public static final int CANLeftDriveFront = 0;
+        public static final int CANRightDriveFront = 0;
+        public static final int CANLeftDriveBack = 0;
+        public static final int CANRightDriveBack = 0;
+        
+
+        // Drive Modes
+        public static final int InitialDriveMode = 0;
+
+        public static final int AADIL_DRIVE = 0;
+        public static final int ARCADE_DRIVE = 1;
+        public static final int TANK_DRIVE = 2;
+
+    }
+
+    public final class kGyro{
+
+        public static final int CANPigeon = 0;
+
+    }
+
+}
