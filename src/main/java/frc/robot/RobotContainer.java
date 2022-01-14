@@ -4,18 +4,24 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
+
+// Subsystems
+import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Pigeon;
+
+// Commands
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.SimpleDriveAuto;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.SlowGear;
-import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.GyroSystem;
-import edu.wpi.first.wpilibj2.command.Command;
+
+// Misc
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj.XboxController;
+
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -31,14 +37,12 @@ public class RobotContainer {
   
       
   // Subsystems defined
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final DriveTrain sys_DriveTrain;
-  private final GyroSystem sys_GyroSystem;
+  private final Pigeon sys_Pigeon;
 
   // Commands defined
   //private final ExampleCommand m_autoCommand;
   private final DefaultDrive cmd_defaultDrive;
-  private final SlowGear cmd_fastGear;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -59,12 +63,10 @@ public class RobotContainer {
 
      // Initialize sub systems
      sys_DriveTrain = new DriveTrain();
-     sys_GyroSystem = new GyroSystem();
+     sys_Pigeon = new Pigeon();
 
      // Init commands
      cmd_defaultDrive = new DefaultDrive((sys_DriveTrain), m_joystick_main);
-     cmd_fastGear = new SlowGear(sys_DriveTrain);
-     
  
     // Configure the button bindings
     configureButtonBindings();
@@ -94,8 +96,8 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  //public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    //return m_autoCommand;
-  //}
+  public Command getAutonomousCommand() {
+     
+    return new SimpleDriveAuto(sys_DriveTrain);
+  }
 }

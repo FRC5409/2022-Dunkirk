@@ -9,14 +9,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.kGyroSystem;
 
-public class GyroSystem extends SubsystemBase{
+public class Pigeon extends SubsystemBase{
     
-    public final WPI_Pigeon2 GyroSystem_pigeon;
+    public final WPI_Pigeon2 gyro_pigeon;
 
 
-    public GyroSystem(){
-        GyroSystem_pigeon = new WPI_Pigeon2(kGyroSystem.CANPigeon);
-        GyroSystem_pigeon.reset();
+    public Pigeon(){
+        gyro_pigeon = new WPI_Pigeon2(kGyroSystem.CANPigeon);
+        gyro_pigeon.reset();
         
     }
 
@@ -36,28 +36,28 @@ public class GyroSystem extends SubsystemBase{
      * resets the GyroSystem's heading 
      */
     public void reset(){
-        GyroSystem_pigeon.reset();
+        gyro_pigeon.reset();
     }
 
     /**
      * @return double the GyroSystem's roll
      */
     public double getRoll(){
-        return GyroSystem_pigeon.getRoll();
+        return gyro_pigeon.getRoll();
     }
     
     /**
      * @return double the GyroSystem's yaw
      */
     public double getYaw(){
-        return GyroSystem_pigeon.getYaw();
+        return gyro_pigeon.getYaw();
     }
 
     /**
      * @return double the GyroSystem's pitch
      */
     public double getPitch(){
-        return GyroSystem_pigeon.getPitch();
+        return gyro_pigeon.getPitch();
     }
 
     /**
@@ -74,7 +74,7 @@ public class GyroSystem extends SubsystemBase{
      *      
      */
     public double getAngle(){
-        return GyroSystem_pigeon.getAngle();
+        return gyro_pigeon.getAngle();
     }
     
     /**
@@ -85,7 +85,7 @@ public class GyroSystem extends SubsystemBase{
      *      
      */
     public double getRate(){
-        return GyroSystem_pigeon.getRate();
+        return gyro_pigeon.getRate();
     }
 
     /**
