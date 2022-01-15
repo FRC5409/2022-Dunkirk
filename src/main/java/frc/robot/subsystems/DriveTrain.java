@@ -247,7 +247,12 @@ public class DriveTrain extends SubsystemBase{
     public double getEncoderVelocityRight(){
         return mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition() / 2;
     }
-
+    /**
+     * Sets all encoders to 0
+     * 
+     * call this function when reading positions relative to the robot's current position.
+     * 
+     */ 
     public void zeroEncoders() {
         mot_rightFrontDrive.setSelectedSensorPosition(0);
         mot_rightRearDrive.setSelectedSensorPosition(0);
