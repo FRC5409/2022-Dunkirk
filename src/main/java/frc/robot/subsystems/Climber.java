@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -18,7 +17,6 @@ public class Climber extends SubsystemBase {
   
   private boolean locked;
 
-
   /**
    * Constructor for the climber.
    */
@@ -27,9 +25,9 @@ public class Climber extends SubsystemBase {
     mot_armDriver = new TalonFX(Constants.Climber.mot_port);
     locked = false;
 
-    //Gives absolute motor positions of 0 - 360 degrees, all positive values. 
+    // Gives absolute motor positions of 0 - 360 degrees, all positive values.
     mot_armDriver.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
-    
+
   }
 
   /**
@@ -47,41 +45,78 @@ public class Climber extends SubsystemBase {
   }
 
   /**
-   * Method that moves arm based on velocity for the motor.
-   * @param rate Rate at which to move the arm. - is backwards, + is forwards.
+   * Method for retracting or extending the climber arm.
    */
-  public void moveArm(double rate){
+  public void moveArm() {
 
     // TODO currently takes in a fixed rate.
     if(!locked){
       //currently moves the motor at a rate of 180 degrees per 100ms.
-      mot_armDriver.set(TalonFXControlMode.Velocity, 1.8);
+      mot_armDriver.set(TalonFXControlMode.Velocity, Constants.Climber.ARM_SPEED);
     }
   }
 
   /**
    * Method for locking the arm.
    */
-  public void lockArm(){
+  public void lockArm() {
+
     locked = true;
   }
 
   /**
    * Method for unlocking the arm.
    */
-  public void unlockArm(){
+  public void unlockArm() {
     locked = false;
   }
 
   /**
-   * Method for getting the length of the arm extended. This is a calculated value. 
-   * @return The length at which the arm is currently extended.
+   * This method can be called to toglle the locked value.
    */
-  public double getLength(){
-    // TODO add conversion for length.
-    SmartDashboard.putNumber("Arm length", mot_armDriver.getSelectedSensorPosition());
-    return mot_armDriver.getSelectedSensorPosition();
+  public void toggleLock() {
+    locked = !locked;
   }
 
+  /**
+   * Method for getting the length of the arm extended. This is a calculated
+   * value.
+   * 
+   * @return The length at which the arm is currently extended.
+   */
+  public double getLength() {
+    return 0;
+  }
+
+  /**
+   * This method will set the inversion of the motor
+   * 
+   * @param direction Direction of travel
+   */
+  public void setDirection(int direction) {
+    // Checks to see if the request is redundant
+    if (direction != getDirection()) {
+      // Set the direction to extend
+      if (direction == Constants.Climber.DIRECTION_EXTEND) {
+        mot_armDriver.setInverted(false);
+        // Set the direction to retract
+      } else if (direction == Constants.Climber.DIRECTION_RETRACT) {
+        mot_armDriver.setInverted(true);
+      }
+    }
+  }
+
+  /**
+   * This method will return the direction of travel for the arm
+   * 
+   * @return Integer value corresponding to the direction of the motor.
+   */
+  public int getDirection() {
+    if (!mot_armDriver.getInverted()) {
+      return Constants.Climber.DIRECTION_EXTEND;
+    } else {
+      return Constants.Climber.DIRECTION_RETRACT;
+    }
+  }
 
 }
