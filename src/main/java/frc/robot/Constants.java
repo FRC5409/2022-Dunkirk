@@ -20,6 +20,33 @@ public final class Constants {
 
     }
 
+
+    public final class Climber {
+        public static final int mot_port = 0;
+
+        public static final int DIRECTION_EXTEND = 0;
+        public static final int DIRECTION_RETRACT = 1;
+        //TODO: determine the extension length
+        public static final double EXTENSION_LENGTH = 0;
+        public static final double RETRACTION_LENGTH = 0;
+
+        public static final double ARM_SPEED = 1.8;
+
+    }
+
+    public static final class kIntakeIndexer{
+        public static final int kIntakeMotor = 4;
+
+        public static final int kRightIntakeSolenoid1 = 1;
+        public static final int kRightIntakeSolenoid2 = 0;
+
+        public static final int kLeftIntakeSolenoid1 = 3;
+        public static final int kLeftIntakeSolenoid2 = 2;
+
+        public static final int velocityMaxIntakeJam = 1000;
+    }
+
+
     public final class kDriveTrain{
 
         // CAN IDs  (not initialized)
@@ -48,6 +75,7 @@ public final class Constants {
     public final class kGyroSystem{
 
         public static final int CANPigeon = 0;
+
 
     }
 }
