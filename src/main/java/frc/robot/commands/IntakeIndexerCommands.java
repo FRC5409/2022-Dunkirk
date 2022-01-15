@@ -8,7 +8,7 @@ import frc.robot.subsystems.IntakeIndexer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class ExampleCommand extends CommandBase {
+public class IntakeIndexerCommands extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final IntakeIndexer m_intakeIndexer;
 
@@ -17,7 +17,7 @@ public class ExampleCommand extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ExampleCommand(IntakeIndexer subsystem) {
+  public IntakeIndexerCommands(IntakeIndexer subsystem) {
     m_intakeIndexer = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);

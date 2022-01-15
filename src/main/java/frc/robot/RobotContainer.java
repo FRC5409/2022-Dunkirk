@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
 
-import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.IntakeIndexerCommands;
 import frc.robot.subsystems.IntakeIndexer;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -37,7 +37,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final IntakeIndexer m_intakeindexer = new IntakeIndexer();
 
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_intakeindexer);
+  private final IntakeIndexerCommands m_autoCommand = new IntakeIndexerCommands(m_intakeindexer);
 
   // Define main joystick
   private final XboxController joystick_main; // = new XboxController(0);
