@@ -20,6 +20,20 @@ public final class Constants {
 
     }
 
+
+    public final class Climber {
+        public static final int mot_port = 0;
+
+        public static final int DIRECTION_EXTEND = 0;
+        public static final int DIRECTION_RETRACT = 1;
+        //TODO: determine the extension length
+        public static final double EXTENSION_LENGTH = 0;
+        public static final double RETRACTION_LENGTH = 0;
+
+        public static final double ARM_SPEED = 1.8;
+
+    }
+
     public final class kDriveTrain{
 
         // CAN IDs  (not initialized)
