@@ -87,8 +87,8 @@ public class RobotContainer {
     but_main_Start.whenPressed(() -> sys_DriveTrain.cycleDriveMode());
 
     // Bind right bumper to 
-    but_main_RBumper.whenPressed(() -> new FastGear(sys_DriveTrain));
-    but_main_RBumper.whenReleased(() -> new SlowGear(sys_DriveTrain));
+    but_main_RBumper.whenPressed(new FastGear(sys_DriveTrain));
+    but_main_RBumper.whenReleased( new SlowGear(sys_DriveTrain));
   }
 
   /**

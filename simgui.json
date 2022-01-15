@@ -16,22 +16,22 @@
           "open": true
         }
       },
+      "Talon FX[14]": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[15]": {
+        "header": {
+          "open": true
+        }
+      },
       "Talon FX[4]": {
         "header": {
           "open": true
         }
       },
-      "Talon FX[4]/Fwd Limit": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon FX[4]/Integrated Sensor": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon FX[4]/Rev Limit": {
+      "Talon FX[6]": {
         "header": {
           "open": true
         }
@@ -50,6 +50,9 @@
   },
   "NetworkTables": {
     "LiveWindow": {
+      "open": true
+    },
+    "SmartDashboard": {
       "open": true
     }
   }

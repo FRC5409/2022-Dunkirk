@@ -36,21 +36,21 @@ public class DriveTrain extends SubsystemBase{
                                                                                         kDriveTrain.triggerThresholdTime));
         mot_leftFrontDrive.setInverted(true);
 
-        mot_leftRearDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveFront);
+        mot_leftRearDrive = new WPI_TalonFX(kDriveTrain.CANRightDriveFront);
         mot_leftRearDrive.configSupplyCurrentLimit( new SupplyCurrentLimitConfiguration(true, 
                                                                                         kDriveTrain.CurrentLimit, 
                                                                                         kDriveTrain.TriggerThresholdCurrent, 
                                                                                         kDriveTrain.triggerThresholdTime));
         mot_leftRearDrive.follow(mot_leftFrontDrive);
 
-        mot_rightFrontDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveFront);
+        mot_rightFrontDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveBack);
         mot_rightFrontDrive.configSupplyCurrentLimit( new SupplyCurrentLimitConfiguration(true, 
                                                                                         kDriveTrain.CurrentLimit, 
                                                                                         kDriveTrain.TriggerThresholdCurrent, 
                                                                                         kDriveTrain.triggerThresholdTime));
         //mot_leftFrontDrive.setInverted(true);
 
-        mot_rightRearDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveFront);
+        mot_rightRearDrive = new WPI_TalonFX(kDriveTrain.CANRightDriveBack);
         mot_rightRearDrive.configSupplyCurrentLimit( new SupplyCurrentLimitConfiguration(true, 
                                                                                         kDriveTrain.CurrentLimit, 
                                                                                         kDriveTrain.TriggerThresholdCurrent, 
@@ -73,7 +73,8 @@ public class DriveTrain extends SubsystemBase{
 
     @Override
     public void simulationPeriodic() {
-
+        displayEncoder();
+        displayDriveMode();
     }
 
     // ------------------------- Drive Modes ------------------------- //
@@ -153,6 +154,7 @@ public class DriveTrain extends SubsystemBase{
      *      REPEAT
      */
     public void cycleDriveMode(){
+        System.out.println("Cycling drive mode");
         switch(driveMode){
             case kDriveTrain.AADIL_DRIVE:
                 driveMode = kDriveTrain.TANK_DRIVE;
@@ -235,6 +237,8 @@ public class DriveTrain extends SubsystemBase{
      * shifts the gear shift to fast 
      */ 
     public void fastShift(){
+        SmartDashboard.putString("Solenoid", "Fast");
+        System.out.println("Fast");
         dsl_gear.set(DoubleSolenoid.Value.kForward);
     }
 
@@ -242,6 +246,9 @@ public class DriveTrain extends SubsystemBase{
      * shifts the gear shift to slow 
      */ 
     public void slowShift(){
+        SmartDashboard.putString("Solenoid", "Slow");
+        System.out.println("Slow");
+    
         dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
 }
