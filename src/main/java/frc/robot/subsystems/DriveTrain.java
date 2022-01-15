@@ -1,8 +1,13 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.wpilibj.Solenoid;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,25 +25,41 @@ public class DriveTrain extends SubsystemBase{
 
     private final DifferentialDrive m_drive;
 
-    private final Solenoid dsl_gear;
+    private final DoubleSolenoid dsl_gear;
 
 
     public DriveTrain(){
         mot_leftFrontDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveFront);
+        mot_leftFrontDrive.configSupplyCurrentLimit( new SupplyCurrentLimitConfiguration(true, 
+                                                                                        kDriveTrain.CurrentLimit, 
+                                                                                        kDriveTrain.TriggerThresholdCurrent, 
+                                                                                        kDriveTrain.triggerThresholdTime));
         mot_leftFrontDrive.setInverted(true);
 
         mot_leftRearDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveFront);
+        mot_leftRearDrive.configSupplyCurrentLimit( new SupplyCurrentLimitConfiguration(true, 
+                                                                                        kDriveTrain.CurrentLimit, 
+                                                                                        kDriveTrain.TriggerThresholdCurrent, 
+                                                                                        kDriveTrain.triggerThresholdTime));
         mot_leftRearDrive.follow(mot_leftFrontDrive);
 
         mot_rightFrontDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveFront);
+        mot_rightFrontDrive.configSupplyCurrentLimit( new SupplyCurrentLimitConfiguration(true, 
+                                                                                        kDriveTrain.CurrentLimit, 
+                                                                                        kDriveTrain.TriggerThresholdCurrent, 
+                                                                                        kDriveTrain.triggerThresholdTime));
         //mot_leftFrontDrive.setInverted(true);
 
         mot_rightRearDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveFront);
+        mot_rightRearDrive.configSupplyCurrentLimit( new SupplyCurrentLimitConfiguration(true, 
+                                                                                        kDriveTrain.CurrentLimit, 
+                                                                                        kDriveTrain.TriggerThresholdCurrent, 
+                                                                                        kDriveTrain.triggerThresholdTime));
         mot_rightRearDrive.follow(mot_rightFrontDrive);
 
         m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
-        dsl_gear = new Solenoid(null, 0);
+        dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
         driveMode = kDriveTrain.InitialDriveMode;
     }
@@ -101,8 +122,6 @@ public class DriveTrain extends SubsystemBase{
             case kDriveTrain.TANK_DRIVE:
                 return "TANK DRIVE";
 
-            case kDriveTrain.ARCADE_DRIVE:
-                return "ARCADE DRIVE";
             default:
                 return "NONE";
         } 
@@ -143,6 +162,25 @@ public class DriveTrain extends SubsystemBase{
                 driveMode = kDriveTrain.AADIL_DRIVE;
                 break; 
         } 
+    }
+    /**
+     * @param enable if true sets all motors to brake, if false sets all motors to coast.
+     * 
+     */
+    public void setBrakeMode(boolean enable){
+        if(enable){
+            mot_leftFrontDrive.setNeutralMode(NeutralMode.Brake);
+            mot_leftRearDrive.setNeutralMode(NeutralMode.Brake);
+            mot_rightFrontDrive.setNeutralMode(NeutralMode.Brake);
+            mot_rightRearDrive.setNeutralMode(NeutralMode.Brake);
+        }
+        else{
+            mot_leftFrontDrive.setNeutralMode(NeutralMode.Coast);
+            mot_leftRearDrive.setNeutralMode(NeutralMode.Coast);
+            mot_rightFrontDrive.setNeutralMode(NeutralMode.Coast);
+            mot_rightRearDrive.setNeutralMode(NeutralMode.Coast);
+        }
+        
     }
 
     // ---------------------------- Encoders ---------------------------- //
@@ -197,13 +235,13 @@ public class DriveTrain extends SubsystemBase{
      * shifts the gear shift to fast 
      */ 
     public void fastShift(){
-        dsl_gear.set(true);
+        dsl_gear.set(DoubleSolenoid.Value.kForward);
     }
 
     /**
      * shifts the gear shift to slow 
      */ 
     public void slowShift(){
-        dsl_gear.set(false);
+        dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
 }
