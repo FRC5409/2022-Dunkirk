@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.kDriveTrain;
@@ -200,6 +201,14 @@ public class DriveTrain extends SubsystemBase{
     }
 
     /**
+     * @return the average position of all four encoders 
+     * 
+     */
+    public double getEncoderPosition(){
+        return (getEncoderPositionLeft() + getEncoderPositionRight() )/ 2;
+    }
+
+    /**
      * @return the average position of the left encoders 
      * 
      */
@@ -213,6 +222,14 @@ public class DriveTrain extends SubsystemBase{
      */
     public double getEncoderPositionRight(){
         return mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition() / 2;
+    }
+
+    /**
+     * @return the average velocity all for encoders
+     * 
+     */
+    public double getEncoderVelocity(){
+        return (getEncoderVelocityLeft() + getEncoderVelocityRight() )/ 2;
     }
 
     /**
@@ -231,6 +248,13 @@ public class DriveTrain extends SubsystemBase{
         return mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition() / 2;
     }
 
+    public void zeroEncoders() {
+        mot_rightFrontDrive.setSelectedSensorPosition(0);
+        mot_rightRearDrive.setSelectedSensorPosition(0);
+        mot_leftFrontDrive.setSelectedSensorPosition(0);
+        mot_leftRearDrive.setSelectedSensorPosition(0);
+    }
+
     // ---------------------------- Solenoids ---------------------------- //
 
     /**
@@ -238,7 +262,6 @@ public class DriveTrain extends SubsystemBase{
      */ 
     public void fastShift(){
         SmartDashboard.putString("Solenoid", "Fast");
-        System.out.println("Fast");
         dsl_gear.set(DoubleSolenoid.Value.kForward);
     }
 
@@ -247,8 +270,8 @@ public class DriveTrain extends SubsystemBase{
      */ 
     public void slowShift(){
         SmartDashboard.putString("Solenoid", "Slow");
-        System.out.println("Slow");
-    
         dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
+
+
 }

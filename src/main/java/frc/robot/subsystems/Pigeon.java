@@ -64,6 +64,8 @@ public class Pigeon extends SubsystemBase{
      * @return double the heading in degrees. Positive is clockwise.
      *  
      * Note:
+     *  - The heading of the robot
+     * 
      *  - Follows North-East-Down convention
      * 
      *  - Angle increases as GyroSystem is turned clockwise as seen from the top

@@ -70,6 +70,19 @@ public final class Constants {
         public static final int AADIL_DRIVE = 0;
         public static final int TANK_DRIVE = 1;
 
+        // PID Controls
+        public static final double P_Distance = 0;
+        public static final double I_Distance = 0;
+        public static final double D_Distance = 0;
+
+        public static final double P_Angle = 0;
+        public static final double I_Angle = 0;
+        public static final double D_Angle = 0;
+
+        // Speed limits for auto
+        public static final double maxStraightSpeed = 1;
+        public static final double maxTurnSpeed = 1;
+
     }
 
     public final class kGyroSystem{
