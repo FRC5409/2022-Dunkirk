@@ -4,15 +4,18 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Climber extends SubsystemBase {
 
   private TalonFX mot_armDriver;
+  
   private boolean locked;
 
 
@@ -50,6 +53,12 @@ public class Climber extends SubsystemBase {
    */
   public void extendArm(double rate){
 
+    //Note, in TalonFX mode velocity, the value is taken in with a velocity of
+    //change in position per 100 ms.
+    if(!locked){
+      mot_armDriver.set(TalonFXControlMode.PercentOutput, rate);
+    }
+
   }
 
   /**
@@ -59,13 +68,17 @@ public class Climber extends SubsystemBase {
    */
   public void retractArm(double rate){
 
+    //Note, in TalonFX mode velocity, the value is taken in with a velocity of
+    //change in position per 100 ms.
+    if(!locked){
+      mot_armDriver.set(TalonFXControlMode.PercentOutput, rate);
+    }
   }
 
   /**
    * Method for locking the arm.
    */
   public void lockArm(){
-
     locked = true;
   }
 
@@ -81,7 +94,9 @@ public class Climber extends SubsystemBase {
    * @return The length at which the arm is currently extended.
    */
   public double getLength(){
-    return 0;
+    // TODO add conversion for length.
+    SmartDashboard.putNumber("Arm length", mot_armDriver.getSelectedSensorPosition());
+    return mot_armDriver.getSelectedSensorPosition();
   }
 
 

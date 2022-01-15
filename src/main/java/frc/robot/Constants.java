@@ -14,7 +14,7 @@ package frc.robot;
  */
 public final class Constants {
 
-    public final class kClimber{
-        public static final int k_mot_port = 0;
+    public final class Climber{
+        public static final int mot_port = 0;
     }
 }
