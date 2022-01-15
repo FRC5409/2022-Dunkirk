@@ -24,7 +24,7 @@ public class Climber extends SubsystemBase {
    */
   public Climber() {
 
-    mot_armDriver = new TalonFX(Constants.kClimber.k_mot_port);
+    mot_armDriver = new TalonFX(Constants.Climber.mot_port);
     locked = false;
 
     //Gives absolute motor positions of 0 - 360 degrees, all positive values. 
@@ -47,31 +47,15 @@ public class Climber extends SubsystemBase {
   }
 
   /**
-   * Method for extending the climber arm. 
-   * 
-   * @param rate Rate at which to extend it.
+   * Method that moves arm based on velocity for the motor.
+   * @param rate Rate at which to move the arm. - is backwards, + is forwards.
    */
-  public void extendArm(double rate){
+  public void moveArm(double rate){
 
-    //Note, in TalonFX mode velocity, the value is taken in with a velocity of
-    //change in position per 100 ms.
+    // TODO currently takes in a fixed rate.
     if(!locked){
-      mot_armDriver.set(TalonFXControlMode.PercentOutput, rate);
-    }
-
-  }
-
-  /**
-   * Method for retracting the climber arm.
-   * 
-   * @param rate Rate at which to retract it.
-   */
-  public void retractArm(double rate){
-
-    //Note, in TalonFX mode velocity, the value is taken in with a velocity of
-    //change in position per 100 ms.
-    if(!locked){
-      mot_armDriver.set(TalonFXControlMode.PercentOutput, rate);
+      //currently moves the motor at a rate of 180 degrees per 100ms.
+      mot_armDriver.set(TalonFXControlMode.Velocity, 1.8);
     }
   }
 
