@@ -4,11 +4,21 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.revrobotics.CANSparkMax;
 
-public class ExampleSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {}
+public class IntakeIndexer extends SubsystemBase {
+  private CANSparkMax mot_intake;
+  private DoubleSolenoid intakeSolenoid_left;
+  private DoubleSolenoid intakeSolenoid_right;
+
+
+
+  public IntakeIndexer() {
+
+
+  }
 
   @Override
   public void periodic() {
