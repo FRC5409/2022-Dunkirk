@@ -13,7 +13,8 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static class kPneumatics {
+    public static class Pneumatics {
+        public static final int MODULE = 0;
         public static final double MIN_PSI = 0;
         public static final double MAX_PSI = 60;
 

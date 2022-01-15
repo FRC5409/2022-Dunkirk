@@ -1,8 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -19,7 +18,7 @@ public class Pneumatics extends SubsystemBase {
    * Constructor for the Pneumatics class
    */
   public Pneumatics() {
-    // compressor1 = new Compressor(ModuleType.kCTRE)
+    compressor1 = new Compressor(Constants.Pneumatics.MODULE, PneumaticsModuleType.CTREPCM);
     startLoop();
   }
 
@@ -31,9 +30,9 @@ public class Pneumatics extends SubsystemBase {
 
     if (!m_manualAutoFillOverride) {
       // Check if pressure is too low or too high
-      if (compressor1.getPressure() <= Constants.kPneumatics.MIN_PSI && !m_autoFill) {
+      if (compressor1.getPressure() <= Constants.Pneumatics.MIN_PSI && !m_autoFill) {
         startLoop();
-      } else if (compressor1.getPressure() >= Constants.kPneumatics.MAX_PSI) {
+      } else if (compressor1.getPressure() >= Constants.Pneumatics.MAX_PSI) {
         endLoop();
       }
     }
