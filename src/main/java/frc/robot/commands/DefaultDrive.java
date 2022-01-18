@@ -65,8 +65,8 @@ public class DefaultDrive extends CommandBase {
     double pitch = 90/pigeon.pitch;
     double roll  = 90/pigeon.roll; // might need to transform roll depending on where 0 is
 
-    double pitchCompensation = drive.applyAntiTip ? pitch*kDriveTrain.pitchCompensation : 0;
-    double rollCompensation = drive.applyAntiTip && (leftTrigger != 0) && (rightTrigger != 0)? roll * kDriveTrain.rollCompensation : 0;
+    double pitchCompensation = drive.getAntiTip() ? pitch*kDriveTrain.pitchCompensation : 0;
+    double rollCompensation = drive.getAntiTip() && (leftTrigger != 0) && (rightTrigger != 0)? roll * kDriveTrain.rollCompensation : 0;
 
     drive.aadilDrive(Math.max(rightTrigger - pitchCompensation - rollCompensation, 0), 
                      Math.max(leftTrigger + pitchCompensation + rollCompensation, 0), 

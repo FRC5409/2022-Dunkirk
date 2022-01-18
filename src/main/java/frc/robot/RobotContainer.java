@@ -15,6 +15,8 @@ import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.SimpleDriveAuto;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.SlowGear;
+import frc.robot.commands.SetAntiTip;
+import frc.robot.commands.ToggleAntiTip;
 
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
@@ -76,7 +78,8 @@ public class RobotContainer {
      Pigeon = new Pigeon();
 
      // Init commands
-     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
+     defaultDrive = new DefaultDrive(DriveTrain, Pigeon, joystick_main);
+
  
     // Configure the button bindings
     configureButtonBindings();
@@ -95,6 +98,7 @@ public class RobotContainer {
 
     // Bind start to go to the next drive mode
     but_main_Start.whenPressed(() -> DriveTrain.cycleDriveMode());
+    but_main_Back.whenReleased( new ToggleAntiTip(DriveTrain));
 
     // Bind right bumper to 
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));

@@ -87,6 +87,8 @@ public final class Constants {
         public static final double pitchCompensation = 0;
         public static final double rollCompensation = 0;
 
+        public static final boolean startWithAntiTip = true;
+
     }
 
     public final class kGyroSystem{

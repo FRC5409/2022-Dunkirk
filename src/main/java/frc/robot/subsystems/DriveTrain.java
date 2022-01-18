@@ -27,6 +27,8 @@ public class DriveTrain extends SubsystemBase{
     private final DifferentialDrive m_drive;
 
     private final DoubleSolenoid dsl_gear;
+    
+    private boolean applyAntiTip;
 
 
     public DriveTrain(){
@@ -184,6 +186,34 @@ public class DriveTrain extends SubsystemBase{
             mot_rightRearDrive.setNeutralMode(NeutralMode.Coast);
         }
         
+    }
+
+    // ---------------------------- Anti Tip ---------------------------- //
+
+    /**
+     * @return true if the anti tip should be applied 
+     * 
+     */
+    public boolean getAntiTip(){
+        return applyAntiTip;
+    }
+
+    /**
+     * @param boolean the new state of applyAntiTip
+     * 
+     * Sets applyAntiTip
+     * 
+     */
+    public void setAntiTip(boolean _applyAntiTip){
+        applyAntiTip = !_applyAntiTip;
+    }
+
+    /**
+     * toggles the anti-tip
+     * 
+     */
+    public void toggleAntiTip(){
+        applyAntiTip = !applyAntiTip;
     }
 
     // ---------------------------- Encoders ---------------------------- //
