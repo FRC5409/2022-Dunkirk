@@ -62,13 +62,15 @@ public class DefaultDrive extends CommandBase {
     double rightTrigger = joystick.getRightTriggerAxis();
     double lxAxis = joystick.getLeftX() * -1;
 
-    double pitch = pigeon.pitch;
-    double roll = pigeon.roll;
+    double pitch = 90/pigeon.pitch;
+    double roll  = 90/pigeon.roll; // might need to transform roll depending on where 0 is
 
+    double pitchCompensation = drive.applyAntiTip ? pitch*kDriveTrain.pitchCompensation : 0;
+    double rollCompensation = drive.applyAntiTip && (leftTrigger != 0) && (rightTrigger != 0)? roll * kDriveTrain.rollCompensation : 0;
 
-    drive.aadilDrive(rightTrigger - pitch*kDriveTrain.pitchCompensation, 
-                     leftTrigger + pitch*kDriveTrain.pitchCompensation, 
-                     lxAxis + roll*kDriveTrain.rollCompensation);
+    drive.aadilDrive(Math.max(rightTrigger - pitchCompensation - rollCompensation, 0), 
+                     Math.max(leftTrigger + pitchCompensation + rollCompensation, 0), 
+                     lxAxis);
   }
 
   /**
