@@ -97,8 +97,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     // Bind start to go to the next drive mode
-    but_main_Start.whenPressed(() -> DriveTrain.cycleDriveMode());
-    but_main_Back.whenReleased( new ToggleAntiTip(DriveTrain));
+    but_main_Back.whenPressed(() -> DriveTrain.cycleDriveMode());
+    but_main_Start.whenPressed( new ToggleAntiTip(DriveTrain));
 
     // Bind right bumper to 
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
