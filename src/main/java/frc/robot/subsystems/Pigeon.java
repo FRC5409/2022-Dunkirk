@@ -1,8 +1,6 @@
 package frc.robot.subsystems;
 
-
-
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -11,11 +9,27 @@ import frc.robot.Constants.kGyroSystem;
 
 public class Pigeon extends SubsystemBase{
     
-    public final WPI_Pigeon2 gyro_pigeon;
+    public final WPI_PigeonIMU gyro_pigeon;
+
+    // The robot's RPY
+    public double roll;
+    public double pitch;
+    public double yaw;
+
+    // The robot's angular velocity
+    public double turn_rate;
+
+    // The robot's heading
+    public double heading;
+
+    // XYZ acceleration relative to the robot
+    public double x_acceleration;
+    public double y_acceleration;
+    public double z_acceleration;
 
 
     public Pigeon(){
-        gyro_pigeon = new WPI_Pigeon2(kGyroSystem.CANPigeon);
+        gyro_pigeon = new WPI_PigeonIMU(kGyroSystem.CANPigeon);
         gyro_pigeon.reset();
         
     }
@@ -29,7 +43,43 @@ public class Pigeon extends SubsystemBase{
 
     @Override
     public void simulationPeriodic() {
+        updateAll();
+    }
 
+    private void updateAll(){
+        updateRPY();
+        updateAcceleration();
+        updateTurnAngle();
+    }
+
+    /**
+     * Updates the roll pitch and yaw members
+     */
+    private void updateRPY(){
+        double [] rpy = new double[3];
+        gyro_pigeon.getYawPitchRoll(rpy);
+        roll  = rpy[0];
+        pitch = rpy[1];
+        yaw   = rpy[2];
+    }
+
+    /**
+     * Updates the heading and turn rate
+     */
+    private void updateTurnAngle(){
+        heading   = getAngle();
+        turn_rate = getRate();
+    }
+
+    /**
+     * Updates the xyz acceleration members
+     */
+    private void updateAcceleration(){
+        short [] xyz = new short[3];
+        gyro_pigeon.getBiasedAccelerometer(xyz);
+        x_acceleration = xyz[0];
+        y_acceleration = xyz[1];
+        z_acceleration = xyz[2];
     }
 
     /**
@@ -42,21 +92,21 @@ public class Pigeon extends SubsystemBase{
     /**
      * @return double the GyroSystem's roll
      */
-    public double getRoll(){
+    private double getRoll(){
         return gyro_pigeon.getRoll();
     }
     
     /**
      * @return double the GyroSystem's yaw
      */
-    public double getYaw(){
+    private double getYaw(){
         return gyro_pigeon.getYaw();
     }
 
     /**
      * @return double the GyroSystem's pitch
      */
-    public double getPitch(){
+    private double getPitch(){
         return gyro_pigeon.getPitch();
     }
 
@@ -75,7 +125,7 @@ public class Pigeon extends SubsystemBase{
      *     output as it sweeps past from 360 to 0 on the second time around."
      *      
      */
-    public double getAngle(){
+    private double getAngle(){
         return gyro_pigeon.getAngle();
     }
     
@@ -86,7 +136,7 @@ public class Pigeon extends SubsystemBase{
      *  - Follows North-East-Down convention
      *      
      */
-    public double getRate(){
+    private double getRate(){
         return gyro_pigeon.getRate();
     }
 
@@ -95,9 +145,9 @@ public class Pigeon extends SubsystemBase{
      * 
      */
     public void displayAngle(){
-        SmartDashboard.putNumber("Roll",  getRoll());
-        SmartDashboard.putNumber("Pitch", getPitch());
-        SmartDashboard.putNumber("Yaw",   getYaw());
+        SmartDashboard.putNumber("Roll",  roll);
+        SmartDashboard.putNumber("Pitch", pitch);
+        SmartDashboard.putNumber("Yaw",   yaw);
     }
 
     /**
@@ -105,7 +155,7 @@ public class Pigeon extends SubsystemBase{
      * 
      */
     public void displayHeading(){
-        SmartDashboard.putNumber("Angle",  getAngle());
-        SmartDashboard.putNumber("Rate", getRate());
+        SmartDashboard.putNumber("Angle",  heading);
+        SmartDashboard.putNumber("Rate", turn_rate);
     }
 }

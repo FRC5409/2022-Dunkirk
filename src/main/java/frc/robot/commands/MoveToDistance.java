@@ -19,6 +19,7 @@ public class MoveToDistance extends PIDCommand{
         drive.zeroEncoders();
         addRequirements(drive);
     }
+    
     /**
      * @return the double with the smallest magnitude (chooses between the PID output and the maxStraightSpeed)
      * 

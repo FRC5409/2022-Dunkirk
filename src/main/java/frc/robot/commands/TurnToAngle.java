@@ -23,8 +23,7 @@ public class TurnToAngle extends PIDCommand{
     /**
      * @return the double with the smallest magnitude (chooses between the PID output and the maxTurnSpeed)
      * 
-     */ 
-    privat
+     */
     private static double limitSpeed(double output){
         if(output >= 0){
             return Math.min(output, kDriveTrain.maxTurnSpeed);
