@@ -83,6 +83,10 @@ public final class Constants {
         public static final double maxStraightSpeed = 1;
         public static final double maxTurnSpeed = 1;
 
+        // Anti-tip compensation
+        public static final double pitchCompensation = 0;
+        public static final double rollCompensation = 0;
+
     }
 
     public final class kGyroSystem{

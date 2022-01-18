@@ -92,21 +92,21 @@ public class Pigeon extends SubsystemBase{
     /**
      * @return double the GyroSystem's roll
      */
-    private double getRoll(){
+    public double getRoll(){
         return gyro_pigeon.getRoll();
     }
     
     /**
      * @return double the GyroSystem's yaw
      */
-    private double getYaw(){
+    public double getYaw(){
         return gyro_pigeon.getYaw();
     }
 
     /**
      * @return double the GyroSystem's pitch
      */
-    private double getPitch(){
+    public double getPitch(){
         return gyro_pigeon.getPitch();
     }
 
@@ -125,7 +125,7 @@ public class Pigeon extends SubsystemBase{
      *     output as it sweeps past from 360 to 0 on the second time around."
      *      
      */
-    private double getAngle(){
+    public double getAngle(){
         return gyro_pigeon.getAngle();
     }
     
@@ -136,7 +136,7 @@ public class Pigeon extends SubsystemBase{
      *  - Follows North-East-Down convention
      *      
      */
-    private double getRate(){
+    public double getRate(){
         return gyro_pigeon.getRate();
     }
 
