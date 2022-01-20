@@ -14,7 +14,7 @@ package frc.robot;
  */
 public final class Constants {
 
-    public static final class kIntakeIndexer{
+    public static final class kIntake{
         public static final int kIntakeMotor = 4;
 
         public static final int kRightIntakeSolenoid1 = 1;
@@ -24,6 +24,11 @@ public final class Constants {
         public static final int kLeftIntakeSolenoid2 = 2;
 
         public static final int velocityMaxIntakeJam = 1000;
+    }
+
+    public static final class kIndexer{
+        public static final int kIndexerMotor = 16; 
+        public static final int currentLimit = 20; 
     }
 
 
