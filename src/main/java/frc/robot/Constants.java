@@ -13,6 +13,26 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static class Pneumatics {
+        public static final int MODULE = 0;
+        public static final double MIN_PSI = 0;
+        public static final double MAX_PSI = 60;
+
+    }
+
+
+    public final class Climber {
+        public static final int mot_port = 0;
+
+        public static final int DIRECTION_EXTEND = 0;
+        public static final int DIRECTION_RETRACT = 1;
+        //TODO: determine the extension length
+        public static final double EXTENSION_LENGTH = 0;
+        public static final double RETRACTION_LENGTH = 0;
+
+        public static final double ARM_SPEED = 1.8;
+
+    }
 
     public static final class kIntake{
         public static final int kIntakeMotor = 4;
@@ -63,5 +83,4 @@ public final class Constants {
 
 
     }
-
 }
