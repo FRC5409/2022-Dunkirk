@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /** An example command that uses an example subsystem. */
 public class IntakeIndexerCommands extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final IntakeIndexer m_intakeIndexer;
+  private IntakeIndexer sys_intakeIndexer;
 
   /**
    * Creates a new ExampleCommand.
@@ -18,7 +18,7 @@ public class IntakeIndexerCommands extends CommandBase {
    * @param subsystem The subsystem used by this command.
    */
   public IntakeIndexerCommands(IntakeIndexer subsystem) {
-    m_intakeIndexer = subsystem;
+    sys_intakeIndexer = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
