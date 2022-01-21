@@ -12,11 +12,11 @@ public class IntakeIndexGo extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private IntakeIndexer sys_intakeIndexer;
 
-  String m_colourSensor_etr;
+  char m_colourSensor_etr;
 
-  String m_colourSensor_ext; 
+  char m_colourSensor_ext; 
 
-  String allianceColour; 
+  char allianceColour; 
 
   int countBalls; 
   /**
@@ -32,26 +32,25 @@ public class IntakeIndexGo extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_colourSensor_etr = "nicole method for colour"; 
-    m_colourSensor_ext = "nicole method for colour"; 
-    allianceColour = "nicole method for fms"; 
+    m_colourSensor_etr = sys_intakeIndexer.getEntranceColour(); 
+    m_colourSensor_ext = sys_intakeIndexer.getExitColour(); 
+    allianceColour = sys_intakeIndexer.getFMS(); 
 
-    if(allianceColour == "B"){ // alliance colour is blue
-        if(m_colourSensor_etr == allianceColour && m_colourSensor_ext == "U"){
+    if(allianceColour == 'B'){ // alliance colour is blue
+        if(m_colourSensor_etr == allianceColour && m_colourSensor_ext == 'U'){
           countBalls ++; 
           sys_intakeIndexer.indexerOn(1); 
         } else if(m_colourSensor_ext == allianceColour && m_colourSensor_etr == allianceColour){
           sys_intakeIndexer.indexerOn(0); 
           countBalls ++;
         }
-    } else if(allianceColour == "R"){ //alliance colour is red
-      if(m_colourSensor_etr == allianceColour && m_colourSensor_ext == "U"){
+    } else if(allianceColour == 'R'){ //alliance colour is red
+      if(m_colourSensor_etr == allianceColour && m_colourSensor_ext == 'U'){
         countBalls ++; 
         sys_intakeIndexer.indexerOn(1); 
       } else if(m_colourSensor_ext == allianceColour && m_colourSensor_etr == allianceColour){
