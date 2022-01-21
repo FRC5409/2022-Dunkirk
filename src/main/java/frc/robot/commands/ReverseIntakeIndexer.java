@@ -11,6 +11,10 @@ public class ReverseIntakeIndexer extends CommandBase{
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private IntakeIndexer sys_intakeIndexer;
 
+    String m_colourSensor_etr;
+    String m_colourSensor_ext;
+    String allianceColour; 
+
     public ReverseIntakeIndexer(IntakeIndexer subsystem) {
         sys_intakeIndexer = subsystem;
         // Use addRequirements() here to declare subsystem dependencies.
@@ -23,7 +27,20 @@ public class ReverseIntakeIndexer extends CommandBase{
 
       // Called everytime the scheduler runs while the command is scheduled
       @Override
-      public void execute() {}
+      public void execute() {
+          m_colourSensor_etr = "insert nicole code here";
+          m_colourSensor_ext = "insert nicole code here";
+          allianceColour = "insert nicole code here";
+
+          if(allianceColour != m_colourSensor_etr){
+            //   sys_intakeIndexer.indexerOn(1);
+            //bind to button
+            //reverse intake
+          } else if(allianceColour != m_colourSensor_ext){
+              //flop shoot
+          }
+
+      }
 
       // Called once the command ends or is interuppted
       @Override
