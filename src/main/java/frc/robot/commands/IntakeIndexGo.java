@@ -45,6 +45,7 @@ public class IntakeIndexGo extends CommandBase {
         if(m_colourSensor_etr == allianceColour && m_colourSensor_ext == 'U'){
           countBalls ++; 
           sys_intakeIndexer.indexerOn(1); 
+          sys_intakeIndexer.intakeOn(0);
         } else if(m_colourSensor_ext == allianceColour && m_colourSensor_etr == allianceColour){
           sys_intakeIndexer.indexerOn(0); 
           countBalls ++;
@@ -53,13 +54,14 @@ public class IntakeIndexGo extends CommandBase {
       if(m_colourSensor_etr == allianceColour && m_colourSensor_ext == 'U'){
         countBalls ++; 
         sys_intakeIndexer.indexerOn(1); 
+        sys_intakeIndexer.intakeOn(0);
       } else if(m_colourSensor_ext == allianceColour && m_colourSensor_etr == allianceColour){
         sys_intakeIndexer.indexerOn(0); 
         countBalls ++;
       }
-    } 
-
-
+    }
+    
+    System.out.println(countBalls);
     
   }
 

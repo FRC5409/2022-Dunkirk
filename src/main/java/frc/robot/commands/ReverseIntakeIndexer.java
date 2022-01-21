@@ -33,7 +33,8 @@ public class ReverseIntakeIndexer extends CommandBase{
           allianceColour = sys_intakeIndexer.getFMS();
 
           if(allianceColour != m_colourSensor_etr){
-            sys_intakeIndexer.indexerOn(-1);
+            sys_intakeIndexer.reverseIndexer(1);
+            sys_intakeIndexer.reverseIntake(1);
           } else if(allianceColour != m_colourSensor_ext){
               //flop shoot
           }
