@@ -27,7 +27,7 @@ public class DriveTrain extends SubsystemBase{
     private final DifferentialDrive m_drive;
 
     private final DoubleSolenoid dsl_gear;
-    
+
     private boolean applyAntiTip;
 
 
@@ -65,6 +65,8 @@ public class DriveTrain extends SubsystemBase{
         dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
         driveMode = kDriveTrain.InitialDriveMode;
+
+        applyAntiTip = kDriveTrain.startWithAntiTip;
     }
 
     /**
@@ -137,7 +139,6 @@ public class DriveTrain extends SubsystemBase{
      */
     public void displayDriveMode(){
         SmartDashboard.putString("Drive Mode", getDriveModeString());
-        mot_leftFrontDrive.getSelectedSensorVelocity();
     }
 
     /**
@@ -267,7 +268,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderVelocityLeft(){
-        return mot_leftFrontDrive.getSelectedSensorPosition() + mot_leftRearDrive.getSelectedSensorPosition() / 2;
+        return mot_leftFrontDrive.getSelectedSensorVelocity() + mot_leftRearDrive.getSelectedSensorVelocity() / 2;
     }
 
     /**
@@ -275,7 +276,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */ 
     public double getEncoderVelocityRight(){
-        return mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition() / 2;
+        return mot_rightFrontDrive.getSelectedSensorVelocity() + mot_rightRearDrive.getSelectedSensorVelocity() / 2;
     }
     /**
      * Sets all encoders to 0
