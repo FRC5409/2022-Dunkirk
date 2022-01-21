@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
 
 import frc.robot.commands.IntakeIndexGo;
+import frc.robot.commands.ReverseIntakeIndexer;
 import frc.robot.subsystems.IntakeIndexer;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -35,10 +36,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
-  private final IntakeIndexer m_intakeindexer = new IntakeIndexer();
-
-  private final IntakeIndexGo m_autoCommand = new IntakeIndexGo(m_intakeindexer);
-
+  
   // Define main joystick
   private final XboxController joystick_main; // = new XboxController(0);
   private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
@@ -48,10 +46,14 @@ public class RobotContainer {
   // Subsystems defined
   private final DriveTrain DriveTrain;
   private final Pigeon Pigeon;
+  private final IntakeIndexer intakeindexer;
 
   // Commands defined
   //private final ExampleCommand m_autoCommand;
   private final DefaultDrive defaultDrive;
+  private final IntakeIndexGo m_intakeIndexGo;
+  private final ReverseIntakeIndexer m_reverseIntakeIndex;
+
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -74,9 +76,12 @@ public class RobotContainer {
      // Initialize sub systems
      DriveTrain = new DriveTrain();
      Pigeon = new Pigeon();
+     intakeindexer = new IntakeIndexer();
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
+     m_intakeIndexGo = new IntakeIndexGo(intakeindexer);
+     m_reverseIntakeIndex = new ReverseIntakeIndexer(intakeindexer);
  
     // Configure the button bindings
     configureButtonBindings();
@@ -99,6 +104,9 @@ public class RobotContainer {
     // Bind right bumper to 
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
+
+    but_main_A.whenPressed(new IntakeIndexGo(intakeindexer));
+    but_main_B.whenPressed(new ReverseIntakeIndexer(intakeindexer));
   }
 
   /**
