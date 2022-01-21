@@ -12,10 +12,6 @@ public class IntakeIndexGo extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private IntakeIndexer sys_intakeIndexer;
 
-  boolean indexerRun; 
-
-  protected boolean m_triggered; 
-
   String m_colourSensor_etr;
 
   String m_colourSensor_ext; 
@@ -49,17 +45,17 @@ public class IntakeIndexGo extends CommandBase {
     if(allianceColour == "B"){ // alliance colour is blue
         if(m_colourSensor_etr == allianceColour && m_colourSensor_ext == "U"){
           countBalls ++; 
-          //moveIndexer()
+          sys_intakeIndexer.indexerOn(1); 
         } else if(m_colourSensor_ext == allianceColour && m_colourSensor_etr == allianceColour){
-          //stop indexer
+          sys_intakeIndexer.indexerOn(0); 
           countBalls ++;
         }
     } else if(allianceColour == "R"){ //alliance colour is red
       if(m_colourSensor_etr == allianceColour && m_colourSensor_ext == "U"){
         countBalls ++; 
-        //move indexer
+        sys_intakeIndexer.indexerOn(1); 
       } else if(m_colourSensor_ext == allianceColour && m_colourSensor_etr == allianceColour){
-        //stop indexer
+        sys_intakeIndexer.indexerOn(0); 
         countBalls ++;
       }
     } 
