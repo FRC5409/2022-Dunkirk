@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -32,6 +33,47 @@ public class Pigeon extends SubsystemBase{
         gyro_pigeon = new WPI_PigeonIMU(kGyroSystem.CANPigeon);
         gyro_pigeon.reset();
         
+        SmartDashboard.putBoolean("Manual Override Enabled", false);
+
+        SmartDashboard.putNumber("manual roll", 0);
+        SmartDashboard.putNumber("manual pitch", 0);
+        SmartDashboard.putNumber("manual yaw", 0);
+
+    }
+
+    // getters
+    public double Roll(){
+        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual roll", 0) : roll;
+    }
+
+    public double Pitch(){
+        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual pitch", 0) : pitch;
+    }
+
+    public double Yaw(){
+        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual yaw", 0) : yaw;
+    }
+
+    public double Heading(){
+        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual heading", 0) : heading;
+    }
+
+    public double TurnRate(){
+        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual turn_rate", 0) : turn_rate;
+    }
+
+
+
+    public double X_Acelleration(){
+        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual x_acceleration", 0) : x_acceleration;
+    }
+
+    public double Y_Acelleration(){
+        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual y_acceleration", 0) : y_acceleration;
+    }
+
+    public double Z_Acelleration(){
+        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual x_acceleration", 0) : x_acceleration;
     }
 
     /**
@@ -44,6 +86,7 @@ public class Pigeon extends SubsystemBase{
     @Override
     public void simulationPeriodic() {
         updateAll();
+        displayAngle();
     }
 
     private void updateAll(){
@@ -145,9 +188,9 @@ public class Pigeon extends SubsystemBase{
      * 
      */
     public void displayAngle(){
-        SmartDashboard.putNumber("Roll",  roll);
-        SmartDashboard.putNumber("Pitch", pitch);
-        SmartDashboard.putNumber("Yaw",   yaw);
+        SmartDashboard.putNumber("Roll",  Roll());
+        SmartDashboard.putNumber("Pitch", Pitch());
+        SmartDashboard.putNumber("Yaw",   Yaw());
     }
 
     /**
@@ -155,7 +198,7 @@ public class Pigeon extends SubsystemBase{
      * 
      */
     public void displayHeading(){
-        SmartDashboard.putNumber("Angle",  heading);
-        SmartDashboard.putNumber("Rate", turn_rate);
+        SmartDashboard.putNumber("Angle",  Heading());
+        SmartDashboard.putNumber("Rate", TurnRate());
     }
 }

@@ -62,8 +62,8 @@ public class DefaultDrive extends CommandBase {
     double rightTrigger = joystick.getRightTriggerAxis();
     double lxAxis = joystick.getLeftX() * -1;
 
-    double pitch = 90/pigeon.pitch;
-    double roll  = 90/pigeon.roll; // might need to transform roll depending on where 0 is
+    double pitch = 90/pigeon.Pitch();
+    double roll  = 90/pigeon.Roll(); // might need to transform roll depending on where 0 is
 
     double pitchCompensation = drive.getAntiTip() ? pitch*kDriveTrain.pitchCompensation : 0;
     double rollCompensation = drive.getAntiTip() && (leftTrigger != 0) && (rightTrigger != 0)? roll * kDriveTrain.rollCompensation : 0;
