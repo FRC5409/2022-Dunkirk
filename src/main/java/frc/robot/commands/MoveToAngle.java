@@ -6,21 +6,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 
-public class MoveToDistance extends CommandBase {
+public class MoveToAngle extends CommandBase {
 
     private DriveTrain drive;
     private double setpoint;
     private boolean useSmartDashboard;
 
-    public MoveToDistance(DriveTrain _drive){
+    public MoveToAngle(DriveTrain _drive){
         drive = _drive;
-        setpoint = 0;
+        setpoint = 0; // calculate distance
         useSmartDashboard = true;
     }
 
-    public MoveToDistance(DriveTrain _drive, double _setpoint){
+    public MoveToAngle(DriveTrain _drive, double _setpoint){
         drive = _drive;
-        setpoint = _setpoint;
+        setpoint = _setpoint; // calculate distance
         useSmartDashboard = true;
     }
 
@@ -37,13 +37,13 @@ public class MoveToDistance extends CommandBase {
     }
 
     @Override
-    public void end(boolean interupted){
+    public void end(boolean interrupt){
         drive.setControlMode(TalonFXControlMode.PercentOutput, 0);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return drive.getEncoderPosition() == setpoint;
+        return drive.getEncoderPositionRight() == setpoint;
     }
 }

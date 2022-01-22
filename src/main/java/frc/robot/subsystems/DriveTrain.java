@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -289,6 +290,15 @@ public class DriveTrain extends SubsystemBase{
         mot_rightRearDrive.setSelectedSensorPosition(0);
         mot_leftFrontDrive.setSelectedSensorPosition(0);
         mot_leftRearDrive.setSelectedSensorPosition(0);
+    }
+
+    // ------------------------- Setpoint Controls ----------------------- //
+
+    public void setControlMode(	TalonFXControlMode 	mode, double value){
+        mot_leftFrontDrive.set(mode, value);
+        mot_leftRearDrive.set(mode, value);
+        mot_rightFrontDrive.set(mode, value);
+        mot_rightRearDrive.set(mode, value);
     }
 
     // ---------------------------- Solenoids ---------------------------- //

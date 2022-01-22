@@ -16,6 +16,8 @@ import frc.robot.commands.SimpleDriveAuto;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.SetAntiTip;
+import frc.robot.commands.MoveToDistance;
+import frc.robot.commands.MoveToAngle;
 import frc.robot.commands.ToggleAntiTip;
 
 // Misc
@@ -103,6 +105,10 @@ public class RobotContainer {
     // Bind right bumper to 
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
+
+    // PID Controls
+    but_main_A.whenPressed(new MoveToDistance(DriveTrain));
+    but_main_B.whenPressed(new MoveToAngle(DriveTrain));
   }
 
   /**
