@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import frc.robot.Constants.kIntake;
 import frc.robot.Constants.kIndexer;
 
+import com.playingwithfusion.TimeOfFlight;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -20,7 +21,6 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 
 public class IntakeIndexer extends SubsystemBase {
   private CANSparkMax mot_intake;
@@ -45,20 +45,28 @@ public class IntakeIndexer extends SubsystemBase {
   private char detectedEntranceColour;
   private char detectedExitColour;
 
+  protected TimeOfFlight TOF_Ent;
+  protected TimeOfFlight TOF_Ext;
+
+  protected boolean isRangeValid_Ent;
+  protected boolean isRangeValid_Ext;
+
+  protected double getRange_Ent;
+  protected double getRange_Ext;
 
   public IntakeIndexer() {
-    mot_intake = new CANSparkMax(kIntake.kIntakeMotor, MotorType.kBrushless);	
-    mot_intake.setSmartCurrentLimit(20); 	
-    mot_intake.setIdleMode(IdleMode.kBrake);	
-    mot_intake.burnFlash();  	
+    mot_intake = new CANSparkMax(kIntake.kIntakeMotor, MotorType.kBrushless);
+    mot_intake.setSmartCurrentLimit(20);
+    mot_intake.setIdleMode(IdleMode.kBrake);
+    mot_intake.burnFlash();
 
     intakeSolenoid_left = new DoubleSolenoid(null, kIntake.kLeftIntakeSolenoid1, kIntake.kLeftIntakeSolenoid2);
-    intakeSolenoid_right = new DoubleSolenoid(null, kIntake.kRightIntakeSolenoid1, kIntake.kRightIntakeSolenoid2);	
+    intakeSolenoid_right = new DoubleSolenoid(null, kIntake.kRightIntakeSolenoid1, kIntake.kRightIntakeSolenoid2);
 
     mot_indexer = new CANSparkMax(kIndexer.kIndexerMotor, MotorType.kBrushless);
-		mot_indexer.setSmartCurrentLimit(kIndexer.currentLimit);
-		mot_indexer.setIdleMode(IdleMode.kBrake);
-		mot_indexer.burnFlash();
+    mot_indexer.setSmartCurrentLimit(kIndexer.currentLimit);
+    mot_indexer.setIdleMode(IdleMode.kBrake);
+    mot_indexer.burnFlash();
 
     m_colorMatcher_etr.addColorMatch(kBlueTarget);
     m_colorMatcher_etr.addColorMatch(kRedTarget);
@@ -68,53 +76,52 @@ public class IntakeIndexer extends SubsystemBase {
 
   }
 
-  public void intakeOn(double speed){
+  public void intakeOn(double speed) {
     mot_intake.set(speed);
   }
 
-  public void reverseIntake(double speed){
+  public void reverseIntake(double speed) {
     mot_intake.set(-speed);
   }
 
-  public void solenoidsDown(){
+  public void solenoidsDown() {
     intakeSolenoid_left.set(DoubleSolenoid.Value.kForward);
     intakeSolenoid_right.set(DoubleSolenoid.Value.kForward);
   }
 
-  public void solenoidsUp(){
+  public void solenoidsUp() {
     intakeSolenoid_left.set(DoubleSolenoid.Value.kReverse);
     intakeSolenoid_right.set(DoubleSolenoid.Value.kReverse);
   }
 
-  public boolean isExtended(){
-    return (intakeSolenoid_left.get()==DoubleSolenoid.Value.kForward) && (intakeSolenoid_right.get()==DoubleSolenoid.Value.kForward);
+  public boolean isExtended() {
+    return (intakeSolenoid_left.get() == DoubleSolenoid.Value.kForward)
+        && (intakeSolenoid_right.get() == DoubleSolenoid.Value.kForward);
   }
 
-	public void indexerOn(double speed){
-		mot_indexer.set(speed);
-	}
+  public void indexerOn(double speed) {
+    mot_indexer.set(speed);
+  }
 
-  public void reverseIndexer(double speed){
+  public void reverseIndexer(double speed) {
     mot_indexer.set(-speed);
   }
 
   public char getFMS() {
     String gameData;
     gameData = DriverStation.getAlliance().name(); // name?
-    if(gameData.length() > 0)
-    {
-      switch (gameData.charAt(0))
-      {
-        case 'B' :
-        allianceColour = 'B';
-          //Blue case code
+    if (gameData.length() > 0) {
+      switch (gameData.charAt(0)) {
+        case 'B':
+          allianceColour = 'B';
+          // Blue case code
           break;
-        case 'R' :
-        allianceColour = 'R';
-          //Red case code
+        case 'R':
+          allianceColour = 'R';
+          // Red case code
           break;
-        default :
-          //This is corrupt data
+        default:
+          // This is corrupt data
           break;
       }
     }
@@ -166,7 +173,7 @@ public class IntakeIndexer extends SubsystemBase {
       detectedEntranceColour = 'B';
     } else if (match.color == kRedTarget) {
       detectedEntranceColour = 'R';
-    } else{
+    } else {
       detectedEntranceColour = 'U';
     }
   }
@@ -180,22 +187,67 @@ public class IntakeIndexer extends SubsystemBase {
       detectedExitColour = 'B';
     } else if (match.color == kRedTarget) {
       detectedExitColour = 'R';
-    } else{
+    } else {
       detectedExitColour = 'U';
     }
   }
 
-  public char getEntranceColour(){
+  public char getEntranceColour() {
     return detectedEntranceColour;
   }
 
-  public char getExitColour(){
+  public char getExitColour() {
     return detectedExitColour;
+  }
+
+  public double getRange_Ent() {
+    return TOF_Ent.getRange();
+  }
+
+  public double getRange_Ext() {
+    return TOF_Ext.getRange();
+  }
+
+  public boolean ballDetectionEnter() {
+    double range = TOF_Ent.getRange();
+    if (range < 24) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean ballDetectionExit() {
+    double range = TOF_Ext.getRange();
+
+    if (range < 24) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean isRangeValid_Ent() {
+    return TOF_Ent.isRangeValid();
+  }
+
+  public boolean isRangeValid_Ext() {
+    return TOF_Ext.isRangeValid();
+  }
+
+  public void setRangingMode(TimeOfFlight.RangingMode rangeModeIn, double sampleTime) {
+    if (sampleTime > 24) {
+      sampleTime = 24;
+      TOF_Ent.setRangingMode(rangeModeIn, sampleTime);
+    }
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("TOF Enter", TOF_Ent.getRange());
+    SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
+    SmartDashboard.putBoolean("TOF Enter In Range", ballDetectionEnter());
+    SmartDashboard.putBoolean("TOF Exit In Range", ballDetectionExit());
+
   }
 
   @Override
