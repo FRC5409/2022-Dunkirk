@@ -60,7 +60,7 @@ public class DefaultDrive extends CommandBase {
   private void aadilDriveExecute(){
     double leftTrigger = joystick.getLeftTriggerAxis();
     double rightTrigger = joystick.getRightTriggerAxis();
-    double lxAxis = joystick.getLeftX() * -1;
+    double lxAxis = joystick.getLeftX();
 
     double pitch = 90/pigeon.Pitch();
     double roll  = 90/pigeon.Roll(); // might need to transform roll depending on where 0 is
@@ -77,8 +77,8 @@ public class DefaultDrive extends CommandBase {
    * This method runs the robot with the tankDrive control scheme
    */
   private void tankDriveExecute(){
-      double lyAxis = joystick.getLeftY() * -1; 
-      double ryAxis = joystick.getRightY() * -1;
+      double lyAxis = -joystick.getLeftY(); 
+      double ryAxis = -joystick.getRightY();
 
       drive.tankDrive(lyAxis, ryAxis);
   }

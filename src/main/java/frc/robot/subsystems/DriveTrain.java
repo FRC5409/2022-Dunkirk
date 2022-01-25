@@ -68,6 +68,8 @@ public class DriveTrain extends SubsystemBase{
         driveMode = kDriveTrain.InitialDriveMode;
 
         applyAntiTip = kDriveTrain.startWithAntiTip;
+
+        setBrakeMode(true);
     }
 
     /**
