@@ -303,7 +303,7 @@ public class DriveTrain extends SubsystemBase{
         mot_rightRearDrive.set(mode, value);
     }
 
-    public void setControlModeSplit(TalonFXControlMode 	mode, double value_l, double value_r){
+    public void setControlMode(TalonFXControlMode 	mode, double value_l, double value_r){
         mot_leftFrontDrive.set(mode, value_l);
         mot_leftRearDrive.set(mode, value_l);
         mot_rightFrontDrive.set(mode, value_r);

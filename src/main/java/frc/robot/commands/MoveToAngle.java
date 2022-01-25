@@ -21,12 +21,12 @@ public class MoveToAngle extends CommandBase {
 
     public MoveToAngle(DriveTrain _drive, double _setpoint){
         drive = _drive;
-        setpoint = CaclulateAngle(_setpoint); // calculate distance
+        setpoint = CalculateDistance(_setpoint); // calculate distance
         useSmartDashboard = true;
     }
 
-    private static double CaclulateAngle(double angle){
-        return Math.toRadians(angle) * Math.PI * Constants.kDriveTrain.wheelSperation;
+    private static double CalculateDistance(double angle){
+        return Math.toRadians(angle) * Math.PI * Constants.kDriveTrain.wheelSeparation;
     }
 
     @Override
@@ -35,13 +35,13 @@ public class MoveToAngle extends CommandBase {
 
         if(useSmartDashboard){
             if(SmartDashboard.containsKey("target distance")){
-                drive.setControlModeSplit(TalonFXControlMode.Position, 
-                                          CaclulateAngle(SmartDashboard.getNumber("target angle", 10)), 
-                                         -CaclulateAngle(SmartDashboard.getNumber("target angle", 10)));
+                drive.setControlMode(TalonFXControlMode.Position, 
+                                          CalculateDistance(SmartDashboard.getNumber("target angle", 10)), 
+                                         -CalculateDistance(SmartDashboard.getNumber("target angle", 10)));
             }
         }
         else {
-            drive.setControlModeSplit(TalonFXControlMode.Position, setpoint, -setpoint);
+            drive.setControlMode(TalonFXControlMode.Position, setpoint, -setpoint);
         }
     }
 
