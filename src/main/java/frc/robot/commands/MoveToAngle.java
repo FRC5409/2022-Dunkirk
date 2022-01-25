@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.DriveTrain;
 
 public class MoveToAngle extends CommandBase {
@@ -20,8 +21,12 @@ public class MoveToAngle extends CommandBase {
 
     public MoveToAngle(DriveTrain _drive, double _setpoint){
         drive = _drive;
-        setpoint = _setpoint; // calculate distance
+        setpoint = CaclulateAngle(_setpoint); // calculate distance
         useSmartDashboard = true;
+    }
+
+    private static double CaclulateAngle(double angle){
+        return Math.toRadians(angle) * Math.PI * Constants.kDriveTrain.wheelSperation;
     }
 
     @Override
@@ -31,8 +36,8 @@ public class MoveToAngle extends CommandBase {
         if(useSmartDashboard){
             if(SmartDashboard.containsKey("target distance")){
                 drive.setControlModeSplit(TalonFXControlMode.Position, 
-                                          SmartDashboard.getNumber("target distance", 10), 
-                                         -SmartDashboard.getNumber("target distance", 10));
+                                          CaclulateAngle(SmartDashboard.getNumber("target angle", 10)), 
+                                         -CaclulateAngle(SmartDashboard.getNumber("target angle", 10)));
             }
         }
         else {
