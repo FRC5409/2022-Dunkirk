@@ -15,17 +15,21 @@ import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.SimpleDriveAuto;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.SlowGear;
+
 import frc.robot.commands.SetAntiTip;
-import frc.robot.commands.MoveToDistance;
-import frc.robot.commands.MoveToAngle;
 import frc.robot.commands.ToggleAntiTip;
+
+import frc.robot.commands.MoveToAngle;
+import frc.robot.commands.MoveToDistance;
+
 
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.IntakeIndexerCommands;
+import frc.robot.commands.MoveToDistance;
 import frc.robot.subsystems.IntakeIndexer;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -86,6 +90,10 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    // temp
+    SmartDashboard.putNumber("target distance", 0);
+    SmartDashboard.putNumber("target angle", 0);
+
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
   }
@@ -106,9 +114,8 @@ public class RobotContainer {
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
 
-    // PID Controls
-    but_main_A.whenPressed(new MoveToDistance(DriveTrain));
-    but_main_B.whenPressed(new MoveToAngle(DriveTrain));
+    but_main_A.toggleWhenPressed( new MoveToDistance(DriveTrain));
+    but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
   }
 
   /**

@@ -26,13 +26,17 @@ public class MoveToAngle extends CommandBase {
 
     @Override
     public void initialize(){
+        drive.zeroEncoders(); 
+
         if(useSmartDashboard){
             if(SmartDashboard.containsKey("target distance")){
-                drive.setControlMode(TalonFXControlMode.Position, SmartDashboard.getNumber("target distance", 0));
+                drive.setControlModeSplit(TalonFXControlMode.Position, 
+                                          SmartDashboard.getNumber("target distance", 10), 
+                                         -SmartDashboard.getNumber("target distance", 10));
             }
         }
-        else{
-            drive.setControlMode(TalonFXControlMode.Position, setpoint);
+        else {
+            drive.setControlModeSplit(TalonFXControlMode.Position, setpoint, -setpoint);
         }
     }
 
