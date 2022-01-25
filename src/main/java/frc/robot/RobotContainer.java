@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
 
 import frc.robot.commands.IntakeIndexGo;
+import frc.robot.commands.IntakeSimulationTesting;
 import frc.robot.commands.ReverseIntakeIndexer;
 import frc.robot.subsystems.IntakeIndexer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -53,7 +54,7 @@ public class RobotContainer {
   private final DefaultDrive defaultDrive;
   private final IntakeIndexGo m_intakeIndexGo;
   private final ReverseIntakeIndexer m_reverseIntakeIndex;
-
+  private final IntakeSimulationTesting m_intakeSimulationTesting;
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -82,6 +83,7 @@ public class RobotContainer {
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
      m_intakeIndexGo = new IntakeIndexGo(intakeindexer);
      m_reverseIntakeIndex = new ReverseIntakeIndexer(intakeindexer);
+     m_intakeSimulationTesting = new IntakeSimulationTesting(intakeindexer);
  
     // Configure the button bindings
     configureButtonBindings();
@@ -105,7 +107,7 @@ public class RobotContainer {
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
 
-    but_main_A.whenPressed(new IntakeIndexGo(intakeindexer));
+    but_main_A.whenPressed(new IntakeSimulationTesting(intakeindexer));
     but_main_B.whenPressed(new ReverseIntakeIndexer(intakeindexer));
   }
 
