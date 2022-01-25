@@ -62,8 +62,6 @@ public class Pigeon extends SubsystemBase{
         return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual turn_rate", 0) : turn_rate;
     }
 
-
-
     public double X_Acelleration(){
         return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual x_acceleration", 0) : x_acceleration;
     }
