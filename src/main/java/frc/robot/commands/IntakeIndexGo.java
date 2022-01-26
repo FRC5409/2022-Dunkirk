@@ -27,7 +27,7 @@ public class IntakeIndexGo extends CommandBase {
   public IntakeIndexGo(IntakeIndexer subsystem) {
     sys_intakeIndexer = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(sys_intakeIndexer);
   }
 
   // Called when the command is initially scheduled.

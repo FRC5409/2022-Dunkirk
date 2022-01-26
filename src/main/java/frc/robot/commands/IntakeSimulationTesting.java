@@ -9,7 +9,7 @@ public class IntakeSimulationTesting extends CommandBase {
 
     public IntakeSimulationTesting(IntakeIndexer subsystem){
         sys_intakeIndexer = subsystem; 
-        addRequirements(subsystem);
+        addRequirements(sys_intakeIndexer);
     }
 
     @Override

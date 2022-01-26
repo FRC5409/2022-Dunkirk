@@ -30,13 +30,13 @@ public class IntakeIndexer extends SubsystemBase {
 
   private CANSparkMax mot_indexer;
 
-  // private I2C.Port i2cPort_1 = I2C.Port.kOnboard;
-  // private ColorSensorV3 m_colourSensor_etr = new ColorSensorV3(i2cPort_1);
-  // private ColorMatch m_colorMatcher_etr = new ColorMatch();
+  private I2C.Port i2cPort_1 = I2C.Port.kOnboard;
+  private ColorSensorV3 m_colourSensor_etr = new ColorSensorV3(i2cPort_1);
+  private ColorMatch m_colorMatcher_etr = new ColorMatch();
 
-  // private I2C.Port i2cPort_2 = I2C.Port.kOnboard;
-  // private ColorSensorV3 m_colourSensor_ext = new ColorSensorV3(i2cPort_2);
-  // private ColorMatch m_colorMatcher_ext = new ColorMatch();
+  private I2C.Port i2cPort_2 = I2C.Port.kOnboard;
+  private ColorSensorV3 m_colourSensor_ext = new ColorSensorV3(i2cPort_2);
+  private ColorMatch m_colorMatcher_ext = new ColorMatch();
 
   // need to be retested for the value
   private Color kBlueTarget = new Color(0.120, 0.402, 0.479);
@@ -71,11 +71,11 @@ public class IntakeIndexer extends SubsystemBase {
     mot_indexer.setIdleMode(IdleMode.kBrake);
     mot_indexer.burnFlash();
 
-    // m_colorMatcher_etr.addColorMatch(kBlueTarget);
-    // m_colorMatcher_etr.addColorMatch(kRedTarget);
+    m_colorMatcher_etr.addColorMatch(kBlueTarget);
+    m_colorMatcher_etr.addColorMatch(kRedTarget);
 
-    // m_colorMatcher_ext.addColorMatch(kBlueTarget);
-    // m_colorMatcher_ext.addColorMatch(kRedTarget);
+    m_colorMatcher_ext.addColorMatch(kBlueTarget);
+    m_colorMatcher_ext.addColorMatch(kRedTarget);
 
   }
 
@@ -132,68 +132,68 @@ public class IntakeIndexer extends SubsystemBase {
   }
 
   // to get colour value (entrance colour sensor)
-  // public void entranceColourTest() {
+  public void entranceColourTest() {
 
-  //   final Color detectedColour = m_colourSensor_etr.getColor();
-  //   ColorMatchResult match = m_colorMatcher_etr.matchClosestColor(detectedColour);
+    final Color detectedColour = m_colourSensor_etr.getColor();
+    ColorMatchResult match = m_colorMatcher_etr.matchClosestColor(detectedColour);
 
-  //   final double IR = m_colourSensor_etr.getIR();
-  //   final int proximity = m_colourSensor_etr.getProximity();
+    final double IR = m_colourSensor_etr.getIR();
+    final int proximity = m_colourSensor_etr.getProximity();
 
-  //   SmartDashboard.putNumber("Entrance blue value", match.color.blue);
-  //   SmartDashboard.putNumber("Entrance red value", match.color.red);
-  //   SmartDashboard.putNumber("Entrance green value", match.color.green);
-  //   SmartDashboard.putNumber("Entrance confidence", match.confidence);
-  //   SmartDashboard.putNumber("Entrance proximity", proximity);
-  //   SmartDashboard.putNumber("Entrance IR", IR);
+    SmartDashboard.putNumber("Entrance blue value", match.color.blue);
+    SmartDashboard.putNumber("Entrance red value", match.color.red);
+    SmartDashboard.putNumber("Entrance green value", match.color.green);
+    SmartDashboard.putNumber("Entrance confidence", match.confidence);
+    SmartDashboard.putNumber("Entrance proximity", proximity);
+    SmartDashboard.putNumber("Entrance IR", IR);
 
-  // }
+  }
 
   // to get colour value (entrance colour sensor)
-  // public void exitColourTest() {
+  public void exitColourTest() {
 
-  //   final Color detectedColour = m_colourSensor_ext.getColor();
-  //   ColorMatchResult match = m_colorMatcher_ext.matchClosestColor(detectedColour);
+    final Color detectedColour = m_colourSensor_ext.getColor();
+    ColorMatchResult match = m_colorMatcher_ext.matchClosestColor(detectedColour);
 
-  //   final double IR = m_colourSensor_ext.getIR();
-  //   final int proximity = m_colourSensor_ext.getProximity();
+    final double IR = m_colourSensor_ext.getIR();
+    final int proximity = m_colourSensor_ext.getProximity();
 
-  //   SmartDashboard.putNumber("Exit blue value", match.color.blue);
-  //   SmartDashboard.putNumber("Exit red value", match.color.red);
-  //   SmartDashboard.putNumber("Exit green value", match.color.green);
-  //   SmartDashboard.putNumber("Exit confidence", match.confidence);
-  //   SmartDashboard.putNumber("Exit proximity", proximity);
-  //   SmartDashboard.putNumber("Exit IR", IR);
+    SmartDashboard.putNumber("Exit blue value", match.color.blue);
+    SmartDashboard.putNumber("Exit red value", match.color.red);
+    SmartDashboard.putNumber("Exit green value", match.color.green);
+    SmartDashboard.putNumber("Exit confidence", match.confidence);
+    SmartDashboard.putNumber("Exit proximity", proximity);
+    SmartDashboard.putNumber("Exit IR", IR);
 
-  // }
+  }
 
-  // public void entranceColourCalibration() {
+  public void entranceColourCalibration() {
 
-  //   final Color detectedColor = m_colourSensor_etr.getColor();
-  //   ColorMatchResult match = m_colorMatcher_etr.matchClosestColor(detectedColor);
+    final Color detectedColor = m_colourSensor_etr.getColor();
+    ColorMatchResult match = m_colorMatcher_etr.matchClosestColor(detectedColor);
 
-  //   if (match.color == kBlueTarget) {
-  //     detectedEntranceColour = 'B';
-  //   } else if (match.color == kRedTarget) {
-  //     detectedEntranceColour = 'R';
-  //   } else {
-  //     detectedEntranceColour = 'U';
-  //   }
-  // }
+    if (match.color == kBlueTarget) {
+      detectedEntranceColour = 'B';
+    } else if (match.color == kRedTarget) {
+      detectedEntranceColour = 'R';
+    } else {
+      detectedEntranceColour = 'U';
+    }
+  }
 
-  // public void exitColourCalibration() {
+  public void exitColourCalibration() {
 
-  //   final Color detectedColor = m_colourSensor_ext.getColor();
-  //   ColorMatchResult match = m_colorMatcher_ext.matchClosestColor(detectedColor);
+    final Color detectedColor = m_colourSensor_ext.getColor();
+    ColorMatchResult match = m_colorMatcher_ext.matchClosestColor(detectedColor);
 
-  //   if (match.color == kBlueTarget) {
-  //     detectedExitColour = 'B';
-  //   } else if (match.color == kRedTarget) {
-  //     detectedExitColour = 'R';
-  //   } else {
-  //     detectedExitColour = 'U';
-  //   }
-  // }
+    if (match.color == kBlueTarget) {
+      detectedExitColour = 'B';
+    } else if (match.color == kRedTarget) {
+      detectedExitColour = 'R';
+    } else {
+      detectedExitColour = 'U';
+    }
+  }
 
   public char getEntranceColour() {
     return detectedEntranceColour;
@@ -246,10 +246,10 @@ public class IntakeIndexer extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("TOF Enter", TOF_Ent.getRange());
-    SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
-    SmartDashboard.putBoolean("TOF Enter In Range", ballDetectionEnter());
-    SmartDashboard.putBoolean("TOF Exit In Range", ballDetectionExit());
+    // SmartDashboard.putNumber("TOF Enter", TOF_Ent.getRange());
+    // SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
+    // SmartDashboard.putBoolean("TOF Enter In Range", ballDetectionEnter());
+    // SmartDashboard.putBoolean("TOF Exit In Range", ballDetectionExit());
     //SmartDashboard.putData(getFMS());
 
   }

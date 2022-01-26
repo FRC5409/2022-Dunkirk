@@ -11,6 +11,11 @@
           "open": true
         }
       },
+      "SPARK MAX [4]": {
+        "header": {
+          "open": true
+        }
+      },
       "Talon FX[0]": {
         "header": {
           "open": true
@@ -88,6 +93,7 @@
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/DriveTrain": "Subsystem",
       "/LiveWindow/ExampleSubsystem": "Subsystem",
+      "/LiveWindow/IntakeIndexer": "Subsystem",
       "/LiveWindow/Pigeon": "Subsystem",
       "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler"
@@ -95,6 +101,9 @@
   },
   "NetworkTables": {
     "LiveWindow": {
+      "IntakeIndexer": {
+        "open": true
+      },
       "open": true
     },
     "SmartDashboard": {
