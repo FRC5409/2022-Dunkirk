@@ -8,7 +8,7 @@ package frc.robot;
 // Subsystems
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Pigeon;
-
+import frc.robot.subsystems.Pneumatics;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DefaultDrive;
@@ -56,6 +56,7 @@ public class RobotContainer {
   // Subsystems defined
   private final DriveTrain DriveTrain;
   private final Pigeon Pigeon;
+  private final Pneumatics Pneumatics;
 
   // Commands defined
   //private final ExampleCommand m_autoCommand;
@@ -82,6 +83,7 @@ public class RobotContainer {
      // Initialize sub systems
      DriveTrain = new DriveTrain();
      Pigeon = new Pigeon();
+     Pneumatics = new Pneumatics();
 
      // Init commands
      defaultDrive = new DefaultDrive(DriveTrain, Pigeon, joystick_main);

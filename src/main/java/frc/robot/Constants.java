@@ -51,10 +51,10 @@ public final class Constants {
     public static final class kDriveTrain{
 
         // CAN IDs  (not initialized)
-        public static final int CANLeftDriveFront = 4;
-        public static final int CANRightDriveFront = 6;
-        public static final int CANLeftDriveBack = 14;
-        public static final int CANRightDriveBack = 15;
+        public static final int CANLeftDriveFront = 1;
+        public static final int CANRightDriveFront = 3;
+        public static final int CANLeftDriveBack = 2;
+        public static final int CANRightDriveBack = 4;
         
         // Current Limits
         public static final double CurrentLimit = 65;
