@@ -18,7 +18,7 @@ public class TestIndexShoot extends CommandBase{
 
     @Override
     public void execute(){
-        sys_intakeIndexer.indexShootOn(1);
+        sys_intakeIndexer.indexShootOn();
     }
 
     @Override

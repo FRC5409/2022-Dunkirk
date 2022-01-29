@@ -7,6 +7,9 @@ package frc.robot.subsystems;
 import frc.robot.Constants.kIntake;
 import frc.robot.Constants.kIndexer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.playingwithfusion.TimeOfFlight;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
@@ -15,11 +18,17 @@ import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -62,6 +71,13 @@ public class IntakeIndexer extends SubsystemBase {
   protected final CANSparkMax indexerBelt_neo; 
   protected final CANSparkMax indexerShooter_neo; 
 
+  //shuffleboard values
+  HashMap<String, NetworkTableEntry> shuffleBoardFields;
+  ShuffleboardTab tab;
+
+  double speedBelt = 0; 
+  double speedShoot = 0; 
+
   public IntakeIndexer() {
     mot_intake = new CANSparkMax(kIntake.kIntakeMotor, MotorType.kBrushless);
     mot_intake.setSmartCurrentLimit(20);
@@ -94,15 +110,49 @@ public class IntakeIndexer extends SubsystemBase {
     m_colorMatcher_ext.addColorMatch(kBlueTarget);
     m_colorMatcher_ext.addColorMatch(kRedTarget);
 
+
+    //shuffleboard values
+    shuffleBoardFields = new HashMap<String, NetworkTableEntry>();
+    tab = Shuffleboard.getTab("Motors");
+    ShuffleboardLayout mLayout = tab.getLayout("motor layout", BuiltInLayouts.kList);
+    shuffleBoardFields.put("motor speed belt",
+        mLayout.add("motor speed belt", speedBelt).withWidget(BuiltInWidgets.kNumberSlider)
+          .withProperties(Map.of("min", 0, "max", 100, "block increment", 10)).getEntry());
+    
+    shuffleBoardFields.put("current speed of belt", mLayout.add("Current belt speed", getSpeedBelt()).getEntry());
+
+    shuffleBoardFields.put("motor speed shooter",
+        mLayout.add("motor speed shooter", speedShoot).withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", 0, "max", 100, "block increment", 10)).getEntry());
+
+    shuffleBoardFields.put("current speed of shoot", mLayout.add("Current shooter speed", getSpeedBelt()).getEntry());
   }
+
+  
 
   //test stuff
-  public void indexBeltOn(double speed){
-    indexerBelt_neo.set(speed);
+  public void indexBeltOn(){
+    indexerBelt_neo.set(speedBelt);
   }
 
-  public void indexShootOn(double speed){
-    indexerShooter_neo.set(speed);
+  public void indexShootOn(){
+    indexerShooter_neo.set(speedShoot);
+  }
+
+  public void setSpeedBelt(double speed){
+    speedBelt = speed;
+  }
+
+  public void setSpeedShoot(double speed){
+    speedShoot = speed; 
+  }
+
+  public double getSpeedBelt(){
+    return speedBelt;
+  }
+
+  public double getSpeedShoot(){
+    return speedShoot;
   }
 
   public void intakeOn(double speed) {
@@ -277,6 +327,12 @@ public class IntakeIndexer extends SubsystemBase {
     // SmartDashboard.putBoolean("TOF Enter In Range", ballDetectionEnter());
     // SmartDashboard.putBoolean("TOF Exit In Range", ballDetectionExit());
     //SmartDashboard.putData(getFMS());
+
+    setSpeedBelt(shuffleBoardFields.get("motor speed belt").getDouble(50));
+    shuffleBoardFields.get("current speed of belt").setDouble(getSpeedBelt());
+
+    setSpeedShoot(shuffleBoardFields.get("motor speed shoot").getDouble(50));
+    shuffleBoardFields.get("current speed shoot").setDouble(getSpeedShoot());
 
   }
 

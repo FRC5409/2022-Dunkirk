@@ -16,7 +16,7 @@ public class TestIndexBelt extends CommandBase{
 
     @Override
     public void execute(){
-        sys_intakeIndexer.indexBeltOn(1);
+        sys_intakeIndexer.indexBeltOn();
     }
 
     @Override
