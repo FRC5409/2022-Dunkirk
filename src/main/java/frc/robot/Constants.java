@@ -44,11 +44,14 @@ public final class Constants {
         public static final int kLeftIntakeSolenoid2 = 2;
 
         public static final int velocityMaxIntakeJam = 1000;
+
     }
 
     public static final class kIndexer{
         public static final int kIndexerMotor = 16; 
         public static final int currentLimit = 20; 
+        public static final int kIndexBeltMotor = 6;
+        public static final int kIndexShooterMotor = 7; 
     }
 
 

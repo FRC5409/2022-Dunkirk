@@ -15,6 +15,7 @@ import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
@@ -57,11 +58,27 @@ public class IntakeIndexer extends SubsystemBase {
 
   protected final static int COMMAND_REGISTER_BIT = 0x80;
 
+  //indexer testing motors
+  protected final CANSparkMax indexerBelt_neo; 
+  protected final CANSparkMax indexerShooter_neo; 
+
   public IntakeIndexer() {
     mot_intake = new CANSparkMax(kIntake.kIntakeMotor, MotorType.kBrushless);
     mot_intake.setSmartCurrentLimit(20);
     mot_intake.setIdleMode(IdleMode.kBrake);
     mot_intake.burnFlash();
+
+    //test motor for belt on indexer prototype
+    indexerBelt_neo = new CANSparkMax(kIndexer.kIndexBeltMotor, MotorType.kBrushless);
+    indexerBelt_neo.setSmartCurrentLimit(20);
+    indexerBelt_neo.setIdleMode(IdleMode.kBrake);
+    indexerBelt_neo.burnFlash();
+
+    //test motor for indexer to shooter (flywheel thing)
+    indexerShooter_neo = new CANSparkMax(kIndexer.kIndexShooterMotor, MotorType.kBrushless); 
+    indexerShooter_neo.setSmartCurrentLimit(20);
+    indexerShooter_neo.setIdleMode(IdleMode.kBrake);
+    indexerShooter_neo.burnFlash();
 
     intakeSolenoid_left = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, kIntake.kLeftIntakeSolenoid1, kIntake.kLeftIntakeSolenoid2);
     intakeSolenoid_right = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, kIntake.kRightIntakeSolenoid1, kIntake.kRightIntakeSolenoid2);
@@ -77,6 +94,15 @@ public class IntakeIndexer extends SubsystemBase {
     m_colorMatcher_ext.addColorMatch(kBlueTarget);
     m_colorMatcher_ext.addColorMatch(kRedTarget);
 
+  }
+
+  //test stuff
+  public void indexBeltOn(double speed){
+    indexerBelt_neo.set(speed);
+  }
+
+  public void indexShootOn(double speed){
+    indexerShooter_neo.set(speed);
   }
 
   public void intakeOn(double speed) {
