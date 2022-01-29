@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import frc.robot.utils.Gains;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -47,7 +48,7 @@ public final class Constants {
     }
 
 
-    public final class kDriveTrain{
+    public static final class kDriveTrain{
 
         // CAN IDs  (not initialized)
         public static final int CANLeftDriveFront = 4;
@@ -71,14 +72,13 @@ public final class Constants {
         public static final int TANK_DRIVE = 1;
 
         // PID Controls
-        public static final double P_Distance = 0;
-        public static final double I_Distance = 0;
-        public static final double D_Distance = 0;
-
-        public static final double P_Angle = 0;
-        public static final double I_Angle = 0;
-        public static final double D_Angle = 0;
-
+        public static final int kSlotIdx = 0;
+        public static final int kPIDLoopIdx = 0;
+        public static final int kTimeoutMs = 30;
+        public static boolean kSensorPhase = true;
+        
+        public static final Gains kDistanceGains = new Gains(0.15, 0.0, 1.0, 0.0, 0, 1.0);
+        public static final Gains kAngleGains = new Gains(0.15, 0.0, 1.0, 0.0, 0, 1.0);
         // Speed limits for auto
         public static final double maxStraightSpeed = 1;
         public static final double maxTurnSpeed = 1;
