@@ -15,7 +15,9 @@ import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.SimpleDriveAuto;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.SlowGear;
-
+import frc.robot.commands.TestIndexBelt;
+import frc.robot.commands.TestIndexProto;
+import frc.robot.commands.TestIndexShoot;
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -55,6 +57,9 @@ public class RobotContainer {
   private final IntakeIndexGo m_intakeIndexGo;
   private final ReverseIntakeIndexer m_reverseIntakeIndex;
   private final IntakeSimulationTesting m_intakeSimulationTesting;
+  private final TestIndexBelt m_testIndexBelt;
+  private final TestIndexShoot m_testIndexShoot;
+  private final TestIndexProto m_testIndexProto;
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -84,6 +89,10 @@ public class RobotContainer {
      m_intakeIndexGo = new IntakeIndexGo(intakeindexer);
      m_reverseIntakeIndex = new ReverseIntakeIndexer(intakeindexer);
      m_intakeSimulationTesting = new IntakeSimulationTesting(intakeindexer);
+     m_testIndexBelt = new TestIndexBelt(intakeindexer);
+     m_testIndexProto = new TestIndexProto(intakeindexer);
+     m_testIndexShoot = new TestIndexShoot(intakeindexer);
+
  
     // Configure the button bindings
     configureButtonBindings();
@@ -107,8 +116,9 @@ public class RobotContainer {
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
 
-    but_main_A.whenPressed(new IntakeSimulationTesting(intakeindexer));
-    but_main_B.whenPressed(new ReverseIntakeIndexer(intakeindexer));
+    but_main_X.whenPressed(new TestIndexBelt(intakeindexer));
+    but_main_Y.whenPressed(new TestIndexShoot(intakeindexer));
+    but_main_RBumper.whenPressed(new TestIndexProto(intakeindexer));
   }
 
   /**
