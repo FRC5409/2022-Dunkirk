@@ -55,7 +55,7 @@ public class RobotContainer {
       
   // Subsystems defined
   private final DriveTrain DriveTrain;
-  private final Pigeon Pigeon;
+  //private final Pigeon Pigeon;
   private final Pneumatics Pneumatics;
 
   // Commands defined
@@ -82,11 +82,11 @@ public class RobotContainer {
 
      // Initialize sub systems
      DriveTrain = new DriveTrain();
-     Pigeon = new Pigeon();
+     //Pigeon = new Pigeon();
      Pneumatics = new Pneumatics();
 
      // Init commands
-     defaultDrive = new DefaultDrive(DriveTrain, Pigeon, joystick_main);
+     defaultDrive = new DefaultDrive(DriveTrain, /*Pigeon,*/ joystick_main);
 
  
     // Configure the button bindings
@@ -116,8 +116,8 @@ public class RobotContainer {
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
 
-    but_main_A.toggleWhenPressed( new MoveToDistance(DriveTrain));
-    but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
+    //but_main_A.toggleWhenPressed( new MoveToDistance(DriveTrain));
+    //but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
   }
 
   /**

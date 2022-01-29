@@ -28,14 +28,14 @@ public class Pneumatics extends SubsystemBase {
   @Override
   public void periodic() {
 
-    if (!m_manualAutoFillOverride) {
-      // Check if pressure is too low or too high
-      if (compressor1.getPressure() <= Constants.Pneumatics.MIN_PSI && !m_autoFill) {
-        startLoop();
-      } else if (compressor1.getPressure() >= Constants.Pneumatics.MAX_PSI) {
-        endLoop();
-      }
-    }
+    // if (!m_manualAutoFillOverride) {
+    //   // Check if pressure is too low or too high
+    //   if (compressor1.getPressure() <= Constants.Pneumatics.MIN_PSI && !m_autoFill) {
+    //     startLoop();
+    //   } else if (compressor1.getPressure() >= Constants.Pneumatics.MAX_PSI) {
+    //     endLoop();
+    //   }
+    // }
   }
 
   /**

@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+
 import frc.robot.utils.Gains;
 
 /**
@@ -89,6 +90,9 @@ public final class Constants {
 
         public static final boolean startWithAntiTip = true;
         public static final double wheelSeparation = 0;
+
+        public static final boolean CounterClockwise = false;
+        public static final boolean Clockwise = true;
 
     }
 
