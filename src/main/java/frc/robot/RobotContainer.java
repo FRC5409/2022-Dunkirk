@@ -8,7 +8,7 @@ package frc.robot;
 // Subsystems
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Pigeon;
-
+import frc.robot.subsystems.Pneumatics;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DefaultDrive;
@@ -16,12 +16,20 @@ import frc.robot.commands.SimpleDriveAuto;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.SlowGear;
 
+import frc.robot.commands.SetAntiTip;
+import frc.robot.commands.ToggleAntiTip;
+
+import frc.robot.commands.MoveToAngle;
+import frc.robot.commands.MoveToDistance;
+
+
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.IntakeIndexerCommands;
+import frc.robot.commands.MoveToDistance;
 import frc.robot.subsystems.IntakeIndexer;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -47,7 +55,8 @@ public class RobotContainer {
       
   // Subsystems defined
   private final DriveTrain DriveTrain;
-  private final Pigeon Pigeon;
+  //private final Pigeon Pigeon;
+  private final Pneumatics Pneumatics;
 
   // Commands defined
   //private final ExampleCommand m_autoCommand;
@@ -73,13 +82,19 @@ public class RobotContainer {
 
      // Initialize sub systems
      DriveTrain = new DriveTrain();
-     Pigeon = new Pigeon();
+     //Pigeon = new Pigeon();
+     Pneumatics = new Pneumatics();
 
      // Init commands
-     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
+     defaultDrive = new DefaultDrive(DriveTrain, /*Pigeon,*/ joystick_main);
+
  
     // Configure the button bindings
     configureButtonBindings();
+
+    // temp
+    SmartDashboard.putNumber("target distance", 0);
+    SmartDashboard.putNumber("target angle", 0);
 
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
@@ -94,11 +109,15 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     // Bind start to go to the next drive mode
-    but_main_Start.whenPressed(() -> DriveTrain.cycleDriveMode());
+    but_main_Back.whenPressed(() -> DriveTrain.cycleDriveMode());
+    but_main_Start.whenPressed( new ToggleAntiTip(DriveTrain));
 
     // Bind right bumper to 
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
+
+    //but_main_A.toggleWhenPressed( new MoveToDistance(DriveTrain));
+    //but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
   }
 
   /**

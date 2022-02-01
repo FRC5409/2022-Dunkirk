@@ -6,14 +6,17 @@ package frc.robot.commands;
 
 import frc.robot.Constants.kDriveTrain;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Pigeon;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class DefaultDrive extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final DriveTrain sys_drive;
-  private final XboxController m_joystick;
+  private final DriveTrain drive;
+  //private final Pigeon pigeon;
+  private final XboxController joystick;
 
   /**
    * Creates a new DefaultDrive
@@ -22,12 +25,13 @@ public class DefaultDrive extends CommandBase {
    * @param subsystem The subsystem used by this command.
    * @param joystick The input device used by this command.
    */
-  public DefaultDrive(DriveTrain subsystem, XboxController joystick) {
-    sys_drive = subsystem;
-    m_joystick = joystick;
+  public DefaultDrive(DriveTrain _drive, /*Pigeon _pigeon,*/ XboxController _joystick) {
+    drive = _drive;
+    //pigeon = _pigeon;
+    joystick = _joystick;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(drive);
   }
 
   // Called when the command is initially scheduled.
@@ -38,7 +42,8 @@ public class DefaultDrive extends CommandBase {
   @Override
   public void execute() {
       // Case to determine what control scheme to utilize 
-      switch(sys_drive.getDriveMode()){
+      
+      switch(drive.getDriveMode()){
           case kDriveTrain.AADIL_DRIVE: //1
             aadilDriveExecute();
             break;
@@ -48,28 +53,48 @@ public class DefaultDrive extends CommandBase {
           default:
             aadilDriveExecute();
       }
-      sys_drive.displayDriveMode();
+      
+      drive.displayDriveMode();
   }
 
   /**
    * This method runs the robot with the aadilDrive control scheme
    */
   private void aadilDriveExecute(){
-    double leftTrigger = m_joystick.getLeftTriggerAxis();
-    double rightTrigger = m_joystick.getRightTriggerAxis();
-    double lxAxis = m_joystick.getLeftX() * -1;
+    double leftTrigger = joystick.getLeftTriggerAxis();
+    double rightTrigger = joystick.getRightTriggerAxis();
+    double lxAxis = joystick.getLeftX();
 
-    sys_drive.aadilDrive(rightTrigger, leftTrigger, lxAxis);
+
+    // Add when pigeon is online
+    //double pitch = 90/pigeon.Pitch();
+    //double roll  = 90/pigeon.Roll(); // might need to transform roll depending on where 0 is
+
+    //double pitchCompensation = drive.getAntiTip() ? pitch*kDriveTrain.pitchCompensation : 0;
+    //double rollCompensation = drive.getAntiTip() && (leftTrigger != 0) && (rightTrigger != 0)? roll * kDriveTrain.rollCompensation : 0;
+
+    //drive.aadilDrive(Math.max(rightTrigger  - pitchCompensation - rollCompensation, 0), 
+    //                 Math.max(leftTrigger + pitchCompensation + rollCompensation, 0), 
+    //                 lxAxis);
+    drive.aadilDrive(leftTrigger, rightTrigger, lxAxis);
+    
+  }
+
+  private void debugDriveExecute(){
+    double left = joystick.getLeftTriggerAxis() * (joystick.getLeftBumper() ? -1 : 1);
+    double right = joystick.getRightTriggerAxis() * (joystick.getRightBumper() ? -1 : 1);
+
+    drive.tankDrive(left, right);
   }
 
   /**
    * This method runs the robot with the tankDrive control scheme
    */
   private void tankDriveExecute(){
-      double lyAxis = m_joystick.getLeftY() * -1; 
-      double ryAxis = m_joystick.getRightY() * -1;
+      double lyAxis = -joystick.getLeftY(); 
+      double ryAxis = -joystick.getRightY();
 
-      sys_drive.tankDrive(lyAxis, ryAxis);
+      drive.tankDrive(lyAxis, ryAxis);
   }
   
   // Called once the command ends or is interrupted.

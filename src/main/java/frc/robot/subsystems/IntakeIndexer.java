@@ -24,8 +24,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeIndexer extends SubsystemBase {
   private CANSparkMax mot_intake;
-  private DoubleSolenoid intakeSolenoid_left;
-  private DoubleSolenoid intakeSolenoid_right;
+  //private DoubleSolenoid intakeSolenoid_left;
+  //private DoubleSolenoid intakeSolenoid_right;
 
   private CANSparkMax mot_indexer;
 
