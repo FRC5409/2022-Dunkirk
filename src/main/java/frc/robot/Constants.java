@@ -16,9 +16,9 @@ import frc.robot.utils.Gains;
  */
 public final class Constants {
     public static class Pneumatics {
-        public static final int MODULE = 0;
-        public static final double MIN_PSI = 0;
-        public static final double MAX_PSI = 60;
+        public static final int MODULE = 1;
+        public static final double MIN_PSI = 110;
+        public static final double MAX_PSI = 120;
 
     }
 
@@ -63,8 +63,8 @@ public final class Constants {
         public static final double triggerThresholdTime = 0;
 
         // Double Solenoid
-        public static final int ForwardChannel = 0;
-        public static final int ReverseChannel = 1;
+        public static final int ForwardChannel = 9;
+        public static final int ReverseChannel = 8;
 
         // Drive Modes
         public static final int InitialDriveMode = 0;

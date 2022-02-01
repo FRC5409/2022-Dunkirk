@@ -10,8 +10,8 @@ import com.revrobotics.CANSparkMax;
 
 public class IntakeIndexer extends SubsystemBase {
   private CANSparkMax mot_intake;
-  private DoubleSolenoid intakeSolenoid_left;
-  private DoubleSolenoid intakeSolenoid_right;
+  //private DoubleSolenoid intakeSolenoid_left;
+  //private DoubleSolenoid intakeSolenoid_right;
 
 
 

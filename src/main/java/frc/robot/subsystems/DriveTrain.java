@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants.Pneumatics;
 import frc.robot.Constants.kDriveTrain;
 
 public class DriveTrain extends SubsystemBase{
@@ -136,13 +136,13 @@ public class DriveTrain extends SubsystemBase{
 
         m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
-        dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
+        dsl_gear = new DoubleSolenoid(Pneumatics.MODULE, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
         driveMode = kDriveTrain.InitialDriveMode;
 
         applyAntiTip = kDriveTrain.startWithAntiTip;
 
-        setBrakeMode(false);
+        setBrakeMode(true);
     }
 
     /**
@@ -170,8 +170,8 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public void aadilDrive(final double acceleration, final double deceleration, final double turn){
-        double accelerate = acceleration - deceleration;
-
+        double accelerate = (acceleration - deceleration);
+        
         m_drive.arcadeDrive(accelerate, turn, true);
     }
     
