@@ -25,6 +25,9 @@ public class DriveTrain extends SubsystemBase{
     private final WPI_TalonFX mot_rightFrontDrive;
     private final WPI_TalonFX mot_rightRearDrive;
 
+    private double lmRPM = 0;
+    private double rmRPM = 0;
+
     private int driveMode;
 
     private final DifferentialDrive m_drive;
@@ -143,6 +146,9 @@ public class DriveTrain extends SubsystemBase{
         applyAntiTip = kDriveTrain.startWithAntiTip;
 
         setBrakeMode(true);
+
+        zeroEncoders();
+        // 6630
     }
 
     /**
@@ -150,6 +156,12 @@ public class DriveTrain extends SubsystemBase{
      */
     public void periodic() {
         displayEncoder();
+
+        SmartDashboard.putNumber("Left Front Motor Temp", mot_leftFrontDrive.getTemperature());
+        SmartDashboard.putNumber("Left Rear Motor Temp", mot_leftRearDrive.getTemperature());
+
+        SmartDashboard.putNumber("Right Front Motor Temp", mot_rightFrontDrive.getTemperature());
+        SmartDashboard.putNumber("Right Rear Motor Temp", mot_rightRearDrive.getTemperature());
     }
 
     @Override
@@ -301,13 +313,21 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public void displayEncoder(){
+        if (Math.abs(getRPMRight()) > rmRPM)
+            rmRPM = Math.abs(getRPMRight());
+
+        if (Math.abs(getRPMLeft()) > lmRPM)
+            lmRPM = Math.abs(getRPMLeft());
+
         SmartDashboard.putNumber("Left Position", getEncoderPositionLeft());
         SmartDashboard.putNumber("Left Velocity", getEncoderVelocityLeft());
         SmartDashboard.putNumber("Left RPM", getRPMLeft());
+        SmartDashboard.putNumber("Left MAX RPM", lmRPM);
 
         SmartDashboard.putNumber("Right Position", getEncoderPositionRight());
         SmartDashboard.putNumber("Right Velocity", getEncoderVelocityRight());
         SmartDashboard.putNumber("Right RPM", getRPMRight());
+        SmartDashboard.putNumber("Right MAX RPM", rmRPM);
     }
 
     /**
@@ -346,7 +366,7 @@ public class DriveTrain extends SubsystemBase{
      * @return the average velocity of the left encoders 
      * 
      */
-    public double getEncoderVelocityLeft(){
+    public double   getEncoderVelocityLeft(){
         return (mot_leftFrontDrive.getSelectedSensorVelocity() + mot_leftRearDrive.getSelectedSensorVelocity()) / 2;
     }
 

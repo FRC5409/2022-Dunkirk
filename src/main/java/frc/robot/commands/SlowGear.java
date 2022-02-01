@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveTrain;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -35,10 +36,19 @@ public class SlowGear extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (sys_drive.getRPMLeft() <= Constants.kDriveTrain.MAX_RPM_FOR_LOW_GEAR
-        && sys_drive.getRPMRight() <= Constants.kDriveTrain.MAX_RPM_FOR_LOW_GEAR && !hasShift) {
+    double rpmLeft = Math.abs(sys_drive.getRPMLeft());
+    double rpmRight = Math.abs(sys_drive.getRPMRight());
+
+    SmartDashboard.putNumber("SHIFT LRPM", rpmLeft);
+    SmartDashboard.putNumber("SHIFT RRPM", rpmRight);
+
+    if (rpmLeft < Constants.kDriveTrain.MAX_RPM_FOR_LOW_GEAR
+        && rpmRight < Constants.kDriveTrain.MAX_RPM_FOR_LOW_GEAR && !hasShift) {
       sys_drive.slowShift();
       hasShift = true;
+      SmartDashboard.putBoolean("Slow Shift True", true);
+    } else {
+      SmartDashboard.putBoolean("Slow Shift False", true);
     }
   }
 
