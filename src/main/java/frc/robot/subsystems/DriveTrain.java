@@ -149,7 +149,7 @@ public class DriveTrain extends SubsystemBase{
      * This method is called once per scheduler run and is used to update smart dashboard data.
      */
     public void periodic() {
-
+        displayEncoder();
     }
 
     @Override
@@ -303,9 +303,11 @@ public class DriveTrain extends SubsystemBase{
     public void displayEncoder(){
         SmartDashboard.putNumber("Left Position", getEncoderPositionLeft());
         SmartDashboard.putNumber("Left Velocity", getEncoderVelocityLeft());
+        SmartDashboard.putNumber("Left RPM", getRPMLeft());
 
         SmartDashboard.putNumber("Right Position", getEncoderPositionRight());
         SmartDashboard.putNumber("Right Velocity", getEncoderVelocityRight());
+        SmartDashboard.putNumber("Right RPM", getRPMRight());
     }
 
     /**
@@ -345,7 +347,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderVelocityLeft(){
-        return mot_leftFrontDrive.getSelectedSensorVelocity() + mot_leftRearDrive.getSelectedSensorVelocity() / 2;
+        return (mot_leftFrontDrive.getSelectedSensorVelocity() + mot_leftRearDrive.getSelectedSensorVelocity()) / 2;
     }
 
     /**
@@ -353,7 +355,19 @@ public class DriveTrain extends SubsystemBase{
      * 
      */ 
     public double getEncoderVelocityRight(){
-        return mot_rightFrontDrive.getSelectedSensorVelocity() + mot_rightRearDrive.getSelectedSensorVelocity() / 2;
+        return (mot_rightFrontDrive.getSelectedSensorVelocity() + mot_rightRearDrive.getSelectedSensorVelocity()) / 2;
+    }
+
+    public double getRPMRight(){
+        return (getEncoderVelocityRight() / 2048) * 600;
+    }
+
+    /**
+     * @return the average velocity of the right encoders 
+     * 
+     */ 
+    public double getRPMLeft(){
+        return (getEncoderVelocityLeft() / 2048) * 600;
     }
     /**
      * Sets all encoders to 0

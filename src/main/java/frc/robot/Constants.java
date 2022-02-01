@@ -94,6 +94,8 @@ public final class Constants {
         public static final boolean CounterClockwise = false;
         public static final boolean Clockwise = true;
 
+        public static final double MAX_RPM_FOR_LOW_GEAR = 6200;
+
     }
 
     public final class kGyroSystem{
