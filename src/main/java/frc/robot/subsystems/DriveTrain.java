@@ -149,7 +149,8 @@ public class DriveTrain extends SubsystemBase{
      * This method is called once per scheduler run and is used to update smart dashboard data.
      */
     public void periodic() {
-
+        displayEncoder();
+        displayTemperatures();
     }
 
     @Override
@@ -266,6 +267,16 @@ public class DriveTrain extends SubsystemBase{
         
     }
 
+    // -------------------------- Temperature --------------------------- //
+
+    void displayTemperatures(){
+        SmartDashboard.putNumber("Temp LF", mot_leftFrontDrive.getTemperature());
+        SmartDashboard.putNumber("Temp LB", mot_leftRearDrive.getTemperature());
+        SmartDashboard.putNumber("Temp RF", mot_rightFrontDrive.getTemperature());
+        SmartDashboard.putNumber("Temp RB", mot_rightRearDrive.getTemperature());
+    }
+
+
     // ---------------------------- Anti Tip ---------------------------- //
 
     /**
@@ -313,7 +324,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderPosition(){
-        return (getEncoderPositionLeft() + getEncoderPositionRight() )/ 2;
+        return (getEncoderPositionLeft() + getEncoderPositionRight())/ 2;
     }
 
     /**
@@ -321,7 +332,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderPositionLeft(){
-        return mot_leftFrontDrive.getSelectedSensorPosition() + mot_leftRearDrive.getSelectedSensorPosition() / 2;
+        return (mot_leftFrontDrive.getSelectedSensorPosition() + mot_leftRearDrive.getSelectedSensorPosition()) / 2;
     }
 
     /**
@@ -329,7 +340,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderPositionRight(){
-        return mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition() / 2;
+        return (mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition()) / 2;
     }
 
     /**
@@ -337,7 +348,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderVelocity(){
-        return (getEncoderVelocityLeft() + getEncoderVelocityRight() )/ 2;
+        return (getEncoderVelocityLeft() + getEncoderVelocityRight())/ 2;
     }
 
     /**
@@ -345,7 +356,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderVelocityLeft(){
-        return mot_leftFrontDrive.getSelectedSensorVelocity() + mot_leftRearDrive.getSelectedSensorVelocity() / 2;
+        return (mot_leftFrontDrive.getSelectedSensorVelocity() + mot_leftRearDrive.getSelectedSensorVelocity()) / 2;
     }
 
     /**
@@ -353,7 +364,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */ 
     public double getEncoderVelocityRight(){
-        return mot_rightFrontDrive.getSelectedSensorVelocity() + mot_rightRearDrive.getSelectedSensorVelocity() / 2;
+        return (mot_rightFrontDrive.getSelectedSensorVelocity() + mot_rightRearDrive.getSelectedSensorVelocity()) / 2;
     }
     /**
      * Sets all encoders to 0
@@ -366,6 +377,20 @@ public class DriveTrain extends SubsystemBase{
         mot_rightRearDrive.setSelectedSensorPosition(0);
         mot_leftFrontDrive.setSelectedSensorPosition(0);
         mot_leftRearDrive.setSelectedSensorPosition(0);
+    }
+
+    public void setAllEncoders(double position) {
+        mot_rightFrontDrive.setSelectedSensorPosition(position);
+        mot_rightRearDrive.setSelectedSensorPosition(position);
+        mot_leftFrontDrive.setSelectedSensorPosition(position);
+        mot_leftRearDrive.setSelectedSensorPosition(position);
+    }
+
+    public void setEncodersSplit(double position_left, double position_right){
+        mot_rightFrontDrive.setSelectedSensorPosition(position_right);
+        mot_rightRearDrive.setSelectedSensorPosition(position_right);
+        mot_leftFrontDrive.setSelectedSensorPosition(position_left);
+        mot_leftRearDrive.setSelectedSensorPosition(position_left);
     }
 
     // ------------------------ Setpoint Controls ------------------------ //

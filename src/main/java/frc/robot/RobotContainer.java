@@ -116,7 +116,7 @@ public class RobotContainer {
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
 
-    //but_main_A.toggleWhenPressed( new MoveToDistance(DriveTrain));
+    but_main_A.whenActive( new MoveToDistance(DriveTrain));
     //but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
   }
 

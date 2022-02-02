@@ -4,7 +4,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
+import frc.robot.Constants.kDriveTrain;
 import frc.robot.subsystems.DriveTrain;
 
 public class MoveToAngle extends CommandBase {
@@ -26,7 +26,7 @@ public class MoveToAngle extends CommandBase {
     }
 
     private static double CalculateDistance(double angle){
-        return Math.toRadians(angle) * Math.PI * Constants.kDriveTrain.wheelSeparation;
+        return Math.toRadians(angle) * Math.PI * kDriveTrain.wheelSeparation * kDriveTrain.encoderToMeterConversionFactor * 2048;
     }
 
     @Override

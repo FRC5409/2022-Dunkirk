@@ -51,7 +51,7 @@ public final class Constants {
 
     public static final class kDriveTrain{
 
-        // CAN IDs  (not initialized)
+        // CAN IDs 
         public static final int CANLeftDriveFront = 1;
         public static final int CANRightDriveFront = 3;
         public static final int CANLeftDriveBack = 2;
@@ -61,6 +61,9 @@ public final class Constants {
         public static final double CurrentLimit = 65;
         public static final double TriggerThresholdCurrent = 65;
         public static final double triggerThresholdTime = 0;
+
+        // Encoders
+        public static final double encoderToMeterConversionFactor = 1;
 
         // Double Solenoid
         public static final int ForwardChannel = 9;
@@ -78,8 +81,8 @@ public final class Constants {
         public static final int kTimeoutMs = 30;
         public static boolean kSensorPhase = true;
         
-        public static final Gains kDistanceGains = new Gains(0.15, 0.0, 1.0, 0.0, 0, 1.0);
-        public static final Gains kAngleGains = new Gains(0.15, 0.0, 1.0, 0.0, 0, 1.0);
+        public static final Gains kDistanceGains = new Gains(0.15, 0.0, 0.1, 0.0, 0, 1.0);
+        public static final Gains kAngleGains = new Gains(0.15, 0.0, 0.1, 0.0, 0, 1.0);
         // Speed limits for auto
         public static final double maxStraightSpeed = 1;
         public static final double maxTurnSpeed = 1;
