@@ -8,28 +8,34 @@ package frc.robot;
 // Subsystems
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Pigeon;
-import frc.robot.subsystems.Pneumatics;
+
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.SimpleDriveAuto;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.SlowGear;
 
-import frc.robot.commands.SetAntiTip;
-import frc.robot.commands.ToggleAntiTip;
+import frc.robot.Constants.kAuto;
 
-import frc.robot.commands.MoveToAngle;
-import frc.robot.commands.MoveToDistance;
+import java.util.List;
 
-
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import frc.robot.commands.IntakeIndexerCommands;
-import frc.robot.commands.MoveToDistance;
 import frc.robot.subsystems.IntakeIndexer;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -55,13 +61,11 @@ public class RobotContainer {
       
   // Subsystems defined
   private final DriveTrain DriveTrain;
-  //private final Pigeon Pigeon;
-  private final Pneumatics Pneumatics;
+  private final Pigeon Pigeon;
 
   // Commands defined
   //private final ExampleCommand m_autoCommand;
   private final DefaultDrive defaultDrive;
-
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -82,19 +86,13 @@ public class RobotContainer {
 
      // Initialize sub systems
      DriveTrain = new DriveTrain();
-     //Pigeon = new Pigeon();
-     Pneumatics = new Pneumatics();
+     Pigeon = new Pigeon();
 
      // Init commands
-     defaultDrive = new DefaultDrive(DriveTrain, /*Pigeon,*/ joystick_main);
-
+     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
  
     // Configure the button bindings
     configureButtonBindings();
-
-    // temp
-    SmartDashboard.putNumber("target distance", 0);
-    SmartDashboard.putNumber("target angle", 0);
 
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
@@ -109,15 +107,11 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     // Bind start to go to the next drive mode
-    but_main_Back.whenPressed(() -> DriveTrain.cycleDriveMode());
-    but_main_Start.whenPressed( new ToggleAntiTip(DriveTrain));
+    but_main_Start.whenPressed(() -> DriveTrain.cycleDriveMode());
 
     // Bind right bumper to 
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
-
-    //but_main_A.toggleWhenPressed( new MoveToDistance(DriveTrain));
-    //but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
   }
 
   /**
@@ -127,6 +121,36 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
      
-    return new SimpleDriveAuto(DriveTrain);
+    // creates configuration for trajectory
+    var feedForward = new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
+        kAuto.kMaxAcceleration);
+    var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(feedForward, kAuto.kDriveKinematics,
+        10);
+
+    TrajectoryConfig config = new TrajectoryConfig(kAuto.kMaxSpeed, kAuto.kMaxAcceleration);
+    config.setKinematics(kAuto.kDriveKinematics).addConstraint(autoVoltageConstraint);
+    // Generates a trajectory that tells the robot to move from its original
+    // location
+    // Go one meter ahead and to the right, another meter ahead and one meter to the
+    // left, then end at 3 meters in front.
+    // m_driveTrain.getOdometry().getPoseMeters(),
+    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
+        List.of(), new Pose2d(1, 0, new Rotation2d(0)), config); // new Translation2d(1, 1), new Translation2d(2, -1))
+
+    RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
+        new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
+        new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
+            kAuto.kMaxAcceleration),
+        kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
+        new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
+        DriveTrain::tankDriveVolts, DriveTrain);
+
+    // Reset odometry to the starting pose of the trajectory.
+    DriveTrain.zeroEncoders();
+    Pigeon.resetOdometry(trajectory.getInitialPose());
+
+    // returns the autonomous command
+    // makes sure that after the auto command is finished running the robot stops.
+    return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
   }
 }
