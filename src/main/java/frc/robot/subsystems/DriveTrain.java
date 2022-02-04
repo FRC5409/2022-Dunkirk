@@ -9,6 +9,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -36,6 +39,7 @@ public class DriveTrain extends SubsystemBase{
 
     private boolean applyAntiTip;
 
+    public DifferentialDriveOdometry m_odometry;
 
     public DriveTrain(){
         // Left Front Drive
@@ -436,5 +440,24 @@ public class DriveTrain extends SubsystemBase{
         dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
 
+    // ---------------------------- Auto ---------------------------- //
 
+    /**
+     * Method gets the wheel speeds using the encoders get velocity methods.
+     */
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(getEncoderVelocityLeft(), getEncoderVelocityRight());
+      }
+
+    /**
+     * Tank drive that takes voltage inputs
+     * 
+     * @param voltsLeft voltage for left wheels
+     * @param voltsRight voltage for right wheels
+     */
+    public void tankDriveVolts(double voltsLeft, double voltsRight){
+        mot_leftFrontDrive.setVoltage(voltsLeft);
+        mot_rightFrontDrive.setVoltage(voltsRight);
+        m_drive.feed();
+    }
 }

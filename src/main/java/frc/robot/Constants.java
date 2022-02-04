@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.util.Units;
 import frc.robot.utils.Gains;
 
 /**
@@ -107,5 +109,26 @@ public final class Constants {
         public static final int CANPigeon = 0;
 
 
+    }
+
+    public static final class kAuto{
+        public static final double kTrackwidthMeters = Units.inchesToMeters(18.5); // or 18.375
+        public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
+
+        // robot characterization
+        public static final double ksVolts = 0.18694;
+        public static final double kvVoltSecondsPerMeter = 2.2569;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.5571;
+        public static final double kPDriveVel = 2.6621;
+        
+        // all units in meters and seconds: max speed & acceleration
+        public static final double kMaxSpeed = 3;
+        public static final double kMaxAcceleration = 3;
+
+        // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+        // works for most robots, if needs to be tuned: 
+        // https://docs.wpilib.org/en/latest/docs/software/advanced-controls/trajectories/ramsete.html#constructing-the-ramsete-controller-object
+        public static final double kRamseteB = 2;
+        public static final double kRamseteZeta = 0.7;
     }
 }
