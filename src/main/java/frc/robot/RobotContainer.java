@@ -13,7 +13,6 @@ import frc.robot.subsystems.Pigeon;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.SimpleDriveAuto;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.SlowGear;
 
@@ -51,7 +50,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final IntakeIndexer m_intakeindexer = new IntakeIndexer();
 
-  private final IntakeIndexerCommands m_autoCommand = new IntakeIndexerCommands(m_intakeindexer);
+  private final IntakeIndexerCommands m_intakeIndexerCommand = new IntakeIndexerCommands(m_intakeindexer);
 
   // Define main joystick
   private final XboxController joystick_main; // = new XboxController(0);
