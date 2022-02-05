@@ -43,6 +43,8 @@ public class Pigeon extends SubsystemBase{
         SmartDashboard.putNumber("manual pitch", 0);
         SmartDashboard.putNumber("manual yaw", 0);
 
+        m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
+
     }
 
     // getters
@@ -82,7 +84,6 @@ public class Pigeon extends SubsystemBase{
      * This method is called once per scheduler run and is used to update smart dashboard data.
      */
     public void periodic() {
-
     }
 
     @Override

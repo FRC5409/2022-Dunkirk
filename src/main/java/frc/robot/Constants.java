@@ -106,8 +106,7 @@ public final class Constants {
 
     public final class kGyroSystem{
 
-        public static final int CANPigeon = 5;
-
+        public static final int CANPigeon = 23;
 
     }
 
@@ -116,14 +115,14 @@ public final class Constants {
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
 
         // robot characterization
-        public static final double ksVolts = 0.18694;
-        public static final double kvVoltSecondsPerMeter = 2.2569;
-        public static final double kaVoltSecondsSquaredPerMeter = 0.5571;
-        public static final double kPDriveVel = 2.6621;
+        public static final double ksVolts = 0.5788;
+        public static final double kvVoltSecondsPerMeter = 4.1279*Math.pow(10, -6);
+        public static final double kaVoltSecondsSquaredPerMeter = 2.0127*Math.pow(10, -7);
+        public static final double kPDriveVel = 8.1401*Math.pow(10, -6);
         
-        // all units in meters and seconds: max speed & acceleration
-        public static final double kMaxSpeed = 3;
-        public static final double kMaxAcceleration = 3;
+        // all units in meters and seconds: max speed & acceleration 3
+        public static final double kMaxSpeed = 2;
+        public static final double kMaxAcceleration = 2;
 
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
         // works for most robots, if needs to be tuned: 
