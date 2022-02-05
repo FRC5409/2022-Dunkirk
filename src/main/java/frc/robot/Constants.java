@@ -106,13 +106,13 @@ public final class Constants {
 
     public final class kGyroSystem{
 
-        public static final int CANPigeon = 0;
+        public static final int CANPigeon = 5;
 
 
     }
 
     public static final class kAuto{
-        public static final double kTrackwidthMeters = Units.inchesToMeters(18.5); // or 18.375
+        public static final double kTrackwidthMeters = Units.inchesToMeters(26.25);
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
 
         // robot characterization
