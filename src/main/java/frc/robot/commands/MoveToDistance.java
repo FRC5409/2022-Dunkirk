@@ -1,13 +1,14 @@
 package frc.robot.commands;
 
-import javax.swing.text.Position;
-
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.kDriveTrain;
+
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.Constants.kDriveTrain;
+
+import frc.robot.utils.Convert;
 
 public class MoveToDistance extends CommandBase {
 
@@ -32,17 +33,15 @@ public class MoveToDistance extends CommandBase {
         SmartDashboard.putString("mode", "Position");
         
         if(useSmartDashboard){
-            setpoint = SmartDashboard.getNumber("target distance", 0) * kDriveTrain.encoderToMeterConversionFactor * 2048;    
-        }
-        else{
-            setpoint = setpoint * kDriveTrain.encoderToMeterConversionFactor * 2048;
+            setpoint = SmartDashboard.getNumber("target distance", 0);
         }
 
-        
+        setpoint = Convert.InchesToEncodeUnits(setpoint);
+
         SmartDashboard.putNumber("setpoint", setpoint);
+
         drive.zeroEncoders();
         drive.setControlMode(TalonFXControlMode.Position, setpoint);
-
     }
     
 
@@ -55,7 +54,6 @@ public class MoveToDistance extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        System.out.println(Math.abs(drive.getEncoderPosition() - setpoint) / setpoint);
         return Math.abs(Math.abs(drive.getEncoderPosition() - setpoint) / setpoint) <= 0.05;
     }
 }

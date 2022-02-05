@@ -17,7 +17,7 @@ import frc.robot.utils.Gains;
 public final class Constants {
     public static class Pneumatics {
         public static final int MODULE = 1;
-        public static final double MIN_PSI = 110;
+        public static final double MIN_PSI = 0; //110
         public static final double MAX_PSI = 120;
 
     }
@@ -65,6 +65,11 @@ public final class Constants {
         // Encoders
         public static final double encoderToMeterConversionFactor = 1;
 
+        public static final double encoderCPR = 2048;
+        public static final double wheelCircumferenceInches = 4 * Math.PI;
+        public static final double lowGearConversionFactor = 1/15.32;
+        public static final double highGearConversionFactor = 1/7.08;
+
         // Double Solenoid
         public static final int ForwardChannel = 9;
         public static final int ReverseChannel = 8;
@@ -79,10 +84,11 @@ public final class Constants {
         public static final int kSlotIdx = 0;
         public static final int kPIDLoopIdx = 0;
         public static final int kTimeoutMs = 30;
-        public static boolean kSensorPhase = true;
+        public static final boolean kSensorPhase = true;
         
-        public static final Gains kDistanceGains = new Gains(0.15, 0.0, 0.1, 0.0, 0, 1.0);
+        public static final Gains kDistanceGains = new Gains(0.15, 0.0002, 0.1, 0.0, 0, 1.0);
         public static final Gains kAngleGains = new Gains(0.15, 0.0, 0.1, 0.0, 0, 1.0);
+        
         // Speed limits for auto
         public static final double maxStraightSpeed = 1;
         public static final double maxTurnSpeed = 1;
@@ -102,7 +108,6 @@ public final class Constants {
     public final class kGyroSystem{
 
         public static final int CANPigeon = 0;
-
 
     }
 }
