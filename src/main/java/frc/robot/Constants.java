@@ -130,6 +130,8 @@ public final class Constants {
 
         public static final int CANPigeon = 23;
 
+    }
+
     public static final class kAuto{
         public static final double kTrackwidthMeters = Units.inchesToMeters(26.25);
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
