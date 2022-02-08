@@ -17,6 +17,20 @@ import frc.robot.utils.Gains;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static class kID{
+        // Can IDs
+        public final int LeftFrontDrive = 1;
+        public final int LeftRearDrive = 2;
+        public final int RightFrontDrive = 3;
+        public final int RightRearDrive = 4;
+
+        public final int CANCoderLeft = 5;
+        public final int CANCoderRight = 6;
+
+        public final int Pigeon = 23;
+    }
+
     public static class Pneumatics {
         public static final int MODULE = 1;
         public static final double MIN_PSI = 110;
