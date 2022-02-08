@@ -17,13 +17,26 @@ import frc.robot.utils.Gains;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static class kID{
+        // Can IDs
+        public final int LeftFrontDrive = 1;
+        public final int LeftRearDrive = 2;
+        public final int RightFrontDrive = 3;
+        public final int RightRearDrive = 4;
+
+        public final int CANCoderLeft = 5;
+        public final int CANCoderRight = 6;
+
+        public final int Pigeon = 23;
+    }
+
     public static class Pneumatics {
         public static final int MODULE = 1;
         public static final double MIN_PSI = 110;
         public static final double MAX_PSI = 120;
 
     }
-
 
     public final class Climber {
         public static final int mot_port = 0;
@@ -58,7 +71,7 @@ public final class Constants {
 
     public static final class kDriveTrain{
 
-        // CAN IDs  (not initialized)
+        // CAN IDs 
         public static final int CANLeftDriveFront = 1;
         public static final int CANRightDriveFront = 3;
         public static final int CANLeftDriveBack = 2;
@@ -68,6 +81,14 @@ public final class Constants {
         public static final double CurrentLimit = 65;
         public static final double TriggerThresholdCurrent = 65;
         public static final double triggerThresholdTime = 0;
+
+        // Encoders
+        public static final double encoderToMeterConversionFactor = 1;
+
+        public static final double encoderCPR = 2048;
+        public static final double wheelCircumferenceInches = 4 * Math.PI;
+        public static final double lowGearConversionFactor = 1/15.32;
+        public static final double highGearConversionFactor = 1/7.08;
 
         // Double Solenoid
         public static final int ForwardChannel = 9;
@@ -83,10 +104,11 @@ public final class Constants {
         public static final int kSlotIdx = 0;
         public static final int kPIDLoopIdx = 0;
         public static final int kTimeoutMs = 30;
-        public static boolean kSensorPhase = true;
+        public static final boolean kSensorPhase = true;
         
-        public static final Gains kDistanceGains = new Gains(0.15, 0.0, 1.0, 0.0, 0, 1.0);
-        public static final Gains kAngleGains = new Gains(0.15, 0.0, 1.0, 0.0, 0, 1.0);
+        public static final Gains kDistanceGains = new Gains(0.15, 0.0002, 0.1, 0.0, 0, 1.0);
+        public static final Gains kAngleGains = new Gains(0.15, 0.0, 0.1, 0.0, 0, 1.0);
+        
         // Speed limits for auto
         public static final double maxStraightSpeed = 1;
         public static final double maxTurnSpeed = 1;
@@ -106,9 +128,7 @@ public final class Constants {
 
     public final class kGyroSystem{
 
-        public static final int CANPigeon = 5;
-
-
+        public static final int CANPigeon  = 23;
     }
 
     public static final class kAuto{
@@ -116,19 +136,21 @@ public final class Constants {
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
 
         // robot characterization
-        public static final double ksVolts = 0.18694;
-        public static final double kvVoltSecondsPerMeter = 2.2569;
-        public static final double kaVoltSecondsSquaredPerMeter = 0.5571;
-        public static final double kPDriveVel = 2.6621;
+        public static final double ksVolts = 0.5788;
+        public static final double kvVoltSecondsPerMeter = 4.1279*Math.pow(10, -6);
+        public static final double kaVoltSecondsSquaredPerMeter = 2.0127*Math.pow(10, -7);
+        public static final double kPDriveVel = 8.1401*Math.pow(10, -6);
         
-        // all units in meters and seconds: max speed & acceleration
-        public static final double kMaxSpeed = 3;
-        public static final double kMaxAcceleration = 3;
+        // all units in meters and seconds: max speed & acceleration 3
+        public static final double kMaxSpeed = 2;
+        public static final double kMaxAcceleration = 2;
 
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
         // works for most robots, if needs to be tuned: 
         // https://docs.wpilib.org/en/latest/docs/software/advanced-controls/trajectories/ramsete.html#constructing-the-ramsete-controller-object
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
+
     }
+
 }
