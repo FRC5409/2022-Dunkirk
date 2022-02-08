@@ -42,6 +42,7 @@ public class DriveTrain extends SubsystemBase{
     public DifferentialDriveOdometry m_odometry;
 
     public DriveTrain(){
+        
         // Left Front Drive
         mot_leftFrontDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveFront);
         mot_leftFrontDrive.configFactoryDefault();
