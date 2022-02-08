@@ -24,7 +24,6 @@ public final class Constants {
 
     }
 
-
     public final class Climber {
         public static final int mot_port = 0;
 
@@ -58,7 +57,7 @@ public final class Constants {
 
     public static final class kDriveTrain{
 
-        // CAN IDs  (not initialized)
+        // CAN IDs 
         public static final int CANLeftDriveFront = 1;
         public static final int CANRightDriveFront = 3;
         public static final int CANLeftDriveBack = 2;
@@ -68,6 +67,14 @@ public final class Constants {
         public static final double CurrentLimit = 65;
         public static final double TriggerThresholdCurrent = 65;
         public static final double triggerThresholdTime = 0;
+
+        // Encoders
+        public static final double encoderToMeterConversionFactor = 1;
+
+        public static final double encoderCPR = 2048;
+        public static final double wheelCircumferenceInches = 4 * Math.PI;
+        public static final double lowGearConversionFactor = 1/15.32;
+        public static final double highGearConversionFactor = 1/7.08;
 
         // Double Solenoid
         public static final int ForwardChannel = 9;
@@ -83,10 +90,11 @@ public final class Constants {
         public static final int kSlotIdx = 0;
         public static final int kPIDLoopIdx = 0;
         public static final int kTimeoutMs = 30;
-        public static boolean kSensorPhase = true;
+        public static final boolean kSensorPhase = true;
         
-        public static final Gains kDistanceGains = new Gains(0.15, 0.0, 1.0, 0.0, 0, 1.0);
-        public static final Gains kAngleGains = new Gains(0.15, 0.0, 1.0, 0.0, 0, 1.0);
+        public static final Gains kDistanceGains = new Gains(0.15, 0.0002, 0.1, 0.0, 0, 1.0);
+        public static final Gains kAngleGains = new Gains(0.15, 0.0, 0.1, 0.0, 0, 1.0);
+        
         // Speed limits for auto
         public static final double maxStraightSpeed = 1;
         public static final double maxTurnSpeed = 1;
@@ -108,8 +116,6 @@ public final class Constants {
 
         public static final int CANPigeon = 23;
 
-    }
-
     public static final class kAuto{
         public static final double kTrackwidthMeters = Units.inchesToMeters(26.25);
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
@@ -129,5 +135,6 @@ public final class Constants {
         // https://docs.wpilib.org/en/latest/docs/software/advanced-controls/trajectories/ramsete.html#constructing-the-ramsete-controller-object
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
+
     }
 }
