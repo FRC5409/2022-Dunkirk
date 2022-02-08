@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.util.Units;
 import frc.robot.utils.Gains;
 
 /**
@@ -35,7 +37,7 @@ public final class Constants {
 
     }
 
-    public static final class kIntakeIndexer{
+    public static final class kIntake{
         public static final int kIntakeMotor = 4;
 
         public static final int kRightIntakeSolenoid1 = 1;
@@ -45,6 +47,11 @@ public final class Constants {
         public static final int kLeftIntakeSolenoid2 = 2;
 
         public static final int velocityMaxIntakeJam = 1000;
+    }
+
+    public static final class kIndexer{
+        public static final int kIndexerMotor = 16; 
+        public static final int currentLimit = 20; 
     }
 
 
@@ -102,11 +109,32 @@ public final class Constants {
         public static final boolean CounterClockwise = false;
         public static final boolean Clockwise = true;
 
+        public static final double MAX_RPM_FOR_LOW_GEAR = 1000;
     }
 
     public final class kGyroSystem{
 
-        public static final int CANPigeon = 0;
+        public static final int CANPigeon = 23;
+
+    public static final class kAuto{
+        public static final double kTrackwidthMeters = Units.inchesToMeters(26.25);
+        public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
+
+        // robot characterization
+        public static final double ksVolts = 0.5788;
+        public static final double kvVoltSecondsPerMeter = 4.1279*Math.pow(10, -6);
+        public static final double kaVoltSecondsSquaredPerMeter = 2.0127*Math.pow(10, -7);
+        public static final double kPDriveVel = 8.1401*Math.pow(10, -6);
+        
+        // all units in meters and seconds: max speed & acceleration 3
+        public static final double kMaxSpeed = 2;
+        public static final double kMaxAcceleration = 2;
+
+        // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+        // works for most robots, if needs to be tuned: 
+        // https://docs.wpilib.org/en/latest/docs/software/advanced-controls/trajectories/ramsete.html#constructing-the-ramsete-controller-object
+        public static final double kRamseteB = 2;
+        public static final double kRamseteZeta = 0.7;
 
     }
 }

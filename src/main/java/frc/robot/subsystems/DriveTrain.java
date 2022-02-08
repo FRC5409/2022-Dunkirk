@@ -9,6 +9,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -25,6 +28,9 @@ public class DriveTrain extends SubsystemBase{
     private final WPI_TalonFX mot_rightFrontDrive;
     private final WPI_TalonFX mot_rightRearDrive;
 
+    private double lmRPM = 0;
+    private double rmRPM = 0;
+
     private int driveMode;
 
     private final DifferentialDrive m_drive;
@@ -33,6 +39,7 @@ public class DriveTrain extends SubsystemBase{
 
     private boolean applyAntiTip;
 
+    public DifferentialDriveOdometry m_odometry;
 
     public DriveTrain(){
         // Left Front Drive
@@ -143,6 +150,9 @@ public class DriveTrain extends SubsystemBase{
         applyAntiTip = kDriveTrain.startWithAntiTip;
 
         setBrakeMode(true);
+
+        zeroEncoders();
+        // 6630
     }
 
     /**
@@ -151,6 +161,7 @@ public class DriveTrain extends SubsystemBase{
     public void periodic() {
         displayEncoder();
         displayTemperatures();
+
     }
 
     @Override
@@ -312,11 +323,21 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public void displayEncoder(){
+        if (Math.abs(getRPMRight()) > rmRPM)
+            rmRPM = Math.abs(getRPMRight());
+
+        if (Math.abs(getRPMLeft()) > lmRPM)
+            lmRPM = Math.abs(getRPMLeft());
+
         SmartDashboard.putNumber("Left Position", getEncoderPositionLeft());
         SmartDashboard.putNumber("Left Velocity", getEncoderVelocityLeft());
+        SmartDashboard.putNumber("Left RPM", getRPMLeft());
+        SmartDashboard.putNumber("Left MAX RPM", lmRPM);
 
         SmartDashboard.putNumber("Right Position", getEncoderPositionRight());
         SmartDashboard.putNumber("Right Velocity", getEncoderVelocityRight());
+        SmartDashboard.putNumber("Right RPM", getRPMRight());
+        SmartDashboard.putNumber("Right MAX RPM", rmRPM);
     }
 
     /**
@@ -365,6 +386,18 @@ public class DriveTrain extends SubsystemBase{
      */ 
     public double getEncoderVelocityRight(){
         return (mot_rightFrontDrive.getSelectedSensorVelocity() + mot_rightRearDrive.getSelectedSensorVelocity()) / 2;
+    }
+
+    public double getRPMRight(){
+        return (getEncoderVelocityRight() / 2048) * 600;
+    }
+
+    /**
+     * @return the average velocity of the right encoders 
+     * 
+     */ 
+    public double getRPMLeft(){
+        return (getEncoderVelocityLeft() / 2048) * 600;
     }
     /**
      * Sets all encoders to 0
@@ -427,5 +460,24 @@ public class DriveTrain extends SubsystemBase{
         dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
 
+    // ---------------------------- Auto ---------------------------- //
 
+    /**
+     * Method gets the wheel speeds using the encoders get velocity methods.
+     */
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(getEncoderVelocityLeft(), getEncoderVelocityRight());
+      }
+
+    /**
+     * Tank drive that takes voltage inputs
+     * 
+     * @param voltsLeft voltage for left wheels
+     * @param voltsRight voltage for right wheels
+     */
+    public void tankDriveVolts(double voltsLeft, double voltsRight){
+        mot_leftFrontDrive.setVoltage(voltsLeft);
+        mot_rightFrontDrive.setVoltage(voltsRight);
+        m_drive.feed();
+    }
 }

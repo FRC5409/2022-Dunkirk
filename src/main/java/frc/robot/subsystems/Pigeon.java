@@ -2,6 +2,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -11,6 +14,7 @@ import frc.robot.Constants.kGyroSystem;
 public class Pigeon extends SubsystemBase{
     
     public final WPI_PigeonIMU gyro_pigeon;
+    private DifferentialDriveOdometry m_odometry;
 
     // The robot's RPY
     public double roll;
@@ -38,6 +42,8 @@ public class Pigeon extends SubsystemBase{
         SmartDashboard.putNumber("manual roll", 0);
         SmartDashboard.putNumber("manual pitch", 0);
         SmartDashboard.putNumber("manual yaw", 0);
+
+        m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
 
     }
 
@@ -78,7 +84,6 @@ public class Pigeon extends SubsystemBase{
      * This method is called once per scheduler run and is used to update smart dashboard data.
      */
     public void periodic() {
-
     }
 
     @Override
@@ -198,5 +203,17 @@ public class Pigeon extends SubsystemBase{
     public void displayHeading(){
         SmartDashboard.putNumber("Angle",  Heading());
         SmartDashboard.putNumber("Rate", TurnRate());
+    }
+
+    public Pose2d getPose(){
+        return m_odometry.getPoseMeters();
+    }
+
+    public DifferentialDriveOdometry getOdometry(){
+        return m_odometry;
+    }
+
+    public void resetOdometry(Pose2d pose) {
+        m_odometry.resetPosition(pose, gyro_pigeon.getRotation2d());
     }
 }
