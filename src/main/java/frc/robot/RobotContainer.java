@@ -134,7 +134,11 @@ public class RobotContainer {
     // left, then end at 3 meters in front.
     // m_driveTrain.getOdometry().getPoseMeters(),
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(), new Pose2d(1, 0, new Rotation2d(0)), config); // new Translation2d(1, 1), new Translation2d(2, -1))
+                                                                   List.of(),
+                                                                   new Pose2d(1, 0, new Rotation2d(0)), 
+                                                                   config); 
+      
+      // new Translation2d(1, 1), new Translation2d(2, -1))
 
     RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
