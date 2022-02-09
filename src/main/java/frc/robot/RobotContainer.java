@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.SlowGear;
-
+import frc.robot.Constants.Pneumatics;
 import frc.robot.Constants.kAuto;
 
 import java.util.List;
@@ -58,6 +58,7 @@ public class RobotContainer {
       
   // Subsystems defined
   private final DriveTrain DriveTrain;
+  private final Pneumatics Pneumatics;
   private final Pigeon Pigeon;
 
   // Commands defined
@@ -83,7 +84,9 @@ public class RobotContainer {
 
      // Initialize sub systems
      DriveTrain = new DriveTrain();
+     Pneumatics = new Pneumatics();
      Pigeon = new Pigeon();
+
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
