@@ -17,6 +17,50 @@ import frc.robot.utils.Gains;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static class kID{
+        // Can IDs
+        public final int LeftFrontDrive = 1;
+        public final int LeftRearDrive = 2;
+        public final int RightFrontDrive = 3;
+        public final int RightRearDrive = 4;
+
+        public final int CANCoderLeft = 5;
+        public final int CANCoderRight = 6;
+
+        public final int IntakeFalcon = 7;
+        public final int IndexNeo1 = 8;
+        public final int IndexNeo2 = 9;
+        public final int IndexToFBottom = 10;
+        public final int IndexToFTop = 11;
+        
+        public final int TurretNeo = 12;
+        public final int TurretLimitSwitch1 = 13;
+        public final int TurretLimitSwitch2 = 14;
+        public final int TurretSwitchLimit3 = 15;
+        public final int ShooterFalconMotor1 = 16;
+        public final int ShooterFalconMotor2 = 17;
+        public final int ClimberToF1 = 18;
+        public final int ClimberToF2 = 19;
+        public final int ClimberFalcon1 = 20;
+        public final int ClimbeFalcon2 = 21;
+        public final int PneumaticHub = 22;
+
+        public final int Pigeon = 23;
+    }
+
+    public static class PneumaticsIDs{
+        public final int GearShiftHigh  = 15;
+        public final int GearShiftLow   = 0;
+        public final int IntakeRightIn  = 14;
+        public final int IntakeRightOut = 1;
+        public final int IntakeLeftIn   = 13;
+        public final int IntakeLeftOut  = 2;
+        public final int ElevatorUnlock = 12;
+        public final int ElevatorLock   = 3;
+
+    }
+
     public static class Pneumatics {
         public static final int MODULE = 1;
         public static final double MIN_PSI = 110;
@@ -115,6 +159,7 @@ public final class Constants {
     public final class kGyroSystem{
 
         public static final int CANPigeon = 23;
+    }
 
     public static final class kAuto{
         public static final double kTrackwidthMeters = Units.inchesToMeters(26.25);
@@ -137,4 +182,5 @@ public final class Constants {
         public static final double kRamseteZeta = 0.7;
 
     }
+
 }
