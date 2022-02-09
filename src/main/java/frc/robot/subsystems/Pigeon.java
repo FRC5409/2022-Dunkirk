@@ -36,6 +36,8 @@ public class Pigeon extends SubsystemBase{
     public Pigeon(){
         gyro_pigeon = new WPI_PigeonIMU(kGyroSystem.CANPigeon);
         gyro_pigeon.reset();
+
+        m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
         
         SmartDashboard.putBoolean("Manual Override Enabled", false);
 
@@ -82,7 +84,8 @@ public class Pigeon extends SubsystemBase{
      * This method is called once per scheduler run and is used to update smart dashboard data.
      */
     public void periodic() {
-
+        updateAll();
+        displayHeading();
     }
 
     @Override
@@ -213,6 +216,7 @@ public class Pigeon extends SubsystemBase{
     }
 
     public void resetOdometry(Pose2d pose) {
+        // System.out.println(pose);
         m_odometry.resetPosition(pose, gyro_pigeon.getRotation2d());
     }
 }

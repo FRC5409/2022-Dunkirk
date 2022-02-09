@@ -51,24 +51,6 @@ public final class Constants {
 
     }
 
-    public static final class kIntake{
-        public static final int kIntakeMotor = 4;
-
-        public static final int kRightIntakeSolenoid1 = 1;
-        public static final int kRightIntakeSolenoid2 = 0;
-
-        public static final int kLeftIntakeSolenoid1 = 3;
-        public static final int kLeftIntakeSolenoid2 = 2;
-
-        public static final int velocityMaxIntakeJam = 1000;
-    }
-
-    public static final class kIndexer{
-        public static final int kIndexerMotor = 16; 
-        public static final int currentLimit = 20; 
-    }
-
-
     public static final class kDriveTrain{
 
         // CAN IDs 
@@ -139,11 +121,11 @@ public final class Constants {
         public static final double ksVolts = 0.5788;
         public static final double kvVoltSecondsPerMeter = 4.1279*Math.pow(10, -6);
         public static final double kaVoltSecondsSquaredPerMeter = 2.0127*Math.pow(10, -7);
-        public static final double kPDriveVel = 8.1401*Math.pow(10, -6);
+        public static final double kPDriveVel = 8.1401 * Math.pow(10, -6); // 8.1401*Math.pow(10, -6);
         
         // all units in meters and seconds: max speed & acceleration 3
-        public static final double kMaxSpeed = 2;
-        public static final double kMaxAcceleration = 2;
+        public static final double kMaxSpeed = 3;
+        public static final double kMaxAcceleration = 3;
 
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
         // works for most robots, if needs to be tuned: 

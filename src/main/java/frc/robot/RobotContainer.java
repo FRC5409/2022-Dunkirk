@@ -25,6 +25,7 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -34,8 +35,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
 
-import frc.robot.commands.IntakeIndexerCommands;
-import frc.robot.subsystems.IntakeIndexer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 
@@ -48,9 +47,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
-  private final IntakeIndexer m_intakeindexer = new IntakeIndexer();
-
-  private final IntakeIndexerCommands m_intakeIndexerCommand = new IntakeIndexerCommands(m_intakeindexer);
 
   // Define main joystick
   private final XboxController joystick_main; // = new XboxController(0);
@@ -134,8 +130,8 @@ public class RobotContainer {
     // left, then end at 3 meters in front.
     // m_driveTrain.getOdometry().getPoseMeters(),
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-                                                                   List.of(),
-                                                                   new Pose2d(1, 0, new Rotation2d(0)), 
+                                                                   List.of(new Translation2d(1, 0)),
+                                                                   new Pose2d(3, 0, new Rotation2d(0)), 
                                                                    config); 
       
       // new Translation2d(1, 1), new Translation2d(2, -1))
@@ -150,6 +146,8 @@ public class RobotContainer {
 
     // Reset odometry to the starting pose of the trajectory.
     DriveTrain.zeroEncoders();
+
+    System.out.println("about to run");
     Pigeon.resetOdometry(trajectory.getInitialPose());
 
     // returns the autonomous command
