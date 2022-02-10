@@ -4,6 +4,10 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.playingwithfusion.TimeOfFlight;
+import com.playingwithfusion.TimeOfFlight.RangingMode;
+
+import java.util.ArrayList;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -18,11 +22,12 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.Pneumatics;
 import frc.robot.Constants.kDriveTrain;
 
-public class DriveTrain extends SubsystemBase{
-    
+public class DriveTrain extends SubsystemBase {
+
     private final WPI_TalonFX mot_leftFrontDrive;
     private final WPI_TalonFX mot_leftRearDrive;
     private final WPI_TalonFX mot_rightFrontDrive;
@@ -41,109 +46,114 @@ public class DriveTrain extends SubsystemBase{
 
     public DifferentialDriveOdometry m_odometry;
 
-    public DriveTrain(){
+    private final TimeOfFlight tof_front;
+
+    public ArrayList<Double> measuredDistances = new ArrayList<>();
+
+    public DriveTrain() {
         // Left Front Drive
         mot_leftFrontDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveFront);
         mot_leftFrontDrive.configFactoryDefault();
-        mot_leftFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 
-                                                        kDriveTrain.kPIDLoopIdx,
-                                                        kDriveTrain.kTimeoutMs);
+        mot_leftFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
+                kDriveTrain.kPIDLoopIdx,
+                kDriveTrain.kTimeoutMs);
         mot_leftFrontDrive.setSensorPhase(kDriveTrain.kSensorPhase);
-        mot_leftFrontDrive.configSupplyCurrentLimit( new SupplyCurrentLimitConfiguration(true, 
-                                                                                        kDriveTrain.CurrentLimit, 
-                                                                                        kDriveTrain.TriggerThresholdCurrent, 
-                                                                                        kDriveTrain.triggerThresholdTime));
+        mot_leftFrontDrive.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,
+                kDriveTrain.CurrentLimit,
+                kDriveTrain.TriggerThresholdCurrent,
+                kDriveTrain.triggerThresholdTime));
         mot_leftFrontDrive.setInverted(kDriveTrain.Clockwise);
 
         mot_leftFrontDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
-		mot_leftFrontDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
-		mot_leftFrontDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
-		mot_leftFrontDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
-		mot_leftFrontDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
-        
-		mot_leftFrontDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
-		mot_leftFrontDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
-		mot_leftFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
-		mot_leftFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
+        mot_leftFrontDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
+        mot_leftFrontDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
+        mot_leftFrontDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
+        mot_leftFrontDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
+
+        mot_leftFrontDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
+        mot_leftFrontDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
+        mot_leftFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
+        mot_leftFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
         // Left Rear Drive
         mot_leftRearDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveBack);
         mot_leftRearDrive.configFactoryDefault();
-        mot_leftRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 
-                                                        kDriveTrain.kPIDLoopIdx,
-                                                        kDriveTrain.kTimeoutMs);
+        mot_leftRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
+                kDriveTrain.kPIDLoopIdx,
+                kDriveTrain.kTimeoutMs);
         mot_leftRearDrive.setSensorPhase(kDriveTrain.kSensorPhase);
-                                                        
-        mot_leftRearDrive.configSupplyCurrentLimit( new SupplyCurrentLimitConfiguration(true, 
-                                                                                        kDriveTrain.CurrentLimit, 
-                                                                                        kDriveTrain.TriggerThresholdCurrent, 
-                                                                                        kDriveTrain.triggerThresholdTime));
+
+        mot_leftRearDrive.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,
+                kDriveTrain.CurrentLimit,
+                kDriveTrain.TriggerThresholdCurrent,
+                kDriveTrain.triggerThresholdTime));
         mot_leftRearDrive.follow(mot_leftFrontDrive);
         mot_leftRearDrive.setInverted(InvertType.FollowMaster);
 
         mot_leftRearDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
-		mot_leftRearDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
-		mot_leftRearDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
-		mot_leftRearDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
-		mot_leftRearDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
-        
-		mot_leftRearDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
-		mot_leftRearDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
-		mot_leftRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
-		mot_leftRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
+        mot_leftRearDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
+        mot_leftRearDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
+        mot_leftRearDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
+        mot_leftRearDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
+
+        mot_leftRearDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
+        mot_leftRearDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
+        mot_leftRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
+        mot_leftRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
         // Right Front Drive
         mot_rightFrontDrive = new WPI_TalonFX(kDriveTrain.CANRightDriveFront);
         mot_rightFrontDrive.configFactoryDefault();
-        mot_rightFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 
-                                                        kDriveTrain.kPIDLoopIdx,
-                                                        kDriveTrain.kTimeoutMs);
+        mot_rightFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
+                kDriveTrain.kPIDLoopIdx,
+                kDriveTrain.kTimeoutMs);
         mot_rightFrontDrive.setSensorPhase(kDriveTrain.kSensorPhase);
-        mot_rightFrontDrive.configSupplyCurrentLimit( new SupplyCurrentLimitConfiguration(true, 
-                                                                                        kDriveTrain.CurrentLimit, 
-                                                                                        kDriveTrain.TriggerThresholdCurrent, 
-                                                                                        kDriveTrain.triggerThresholdTime));
+        mot_rightFrontDrive.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,
+                kDriveTrain.CurrentLimit,
+                kDriveTrain.TriggerThresholdCurrent,
+                kDriveTrain.triggerThresholdTime));
 
         mot_rightFrontDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
-		mot_rightFrontDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
-		mot_rightFrontDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
-		mot_rightFrontDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
-		mot_rightFrontDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
-        
-		mot_rightFrontDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
-		mot_rightFrontDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
-		mot_rightFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
-		mot_rightFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
+        mot_rightFrontDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
+        mot_rightFrontDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
+        mot_rightFrontDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
+        mot_rightFrontDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
+
+        mot_rightFrontDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
+        mot_rightFrontDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
+        mot_rightFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
+        mot_rightFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
         mot_rightFrontDrive.setInverted(kDriveTrain.CounterClockwise);
 
         // Right Rear Drive
         mot_rightRearDrive = new WPI_TalonFX(kDriveTrain.CANRightDriveBack);
         mot_rightRearDrive.configFactoryDefault();
-        mot_rightRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 
-                                                        kDriveTrain.kPIDLoopIdx,
-                                                        kDriveTrain.kTimeoutMs);
+        mot_rightRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
+                kDriveTrain.kPIDLoopIdx,
+                kDriveTrain.kTimeoutMs);
         mot_rightRearDrive.setSensorPhase(kDriveTrain.kSensorPhase);
-        mot_rightRearDrive.configSupplyCurrentLimit( new SupplyCurrentLimitConfiguration(true, 
-                                                                                        kDriveTrain.CurrentLimit, 
-                                                                                        kDriveTrain.TriggerThresholdCurrent, 
-                                                                                        kDriveTrain.triggerThresholdTime));
+        mot_rightRearDrive.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,
+                kDriveTrain.CurrentLimit,
+                kDriveTrain.TriggerThresholdCurrent,
+                kDriveTrain.triggerThresholdTime));
         mot_rightRearDrive.follow(mot_rightFrontDrive);
         mot_rightRearDrive.setInverted(InvertType.FollowMaster);
 
         mot_rightRearDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
-		mot_rightRearDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
-		mot_rightRearDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
-		mot_rightRearDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
-		mot_rightRearDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
-        
-		mot_rightRearDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
-		mot_rightRearDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
-		mot_rightRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
-		mot_rightRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
+        mot_rightRearDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
+        mot_rightRearDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
+        mot_rightRearDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
+        mot_rightRearDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
+
+        mot_rightRearDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
+        mot_rightRearDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
+        mot_rightRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
+        mot_rightRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
         m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
-        dsl_gear = new DoubleSolenoid(Pneumatics.MODULE, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
+        dsl_gear = new DoubleSolenoid(Pneumatics.MODULE, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel,
+                kDriveTrain.ReverseChannel);
 
         driveMode = kDriveTrain.InitialDriveMode;
 
@@ -152,11 +162,15 @@ public class DriveTrain extends SubsystemBase{
         setBrakeMode(true);
 
         zeroEncoders();
+
+        tof_front = new TimeOfFlight(Constants.kID.TOF_FRONT);
+        tof_front.setRangingMode(RangingMode.Medium, 1000);
         // 6630
     }
 
     /**
-     * This method is called once per scheduler run and is used to update smart dashboard data.
+     * This method is called once per scheduler run and is used to update smart
+     * dashboard data.
      */
     public void periodic() {
         displayEncoder();
@@ -170,30 +184,31 @@ public class DriveTrain extends SubsystemBase{
         displayDriveMode();
     }
 
-
     // ------------------------- Drive Modes ------------------------- //
 
     /**
-     * @param acceleration the robot's forward speed 
+     * @param acceleration the robot's forward speed
      * 
      * @param deceleration the robot's backward speed
      * 
      * @param turn         the robot's angular speed about the z axis
      * 
      */
-    public void aadilDrive(final double acceleration, final double deceleration, final double turn){
+    public void aadilDrive(final double acceleration, final double deceleration, final double turn) {
         double accelerate = (acceleration - deceleration);
-        
+
         m_drive.arcadeDrive(accelerate, turn, true);
     }
-    
+
     /**
-     * @param leftSpeed the robot's left side speed along the X axis [-1.0, 1.0]. Forward is positive.
+     * @param leftSpeed  the robot's left side speed along the X axis [-1.0, 1.0].
+     *                   Forward is positive.
      * 
-     * @param rightSpeed the robot's right side speed along the X axis [-1.0, 1.0]. Forward is positive.
+     * @param rightSpeed the robot's right side speed along the X axis [-1.0, 1.0].
+     *                   Forward is positive.
      * 
      */
-    public void tankDrive(double leftSpeed, double rightSpeed){
+    public void tankDrive(double leftSpeed, double rightSpeed) {
         m_drive.tankDrive(leftSpeed, rightSpeed);
     }
 
@@ -201,7 +216,7 @@ public class DriveTrain extends SubsystemBase{
      * @return the current drive mode as an int
      * 
      */
-    public int getDriveMode(){
+    public int getDriveMode() {
         return driveMode;
     }
 
@@ -209,8 +224,8 @@ public class DriveTrain extends SubsystemBase{
      * @return the current drive mode as a String
      * 
      */
-    private String getDriveModeString(){
-        switch(driveMode){
+    private String getDriveModeString() {
+        switch (driveMode) {
             case kDriveTrain.AADIL_DRIVE:
                 return "AADIL DRIVE";
 
@@ -219,14 +234,14 @@ public class DriveTrain extends SubsystemBase{
 
             default:
                 return "NONE";
-        } 
+        }
     }
 
     /**
-     * Puts the current drive mode into SmartDashboard 
+     * Puts the current drive mode into SmartDashboard
      * 
      */
-    public void displayDriveMode(){
+    public void displayDriveMode() {
         SmartDashboard.putString("Drive Mode", getDriveModeString());
     }
 
@@ -234,7 +249,7 @@ public class DriveTrain extends SubsystemBase{
      * directly set the drive mode to the specified int
      * 
      */
-    public void setDriveMode(int newDriveMode){
+    public void setDriveMode(int newDriveMode) {
         driveMode = newDriveMode;
     }
 
@@ -242,69 +257,69 @@ public class DriveTrain extends SubsystemBase{
      * cycles to the next drive mode
      * 
      * Order:
-     *      AADIL_DRIVE
-     *      TANK_DRIVE
-     *      REPEAT
+     * AADIL_DRIVE
+     * TANK_DRIVE
+     * REPEAT
      */
-    public void cycleDriveMode(){
+    public void cycleDriveMode() {
         System.out.println("Cycling drive mode");
-        switch(driveMode){
+        switch (driveMode) {
             case kDriveTrain.AADIL_DRIVE:
                 driveMode = kDriveTrain.TANK_DRIVE;
-                break; 
+                break;
 
             case kDriveTrain.TANK_DRIVE:
                 driveMode = kDriveTrain.AADIL_DRIVE;
-                break; 
-        } 
+                break;
+        }
     }
+
     /**
-     * @param enable if true sets all motors to brake, if false sets all motors to coast.
+     * @param enable if true sets all motors to brake, if false sets all motors to
+     *               coast.
      * 
      */
-    public void setBrakeMode(boolean enable){
-        if(enable){
+    public void setBrakeMode(boolean enable) {
+        if (enable) {
             mot_leftFrontDrive.setNeutralMode(NeutralMode.Brake);
             mot_leftRearDrive.setNeutralMode(NeutralMode.Brake);
             mot_rightFrontDrive.setNeutralMode(NeutralMode.Brake);
             mot_rightRearDrive.setNeutralMode(NeutralMode.Brake);
-        }
-        else{
+        } else {
             mot_leftFrontDrive.setNeutralMode(NeutralMode.Coast);
             mot_leftRearDrive.setNeutralMode(NeutralMode.Coast);
             mot_rightFrontDrive.setNeutralMode(NeutralMode.Coast);
             mot_rightRearDrive.setNeutralMode(NeutralMode.Coast);
         }
-        
+
     }
 
     // -------------------------- Temperature --------------------------- //
 
-    void displayTemperatures(){
+    void displayTemperatures() {
         SmartDashboard.putNumber("Temp LF", mot_leftFrontDrive.getTemperature());
         SmartDashboard.putNumber("Temp LB", mot_leftRearDrive.getTemperature());
         SmartDashboard.putNumber("Temp RF", mot_rightFrontDrive.getTemperature());
         SmartDashboard.putNumber("Temp RB", mot_rightRearDrive.getTemperature());
     }
 
-
     // ---------------------------- Anti Tip ---------------------------- //
 
     /**
-     * @return true if the anti tip should be applied 
+     * @return true if the anti tip should be applied
      * 
      */
-    public boolean getAntiTip(){
+    public boolean getAntiTip() {
         return applyAntiTip;
     }
 
     /**
      * @param boolean the new state of applyAntiTip
      * 
-     * Sets applyAntiTip
+     *                Sets applyAntiTip
      * 
      */
-    public void setAntiTip(boolean _applyAntiTip){
+    public void setAntiTip(boolean _applyAntiTip) {
         applyAntiTip = !_applyAntiTip;
     }
 
@@ -312,17 +327,18 @@ public class DriveTrain extends SubsystemBase{
      * toggles the anti-tip
      * 
      */
-    public void toggleAntiTip(){
+    public void toggleAntiTip() {
         applyAntiTip = !applyAntiTip;
     }
 
     // ---------------------------- Encoders ---------------------------- //
 
     /**
-     * Puts the positions and velocities of the left and right encoders into SmartDashboard 
+     * Puts the positions and velocities of the left and right encoders into
+     * SmartDashboard
      * 
      */
-    public void displayEncoder(){
+    public void displayEncoder() {
         if (Math.abs(getRPMRight()) > rmRPM)
             rmRPM = Math.abs(getRPMRight());
 
@@ -341,26 +357,26 @@ public class DriveTrain extends SubsystemBase{
     }
 
     /**
-     * @return the average position of all four encoders 
+     * @return the average position of all four encoders
      * 
      */
-    public double getEncoderPosition(){
-        return (getEncoderPositionLeft() + getEncoderPositionRight())/ 2;
+    public double getEncoderPosition() {
+        return (getEncoderPositionLeft() + getEncoderPositionRight()) / 2;
     }
 
     /**
-     * @return the average position of the left encoders 
+     * @return the average position of the left encoders
      * 
      */
-    public double getEncoderPositionLeft(){
+    public double getEncoderPositionLeft() {
         return (mot_leftFrontDrive.getSelectedSensorPosition() + mot_leftRearDrive.getSelectedSensorPosition()) / 2;
     }
 
     /**
-     * @return the average position of the right encoders 
+     * @return the average position of the right encoders
      * 
      */
-    public double getEncoderPositionRight(){
+    public double getEncoderPositionRight() {
         return (mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition()) / 2;
     }
 
@@ -368,43 +384,45 @@ public class DriveTrain extends SubsystemBase{
      * @return the average velocity all for encoders
      * 
      */
-    public double getEncoderVelocity(){
-        return (getEncoderVelocityLeft() + getEncoderVelocityRight())/ 2;
+    public double getEncoderVelocity() {
+        return (getEncoderVelocityLeft() + getEncoderVelocityRight()) / 2;
     }
 
     /**
-     * @return the average velocity of the left encoders 
+     * @return the average velocity of the left encoders
      * 
      */
-    public double getEncoderVelocityLeft(){
+    public double getEncoderVelocityLeft() {
         return (mot_leftFrontDrive.getSelectedSensorVelocity() + mot_leftRearDrive.getSelectedSensorVelocity()) / 2;
     }
 
     /**
-     * @return the average velocity of the right encoders 
+     * @return the average velocity of the right encoders
      * 
-     */ 
-    public double getEncoderVelocityRight(){
+     */
+    public double getEncoderVelocityRight() {
         return (mot_rightFrontDrive.getSelectedSensorVelocity() + mot_rightRearDrive.getSelectedSensorVelocity()) / 2;
     }
 
-    public double getRPMRight(){
+    public double getRPMRight() {
         return (getEncoderVelocityRight() / 2048) * 600;
     }
 
     /**
-     * @return the average velocity of the right encoders 
+     * @return the average velocity of the right encoders
      * 
-     */ 
-    public double getRPMLeft(){
+     */
+    public double getRPMLeft() {
         return (getEncoderVelocityLeft() / 2048) * 600;
     }
+
     /**
      * Sets all encoders to 0
      * 
-     * call this function when reading positions relative to the robot's current position.
+     * call this function when reading positions relative to the robot's current
+     * position.
      * 
-     */ 
+     */
     public void zeroEncoders() {
         mot_rightFrontDrive.setSelectedSensorPosition(0);
         mot_rightRearDrive.setSelectedSensorPosition(0);
@@ -419,7 +437,7 @@ public class DriveTrain extends SubsystemBase{
         mot_leftRearDrive.setSelectedSensorPosition(position);
     }
 
-    public void setEncodersSplit(double position_left, double position_right){
+    public void setEncodersSplit(double position_left, double position_right) {
         mot_rightFrontDrive.setSelectedSensorPosition(position_right);
         mot_rightRearDrive.setSelectedSensorPosition(position_right);
         mot_leftFrontDrive.setSelectedSensorPosition(position_left);
@@ -428,14 +446,14 @@ public class DriveTrain extends SubsystemBase{
 
     // ------------------------ Setpoint Controls ------------------------ //
 
-    public void setControlMode(	TalonFXControlMode 	mode, double value){
+    public void setControlMode(TalonFXControlMode mode, double value) {
         mot_leftFrontDrive.set(mode, value);
         mot_leftRearDrive.set(mode, value);
         mot_rightFrontDrive.set(mode, value);
         mot_rightRearDrive.set(mode, value);
     }
 
-    public void setControlMode(TalonFXControlMode 	mode, double value_l, double value_r){
+    public void setControlMode(TalonFXControlMode mode, double value_l, double value_r) {
         mot_leftFrontDrive.set(mode, value_l);
         mot_leftRearDrive.set(mode, value_l);
         mot_rightFrontDrive.set(mode, value_r);
@@ -445,17 +463,17 @@ public class DriveTrain extends SubsystemBase{
     // ---------------------------- Solenoids ---------------------------- //
 
     /**
-     * shifts the gear shift to fast 
-     */ 
-    public void fastShift(){
+     * shifts the gear shift to fast
+     */
+    public void fastShift() {
         SmartDashboard.putString("Solenoid", "Fast");
         dsl_gear.set(DoubleSolenoid.Value.kForward);
     }
 
     /**
-     * shifts the gear shift to slow 
-     */ 
-    public void slowShift(){
+     * shifts the gear shift to slow
+     */
+    public void slowShift() {
         SmartDashboard.putString("Solenoid", "Slow");
         dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
@@ -467,17 +485,85 @@ public class DriveTrain extends SubsystemBase{
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
         return new DifferentialDriveWheelSpeeds(getEncoderVelocityLeft(), getEncoderVelocityRight());
-      }
+    }
 
     /**
      * Tank drive that takes voltage inputs
      * 
-     * @param voltsLeft voltage for left wheels
+     * @param voltsLeft  voltage for left wheels
      * @param voltsRight voltage for right wheels
      */
-    public void tankDriveVolts(double voltsLeft, double voltsRight){
+    public void tankDriveVolts(double voltsLeft, double voltsRight) {
         mot_leftFrontDrive.setVoltage(voltsLeft);
         mot_rightFrontDrive.setVoltage(voltsRight);
         m_drive.feed();
+    }
+
+    // ---------------------------- Auto Align ---------------------------- //
+
+    /**
+     * This method will return the distance read by the Time of Flight sensor.
+     * 
+     * @return distance in meters
+     */
+    public double getDistance() {
+        return tof_front.getRange() / 1000;
+    }
+
+    /**
+     * This method will return if the distance read from the Time Of Flight sensor
+     * is accurate.
+     * 
+     * @return valid or invalid.
+     */
+    public boolean getValidDistance() {
+        return tof_front.isRangeValid();
+    }
+
+    public void setDefaultControlMode() {
+        mot_rightFrontDrive.set(TalonFXControlMode.PercentOutput, 0);
+        mot_rightFrontDrive.setInverted(false);
+
+        mot_rightRearDrive.follow(mot_rightFrontDrive);
+        mot_rightRearDrive.setInverted(InvertType.FollowMaster);
+
+        mot_leftFrontDrive.set(TalonFXControlMode.PercentOutput, 0);
+        mot_leftFrontDrive.setInverted(true);
+
+        mot_leftRearDrive.follow(mot_leftFrontDrive);
+        mot_leftRearDrive.setInverted(InvertType.FollowMaster);
+    }
+
+    public void addDistance(double val) {
+        measuredDistances.add(val);
+    }
+
+    public void clearDistances() {
+        measuredDistances.clear();
+    }
+
+    public int getNumOfDistances() {
+        return measuredDistances.size();
+    }
+
+    public double getAvgDistance() {
+        System.out.print("DATA: ");
+        System.out.println(measuredDistances.toString());
+        double sum = 0.0;
+
+        double[] arr = new double[measuredDistances.size()];
+
+        for (int i = 0; i < measuredDistances.size(); i++) {
+            sum += measuredDistances.get(i);
+
+            arr[i] = measuredDistances.get(i);
+        }
+
+        double avg = sum / measuredDistances.size();
+
+        SmartDashboard.putNumberArray("Distances", arr);
+        SmartDashboard.putNumber("Avergae Distance", avg);
+        SmartDashboard.putBoolean("AVG CALLED", true);
+        return avg;
     }
 }

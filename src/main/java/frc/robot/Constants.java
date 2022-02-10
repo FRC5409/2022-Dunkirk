@@ -29,6 +29,9 @@ public final class Constants {
         public final int CANCoderRight = 6;
 
         public final int Pigeon = 23;
+
+        // TODO: Find correct CanID
+        public static final int TOF_FRONT = 0;
     }
 
     public static class Pneumatics {
@@ -84,6 +87,7 @@ public final class Constants {
 
         // Encoders
         public static final double encoderToMeterConversionFactor = 1;
+        
 
         public static final double encoderCPR = 2048;
         public static final double wheelCircumferenceInches = 4 * Math.PI;
@@ -99,6 +103,7 @@ public final class Constants {
 
         public static final int AADIL_DRIVE = 0;
         public static final int TANK_DRIVE = 1;
+        public static final double MAX_RPM_LOW_GEAR = 1000;
 
         // PID Controls
         public static final int kSlotIdx = 0;
@@ -124,6 +129,8 @@ public final class Constants {
         public static final boolean Clockwise = true;
 
         public static final double MAX_RPM_FOR_LOW_GEAR = 1000;
+        public static final double DISTANCE_TO_MID_RUN_FROM_WALL = 2.2098;
+        public static final double METERS_TO_RSU = 12_832.0802;
     }
 
     public final class kGyroSystem{
