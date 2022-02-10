@@ -118,7 +118,7 @@ public class RobotContainer {
      
     // creates configuration for trajectory
     var feedForward = new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-        kAuto.kMaxAcceleration);
+        kAuto.kaVoltSecondsSquaredPerMeter);
     var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(feedForward, kAuto.kDriveKinematics,
         10);
 
@@ -139,15 +139,13 @@ public class RobotContainer {
     RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
         new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-            kAuto.kMaxAcceleration),
+            kAuto.kaVoltSecondsSquaredPerMeter),
         kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
         new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
         DriveTrain::tankDriveVolts, DriveTrain);
 
     // Reset odometry to the starting pose of the trajectory.
     DriveTrain.zeroEncoders();
-
-    System.out.println("about to run");
     Pigeon.resetOdometry(trajectory.getInitialPose());
 
     // returns the autonomous command
