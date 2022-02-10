@@ -1,12 +1,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.IntakeIndexer;
+import frc.robot.subsystems.Indexer;
 public class TestIndexBelt extends CommandBase{
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    private IntakeIndexer sys_intakeIndexer;
+    private Indexer sys_intakeIndexer;
 
-    public TestIndexBelt(IntakeIndexer subsystem){
+    public TestIndexBelt(Indexer subsystem){
         sys_intakeIndexer = subsystem;
         addRequirements(subsystem);
     }

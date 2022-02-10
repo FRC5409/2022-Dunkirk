@@ -26,7 +26,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.IntakeIndexGo;
 import frc.robot.commands.IntakeSimulationTesting;
 import frc.robot.commands.ReverseIntakeIndexer;
-import frc.robot.subsystems.IntakeIndexer;
+import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
 
 
@@ -49,7 +50,8 @@ public class RobotContainer {
   // Subsystems defined
   private final DriveTrain DriveTrain;
   private final Pigeon Pigeon;
-  private final IntakeIndexer intakeindexer;
+  private final Indexer Indexer;
+  private final Intake Intake;
 
   // Commands defined
   //private final ExampleCommand m_autoCommand;
@@ -82,16 +84,17 @@ public class RobotContainer {
      // Initialize sub systems
      DriveTrain = new DriveTrain();
      Pigeon = new Pigeon();
-     intakeindexer = new IntakeIndexer();
+     Indexer = new Indexer();
+     Intake = new Intake();
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
-     m_intakeIndexGo = new IntakeIndexGo(intakeindexer);
-     m_reverseIntakeIndex = new ReverseIntakeIndexer(intakeindexer);
-     m_intakeSimulationTesting = new IntakeSimulationTesting(intakeindexer);
-     m_testIndexBelt = new TestIndexBelt(intakeindexer);
-     m_testIndexProto = new TestIndexProto(intakeindexer);
-     m_testIndexShoot = new TestIndexShoot(intakeindexer);
+     m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
+     m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
+     m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
+     m_testIndexBelt = new TestIndexBelt(Indexer);
+     m_testIndexProto = new TestIndexProto(Indexer);
+     m_testIndexShoot = new TestIndexShoot(Indexer);
 
  
     // Configure the button bindings
@@ -116,9 +119,9 @@ public class RobotContainer {
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
 
-    but_main_X.whenPressed(new TestIndexBelt(intakeindexer));
-    but_main_Y.whenPressed(new TestIndexShoot(intakeindexer));
-    but_main_RBumper.whenPressed(new TestIndexProto(intakeindexer));
+    but_main_X.whenPressed(new TestIndexBelt(Indexer));
+    but_main_Y.whenPressed(new TestIndexShoot(Indexer));
+    but_main_RBumper.whenPressed(new TestIndexProto(Indexer));
   }
 
   /**

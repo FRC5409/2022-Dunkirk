@@ -4,19 +4,15 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.IntakeIndexer;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class IntakeIndexGo extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private IntakeIndexer sys_intakeIndexer;
-
-  char m_colourSensor_etr;
-
-  char m_colourSensor_ext; 
-
-  char allianceColour; 
+  private Intake sys_intake;
+  private Indexer sys_indexer;
 
   int countBalls; 
   /**
@@ -24,10 +20,12 @@ public class IntakeIndexGo extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public IntakeIndexGo(IntakeIndexer subsystem) {
-    sys_intakeIndexer = subsystem;
+  public IntakeIndexGo(Indexer indexer, Intake intake) {
+    sys_intake = intake;
+    sys_indexer = indexer;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(sys_intakeIndexer);
+    addRequirements(sys_intake);
+    addRequirements(sys_indexer);
   }
 
   // Called when the command is initially scheduled.
@@ -35,51 +33,24 @@ public class IntakeIndexGo extends CommandBase {
   public void initialize() {
 
     if(countBalls == 2){
-      sys_intakeIndexer.intakeOn(1);
-      sys_intakeIndexer.solenoidsDown();
+      sys_intake.intakeOn(1);
+      sys_intake.solenoidsDown();
     }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_colourSensor_etr = sys_intakeIndexer.getEntranceColour(); 
-    m_colourSensor_ext = sys_intakeIndexer.getExitColour(); 
-    allianceColour = sys_intakeIndexer.getFMS(); 
-
-    if(allianceColour == 'B'){ // alliance colour is blue
-        if(m_colourSensor_etr == allianceColour && m_colourSensor_ext == 'U'){
-          countBalls ++; 
-          sys_intakeIndexer.indexerOn(1); 
-          sys_intakeIndexer.intakeOn(0);
-        } else if(m_colourSensor_ext == allianceColour && m_colourSensor_etr == allianceColour){
-          sys_intakeIndexer.indexerOn(0); 
-          countBalls ++;
-        }
-    } else if(allianceColour == 'R'){ //alliance colour is red
-      if(m_colourSensor_etr == allianceColour && m_colourSensor_ext == 'U'){
-        countBalls ++; 
-        sys_intakeIndexer.indexerOn(1); 
-        sys_intakeIndexer.intakeOn(0);
-      } else if(m_colourSensor_ext == allianceColour && m_colourSensor_etr == allianceColour){
-        sys_intakeIndexer.indexerOn(0); 
-        countBalls ++;
-      }
-    }
     
-    System.out.println(countBalls);
     
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    sys_intakeIndexer.intakeOn(0);
-    sys_intakeIndexer.indexerOn(0);
+    sys_intake.intakeOn(0);
+    sys_indexer.indexerOn(0);
 
-    if(sys_intakeIndexer.getExitColour() == allianceColour){
-      sys_intakeIndexer.solenoidsDown();
-    }
   }
 
   // Returns true when the command should end.
