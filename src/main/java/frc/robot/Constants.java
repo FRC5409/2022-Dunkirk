@@ -114,7 +114,7 @@ public final class Constants {
     }
 
     public static final class kAuto{
-        public static final double kTrackwidthMeters = Units.inchesToMeters(26.25);
+        public static final double kTrackwidthMeters = Units.inchesToMeters(27); // may be off (should run through the track width test) 26.25
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
 
         // robot characterization

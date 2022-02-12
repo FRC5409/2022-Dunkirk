@@ -136,13 +136,16 @@ public class RobotContainer {
       
       // new Translation2d(1, 1), new Translation2d(2, -1))
 
+    // RamseteController controller = new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta);
+    // controller.setEnabled(false);
+
     RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
         new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
             kAuto.kaVoltSecondsSquaredPerMeter),
         kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
         new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
-        DriveTrain::tankDriveVolts, DriveTrain);
+        DriveTrain::tankDriveVolts, DriveTrain); // set p to 0
 
     // Reset odometry to the starting pose of the trajectory.
     DriveTrain.zeroEncoders();
