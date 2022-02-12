@@ -120,8 +120,8 @@ public final class Constants {
         public static final double highGearConversionFactor = 1/7.08;
 
         // Double Solenoid
-        public static final int ForwardChannel = 9;
-        public static final int ReverseChannel = 8;
+        public static final int ForwardChannel = 0;
+        public static final int ReverseChannel = 1;
 
         // Drive Modes
         public static final int InitialDriveMode = 0;
