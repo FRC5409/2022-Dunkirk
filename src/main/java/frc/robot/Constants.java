@@ -123,7 +123,7 @@ public final class Constants {
         public static final double kaVoltSecondsSquaredPerMeter = 2.0127*Math.pow(10, -7);
         public static final double kPDriveVel = 8.1401 * Math.pow(10, -6); // 8.1401*Math.pow(10, -6);
         
-        // all units in meters and seconds: max speed & acceleration 3
+        // all units in meters and seconds: max speed & acceleration
         public static final double kMaxSpeed = 3;
         public static final double kMaxAcceleration = 3;
 
