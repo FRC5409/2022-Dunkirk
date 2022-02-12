@@ -31,8 +31,6 @@ public class Pneumatics extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("PSI", compressor1.getPressure());
 
-    System.out.println("run");
-
     // Check if pressure is too low or too high
     if (compressor1.getPressure() <= Constants.kPneumatics.MIN_PSI) {
       startLoop();

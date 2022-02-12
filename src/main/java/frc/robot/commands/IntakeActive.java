@@ -22,7 +22,8 @@ public class IntakeActive extends CommandBase{
 	public void initialize() {
 
         sys_Intake.solenoidsDown();
-		sys_Intake.intakeOn(0.15);
+		sys_Intake.intakeOn(0.75);
+
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
