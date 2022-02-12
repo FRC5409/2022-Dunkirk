@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.kID;
 import frc.robot.Constants;
 
 public class Pneumatics extends SubsystemBase {
@@ -12,14 +13,14 @@ public class Pneumatics extends SubsystemBase {
    */
   Compressor compressor1;
 
-  private boolean m_autoFill = false;
+  private boolean m_autoFill = true;
   private boolean m_manualAutoFillOverride = false;
 
   /**
    * Constructor for the Pneumatics class
    */
   public Pneumatics() {
-    compressor1 = new Compressor(Constants.Pneumatics.MODULE, PneumaticsModuleType.REVPH);
+    compressor1 = new Compressor(kID.PneumaticHub, PneumaticsModuleType.REVPH);
     startLoop();
   }
 
@@ -28,23 +29,23 @@ public class Pneumatics extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("PSI",compressor1.getPressure());
+    SmartDashboard.putNumber("PSI", compressor1.getPressure());
 
-    if (!m_manualAutoFillOverride) {
-       // Check if pressure is too low or too high
-       if (compressor1.getPressure() <= Constants.Pneumatics.MIN_PSI && !m_autoFill) {
-         startLoop();
-       } else if (compressor1.getPressure() >= Constants.Pneumatics.MAX_PSI) {
-         endLoop();
-       }
+    // Check if pressure is too low or too high
+    if (compressor1.getPressure() <= Constants.kPneumatics.MIN_PSI) {
+      startLoop();
+    } else if (compressor1.getPressure() >= Constants.kPneumatics.MAX_PSI) {
+      endLoop();
     }
+
   }
 
   /**
    * This method will set the closed loop to true.
    */
   private void startLoop() {
-    compressor1.enableAnalog(Constants.Pneumatics.MIN_PSI, Constants.Pneumatics.MAX_PSI);;
+    compressor1.enableAnalog(Constants.kPneumatics.MIN_PSI, Constants.kPneumatics.MAX_PSI);
+    ;
   }
 
   /**

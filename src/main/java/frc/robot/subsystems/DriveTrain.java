@@ -18,7 +18,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Pneumatics;
+import frc.robot.Constants.kPneumatics;
+import frc.robot.Constants.kID;
 import frc.robot.Constants.kDriveTrain;
 
 public class DriveTrain extends SubsystemBase{
@@ -43,7 +44,7 @@ public class DriveTrain extends SubsystemBase{
 
     public DriveTrain(){
         // Left Front Drive
-        mot_leftFrontDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveFront);
+        mot_leftFrontDrive = new WPI_TalonFX(kID.LeftFrontDrive);
         mot_leftFrontDrive.configFactoryDefault();
         mot_leftFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 
                                                         kDriveTrain.kPIDLoopIdx,
@@ -67,7 +68,7 @@ public class DriveTrain extends SubsystemBase{
 		mot_leftFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
         // Left Rear Drive
-        mot_leftRearDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveBack);
+        mot_leftRearDrive = new WPI_TalonFX(kID.LeftRearDrive);
         mot_leftRearDrive.configFactoryDefault();
         mot_leftRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 
                                                         kDriveTrain.kPIDLoopIdx,
@@ -93,7 +94,7 @@ public class DriveTrain extends SubsystemBase{
 		mot_leftRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
         // Right Front Drive
-        mot_rightFrontDrive = new WPI_TalonFX(kDriveTrain.CANRightDriveFront);
+        mot_rightFrontDrive = new WPI_TalonFX(kID.RightFrontDrive);
         mot_rightFrontDrive.configFactoryDefault();
         mot_rightFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 
                                                         kDriveTrain.kPIDLoopIdx,
@@ -117,7 +118,7 @@ public class DriveTrain extends SubsystemBase{
         mot_rightFrontDrive.setInverted(kDriveTrain.CounterClockwise);
 
         // Right Rear Drive
-        mot_rightRearDrive = new WPI_TalonFX(kDriveTrain.CANRightDriveBack);
+        mot_rightRearDrive = new WPI_TalonFX(kID.RightRearDrive);
         mot_rightRearDrive.configFactoryDefault();
         mot_rightRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 
                                                         kDriveTrain.kPIDLoopIdx,
@@ -143,7 +144,7 @@ public class DriveTrain extends SubsystemBase{
 
         m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
-        dsl_gear = new DoubleSolenoid(Pneumatics.MODULE, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
+        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
         driveMode = kDriveTrain.InitialDriveMode;
 
