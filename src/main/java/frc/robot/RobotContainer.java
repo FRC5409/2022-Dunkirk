@@ -7,6 +7,7 @@ package frc.robot;
 
 // Subsystems
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pigeon;
 
 // Commands
@@ -14,8 +15,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.FastGear;
+import frc.robot.commands.IntakeActive;
+import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.SlowGear;
+
 import frc.robot.subsystems.Pneumatics;
+
+import frc.robot.Constants.Pneumatics;
+
 import frc.robot.Constants.kAuto;
 
 import java.util.List;
@@ -55,12 +62,16 @@ public class RobotContainer {
       
   // Subsystems defined
   private final DriveTrain DriveTrain;
+  private final Pneumatics Pneumatics;
   private final Pigeon Pigeon;
   private final Pneumatics Pneumatics;
+  private final Intake intake; 
 
   // Commands defined
   //private final ExampleCommand m_autoCommand;
   private final DefaultDrive defaultDrive;
+  private final IntakeActive intakeActive; 
+  private final ReverseIntake reverseIntake; 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -81,11 +92,16 @@ public class RobotContainer {
 
      // Initialize sub systems
      DriveTrain = new DriveTrain();
+     Pneumatics = new Pneumatics();
      Pigeon = new Pigeon();
      Pneumatics = new Pneumatics();
+     intake = new Intake();
+
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
+     intakeActive = new IntakeActive(intake);
+     reverseIntake = new ReverseIntake(intake);
  
     // Configure the button bindings
     configureButtonBindings();
@@ -109,6 +125,8 @@ public class RobotContainer {
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
 
+    but_main_X.whileHeld(new IntakeActive(intake));
+    but_main_B.whileHeld(new ReverseIntake(intake));
     // but_main_A.whenActive( new MoveToDistance(DriveTrain));
     // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
 

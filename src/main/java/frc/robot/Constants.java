@@ -20,6 +20,7 @@ public final class Constants {
 
     public static class kID{
         // Can IDs
+
         public final static int LeftFrontDrive = 1;
         public final static int LeftRearDrive = 2;
         public final static int RightFrontDrive = 3;
@@ -62,6 +63,22 @@ public final class Constants {
     }
 
     public static class kPneumatics {
+        public static final double MIN_PSI = 90;
+        public static final double MAX_PSI = 110;
+
+        public final int LeftFrontDrive = 1;
+        public final int LeftRearDrive = 2;
+        public final int RightFrontDrive = 3;
+        public final int RightRearDrive = 4;
+
+        public final int CANCoderLeft = 5;
+        public final int CANCoderRight = 6;
+
+        public final int Pigeon = 23;
+    }
+
+    public static class Pneumatics {
+        public static final int MODULE = 1;
         public static final double MIN_PSI = 110;
         public static final double MAX_PSI = 120;
 
@@ -81,13 +98,13 @@ public final class Constants {
     }
 
     public static final class kIntake{
-        public static final int kIntakeMotor = 4;
+        public static final int kIntakeMotor = 11;
 
-        public static final int kRightIntakeSolenoid1 = 1;
-        public static final int kRightIntakeSolenoid2 = 0;
+        public static final int kRightIntakeSolenoid1 = 2;
+        public static final int kRightIntakeSolenoid2 = 3;
 
-        public static final int kLeftIntakeSolenoid1 = 3;
-        public static final int kLeftIntakeSolenoid2 = 2;
+        public static final int kLeftIntakeSolenoid1 = 4;
+        public static final int kLeftIntakeSolenoid2 = 5;
 
         public static final int velocityMaxIntakeJam = 1000;
     }
@@ -120,8 +137,8 @@ public final class Constants {
         public static final double highGearConversionFactor = 1/7.08;
 
         // Double Solenoid
-        public static final int ForwardChannel = 9;
-        public static final int ReverseChannel = 8;
+        public static final int ForwardChannel = 0;
+        public static final int ReverseChannel = 1;
 
         // Drive Modes
         public static final int InitialDriveMode = 0;
@@ -158,6 +175,8 @@ public final class Constants {
     public final class kGyroSystem{
 
         public static final int CANPigeon = 23;
+    }
+
     }
 
     public static final class kAuto{
