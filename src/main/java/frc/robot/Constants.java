@@ -77,13 +77,6 @@ public final class Constants {
         public final int Pigeon = 23;
     }
 
-    // public static class Pneumatics {
-    //     public static final int MODULE = 1;
-    //     public static final double MIN_PSI = 110;
-    //     public static final double MAX_PSI = 120;
-
-    // }
-
     public final class Climber {
         public static final int mot_port = 0;
 
