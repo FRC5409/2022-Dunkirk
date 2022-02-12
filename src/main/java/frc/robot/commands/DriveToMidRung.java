@@ -42,7 +42,7 @@ public class DriveToMidRung extends CommandBase {
     if (!distanceValid)
       sys_drive.tankDrive(0.5f, 0.5f);
 
-    if (sys_drive.getValidDistance() && distance <= 1.3) {
+    if (sys_drive.getValidDistance() && distance <= Constants.kDriveTrain.DISTANCE_TO_MID_RUN_FROM_WALL) {
       sys_drive.addDistance(distance);
       // System.out.println(distance);
       System.out.println(sys_drive.measuredDistances.toString());

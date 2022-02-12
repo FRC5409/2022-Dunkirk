@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-
+import frc.robot.subsystems.Climber;
 // Subsystems
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Pigeon;
@@ -39,11 +39,13 @@ import frc.robot.commands.IntakeIndexerCommands;
 import frc.robot.subsystems.IntakeIndexer;
 import edu.wpi.first.wpilibj2.command.Command;
 
-
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -54,18 +56,20 @@ public class RobotContainer {
   private final XboxController joystick_main; // = new XboxController(0);
   private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
       but_main_LAnalog, but_main_RAnalog, but_main_Back, but_main_Start;
-  
-      
+
   // Subsystems defined
   private final DriveTrain DriveTrain;
   private final Pneumatics Pneumatics;
   private final Pigeon Pigeon;
+  private final Climber Climber;
 
   // Commands defined
-  //private final ExampleCommand m_autoCommand;
+  // private final ExampleCommand m_autoCommand;
   private final DefaultDrive defaultDrive;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     // Init controller
     joystick_main = new XboxController(0);
@@ -82,15 +86,15 @@ public class RobotContainer {
     but_main_Back = new JoystickButton(joystick_main, XboxController.Button.kBack.value);
     but_main_Start = new JoystickButton(joystick_main, XboxController.Button.kStart.value);
 
-     // Initialize sub systems
-     DriveTrain = new DriveTrain();
-     Pneumatics = new Pneumatics();
-     Pigeon = new Pigeon();
+    // Initialize sub systems
+    DriveTrain = new DriveTrain();
+    Pneumatics = new Pneumatics();
+    Pigeon = new Pigeon();
+    Climber = new Climber();
 
+    // Init commands
+    defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
 
-     // Init commands
-     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
- 
     // Configure the button bindings
     configureButtonBindings();
 
@@ -99,9 +103,11 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
@@ -109,9 +115,9 @@ public class RobotContainer {
     // Bind start to go to the next drive mode
     but_main_Start.whenPressed(() -> DriveTrain.cycleDriveMode());
 
-    // Bind right bumper to 
+    // Bind right bumper to
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
-    but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
+    but_main_RBumper.whenReleased(new SlowGear(DriveTrain));
 
     // but_main_A.whenActive( new MoveToDistance(DriveTrain));
     // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
@@ -124,7 +130,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-     
+
     // creates configuration for trajectory
     var feedForward = new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
         kAuto.kaVoltSecondsSquaredPerMeter);
@@ -137,10 +143,9 @@ public class RobotContainer {
     // location
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
         List.of(
-          new Translation2d(1, 0)
-        ), 
-        new Pose2d(0, 1, new Rotation2d(0)), 
-        config); // new Translation2d(1, 1),  new Translation2d(2, -1)
+            new Translation2d(1, 0)),
+        new Pose2d(0, 1, new Rotation2d(0)),
+        config); // new Translation2d(1, 1), new Translation2d(2, -1)
 
     RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),

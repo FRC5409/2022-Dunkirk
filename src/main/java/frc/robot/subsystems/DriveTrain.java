@@ -163,7 +163,7 @@ public class DriveTrain extends SubsystemBase {
 
         zeroEncoders();
 
-        tof_front = new TimeOfFlight(Constants.kID.TOF_FRONT);
+        tof_front = new TimeOfFlight(Constants.kID.TOF_CLIMBER);
         tof_front.setRangingMode(RangingMode.Medium, 1000);
         // 6630
     }

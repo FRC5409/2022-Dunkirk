@@ -31,7 +31,7 @@ public final class Constants {
         public final int Pigeon = 23;
 
         // TODO: Find correct CanID
-        public static final int TOF_FRONT = 0;
+        public static final int TOF_CLIMBER = 18;
     }
 
     public static class Pneumatics {
@@ -42,7 +42,8 @@ public final class Constants {
     }
 
     public final class Climber {
-        public static final int mot_port = 0;
+        public static final int CAN_MASTER_MOT = 20;
+        public static final int CAN_FOLLOWER_MOT = 21;
 
         public static final int DIRECTION_EXTEND = 0;
         public static final int DIRECTION_RETRACT = 1;
@@ -52,6 +53,15 @@ public final class Constants {
 
         public static final double ARM_SPEED = 1.8;
 
+        public static final double GEAR_RATIO = 20;
+
+        public static final double CIRCUMFERENCE = 0.11427;
+
+        // TODO: Find PIDF values
+        public static final double P = 0;
+        public static final double I = 0;
+        public static final double D = 0;
+        public static final double F = 0;
     }
 
     public static final class kIntake{
