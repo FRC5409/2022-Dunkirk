@@ -14,9 +14,9 @@ package frc.robot;
  */
 public final class Constants {
     public static class Pneumatics {
-        public static final int MODULE = 0;
-        public static final double MIN_PSI = 0;
-        public static final double MAX_PSI = 60;
+        public static final int MODULE = 2;
+        public static final double MIN_PSI = 110;
+        public static final double MAX_PSI = 120;
 
     }
 
@@ -82,7 +82,7 @@ public final class Constants {
 
     public final class kGyroSystem{
 
-        public static final int CANPigeon = 0;
+        public static final int CANPigeon = 23;
 
 
     }

@@ -18,7 +18,7 @@ public class Pneumatics extends SubsystemBase {
    * Constructor for the Pneumatics class
    */
   public Pneumatics() {
-    compressor1 = new Compressor(Constants.Pneumatics.MODULE, PneumaticsModuleType.CTREPCM);
+    compressor1 = new Compressor(Constants.Pneumatics.MODULE, PneumaticsModuleType.REVPH);
     startLoop();
   }
 

@@ -30,6 +30,7 @@ import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseIntakeIndexer;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Pneumatics;
 import edu.wpi.first.wpilibj2.command.Command;
 
 
@@ -52,18 +53,19 @@ public class RobotContainer {
   // Subsystems defined
   private final DriveTrain DriveTrain;
   private final Pigeon Pigeon;
-  private final Indexer Indexer;
+  //private final Indexer Indexer;
   private final Intake Intake;
+  private final Pneumatics pneumatics; 
 
   // Commands defined
   //private final ExampleCommand m_autoCommand;
   private final DefaultDrive defaultDrive;
-  private final IntakeIndexGo m_intakeIndexGo;
-  private final ReverseIntakeIndexer m_reverseIntakeIndex;
-  private final IntakeSimulationTesting m_intakeSimulationTesting;
-  private final TestIndexBelt m_testIndexBelt;
-  private final TestIndexShoot m_testIndexShoot;
-  private final TestIndexProto m_testIndexProto;
+  //private final IntakeIndexGo m_intakeIndexGo;
+  //private final ReverseIntakeIndexer m_reverseIntakeIndex;
+  //private final IntakeSimulationTesting m_intakeSimulationTesting;
+  // private final TestIndexBelt m_testIndexBelt;
+  // private final TestIndexShoot m_testIndexShoot;
+  // private final TestIndexProto m_testIndexProto;
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -86,17 +88,18 @@ public class RobotContainer {
      // Initialize sub systems
      DriveTrain = new DriveTrain();
      Pigeon = new Pigeon();
-     Indexer = new Indexer();
+     //Indexer = new Indexer();
      Intake = new Intake();
+     pneumatics = new Pneumatics();
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
-     m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
-     m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
-     m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
-     m_testIndexBelt = new TestIndexBelt(Indexer);
-     m_testIndexProto = new TestIndexProto(Indexer);
-     m_testIndexShoot = new TestIndexShoot(Indexer);
+    //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
+    //  m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
+    //  m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
+    //  m_testIndexBelt = new TestIndexBelt(Indexer);
+    //  m_testIndexProto = new TestIndexProto(Indexer);
+    //  m_testIndexShoot = new TestIndexShoot(Indexer);
 
  
     // Configure the button bindings

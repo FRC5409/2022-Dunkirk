@@ -29,7 +29,7 @@ public class IntakeActive extends CommandBase {
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-        sys_Intake.intakeOn(1);
+        sys_Intake.intakeOn(0.15);
 
 	}
 

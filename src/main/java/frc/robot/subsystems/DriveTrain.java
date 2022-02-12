@@ -59,7 +59,7 @@ public class DriveTrain extends SubsystemBase{
 
         m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
-        dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
+        dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
         driveMode = kDriveTrain.InitialDriveMode;
     }

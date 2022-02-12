@@ -21,8 +21,8 @@ public class Intake extends SubsystemBase {
         mot_intake.setIdleMode(IdleMode.kBrake);
         mot_intake.burnFlash();
 
-        intakeSolenoid_left = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, kIntake.kLeftIntakeSolenoid1, kIntake.kLeftIntakeSolenoid2);
-        intakeSolenoid_right = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, kIntake.kRightIntakeSolenoid1, kIntake.kRightIntakeSolenoid2);
+        intakeSolenoid_left = new DoubleSolenoid(PneumaticsModuleType.REVPH, kIntake.kLeftIntakeSolenoid1, kIntake.kLeftIntakeSolenoid2);
+        intakeSolenoid_right = new DoubleSolenoid(PneumaticsModuleType.REVPH, kIntake.kRightIntakeSolenoid1, kIntake.kRightIntakeSolenoid2);
     }
 
     public void intakeOn(double speed) {
