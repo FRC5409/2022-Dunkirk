@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.SimpleDriveAuto;
 import frc.robot.commands.FastGear;
+import frc.robot.commands.IntakeActive;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.TestIndexBelt;
 import frc.robot.commands.TestIndexProto;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj.XboxController;
 
 import frc.robot.commands.IntakeIndexGo;
 import frc.robot.commands.IntakeSimulationTesting;
+import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseIntakeIndexer;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -119,9 +121,10 @@ public class RobotContainer {
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
 
-    but_main_X.whenPressed(new TestIndexBelt(Indexer));
-    but_main_Y.whenPressed(new TestIndexShoot(Indexer));
-    but_main_RBumper.whenPressed(new TestIndexProto(Indexer));
+    // but_main_A.whenPressed();
+    but_main_X.whileHeld(new IntakeActive(Intake));
+    but_main_B.whileHeld(new ReverseIntake(Intake));
+
   }
 
   /**
