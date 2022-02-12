@@ -35,13 +35,13 @@ public final class Constants {
     }
 
     public static final class kIntake{
-        public static final int kIntakeMotor = 4;
+        public static final int kIntakeMotor = 7;
 
-        public static final int kRightIntakeSolenoid1 = 5;
-        public static final int kRightIntakeSolenoid2 = 4;
+        public static final int kRightIntakeSolenoid1 = 2;
+        public static final int kRightIntakeSolenoid2 = 3;
 
-        public static final int kLeftIntakeSolenoid1 = 3;
-        public static final int kLeftIntakeSolenoid2 = 2;
+        public static final int kLeftIntakeSolenoid1 = 4;
+        public static final int kLeftIntakeSolenoid2 = 5;
 
         public static final int velocityMaxIntakeJam = 1000;
 
