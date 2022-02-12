@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.kID;
 import frc.robot.Constants;
 
 public class Pneumatics extends SubsystemBase {
@@ -19,7 +20,7 @@ public class Pneumatics extends SubsystemBase {
    * Constructor for the Pneumatics class
    */
   public Pneumatics() {
-    compressor1 = new Compressor(Constants.Pneumatics.MODULE, PneumaticsModuleType.REVPH);
+    compressor1 = new Compressor(kID.PneumaticHub, PneumaticsModuleType.REVPH);
     startLoop();
   }
 

@@ -20,33 +20,33 @@ public final class Constants {
 
     public static class kID{
         // Can IDs
-        public final int LeftFrontDrive = 1;
-        public final int LeftRearDrive = 2;
-        public final int RightFrontDrive = 3;
-        public final int RightRearDrive = 4;
+        public final static int LeftFrontDrive = 1;
+        public final static int LeftRearDrive = 2;
+        public final static int RightFrontDrive = 3;
+        public final static int RightRearDrive = 4;
 
-        public final int CANCoderLeft = 5;
-        public final int CANCoderRight = 6;
+        public final static int CANCoderLeft = 5;
+        public final static int CANCoderRight = 6;
 
-        public final int IntakeFalcon = 7;
-        public final int IndexNeo1 = 8;
-        public final int IndexNeo2 = 9;
-        public final int IndexToFBottom = 10;
-        public final int IndexToFTop = 11;
+        public final static int IntakeFalcon = 7;
+        public final static int IndexNeo1 = 8;
+        public final static int IndexNeo2 = 9;
+        public final static int IndexToFBottom = 10;
+        public final static int IndexToFTop = 11;
         
-        public final int TurretNeo = 12;
-        public final int TurretLimitSwitch1 = 13;
-        public final int TurretLimitSwitch2 = 14;
-        public final int TurretSwitchLimit3 = 15;
-        public final int ShooterFalconMotor1 = 16;
-        public final int ShooterFalconMotor2 = 17;
-        public final int ClimberToF1 = 18;
-        public final int ClimberToF2 = 19;
-        public final int ClimberFalcon1 = 20;
-        public final int ClimbeFalcon2 = 21;
-        public final int PneumaticHub = 22;
+        public final static int TurretNeo = 12;
+        public final static int TurretLimitSwitch1 = 13;
+        public final static int TurretLimitSwitch2 = 14;
+        public final static int TurretSwitchLimit3 = 15;
+        public final static int ShooterFalconMotor1 = 16;
+        public final static int ShooterFalconMotor2 = 17;
+        public final static int ClimberToF1 = 18;
+        public final static int ClimberToF2 = 19;
+        public final static int ClimberFalcon1 = 20;
+        public final static int ClimbeFalcon2 = 21;
+        public final static int PneumaticHub = 2;
 
-        public final int Pigeon = 23;
+        public final static int Pigeon = 23;
     }
 
     public static class PneumaticsIDs{
@@ -62,7 +62,6 @@ public final class Constants {
     }
 
     public static class Pneumatics {
-        public static final int MODULE = 1;
         public static final double MIN_PSI = 110;
         public static final double MAX_PSI = 120;
 
