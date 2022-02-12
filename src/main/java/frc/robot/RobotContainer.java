@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.SlowGear;
-import frc.robot.Constants.Pneumatics;
+import frc.robot.subsystems.Pneumatics;
 import frc.robot.Constants.kAuto;
 
 import java.util.List;
@@ -34,9 +34,6 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
-
-import frc.robot.commands.IntakeIndexerCommands;
-import frc.robot.subsystems.IntakeIndexer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 

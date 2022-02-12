@@ -61,7 +61,7 @@ public final class Constants {
 
     }
 
-    public static class Pneumatics {
+    public static class kPneumatics {
         public static final double MIN_PSI = 110;
         public static final double MAX_PSI = 120;
 
