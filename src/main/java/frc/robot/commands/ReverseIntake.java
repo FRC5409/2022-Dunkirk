@@ -22,7 +22,7 @@ public class ReverseIntake extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        sys_Intake.intakeOn(-0.5);
+        sys_Intake.reverseIntake(0.5);
     }
 
     // Called once the command ends or is interrupted.
