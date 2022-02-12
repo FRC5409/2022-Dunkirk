@@ -75,6 +75,9 @@ public final class Constants {
         public final int CANCoderRight = 6;
 
         public final int Pigeon = 23;
+
+        // TODO: Find correct CanID
+        public static final int TOF_CLIMBER = 18;
     }
 
     public static class Pneumatics {
@@ -85,7 +88,8 @@ public final class Constants {
     }
 
     public final class Climber {
-        public static final int mot_port = 0;
+        public static final int CAN_MASTER_MOT = 20;
+        public static final int CAN_FOLLOWER_MOT = 21;
 
         public static final int DIRECTION_EXTEND = 0;
         public static final int DIRECTION_RETRACT = 1;
@@ -95,6 +99,15 @@ public final class Constants {
 
         public static final double ARM_SPEED = 1.8;
 
+        public static final double GEAR_RATIO = 20;
+
+        public static final double CIRCUMFERENCE = 0.11427;
+
+        // TODO: Find PIDF values
+        public static final double P = 0;
+        public static final double I = 0;
+        public static final double D = 0;
+        public static final double F = 0;
     }
 
     public static final class kIntake{
@@ -130,6 +143,7 @@ public final class Constants {
 
         // Encoders
         public static final double encoderToMeterConversionFactor = 1;
+        
 
         public static final double encoderCPR = 2048;
         public static final double wheelCircumferenceInches = 4 * Math.PI;
@@ -145,6 +159,7 @@ public final class Constants {
 
         public static final int AADIL_DRIVE = 0;
         public static final int TANK_DRIVE = 1;
+        public static final double MAX_RPM_LOW_GEAR = 1000;
 
         // PID Controls
         public static final int kSlotIdx = 0;
@@ -170,6 +185,8 @@ public final class Constants {
         public static final boolean Clockwise = true;
 
         public static final double MAX_RPM_FOR_LOW_GEAR = 1000;
+        public static final double DISTANCE_TO_MID_RUN_FROM_WALL = 2.2098;
+        public static final double METERS_TO_RSU = 12_832.0802;
     }
 
     public final class kGyroSystem{

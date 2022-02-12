@@ -4,30 +4,76 @@
 
 package frc.robot.subsystems;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.MoveClimberArm;
 
 public class Climber extends SubsystemBase {
+  private CANSparkMax mot_main;
+  private CANSparkMax mot_follower;
+  private SparkMaxPIDController controller_main;
+  private RelativeEncoder encoder_main;
 
-  private TalonFX mot_armDriver;
-  
   private boolean locked;
+  private HashMap<String, NetworkTableEntry> shuffleboardFields;
 
   /**
    * Constructor for the climber.
    */
   public Climber() {
+    mot_main = new CANSparkMax(Constants.Climber.CAN_MASTER_MOT, MotorType.kBrushless);
+    mot_main.setInverted(false);
 
-    mot_armDriver = new TalonFX(Constants.Climber.mot_port);
+    mot_follower = new CANSparkMax(Constants.Climber.CAN_FOLLOWER_MOT, MotorType.kBrushless);
+    mot_follower.setInverted(true);
+    // encoder
+    encoder_main = mot_main.getEncoder();
+    zeroEncoder();
+
+    mot_main.burnFlash();
+    mot_follower.burnFlash();
+
+    controller_main = mot_main.getPIDController();
+    mot_follower.follow(mot_main);
+
     locked = false;
 
     // Gives absolute motor positions of 0 - 360 degrees, all positive values.
-    mot_armDriver.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
+    // mot_main.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
+    shuffleboardFields = new HashMap<String, NetworkTableEntry>();
 
+    ShuffleboardLayout layout = Shuffleboard.getTab("Climber").getLayout("Movement", BuiltInLayouts.kList);
+    layout.add("ELEVATE", new MoveClimberArm(this)).withWidget(BuiltInWidgets.kCommand);
+
+    shuffleboardFields.put("toPosition", layout.add("TO POSITION", 0).withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", 0, "max", 1)).getEntry());
+
+    shuffleboardFields.put("currentPos",
+        layout.add("CURRENT POSITION", 0).withWidget(BuiltInWidgets.kTextView).getEntry());
+  }
+
+  private void zeroEncoder() {
+    encoder_main.setPosition(0);
   }
 
   /**
@@ -35,6 +81,7 @@ public class Climber extends SubsystemBase {
    */
   @Override
   public void periodic() {
+    shuffleboardFields.get("currentPos").setNumber(getPosition());
   }
 
   /**
@@ -47,12 +94,12 @@ public class Climber extends SubsystemBase {
   /**
    * Method for retracting or extending the climber arm.
    */
-  public void moveArm() {
+  public void moveArm(double target) {
 
     // TODO currently takes in a fixed rate.
-    if(!locked){
-      //currently moves the motor at a rate of 180 degrees per 100ms.
-      mot_armDriver.set(TalonFXControlMode.Velocity, Constants.Climber.ARM_SPEED);
+    if (!locked) {
+      // currently moves the motor at a rate of 180 degrees per 100ms.
+      controller_main.setReference(target, ControlType.kPosition);
     }
   }
 
@@ -79,44 +126,28 @@ public class Climber extends SubsystemBase {
   }
 
   /**
-   * Method for getting the length of the arm extended. This is a calculated
+   * Method for getting the position of the arm extended. This is a calculated
    * value.
    * 
-   * @return The length at which the arm is currently extended.
+   * @return The position at which the arm is currently extended.
    */
-  public double getLength() {
-    return 0;
+  public double getPosition() {
+    return encoder_main.getPosition();
   }
 
-  /**
-   * This method will set the inversion of the motor
-   * 
-   * @param direction Direction of travel
-   */
-  public void setDirection(int direction) {
-    // Checks to see if the request is redundant
-    if (direction != getDirection()) {
-      // Set the direction to extend
-      if (direction == Constants.Climber.DIRECTION_EXTEND) {
-        mot_armDriver.setInverted(false);
-        // Set the direction to retract
-      } else if (direction == Constants.Climber.DIRECTION_RETRACT) {
-        mot_armDriver.setInverted(true);
-      }
-    }
+  public void configPID(double P, double I, double D, double F) {
+    controller_main.setP(P);
+    controller_main.setI(I);
+    controller_main.setD(D);
+    controller_main.setFF(F);
   }
 
-  /**
-   * This method will return the direction of travel for the arm
-   * 
-   * @return Integer value corresponding to the direction of the motor.
-   */
-  public int getDirection() {
-    if (!mot_armDriver.getInverted()) {
-      return Constants.Climber.DIRECTION_EXTEND;
-    } else {
-      return Constants.Climber.DIRECTION_RETRACT;
-    }
+  public double getSliderPosition() {
+    return shuffleboardFields.get("toPosition").getDouble(0);
   }
 
+  public void disableMotors() {
+    mot_main.disable();
+    mot_follower.disable();
+  }
 }
