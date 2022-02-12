@@ -18,7 +18,11 @@ import frc.robot.commands.FastGear;
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.SlowGear;
+
 import frc.robot.subsystems.Pneumatics;
+
+import frc.robot.Constants.Pneumatics;
+
 import frc.robot.Constants.kAuto;
 
 import java.util.List;
@@ -58,6 +62,7 @@ public class RobotContainer {
       
   // Subsystems defined
   private final DriveTrain DriveTrain;
+  private final Pneumatics Pneumatics;
   private final Pigeon Pigeon;
   private final Pneumatics Pneumatics;
   private final Intake intake; 
@@ -87,9 +92,11 @@ public class RobotContainer {
 
      // Initialize sub systems
      DriveTrain = new DriveTrain();
+     Pneumatics = new Pneumatics();
      Pigeon = new Pigeon();
      Pneumatics = new Pneumatics();
      intake = new Intake();
+
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
