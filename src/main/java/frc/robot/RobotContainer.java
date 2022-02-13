@@ -9,6 +9,8 @@ package frc.robot;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pigeon;
+import frc.robot.subsystems.Pneumatics;
+
 
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,10 +21,7 @@ import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.SlowGear;
 
-import frc.robot.subsystems.Pneumatics;
-
-import frc.robot.Constants.Pneumatics;
-
+//Constants
 import frc.robot.Constants.kAuto;
 
 import java.util.List;
@@ -64,7 +63,6 @@ public class RobotContainer {
   private final DriveTrain DriveTrain;
   private final Pneumatics Pneumatics;
   private final Pigeon Pigeon;
-  private final Pneumatics Pneumatics;
   private final Intake intake; 
 
   // Commands defined
@@ -94,7 +92,6 @@ public class RobotContainer {
      DriveTrain = new DriveTrain();
      Pneumatics = new Pneumatics();
      Pigeon = new Pigeon();
-     Pneumatics = new Pneumatics();
      intake = new Intake();
 
 
