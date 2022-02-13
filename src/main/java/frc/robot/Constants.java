@@ -94,7 +94,7 @@ public final class Constants {
         public static final int DIRECTION_EXTEND = 0;
         public static final int DIRECTION_RETRACT = 1;
         //TODO: determine the extension length
-        public static final double EXTENSION_LENGTH = 0;
+        public static final double EXTENSION_LENGTH = 104;
         public static final double RETRACTION_LENGTH = 0;
 
         public static final double ARM_SPEED = 1.8;
@@ -104,7 +104,7 @@ public final class Constants {
         public static final double CIRCUMFERENCE = 0.11427;
 
         // TODO: Find PIDF values
-        public static final double P = 0;
+        public static final double P = 0.16;
         public static final double I = 0;
         public static final double D = 0;
         public static final double F = 0;
@@ -192,8 +192,6 @@ public final class Constants {
     public final class kGyroSystem{
 
         public static final int CANPigeon = 23;
-    }
-
     }
 
     public static final class kAuto{

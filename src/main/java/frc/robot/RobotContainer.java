@@ -21,8 +21,6 @@ import frc.robot.commands.SlowGear;
 
 import frc.robot.subsystems.Pneumatics;
 
-import frc.robot.Constants.Pneumatics;
-
 import frc.robot.Constants.kAuto;
 
 import java.util.List;
@@ -63,17 +61,16 @@ public class RobotContainer {
 
   // Subsystems defined
   private final DriveTrain DriveTrain;
-  private final Pneumatics Pneumatics;
   private final Pigeon Pigeon;
   private final Pneumatics Pneumatics;
-  private final Intake intake; 
+  private final Intake intake;
   private final Climber Climber;
 
   // Commands defined
   // private final ExampleCommand m_autoCommand;
   private final DefaultDrive defaultDrive;
-  private final IntakeActive intakeActive; 
-  private final ReverseIntake reverseIntake; 
+  private final IntakeActive intakeActive;
+  private final ReverseIntake reverseIntake;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -94,20 +91,18 @@ public class RobotContainer {
     but_main_Back = new JoystickButton(joystick_main, XboxController.Button.kBack.value);
     but_main_Start = new JoystickButton(joystick_main, XboxController.Button.kStart.value);
 
-     // Initialize sub systems
-     DriveTrain = new DriveTrain();
-     Pneumatics = new Pneumatics();
-     Pigeon = new Pigeon();
-     Pneumatics = new Pneumatics();
-     intake = new Intake();
-     Climber = new Climber();
+    // Initialize sub systems
+    DriveTrain = new DriveTrain();
+    Pneumatics = new Pneumatics();
+    Pigeon = new Pigeon();
+    intake = new Intake();
+    Climber = new Climber();
 
     // Init commands
     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
 
-     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
-     intakeActive = new IntakeActive(intake);
-     reverseIntake = new ReverseIntake(intake);
+    intakeActive = new IntakeActive(intake);
+    reverseIntake = new ReverseIntake(intake);
     // Configure the button bindings
     configureButtonBindings();
 

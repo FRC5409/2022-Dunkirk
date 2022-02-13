@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -43,9 +44,13 @@ public class Climber extends SubsystemBase {
   public Climber() {
     mot_main = new CANSparkMax(Constants.Climber.CAN_MASTER_MOT, MotorType.kBrushless);
     mot_main.setInverted(false);
+    mot_main.setIdleMode(IdleMode.kCoast);
 
     mot_follower = new CANSparkMax(Constants.Climber.CAN_FOLLOWER_MOT, MotorType.kBrushless);
-    mot_follower.setInverted(true);
+    mot_follower.follow(mot_main, true);
+    mot_follower.setIdleMode(IdleMode.kCoast);
+
+
     // encoder
     encoder_main = mot_main.getEncoder();
     zeroEncoder();
@@ -54,7 +59,8 @@ public class Climber extends SubsystemBase {
     mot_follower.burnFlash();
 
     controller_main = mot_main.getPIDController();
-    mot_follower.follow(mot_main);
+    controller_main.setOutputRange(-1, 1);
+    configPID(Constants.Climber.P, Constants.Climber.I, Constants.Climber.D, Constants.Climber.F);
 
     locked = false;
 
@@ -66,7 +72,7 @@ public class Climber extends SubsystemBase {
     layout.add("ELEVATE", new MoveClimberArm(this)).withWidget(BuiltInWidgets.kCommand);
 
     shuffleboardFields.put("toPosition", layout.add("TO POSITION", 0).withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", 0, "max", 1)).getEntry());
+        .withProperties(Map.of("min", 0, "max", 104)).getEntry());
 
     shuffleboardFields.put("currentPos",
         layout.add("CURRENT POSITION", 0).withWidget(BuiltInWidgets.kTextView).getEntry());

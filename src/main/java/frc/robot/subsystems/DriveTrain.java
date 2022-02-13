@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.kPneumatics;
 import frc.robot.Constants.kID;
+import frc.robot.Constants;
 import frc.robot.Constants.kDriveTrain;
 
 public class DriveTrain extends SubsystemBase {
@@ -46,7 +47,7 @@ public class DriveTrain extends SubsystemBase {
 
     public DifferentialDriveOdometry m_odometry;
 
-    private final TimeOfFlight tof_front;
+    private TimeOfFlight tof_front;
 
     public ArrayList<Double> measuredDistances = new ArrayList<>();
 
@@ -152,7 +153,7 @@ public class DriveTrain extends SubsystemBase {
 
         m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
-        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel)
+        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
         driveMode = kDriveTrain.InitialDriveMode;
 
@@ -162,8 +163,8 @@ public class DriveTrain extends SubsystemBase {
 
         zeroEncoders();
 
-        tof_front = new TimeOfFlight(Constants.kID.TOF_CLIMBER);
-        tof_front.setRangingMode(RangingMode.Medium, 1000);
+        // tof_front = new TimeOfFlight(Constants.kID.TOF_CLIMBER);
+        // tof_front.setRangingMode(RangingMode.Medium, 1000);
         // 6630
     }
 

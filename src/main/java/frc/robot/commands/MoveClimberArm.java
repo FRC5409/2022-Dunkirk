@@ -33,8 +33,8 @@ public class MoveClimberArm extends CommandBase {
     public void initialize() {
         toPos = climber.getSliderPosition();
 
-        System.out.println("Going to " + toPos + "m.");
-        toPos /= (Constants.Climber.CIRCUMFERENCE / Constants.Climber.GEAR_RATIO);
+        // System.out.println("Going to " + toPos + "m.");
+        // toPos /= (Constants.Climber.CIRCUMFERENCE / Constants.Climber.GEAR_RATIO);
 
         climber.moveArm(toPos);
     }
