@@ -19,6 +19,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
@@ -38,15 +39,18 @@ public class Climber extends SubsystemBase {
   private boolean locked;
   private HashMap<String, NetworkTableEntry> shuffleboardFields;
 
+  private final DigitalInput limitSwitch;
+
+
   /**
    * Constructor for the climber.
    */
   public Climber() {
-    mot_main = new CANSparkMax(Constants.Climber.CAN_MASTER_MOT, MotorType.kBrushless);
+    mot_main = new CANSparkMax(Constants.kClimber.CAN_MASTER_MOT, MotorType.kBrushless);
     mot_main.setInverted(false);
     mot_main.setIdleMode(IdleMode.kCoast);
 
-    mot_follower = new CANSparkMax(Constants.Climber.CAN_FOLLOWER_MOT, MotorType.kBrushless);
+    mot_follower = new CANSparkMax(Constants.kClimber.CAN_FOLLOWER_MOT, MotorType.kBrushless);
     mot_follower.follow(mot_main, true);
     mot_follower.setIdleMode(IdleMode.kCoast);
 
@@ -60,9 +64,11 @@ public class Climber extends SubsystemBase {
 
     controller_main = mot_main.getPIDController();
     controller_main.setOutputRange(-1, 1);
-    configPID(Constants.Climber.P, Constants.Climber.I, Constants.Climber.D, Constants.Climber.F);
+    configPID(Constants.kClimber.P, Constants.kClimber.I, Constants.kClimber.D, Constants.kClimber.F);
 
     locked = false;
+
+    limitSwitch = new DigitalInput(Constants.kClimber.DIGITAL_INPUT_PORT);;
 
     // Gives absolute motor positions of 0 - 360 degrees, all positive values.
     // mot_main.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
@@ -155,5 +161,13 @@ public class Climber extends SubsystemBase {
   public void disableMotors() {
     mot_main.disable();
     mot_follower.disable();
+  }
+
+  public boolean getLimitSwitch() {
+    return limitSwitch.get();
+  }
+
+  public void findZero() {
+    controller_main.setReference(-10.0, ControlType.kVelocity);
   }
 }

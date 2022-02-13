@@ -87,7 +87,7 @@ public final class Constants {
 
     }
 
-    public final class Climber {
+    public final class kClimber {
         public static final int CAN_MASTER_MOT = 20;
         public static final int CAN_FOLLOWER_MOT = 21;
 
@@ -108,6 +108,7 @@ public final class Constants {
         public static final double I = 0;
         public static final double D = 0;
         public static final double F = 0;
+        public static final int DIGITAL_INPUT_PORT = 0;
     }
 
     public static final class kIntake{
