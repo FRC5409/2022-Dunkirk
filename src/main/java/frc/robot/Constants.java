@@ -118,10 +118,10 @@ public final class Constants {
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
 
         // robot characterization
-        public static final double ksVolts = 0.5788;
-        public static final double kvVoltSecondsPerMeter = 4.1279*Math.pow(10, -6);
-        public static final double kaVoltSecondsSquaredPerMeter = 2.0127*Math.pow(10, -7);
-        public static final double kPDriveVel = 8.1401 * Math.pow(10, -6); // 8.1401*Math.pow(10, -6);
+        public static final double ksVolts = 0.59018;
+        public static final double kvVoltSecondsPerMeter = 1.6116;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.089259;
+        public static final double kPDriveVel = 1.6064;
         
         // all units in meters and seconds: max speed & acceleration
         public static final double kMaxSpeed = 3;

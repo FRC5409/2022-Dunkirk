@@ -36,8 +36,8 @@ public class Pigeon extends SubsystemBase{
 
     DriveTrain driveTrain = new DriveTrain();
 
-    NetworkTableEntry m_xEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("X");
-    NetworkTableEntry m_yEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("Y");
+    // NetworkTableEntry m_xEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("X");
+    // NetworkTableEntry m_yEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("Y");
 
 
     public Pigeon(){
@@ -94,9 +94,9 @@ public class Pigeon extends SubsystemBase{
         m_odometry.update(Rotation2d.fromDegrees(getHeading()), driveTrain.getEncoderPositionLeft(),
         driveTrain.getEncoderPositionRight());
 
-        var translation = m_odometry.getPoseMeters().getTranslation();
-        m_xEntry.setNumber(translation.getX());
-        m_yEntry.setNumber(translation.getY());
+        // var translation = m_odometry.getPoseMeters().getTranslation();
+        // m_xEntry.setNumber(translation.getX());
+        // m_yEntry.setNumber(translation.getY());
     }
 
     @Override
