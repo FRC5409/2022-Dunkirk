@@ -17,6 +17,7 @@ import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
+import frc.robot.commands.SetpointDrive;
 import frc.robot.commands.SlowGear;
 
 import frc.robot.subsystems.Pneumatics;
@@ -67,6 +68,7 @@ public class RobotContainer {
   // Commands defined
   //private final ExampleCommand m_autoCommand;
   private final DefaultDrive defaultDrive;
+  private final SetpointDrive setpointDrive;
   private final IntakeActive intakeActive; 
   private final ReverseIntake reverseIntake; 
 
@@ -76,27 +78,28 @@ public class RobotContainer {
     joystick_main = new XboxController(0);
 
     // Init button binds
-    but_main_A = new JoystickButton(joystick_main, XboxController.Button.kA.value);
-    but_main_B = new JoystickButton(joystick_main, XboxController.Button.kB.value);
-    but_main_X = new JoystickButton(joystick_main, XboxController.Button.kX.value);
-    but_main_Y = new JoystickButton(joystick_main, XboxController.Button.kY.value);
+    but_main_A       = new JoystickButton(joystick_main, XboxController.Button.kA.value);
+    but_main_B       = new JoystickButton(joystick_main, XboxController.Button.kB.value);
+    but_main_X       = new JoystickButton(joystick_main, XboxController.Button.kX.value);
+    but_main_Y       = new JoystickButton(joystick_main, XboxController.Button.kY.value);
     but_main_LBumper = new JoystickButton(joystick_main, XboxController.Button.kLeftBumper.value);
     but_main_RBumper = new JoystickButton(joystick_main, XboxController.Button.kRightBumper.value);
     but_main_LAnalog = new JoystickButton(joystick_main, XboxController.Button.kLeftStick.value);
     but_main_RAnalog = new JoystickButton(joystick_main, XboxController.Button.kRightStick.value);
-    but_main_Back = new JoystickButton(joystick_main, XboxController.Button.kBack.value);
-    but_main_Start = new JoystickButton(joystick_main, XboxController.Button.kStart.value);
+    but_main_Back    = new JoystickButton(joystick_main, XboxController.Button.kBack.value);
+    but_main_Start   = new JoystickButton(joystick_main, XboxController.Button.kStart.value);
 
      // Initialize sub systems
      DriveTrain = new DriveTrain();
      Pneumatics = new Pneumatics();
-     Pigeon = new Pigeon();
-     intake = new Intake();
+     Pigeon     = new Pigeon();
+     intake     = new Intake();
 
 
      // Init commands
-     defaultDrive = new DefaultDrive(DriveTrain, joystick_main);
-     intakeActive = new IntakeActive(intake);
+     defaultDrive  = new DefaultDrive(DriveTrain, joystick_main);
+     setpointDrive = new SetpointDrive(DriveTrain, Pigeon, joystick_main);
+     intakeActive  = new IntakeActive(intake);
      reverseIntake = new ReverseIntake(intake);
  
     // Configure the button bindings
