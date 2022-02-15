@@ -48,10 +48,18 @@ public final class Constants {
     }
 
     public static final class kIndexer{
-        public static final int kIndexerMotor = 16; 
         public static final int currentLimit = 20; 
-        public static final int kIndexBeltMotor = 6;
-        public static final int kIndexShooterMotor = 7; 
+        public static final int indexerMotorBottom = 8; 
+
+        public static final int TOF_Ent = 15; 
+        public static final int TOF_Ball1 = 16; 
+        public static final int TOF_Ext = 17; 
+
+        public static final int sampleTime = 24; 
+
+        public static final int rangeEnter = 250; 
+        public static final int rangeBall1 = 80; 
+        public static final int rangeExt = 100; 
     }
 
 

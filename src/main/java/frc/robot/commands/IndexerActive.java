@@ -9,12 +9,13 @@ import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class TimeOfFlights extends CommandBase {
+public class IndexerActive extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private Intake sys_intake;
   private Indexer sys_indexer;
 
   boolean TOF_Ent; 
+  boolean TOF_Ball1; 
   boolean TOF_Ext;
 
   int countBalls; 
@@ -24,7 +25,7 @@ public class TimeOfFlights extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public TimeOfFlights(Intake subsystem) {
+  public IndexerActive(Intake subsystem) {
     sys_intake = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(sys_intake);
@@ -38,7 +39,7 @@ public class TimeOfFlights extends CommandBase {
     //safety to stop running the intake when indexer is full
     if(!(sys_indexer.ballDetectionExit() && sys_indexer.isRangeValid_Ext())){
       sys_intake.intakeOn(1);
-      sys_intake.solenoidsDown();
+      sys_intake.solenoidsUp();
     }
   }
 
@@ -46,12 +47,13 @@ public class TimeOfFlights extends CommandBase {
   @Override
   public void execute() {
     TOF_Ent = sys_indexer.ballDetectionEnter();
+    TOF_Ball1 = sys_indexer.ballDetectionBall1();
     TOF_Ext = sys_indexer.ballDetectionExit();
 
     if(TOF_Ent){
       sys_indexer.indexerOn(1);
       countBalls++;
-    } else if(TOF_Ext){
+    } else if(TOF_Ball1 && !TOF_Ext){
       sys_indexer.indexerOn(0);
       countBalls++;
     }

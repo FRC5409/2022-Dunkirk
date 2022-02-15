@@ -17,8 +17,6 @@ import frc.robot.commands.FastGear;
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.TestIndexBelt;
-import frc.robot.commands.TestIndexProto;
-import frc.robot.commands.TestIndexShoot;
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;

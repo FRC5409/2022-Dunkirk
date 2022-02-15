@@ -15,20 +15,14 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.CAN;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
-  private CANSparkMax mot_indexer;
 
   // time of flights
   protected TimeOfFlight TOF_Ext;
@@ -43,87 +37,71 @@ public class Indexer extends SubsystemBase {
 
   protected final static int COMMAND_REGISTER_BIT = 0x80;
 
-  //indexer testing motors
-  protected final CANSparkMax indexerBelt_neo; 
-  protected final CANSparkMax indexerShooter_neo; 
+  // indexer testing motors
+  protected final CANSparkMax indexerBelt_neo;
 
-  //shuffleboard values
+  // shuffleboard values
   HashMap<String, NetworkTableEntry> shuffleBoardFields;
   ShuffleboardTab tab;
 
-  double speedBelt = 0; 
-  double speedShoot = 0; 
+  double speedBelt = 0;
+  double speedShoot = 0;
 
-  private boolean indexerEnabled;
-  private boolean preshooterEnabled;
+  // private boolean indexerEnabled;
+  // private boolean preshooterEnabled;
 
   public Indexer() {
 
-    //test motor for belt on indexer prototype
-    indexerBelt_neo = new CANSparkMax(kIndexer.kIndexBeltMotor, MotorType.kBrushless);
-    indexerBelt_neo.setSmartCurrentLimit(20);
+    // test motor for belt on indexer prototype
+    indexerBelt_neo = new CANSparkMax(kIndexer.indexerMotorBottom, MotorType.kBrushless);
+    indexerBelt_neo.setSmartCurrentLimit(kIndexer.currentLimit);
     indexerBelt_neo.setIdleMode(IdleMode.kBrake);
     indexerBelt_neo.burnFlash();
 
-    //test motor for indexer to shooter (flywheel thing)
-    indexerShooter_neo = new CANSparkMax(kIndexer.kIndexShooterMotor, MotorType.kBrushless); 
-    indexerShooter_neo.setSmartCurrentLimit(20);
-    indexerShooter_neo.setIdleMode(IdleMode.kBrake);
-    indexerShooter_neo.burnFlash();
-
-    mot_indexer = new CANSparkMax(kIndexer.kIndexerMotor, MotorType.kBrushless);
-    mot_indexer.setSmartCurrentLimit(kIndexer.currentLimit);
-    mot_indexer.setIdleMode(IdleMode.kBrake);
-    mot_indexer.burnFlash();
-
-    //shuffleboard values
+    // shuffleboard values
     shuffleBoardFields = new HashMap<String, NetworkTableEntry>();
     tab = Shuffleboard.getTab("Motors");
     ShuffleboardLayout mLayout = tab.getLayout("motor layout", BuiltInLayouts.kList);
     shuffleBoardFields.put("motor speed belt",
         mLayout.add("motor speed belt", speedBelt).withWidget(BuiltInWidgets.kNumberSlider)
-          .withProperties(Map.of("min", 0, "max", 100, "block increment", 10)).getEntry());
-    
+            .withProperties(Map.of("min", 0, "max", 100, "block increment", 10)).getEntry());
+
     shuffleBoardFields.put("current speed of belt", mLayout.add("Current belt speed", getSpeedBelt()).getEntry());
 
     shuffleBoardFields.put("motor speed shooter",
         mLayout.add("motor speed shooter", speedShoot).withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", 0, "max", 100, "block increment", 10)).getEntry());
+            .withProperties(Map.of("min", 0, "max", 100, "block increment", 10)).getEntry());
 
     shuffleBoardFields.put("current speed of shoot", mLayout.add("Current shooter speed", getSpeedBelt()).getEntry());
   }
 
-  //test stuff
-  public void indexBeltOn(){
+  // test stuff
+  public void indexBeltOn() {
     indexerBelt_neo.set(speedBelt);
   }
 
-  public void indexShootOn(){
-    indexerShooter_neo.set(speedShoot);
-  }
-
-  public void setSpeedBelt(double speed){
+  public void setSpeedBelt(double speed) {
     speedBelt = speed;
   }
 
-  public void setSpeedShoot(double speed){
-    speedShoot = speed; 
+  public void setSpeedShoot(double speed) {
+    speedShoot = speed;
   }
 
-  public double getSpeedBelt(){
+  public double getSpeedBelt() {
     return speedBelt;
   }
 
-  public double getSpeedShoot(){
+  public double getSpeedShoot() {
     return speedShoot;
   }
 
   public void indexerOn(double speed) {
-    mot_indexer.set(speed);
+    indexerBelt_neo.set(speed);
   }
 
   public void reverseIndexer(double speed) {
-    mot_indexer.set(-speed);
+    indexerBelt_neo.set(-speed);
   }
 
   public double getRange_Ent() {
@@ -136,7 +114,15 @@ public class Indexer extends SubsystemBase {
 
   public boolean ballDetectionEnter() {
     double range = TOF_Ent.getRange();
-    if (range < 24) { //need to find the range to compare with
+    if (range < kIndexer.rangeEnter) { // need to find the range to compare with
+      return true;
+    }
+    return false;
+  }
+
+  public boolean ballDetectionBall1() {
+    double range = TOF_Ball1.getRange();
+    if (range < kIndexer.rangeBall1) {
       return true;
     }
     return false;
@@ -145,7 +131,7 @@ public class Indexer extends SubsystemBase {
   public boolean ballDetectionExit() {
     double range = TOF_Ext.getRange();
 
-    if (range < 24) { //need to find number to compare with
+    if (range < kIndexer.rangeBall1) { // need to find number to compare with
       return true;
     }
     return false;
@@ -153,6 +139,10 @@ public class Indexer extends SubsystemBase {
 
   public boolean isRangeValid_Ent() {
     return TOF_Ent.isRangeValid();
+  }
+
+  public boolean isRangeValid_Ball1() {
+    return TOF_Ball1.isRangeValid();
   }
 
   public boolean isRangeValid_Ext() {
@@ -173,7 +163,7 @@ public class Indexer extends SubsystemBase {
     // SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
     // SmartDashboard.putBoolean("TOF Enter In Range", ballDetectionEnter());
     // SmartDashboard.putBoolean("TOF Exit In Range", ballDetectionExit());
-    //SmartDashboard.putData(getFMS());
+    // SmartDashboard.putData(getFMS());
 
     setSpeedBelt(shuffleBoardFields.get("motor speed belt").getDouble(50));
     shuffleBoardFields.get("current speed of belt").setDouble(getSpeedBelt());
