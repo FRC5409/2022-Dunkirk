@@ -17,14 +17,16 @@ public class SetpointDrive extends PIDCommand {
 
     public SetpointDrive(DriveTrain drive, Pigeon gyro, XboxController joystick) {
         super(
-            new PIDController(kDriveTrain.kDistanceGains.kP, kDriveTrain.kDistanceGains.kI, kDriveTrain.kDistanceGains.kD), 
-            gyro::getAngle, 
+            new PIDController(kDriveTrain.kAngleGains.kP, 
+                              kDriveTrain.kAngleGains.kI, 
+                              kDriveTrain.kAngleGains.kD), 
+            gyro::ContinuousHeading, 
             0, 
             output -> drive.aadilDrive(joystick.getRightTriggerAxis(), 
                                        joystick.getLeftTriggerAxis(), 
-                                        output)
+                                       Math.min(Math.max(output, 1), -1)
+                                      )
             );
-        // Use addRequirements() here to declare subsystem dependencies.
 
         this.drive = drive;
         this.gyro = gyro;
@@ -37,18 +39,26 @@ public class SetpointDrive extends PIDCommand {
         double x = joystick.getRightX();
         double y = joystick.getRightY();
 
-        if (x == 0 && y == 0){ return gyro.getAngle(); }
-        if (y == 0) {return x;}
-        if (x == 0) {return y;}
+        if (x == 0 && y == 0){ 
+            return gyro.ContinuousHeading(); 
+        }
+        else if (y == 0) {
+            return gyro.ContinuousHeading() + Math.toDegrees(x/Math.abs(x)) - gyro.ContinuousHeading() % 360; 
+        }
+        else if (x == 0) { 
+            return gyro.ContinuousHeading() + Math.toDegrees(y/Math.abs(y)) - gyro.ContinuousHeading() % 360; 
+        }
+        else {
+            return gyro.ContinuousHeading() + Math.toDegrees(Math.atan(joystick.getRightY() / joystick.getRightX())) - gyro.ContinuousHeading() % 360;
+        }
 
-        double ra = Math.toDegrees(Math.abs(Math.atan(joystick.getRightY() / joystick.getRightX())));
+        /*
+        if(x < 0  && y > 0) { ra = 180 - ra; }
+        else if(x < 0  && y < 0) { ra = 180 + ra; }
+        else if(x > 0  && y < 0) { ra = 360 - ra; }
 
-        if(x > 0  && y > 0) { return ra;      }
-        if(x < 0  && y > 0) { return 180 - ra;}
-        if(x < 0  && y < 0) { return 180 + ra;}
-        if(x > 0  && y < 0) {return 360 - ra; }
-        else return 0;
-
+        ra = ra % 360 + (int)(gyro.ContinuousHeading() / 360);
+        */
     }
 
     // Called when the command is initially scheduled.

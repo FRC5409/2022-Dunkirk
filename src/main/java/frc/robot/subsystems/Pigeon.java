@@ -65,6 +65,10 @@ public class Pigeon extends SubsystemBase{
         return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual heading", 0) : heading;
     }
 
+    public double ContinuousHeading(){
+        return continuous_heading;
+    }
+
     public double TurnRate(){
         return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual turn_rate", 0) : turn_rate;
     }
@@ -114,8 +118,10 @@ public class Pigeon extends SubsystemBase{
      * Updates the heading and turn rate
      */
     private void updateTurnAngle(){
-        heading   = getAngle();
-        turn_rate = getRate();
+        double angle       = getAngle();
+        continuous_heading = angle - heading;
+        heading            = angle;
+        turn_rate          = getRate();
     }
 
     /**
