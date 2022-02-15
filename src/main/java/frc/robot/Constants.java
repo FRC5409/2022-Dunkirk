@@ -20,7 +20,6 @@ public final class Constants {
 
     public static class kID{
         // Can IDs
-
         public final static int LeftFrontDrive = 1;
         public final static int LeftRearDrive = 2;
         public final static int RightFrontDrive = 3;
@@ -175,8 +174,6 @@ public final class Constants {
     public final class kGyroSystem{
 
         public static final int CANPigeon = 23;
-    }
-
     }
 
     public static final class kAuto{

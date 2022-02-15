@@ -21,8 +21,6 @@ import frc.robot.commands.SlowGear;
 
 import frc.robot.subsystems.Pneumatics;
 
-import frc.robot.Constants.Pneumatics;
-
 import frc.robot.Constants.kAuto;
 
 import java.util.List;
@@ -64,7 +62,6 @@ public class RobotContainer {
   private final DriveTrain DriveTrain;
   private final Pneumatics Pneumatics;
   private final Pigeon Pigeon;
-  private final Pneumatics Pneumatics;
   private final Intake intake; 
 
   // Commands defined
@@ -94,12 +91,11 @@ public class RobotContainer {
      DriveTrain = new DriveTrain();
      Pneumatics = new Pneumatics();
      Pigeon = new Pigeon();
-     Pneumatics = new Pneumatics();
      intake = new Intake();
 
 
      // Init commands
-     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
+     defaultDrive = new DefaultDrive(DriveTrain, joystick_main);
      intakeActive = new IntakeActive(intake);
      reverseIntake = new ReverseIntake(intake);
  

@@ -26,6 +26,7 @@ public class Pigeon extends SubsystemBase{
 
     // The robot's heading
     public double heading;
+    public double continuous_heading;
 
     // XYZ acceleration relative to the robot
     public double x_acceleration;
@@ -104,9 +105,9 @@ public class Pigeon extends SubsystemBase{
     private void updateRPY(){
         double [] rpy = new double[3];
         gyro_pigeon.getYawPitchRoll(rpy);
-        roll  = rpy[0];
+        roll  = rpy[2];
         pitch = rpy[1];
-        yaw   = rpy[2];
+        yaw   = rpy[0];
     }
 
     /**
