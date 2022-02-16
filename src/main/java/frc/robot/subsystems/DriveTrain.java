@@ -9,9 +9,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.kPneumatics;
 import frc.robot.Constants.kID;
 import frc.robot.Constants.kDriveTrain;
+import frc.robot.utils.Convert;
 
 public class DriveTrain extends SubsystemBase{
     
@@ -36,13 +37,14 @@ public class DriveTrain extends SubsystemBase{
 
     private final DifferentialDrive m_drive;
 
-    private final DoubleSolenoid dsl_gear;
+    //private final DoubleSolenoid dsl_gear;
 
     private boolean applyAntiTip;
 
     public DifferentialDriveOdometry m_odometry;
 
     public DriveTrain(){
+        
         // Left Front Drive
         mot_leftFrontDrive = new WPI_TalonFX(kID.LeftFrontDrive);
         mot_leftFrontDrive.configFactoryDefault();
@@ -450,7 +452,7 @@ public class DriveTrain extends SubsystemBase{
      */ 
     public void fastShift(){
         SmartDashboard.putString("Solenoid", "Fast");
-        dsl_gear.set(DoubleSolenoid.Value.kForward);
+        //dsl_gear.set(DoubleSolenoid.Value.kForward);
     }
 
     /**
@@ -458,7 +460,7 @@ public class DriveTrain extends SubsystemBase{
      */ 
     public void slowShift(){
         SmartDashboard.putString("Solenoid", "Slow");
-        dsl_gear.set(DoubleSolenoid.Value.kReverse);
+        //dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
 
     // ---------------------------- Auto ---------------------------- //
@@ -467,7 +469,11 @@ public class DriveTrain extends SubsystemBase{
      * Method gets the wheel speeds using the encoders get velocity methods.
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-        return new DifferentialDriveWheelSpeeds(getEncoderVelocityLeft(), getEncoderVelocityRight());
+
+        double leftEncoderVelocityInchesPerSecond = Convert.EncoderUnitsToInches((float)getEncoderVelocityLeft())*10;
+        double rightEncoderVelocityInchesPerSecond = Convert.EncoderUnitsToInches((float)getEncoderVelocityRight())*10;
+
+        return new DifferentialDriveWheelSpeeds(Units.inchesToMeters(leftEncoderVelocityInchesPerSecond), Units.inchesToMeters(rightEncoderVelocityInchesPerSecond));
       }
 
     /**

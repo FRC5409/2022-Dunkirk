@@ -6,9 +6,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.robot.subsystems.DriveTrain;
 import frc.robot.Constants.kGyroSystem;
 
 public class Pigeon extends SubsystemBase{
@@ -32,10 +34,17 @@ public class Pigeon extends SubsystemBase{
     public double y_acceleration;
     public double z_acceleration;
 
+    DriveTrain driveTrain = new DriveTrain();
+
+    // NetworkTableEntry m_xEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("X");
+    // NetworkTableEntry m_yEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("Y");
+
 
     public Pigeon(){
         gyro_pigeon = new WPI_PigeonIMU(kGyroSystem.CANPigeon);
         gyro_pigeon.reset();
+
+        m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
         
         SmartDashboard.putBoolean("Manual Override Enabled", false);
 
@@ -84,6 +93,12 @@ public class Pigeon extends SubsystemBase{
      * This method is called once per scheduler run and is used to update smart dashboard data.
      */
     public void periodic() {
+        m_odometry.update(Rotation2d.fromDegrees(getHeading()), driveTrain.getEncoderPositionLeft(),
+        driveTrain.getEncoderPositionRight());
+
+        // var translation = m_odometry.getPoseMeters().getTranslation();
+        // m_xEntry.setNumber(translation.getX());
+        // m_yEntry.setNumber(translation.getY());
     }
 
     @Override
@@ -213,7 +228,17 @@ public class Pigeon extends SubsystemBase{
         return m_odometry;
     }
 
+    /**
+     * Returns the heading of the robot.
+     *
+     * @return the robot's heading in degrees, from -180 to 180
+     */
+    public double getHeading() {
+        return gyro_pigeon.getRotation2d().getDegrees();
+    }
+
     public void resetOdometry(Pose2d pose) {
+        // System.out.println(pose);
         m_odometry.resetPosition(pose, gyro_pigeon.getRotation2d());
     }
 }
