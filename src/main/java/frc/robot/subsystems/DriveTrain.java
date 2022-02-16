@@ -36,7 +36,7 @@ public class DriveTrain extends SubsystemBase{
 
     private final DifferentialDrive m_drive;
 
-    private final DoubleSolenoid dsl_gear;
+    //private final DoubleSolenoid dsl_gear;
 
     private boolean applyAntiTip;
 
@@ -145,7 +145,7 @@ public class DriveTrain extends SubsystemBase{
 
         m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
-        dsl_gear = new DoubleSolenoid(Pneumatics.MODULE, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
+        //dsl_gear = new DoubleSolenoid(Pneumatics.MODULE, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
         driveMode = kDriveTrain.InitialDriveMode;
 
@@ -431,7 +431,7 @@ public class DriveTrain extends SubsystemBase{
      */ 
     public void fastShift(){
         SmartDashboard.putString("Solenoid", "Fast");
-        dsl_gear.set(DoubleSolenoid.Value.kForward);
+        //dsl_gear.set(DoubleSolenoid.Value.kForward);
     }
 
     /**
@@ -439,7 +439,7 @@ public class DriveTrain extends SubsystemBase{
      */ 
     public void slowShift(){
         SmartDashboard.putString("Solenoid", "Slow");
-        dsl_gear.set(DoubleSolenoid.Value.kReverse);
+        //dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
 
     // ---------------------------- Auto ---------------------------- //
