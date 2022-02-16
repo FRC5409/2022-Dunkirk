@@ -18,7 +18,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Pneumatics;
+import frc.robot.Constants.kPneumatics;
+import frc.robot.Constants.kID;
 import frc.robot.Constants.kDriveTrain;
 import frc.robot.utils.Convert;
 
@@ -45,7 +46,7 @@ public class DriveTrain extends SubsystemBase{
     public DriveTrain(){
         
         // Left Front Drive
-        mot_leftFrontDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveFront);
+        mot_leftFrontDrive = new WPI_TalonFX(kID.LeftFrontDrive);
         mot_leftFrontDrive.configFactoryDefault();
         mot_leftFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 
                                                         kDriveTrain.kPIDLoopIdx,
@@ -69,7 +70,7 @@ public class DriveTrain extends SubsystemBase{
 		mot_leftFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
         // Left Rear Drive
-        mot_leftRearDrive = new WPI_TalonFX(kDriveTrain.CANLeftDriveBack);
+        mot_leftRearDrive = new WPI_TalonFX(kID.LeftRearDrive);
         mot_leftRearDrive.configFactoryDefault();
         mot_leftRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 
                                                         kDriveTrain.kPIDLoopIdx,
@@ -95,7 +96,7 @@ public class DriveTrain extends SubsystemBase{
 		mot_leftRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
         // Right Front Drive
-        mot_rightFrontDrive = new WPI_TalonFX(kDriveTrain.CANRightDriveFront);
+        mot_rightFrontDrive = new WPI_TalonFX(kID.RightFrontDrive);
         mot_rightFrontDrive.configFactoryDefault();
         mot_rightFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 
                                                         kDriveTrain.kPIDLoopIdx,
@@ -119,7 +120,7 @@ public class DriveTrain extends SubsystemBase{
         mot_rightFrontDrive.setInverted(kDriveTrain.CounterClockwise);
 
         // Right Rear Drive
-        mot_rightRearDrive = new WPI_TalonFX(kDriveTrain.CANRightDriveBack);
+        mot_rightRearDrive = new WPI_TalonFX(kID.RightRearDrive);
         mot_rightRearDrive.configFactoryDefault();
         mot_rightRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 
                                                         kDriveTrain.kPIDLoopIdx,
@@ -145,7 +146,7 @@ public class DriveTrain extends SubsystemBase{
 
         m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
-        //dsl_gear = new DoubleSolenoid(Pneumatics.MODULE, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
+        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
         driveMode = kDriveTrain.InitialDriveMode;
 
@@ -162,12 +163,8 @@ public class DriveTrain extends SubsystemBase{
      */
     public void periodic() {
         displayEncoder();
+        displayTemperatures();
 
-        SmartDashboard.putNumber("Left Front Motor Temp", mot_leftFrontDrive.getTemperature());
-        SmartDashboard.putNumber("Left Rear Motor Temp", mot_leftRearDrive.getTemperature());
-
-        SmartDashboard.putNumber("Right Front Motor Temp", mot_rightFrontDrive.getTemperature());
-        SmartDashboard.putNumber("Right Rear Motor Temp", mot_rightRearDrive.getTemperature());
     }
 
     @Override
@@ -284,6 +281,16 @@ public class DriveTrain extends SubsystemBase{
         
     }
 
+    // -------------------------- Temperature --------------------------- //
+
+    void displayTemperatures(){
+        SmartDashboard.putNumber("Temp LF", mot_leftFrontDrive.getTemperature());
+        SmartDashboard.putNumber("Temp LB", mot_leftRearDrive.getTemperature());
+        SmartDashboard.putNumber("Temp RF", mot_rightFrontDrive.getTemperature());
+        SmartDashboard.putNumber("Temp RB", mot_rightRearDrive.getTemperature());
+    }
+
+
     // ---------------------------- Anti Tip ---------------------------- //
 
     /**
@@ -341,7 +348,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderPosition(){
-        return (getEncoderPositionLeft() + getEncoderPositionRight() )/ 2;
+        return (getEncoderPositionLeft() + getEncoderPositionRight())/ 2;
     }
 
     /**
@@ -349,7 +356,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderPositionLeft(){
-        return mot_leftFrontDrive.getSelectedSensorPosition() + mot_leftRearDrive.getSelectedSensorPosition() / 2;
+        return (mot_leftFrontDrive.getSelectedSensorPosition() + mot_leftRearDrive.getSelectedSensorPosition()) / 2;
     }
 
     /**
@@ -357,7 +364,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderPositionRight(){
-        return mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition() / 2;
+        return (mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition()) / 2;
     }
 
     /**
@@ -365,7 +372,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderVelocity(){
-        return (getEncoderVelocityLeft() + getEncoderVelocityRight() )/ 2;
+        return (getEncoderVelocityLeft() + getEncoderVelocityRight())/ 2;
     }
 
     /**
@@ -406,6 +413,20 @@ public class DriveTrain extends SubsystemBase{
         mot_rightRearDrive.setSelectedSensorPosition(0);
         mot_leftFrontDrive.setSelectedSensorPosition(0);
         mot_leftRearDrive.setSelectedSensorPosition(0);
+    }
+
+    public void setAllEncoders(double position) {
+        mot_rightFrontDrive.setSelectedSensorPosition(position);
+        mot_rightRearDrive.setSelectedSensorPosition(position);
+        mot_leftFrontDrive.setSelectedSensorPosition(position);
+        mot_leftRearDrive.setSelectedSensorPosition(position);
+    }
+
+    public void setEncodersSplit(double position_left, double position_right){
+        mot_rightFrontDrive.setSelectedSensorPosition(position_right);
+        mot_rightRearDrive.setSelectedSensorPosition(position_right);
+        mot_leftFrontDrive.setSelectedSensorPosition(position_left);
+        mot_leftRearDrive.setSelectedSensorPosition(position_left);
     }
 
     // ------------------------ Setpoint Controls ------------------------ //

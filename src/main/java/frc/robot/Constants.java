@@ -20,6 +20,52 @@ public final class Constants {
 
     public static class kID{
         // Can IDs
+
+        public final static int LeftFrontDrive = 1;
+        public final static int LeftRearDrive = 2;
+        public final static int RightFrontDrive = 3;
+        public final static int RightRearDrive = 4;
+
+        public final static int CANCoderLeft = 5;
+        public final static int CANCoderRight = 6;
+
+        public final static int IntakeFalcon = 7;
+        public final static int IndexNeo1 = 8;
+        public final static int IndexNeo2 = 9;
+        public final static int IndexToFBottom = 10;
+        public final static int IndexToFTop = 11;
+        
+        public final static int TurretNeo = 12;
+        public final static int TurretLimitSwitch1 = 13;
+        public final static int TurretLimitSwitch2 = 14;
+        public final static int TurretSwitchLimit3 = 15;
+        public final static int ShooterFalconMotor1 = 16;
+        public final static int ShooterFalconMotor2 = 17;
+        public final static int ClimberToF1 = 18;
+        public final static int ClimberToF2 = 19;
+        public final static int ClimberFalcon1 = 20;
+        public final static int ClimbeFalcon2 = 21;
+        public final static int PneumaticHub = 2;
+
+        public final static int Pigeon = 23;
+    }
+
+    public static class PneumaticsIDs{
+        public final int GearShiftHigh  = 15;
+        public final int GearShiftLow   = 0;
+        public final int IntakeRightIn  = 14;
+        public final int IntakeRightOut = 1;
+        public final int IntakeLeftIn   = 13;
+        public final int IntakeLeftOut  = 2;
+        public final int ElevatorUnlock = 12;
+        public final int ElevatorLock   = 3;
+
+    }
+
+    public static class kPneumatics {
+        public static final double MIN_PSI = 90;
+        public static final double MAX_PSI = 110;
+
         public final int LeftFrontDrive = 1;
         public final int LeftRearDrive = 2;
         public final int RightFrontDrive = 3;
@@ -29,13 +75,6 @@ public final class Constants {
         public final int CANCoderRight = 6;
 
         public final int Pigeon = 23;
-    }
-
-    public static class Pneumatics {
-        public static final int MODULE = 1;
-        public static final double MIN_PSI = 110;
-        public static final double MAX_PSI = 120;
-
     }
 
     public final class Climber {
@@ -49,6 +88,23 @@ public final class Constants {
 
         public static final double ARM_SPEED = 1.8;
 
+    }
+
+    public static final class kIntake{
+        public static final int kIntakeMotor = 11;
+
+        public static final int kRightIntakeSolenoid1 = 2;
+        public static final int kRightIntakeSolenoid2 = 3;
+
+        public static final int kLeftIntakeSolenoid1 = 4;
+        public static final int kLeftIntakeSolenoid2 = 5;
+
+        public static final int velocityMaxIntakeJam = 1000;
+    }
+
+    public static final class kIndexer{
+        public static final int kIndexerMotor = 16; 
+        public static final int currentLimit = 20; 
     }
 
     public static final class kDriveTrain{
@@ -73,8 +129,8 @@ public final class Constants {
         public static final double highGearConversionFactor = 1/7.08;
 
         // Double Solenoid
-        public static final int ForwardChannel = 9;
-        public static final int ReverseChannel = 8;
+        public static final int ForwardChannel = 0;
+        public static final int ReverseChannel = 1;
 
         // Drive Modes
         public static final int InitialDriveMode = 0;
@@ -110,8 +166,10 @@ public final class Constants {
 
     public final class kGyroSystem{
 
-        public static final int CANPigeon  = 23;
+        public static final int CANPigeon = 23;
     }
+
+    
 
     public static final class kAuto{
         public static final double kTrackwidthMeters = Units.inchesToMeters(27); // may be off (should run through the track width test) 26.25
@@ -123,9 +181,9 @@ public final class Constants {
         public static final double kaVoltSecondsSquaredPerMeter = 0.089259;
         public static final double kPDriveVel = 1.6064;
         
-        // all units in meters and seconds: max speed & acceleration
-        public static final double kMaxSpeed = 3;
-        public static final double kMaxAcceleration = 3;
+        // all units in meters and seconds: max speed & acceleration 3
+        public static final double kMaxSpeed = 2;
+        public static final double kMaxAcceleration = 2;
 
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
         // works for most robots, if needs to be tuned: 
@@ -136,3 +194,5 @@ public final class Constants {
     }
 
 }
+
+

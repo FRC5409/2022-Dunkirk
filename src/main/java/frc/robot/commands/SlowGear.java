@@ -29,8 +29,11 @@ public class SlowGear extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // sys_drive.slowShift();
+
+    SmartDashboard.putBoolean("LowGear", true);
+
     hasShift = false;
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -4,7 +4,11 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.Constants.kDriveTrain;
+
+import frc.robot.utils.Convert;
 
 public class MoveToDistance extends CommandBase {
 
@@ -21,29 +25,35 @@ public class MoveToDistance extends CommandBase {
     public MoveToDistance(DriveTrain _drive, double _setpoint){
         drive = _drive;
         setpoint = _setpoint;
-        useSmartDashboard = true;
+        useSmartDashboard = false;
     }
 
     @Override
     public void initialize(){
+        SmartDashboard.putString("mode", "Position");
+        
         if(useSmartDashboard){
-            if(SmartDashboard.containsKey("target distance")){
-                drive.setControlMode(TalonFXControlMode.Position, SmartDashboard.getNumber("target distance", 0));
-            }
+            setpoint = SmartDashboard.getNumber("target distance", 0);
         }
-        else{
-            drive.setControlMode(TalonFXControlMode.Position, setpoint);
-        }
+
+        setpoint = Convert.InchesToEncodeUnits(setpoint);
+
+        SmartDashboard.putNumber("setpoint", setpoint);
+
+        drive.zeroEncoders();
+        drive.setControlMode(TalonFXControlMode.Position, setpoint);
     }
+    
 
     @Override
-    public void end(boolean interupted){
+    public void end(boolean interrupted){
         drive.setControlMode(TalonFXControlMode.PercentOutput, 0);
+        SmartDashboard.putString("mode", "PercentOutput");
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return drive.getEncoderPosition() == setpoint;
+        return Math.abs(Math.abs(drive.getEncoderPosition() - setpoint) / setpoint) <= 0.05;
     }
 }
