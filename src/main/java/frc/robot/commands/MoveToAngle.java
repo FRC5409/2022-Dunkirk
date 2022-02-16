@@ -14,7 +14,7 @@ public class MoveToAngle extends PIDCommand{
             new PIDController(kDriveTrain.kAngleGains.kP, kDriveTrain.kAngleGains.kI, kDriveTrain.kAngleGains.kD), 
             pigeon::ContinuousHeading, 
             targetDistance, 
-            output -> drive.tankDrive(limitSpeed(output), -limitSpeed(output))
+            (output) -> drive.tankDrive(limitSpeed(output), -limitSpeed(output))
               );
 
         addRequirements(drive);

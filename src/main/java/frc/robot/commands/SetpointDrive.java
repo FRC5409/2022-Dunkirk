@@ -1,5 +1,4 @@
 package frc.robot.commands;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -8,29 +7,26 @@ import frc.robot.Constants.kDriveTrain;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Pigeon;
 
+import frc.robot.utils.PIDController;
 
-public class SetpointDrive extends PIDCommand {
+
+public class SetpointDrive extends CommandBase {
 
     private final DriveTrain drive;
     private final Pigeon gyro;
     private final XboxController joystick;
 
-    public SetpointDrive(DriveTrain drive, Pigeon gyro, XboxController joystick) {
-        super(
-            new PIDController(kDriveTrain.kAngleGains.kP, 
-                              kDriveTrain.kAngleGains.kI, 
-                              kDriveTrain.kAngleGains.kD), 
-            gyro::ContinuousHeading, 
-            0, 
-            output -> drive.aadilDrive(joystick.getRightTriggerAxis(), 
-                                       joystick.getLeftTriggerAxis(), 
-                                       Math.min(Math.max(output, 1), -1)
-                                      )
-            );
+    private final PIDController controller;
 
-        this.drive = drive;
-        this.gyro = gyro;
-        this.joystick = joystick;
+    public SetpointDrive(DriveTrain _drive, Pigeon _gyro, XboxController _joystick) {
+                                                                 
+        controller = new PIDController(kDriveTrain.kAngleGains.kP, kDriveTrain.kAngleGains.kI, kDriveTrain.kAngleGains.kD);
+
+        drive = _drive;
+        gyro = _gyro;
+        joystick = _joystick;
+
+        System.out.println("Setpoint drive contr");
 
         addRequirements(drive);
     }
@@ -64,13 +60,20 @@ public class SetpointDrive extends PIDCommand {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        
+        System.out.println("init");
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        getController().setSetpoint(GetSetpointHeading());
+        System.out.println("execute");
+        double comp = controller.calculate(gyro.ContinuousHeading());
+        controller.setSetpoint(GetSetpointHeading());
+
+        drive.aadilDrive(joystick.getRightTriggerAxis(), 
+                         joystick.getLeftTriggerAxis(), 
+                         Math.min(Math.max(comp, 1), -1)
+                         );
     }
 
     // Called once the command ends or is interrupted.
@@ -82,6 +85,8 @@ public class SetpointDrive extends PIDCommand {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
+        
+        System.out.println("finished");
         return false;
     }
 

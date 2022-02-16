@@ -167,8 +167,8 @@ public class DriveTrain extends SubsystemBase{
 
     @Override
     public void simulationPeriodic() {
-        displayEncoder();
-        displayDriveMode();
+        //displayEncoder();
+        //displayDriveMode();
     }
 
 
@@ -184,7 +184,7 @@ public class DriveTrain extends SubsystemBase{
      */
     public void aadilDrive(final double acceleration, final double deceleration, final double turn){
         double accelerate = (acceleration - deceleration);
-        
+        System.out.println(turn);
         m_drive.arcadeDrive(accelerate, turn, true);
     }
     

@@ -66,6 +66,7 @@ public class Pigeon extends SubsystemBase{
     }
 
     public double ContinuousHeading(){
+        System.out.println("cont heading");
         return continuous_heading;
     }
 
@@ -89,12 +90,13 @@ public class Pigeon extends SubsystemBase{
      * This method is called once per scheduler run and is used to update smart dashboard data.
      */
     public void periodic() {
+        SmartDashboard.putNumber("heading", heading);
+        updateAll();
     }
 
     @Override
     public void simulationPeriodic() {
         updateAll();
-        displayAngle();
     }
 
     private void updateAll(){
@@ -118,10 +120,10 @@ public class Pigeon extends SubsystemBase{
      * Updates the heading and turn rate
      */
     private void updateTurnAngle(){
-        double angle       = getAngle();
-        continuous_heading = angle - heading;
-        heading            = angle;
-        turn_rate          = getRate();
+        double angle        = getAngle();
+        continuous_heading += angle - heading;
+        heading             = angle;
+        turn_rate           = getRate();
     }
 
     /**

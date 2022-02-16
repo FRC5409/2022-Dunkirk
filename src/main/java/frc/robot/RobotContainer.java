@@ -106,7 +106,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Sets default command to be DefaultDrive
-    DriveTrain.setDefaultCommand(defaultDrive);
+    DriveTrain.setDefaultCommand(setpointDrive);
   }
 
   /**
