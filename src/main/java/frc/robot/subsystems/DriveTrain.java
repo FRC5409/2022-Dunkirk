@@ -429,6 +429,24 @@ public class DriveTrain extends SubsystemBase{
 
     // ------------------------ Setpoint Controls ------------------------ //
 
+    public void setDefaultControlMode(double value){
+        mot_leftFrontDrive.set(TalonFXControlMode.PercentOutput, value);
+
+        mot_leftRearDrive.set(TalonFXControlMode.Follower, value);
+        mot_leftRearDrive.follow(mot_leftFrontDrive);
+        mot_leftRearDrive.setInverted(InvertType.FollowMaster);
+
+        mot_rightFrontDrive.set(TalonFXControlMode.PercentOutput, value);
+
+        mot_rightRearDrive.set(TalonFXControlMode.Follower, value);
+        mot_rightRearDrive.follow(mot_rightFrontDrive);
+        mot_rightRearDrive.setInverted(InvertType.FollowMaster);
+    }
+
+    public void setDefaultControlMode(){
+        setDefaultControlMode(0);
+    }
+
     public void setControlMode(	TalonFXControlMode 	mode, double value){
         mot_leftFrontDrive.set(mode, value);
         mot_leftRearDrive.set(mode, value);
