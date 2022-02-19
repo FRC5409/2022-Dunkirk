@@ -82,7 +82,6 @@ public class RobotContainer {
   private final Intake Intake;
   private final Pneumatics pneumatics; 
 
-  private final Intake intake; 
 
 
   // Commands defined
@@ -100,7 +99,7 @@ public class RobotContainer {
 
 
   private final IntakeActive intakeActive; 
-  private final ReverseIntake reverseIntake; 
+  //private final ReverseIntake reverseIntake; 
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -133,21 +132,13 @@ public class RobotContainer {
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
      indexerActive = new IndexerActive(Indexer, Intake);
      reverse = new ReverseIntakeIndexer(Intake, Indexer);
+     intakeActive = new IntakeActive(Intake);
     //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
     //  m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
     //  m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
     //  m_testIndexBelt = new TestIndexBelt(Indexer);
     //  m_testIndexProto = new TestIndexProto(Indexer);
     //  m_testIndexShoot = new TestIndexShoot(Indexer);
-
-
-     intake = new Intake();
-
-
-     // Init commands
-     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
-     intakeActive = new IntakeActive(intake);
-     reverseIntake = new ReverseIntake(intake);
 
  
     // Configure the button bindings

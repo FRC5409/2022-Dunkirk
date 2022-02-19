@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
@@ -20,7 +21,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 public class Intake extends SubsystemBase{
 
     private WPI_TalonFX mot_intake;
-
+    private CANSparkMax mot_intakeIn;
     private DoubleSolenoid intakeSolenoid_left;
     private DoubleSolenoid intakeSolenoid_right;
 
@@ -29,7 +30,7 @@ public class Intake extends SubsystemBase{
        
 
         mot_intakeIn = new CANSparkMax(kIntake.kIntakeMotorIn, MotorType.kBrushless);
-        mot_intake.setSmartCurrentLimit(20);
+        mot_intakeIn.setSmartCurrentLimit(20);
         mot_intakeIn.setIdleMode(IdleMode.kBrake);
         mot_intakeIn.burnFlash();
 
