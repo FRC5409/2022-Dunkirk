@@ -177,7 +177,9 @@ public class Indexer extends SubsystemBase {
       countBalls = 1; 
     } else if(ballDetectionBall1() == true && !ballDetectionEnter()){
       countBalls = 2; 
-    } 
+    } else if (!ballDetectionExit() && !ballDetectionEnter() && !ballDetectionBall1()){
+      countBalls = 0; 
+    }
 
     if(ballDetectionExit() == true){
       shooterReady = true; 
