@@ -66,14 +66,6 @@ public final class Constants {
         public static final double MIN_PSI = 90;
         public static final double MAX_PSI = 110;
 
-        public final int LeftFrontDrive = 1;
-        public final int LeftRearDrive = 2;
-        public final int RightFrontDrive = 3;
-        public final int RightRearDrive = 4;
-
-        public final int CANCoderLeft = 5;
-        public final int CANCoderRight = 6;
-
         public final int Pigeon = 23;
     }
 
@@ -109,13 +101,6 @@ public final class Constants {
 
 
     public static final class kDriveTrain{
-
-        // CAN IDs 
-        public static final int CANLeftDriveFront = 1;
-        public static final int CANRightDriveFront = 3;
-        public static final int CANLeftDriveBack = 2;
-        public static final int CANRightDriveBack = 4;
-        
         // Current Limits
         public static final double CurrentLimit = 65;
         public static final double TriggerThresholdCurrent = 65;
@@ -167,7 +152,7 @@ public final class Constants {
 
     public final class kGyroSystem{
 
-        public static final int CANPigeon = 23;
+        
     }
 
     
