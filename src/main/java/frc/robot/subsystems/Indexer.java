@@ -162,10 +162,9 @@ public class Indexer extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // SmartDashboard.putNumber("TOF Enter", TOF_Ent.getRange());
-    // SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
-    // SmartDashboard.putBoolean("TOF Enter In Range", ballDetectionEnter());
-    // SmartDashboard.putBoolean("TOF Exit In Range", ballDetectionExit());
+    SmartDashboard.putNumber("TOF Enter", TOF_Ent.getRange());
+    SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
+    SmartDashboard.putNumber("TOF Ball1", TOF_Ball1.getRange());
     // SmartDashboard.putData(getFMS());
 
     setSpeedBelt(shuffleBoardFields.get("motor speed belt").getDouble(50));
@@ -188,8 +187,6 @@ public class Indexer extends SubsystemBase {
 
     SmartDashboard.putNumber("Number of Balls in Indexer", countBalls); 
     SmartDashboard.putBoolean("Ready to Shoot", shooterReady);
-    
-
   }
 
   @Override
