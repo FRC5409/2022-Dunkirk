@@ -11,18 +11,43 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class MoveClimberArm extends CommandBase {
+public class ElevateTo extends CommandBase {
     @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
     // private final XboxController m_joystick;
     private final Climber climber;
-    private double toPos = 0;
+    private double toPos = -1;
 
     /**
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
      */
-    public MoveClimberArm(Climber subsystem) {
+    public ElevateTo(Climber subsystem, double endPos) {
+        climber = subsystem;
+        toPos = endPos;
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(subsystem);
+    }
+
+    /**
+     * Creates a new ExampleCommand.
+     *
+     * @param subsystem The subsystem used by this command.
+     */
+    public ElevateTo(Climber subsystem, int axis) {
+        climber = subsystem;
+        // toPos = endPos;
+        // System.out.println();
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(subsystem);
+    }
+
+    /**
+     * Creates a new ExampleCommand.
+     *
+     * @param subsystem The subsystem used by this command.
+     */
+    public ElevateTo(Climber subsystem) {
         climber = subsystem;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(subsystem);
@@ -31,9 +56,10 @@ public class MoveClimberArm extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        toPos = climber.getSliderPosition();
+        if (toPos < 0)
+            toPos = climber.getSliderPosition();
 
-        // System.out.println("Going to " + toPos + "m.");
+        System.out.println("Going to " + toPos + "m.");
         // toPos /= (Constants.Climber.CIRCUMFERENCE / Constants.Climber.GEAR_RATIO);
 
         climber.moveArm(toPos);
@@ -48,6 +74,6 @@ public class MoveClimberArm extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return climber.getPosition() >= toPos;
+        return Math.abs((climber.getPosition() - toPos)) / toPos <= 0.05 || climber.getPosition() >= toPos;
     }
 }

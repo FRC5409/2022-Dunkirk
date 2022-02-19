@@ -14,7 +14,10 @@ import frc.robot.subsystems.Pigeon;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.DefaultDrive;
+import frc.robot.commands.DefaultElevator;
+import frc.robot.commands.ElevateTo;
 import frc.robot.commands.FastGear;
+import frc.robot.commands.FindElevatorZero;
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.SlowGear;
@@ -56,8 +59,12 @@ public class RobotContainer {
 
   // Define main joystick
   private final XboxController joystick_main; // = new XboxController(0);
+  private final XboxController joystick_secondary;
   private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
       but_main_LAnalog, but_main_RAnalog, but_main_Back, but_main_Start;
+  private JoystickButton but_sec_A, but_sec_B, but_sec_X, but_sec_Y, but_sec_LBumper, but_sec_RBumper,
+      but_sec_LAnalog, but_sec_RAnalog, but_sec_Back, but_sec_Start, but_sec_Left, but_sec_Up, but_sec_Right,
+      but_sec_Down;
 
   // Subsystems defined
   private final DriveTrain DriveTrain;
@@ -78,6 +85,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Init controller
     joystick_main = new XboxController(0);
+    joystick_secondary = new XboxController(1);
 
     // Init button binds
     but_main_A = new JoystickButton(joystick_main, XboxController.Button.kA.value);
@@ -91,12 +99,25 @@ public class RobotContainer {
     but_main_Back = new JoystickButton(joystick_main, XboxController.Button.kBack.value);
     but_main_Start = new JoystickButton(joystick_main, XboxController.Button.kStart.value);
 
+    but_sec_A = new JoystickButton(joystick_secondary, XboxController.Button.kA.value);
+    but_sec_B = new JoystickButton(joystick_secondary, XboxController.Button.kB.value);
+    but_sec_X = new JoystickButton(joystick_secondary, XboxController.Button.kX.value);
+    but_sec_Y = new JoystickButton(joystick_secondary, XboxController.Button.kY.value);
+    but_sec_LBumper = new JoystickButton(joystick_secondary, XboxController.Button.kLeftBumper.value);
+    but_sec_RBumper = new JoystickButton(joystick_secondary, XboxController.Button.kRightBumper.value);
+    but_sec_LAnalog = new JoystickButton(joystick_secondary, XboxController.Button.kLeftStick.value);
+    but_sec_RAnalog = new JoystickButton(joystick_secondary, XboxController.Button.kRightStick.value);
+    but_sec_Back = new JoystickButton(joystick_secondary, XboxController.Button.kBack.value);
+    but_sec_Start = new JoystickButton(joystick_secondary, XboxController.Button.kStart.value);
+
+    // but_sec_Left = new JoystickButton(joystick_main, );
+
     // Initialize sub systems
     DriveTrain = new DriveTrain();
-    Pneumatics = new Pneumatics();
     Pigeon = new Pigeon();
     intake = new Intake();
     Climber = new Climber();
+    Pneumatics = new Pneumatics();
 
     // Init commands
     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
@@ -108,6 +129,7 @@ public class RobotContainer {
 
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
+    Climber.setDefaultCommand(new DefaultElevator(Climber, joystick_secondary));
   }
 
   /**
@@ -129,8 +151,15 @@ public class RobotContainer {
 
     but_main_X.whileHeld(new IntakeActive(intake));
     but_main_B.whileHeld(new ReverseIntake(intake));
+
+    but_main_Y.whenPressed(new FindElevatorZero(Climber));
     // but_main_A.whenActive( new MoveToDistance(DriveTrain));
     // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
+
+    // but_sec_Left.whenPressed(new ElevateTo(Climber, true, 0));
+    // but_sec_Left.whenPressed(() -> {
+    // System.out.println(true);
+    // });
 
   }
 

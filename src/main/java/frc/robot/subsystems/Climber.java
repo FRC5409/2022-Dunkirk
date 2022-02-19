@@ -26,9 +26,10 @@ import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.commands.MoveClimberArm;
+import frc.robot.commands.ElevateTo;
 
 public class Climber extends SubsystemBase {
   private CANSparkMax mot_main;
@@ -41,19 +42,17 @@ public class Climber extends SubsystemBase {
 
   private final DigitalInput limitSwitch;
 
-
   /**
    * Constructor for the climber.
    */
   public Climber() {
     mot_main = new CANSparkMax(Constants.kClimber.CAN_MASTER_MOT, MotorType.kBrushless);
     mot_main.setInverted(false);
-    mot_main.setIdleMode(IdleMode.kCoast);
+    mot_main.setIdleMode(IdleMode.kBrake);
 
     mot_follower = new CANSparkMax(Constants.kClimber.CAN_FOLLOWER_MOT, MotorType.kBrushless);
     mot_follower.follow(mot_main, true);
-    mot_follower.setIdleMode(IdleMode.kCoast);
-
+    mot_follower.setIdleMode(IdleMode.kBrake);
 
     // encoder
     encoder_main = mot_main.getEncoder();
@@ -68,23 +67,35 @@ public class Climber extends SubsystemBase {
 
     locked = false;
 
-    limitSwitch = new DigitalInput(Constants.kClimber.DIGITAL_INPUT_PORT);;
+    limitSwitch = new DigitalInput(Constants.kClimber.DIGITAL_INPUT_PORT);
 
     // Gives absolute motor positions of 0 - 360 degrees, all positive values.
     // mot_main.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
     shuffleboardFields = new HashMap<String, NetworkTableEntry>();
 
-    ShuffleboardLayout layout = Shuffleboard.getTab("Climber").getLayout("Movement", BuiltInLayouts.kList);
-    layout.add("ELEVATE", new MoveClimberArm(this)).withWidget(BuiltInWidgets.kCommand);
+    ShuffleboardLayout sliders = Shuffleboard.getTab("Climber").getLayout("Auto", BuiltInLayouts.kList);
+    ShuffleboardLayout setPoints = Shuffleboard.getTab("Climber").getLayout("Setpoints", BuiltInLayouts.kList);
+    ShuffleboardLayout extras = Shuffleboard.getTab("Climber").getLayout("Extras", BuiltInLayouts.kList);
 
-    shuffleboardFields.put("toPosition", layout.add("TO POSITION", 0).withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", 0, "max", 104)).getEntry());
+    sliders.add("ELEVATE", new ElevateTo(this)).withWidget(BuiltInWidgets.kCommand);
+
+    setPoints.add("ELEVATE TO MID", new ElevateTo(this, Constants.kClimber.TO_MID_RUNG))
+        .withWidget(BuiltInWidgets.kCommand);
+    setPoints.add("ELEVATE TO LOW", new ElevateTo(this, Constants.kClimber.TO_LOW_RUNG))
+        .withWidget(BuiltInWidgets.kCommand);
+    setPoints.add("ELEVATE TO MIN", new ElevateTo(this, Constants.kClimber.TO_MIN)).withWidget(BuiltInWidgets.kCommand);
+
+    shuffleboardFields.put("toPosition", sliders.add("TO POSITION", 0).withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", 0.5, "max", 104)).getEntry());
 
     shuffleboardFields.put("currentPos",
-        layout.add("CURRENT POSITION", 0).withWidget(BuiltInWidgets.kTextView).getEntry());
+        extras.add("CURRENT POSITION", 0).withWidget(BuiltInWidgets.kTextView).getEntry());
+
+    shuffleboardFields.put("limitSwitch",
+        extras.add("LIMIT SWITCH", false).withWidget(BuiltInWidgets.kBooleanBox).getEntry());
   }
 
-  private void zeroEncoder() {
+  public void zeroEncoder() {
     encoder_main.setPosition(0);
   }
 
@@ -94,6 +105,16 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     shuffleboardFields.get("currentPos").setNumber(getPosition());
+
+    // if (encoder_main.getVelocity() < 0 && encoder_main.getPosition() <=
+    // Constants.kClimber.TO_MIN) {
+    // disableMotors();
+    // } else if (encoder_main.getVelocity() > 0 && encoder_main.getPosition() >=
+    // Constants.kClimber.TO_MAX) {
+    // disableMotors();
+    // }
+
+    shuffleboardFields.get("limitSwitch").setBoolean(getLimitSwitch());
   }
 
   /**
@@ -160,7 +181,7 @@ public class Climber extends SubsystemBase {
 
   public void disableMotors() {
     mot_main.disable();
-    mot_follower.disable();
+    // mot_follower.disable();
   }
 
   public boolean getLimitSwitch() {
@@ -168,6 +189,18 @@ public class Climber extends SubsystemBase {
   }
 
   public void findZero() {
-    controller_main.setReference(-10.0, ControlType.kVelocity);
+    controller_main.setReference(-4.0, ControlType.kVelocity);
+  }
+
+  public void moveArm(double acceleration, double deceleration) {
+    double value = acceleration - deceleration;
+
+    if (value < 0 && getPosition() <= Constants.kClimber.TO_MIN
+        || value > 0 && getPosition() >= Constants.kClimber.TO_MAX) {
+      controller_main.setReference(0, ControlType.kDutyCycle);
+      return;
+    }
+
+    controller_main.setReference(value, ControlType.kDutyCycle);
   }
 }

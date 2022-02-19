@@ -21,7 +21,7 @@ public class Pneumatics extends SubsystemBase {
    */
   public Pneumatics() {
     compressor1 = new Compressor(kID.PneumaticHub, PneumaticsModuleType.REVPH);
-    startLoop();
+    endLoop();
   }
 
   /**
@@ -52,6 +52,7 @@ public class Pneumatics extends SubsystemBase {
    * This method will set the closed loop to be false.
    */
   private void endLoop() {
+    // System.out.println(true);
     compressor1.disable();
   }
 

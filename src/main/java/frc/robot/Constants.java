@@ -82,8 +82,8 @@ public final class Constants {
 
     public static class Pneumatics {
         public static final int MODULE = 1;
-        public static final double MIN_PSI = 110;
-        public static final double MAX_PSI = 120;
+        public static final double MIN_PSI = 20;
+        public static final double MAX_PSI = 30;
 
     }
 
@@ -94,7 +94,7 @@ public final class Constants {
         public static final int DIRECTION_EXTEND = 0;
         public static final int DIRECTION_RETRACT = 1;
         //TODO: determine the extension length
-        public static final double EXTENSION_LENGTH = 104;
+        public static final double EXTENSION_LENGTH = 106.5;
         public static final double RETRACTION_LENGTH = 0;
 
         public static final double ARM_SPEED = 1.8;
@@ -108,7 +108,12 @@ public final class Constants {
         public static final double I = 0;
         public static final double D = 0;
         public static final double F = 0;
-        public static final int DIGITAL_INPUT_PORT = 0;
+        public static final int DIGITAL_INPUT_PORT = 8;
+
+        public static final double TO_MAX = 106.5;
+        public static final double TO_MID_RUNG = 100.0;
+        public static final double TO_LOW_RUNG = 80.0;
+        public static final double TO_MIN = 0.5;
     }
 
     public static final class kIntake{

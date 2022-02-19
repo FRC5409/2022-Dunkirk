@@ -89,17 +89,24 @@
       "/LiveWindow/Climber": "Subsystem",
       "/LiveWindow/DriveTrain": "Subsystem",
       "/LiveWindow/ExampleSubsystem": "Subsystem",
+      "/LiveWindow/Intake": "Subsystem",
       "/LiveWindow/IntakeIndexer": "Subsystem",
       "/LiveWindow/Pigeon": "Subsystem",
       "/LiveWindow/Pneumatics": "Subsystem",
       "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
+      "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon FX [11]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [2]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [4]": "Motor Controller",
+      "/Shuffleboard/Climber/Auto/ELEVATE": "Command",
       "/Shuffleboard/Climber/Direction/ELEVATE": "Command",
-      "/Shuffleboard/Climber/Movement/ELEVATE": "Command"
+      "/Shuffleboard/Climber/Movement/ELEVATE": "Command",
+      "/Shuffleboard/Climber/Setpoints/ELEVATE TO LOW": "Command",
+      "/Shuffleboard/Climber/Setpoints/ELEVATE TO MID": "Command",
+      "/Shuffleboard/Climber/Setpoints/ELEVATE TO MIN": "Command"
     }
   },
   "NetworkTables": {
