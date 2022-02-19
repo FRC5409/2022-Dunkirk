@@ -123,7 +123,7 @@ public final class Constants {
         // Encoders
         public static final double encoderToMeterConversionFactor = 1;
 
-        public static final double encoderCPR = 2048;
+        public static final double encoderCPR = 4096 / 4;
         public static final double wheelCircumferenceInches = 4 * Math.PI;
         public static final double lowGearConversionFactor = 1/15.32;
         public static final double highGearConversionFactor = 1/7.08;
@@ -172,7 +172,7 @@ public final class Constants {
     
 
     public static final class kAuto{
-        public static final double kTrackwidthMeters = Units.inchesToMeters(27); // may be off (should run through the track width test) 26.25
+        public static final double kTrackwidthMeters = Units.inchesToMeters(26.25); // may be off (should run through the track width test) 26.25
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
 
         // robot characterization
@@ -180,6 +180,11 @@ public final class Constants {
         public static final double kvVoltSecondsPerMeter = 1.6116;
         public static final double kaVoltSecondsSquaredPerMeter = 0.089259;
         public static final double kPDriveVel = 1.6064;
+
+        // public static final double ksVolts = 0.5788;
+        // public static final double kvVoltSecondsPerMeter = 4.1279*Math.pow(10, -6);
+        // public static final double kaVoltSecondsSquaredPerMeter = 2.0127*Math.pow(10, -7);
+        // public static final double kPDriveVel = 8.1401 * Math.pow(10, -1); // 8.1401*Math.pow(10, -6);
         
         // all units in meters and seconds: max speed & acceleration 3
         public static final double kMaxSpeed = 2;
