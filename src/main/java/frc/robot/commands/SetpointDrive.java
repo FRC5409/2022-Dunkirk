@@ -31,30 +31,40 @@ public class SetpointDrive extends CommandBase {
         addRequirements(drive);
     }
 
+    private static double getReferenceAngle(double x, double y, double heading){
+
+        if (x == 0 && y == 0){ 
+            return heading; 
+        }
+        else if (y == 0) {
+            return -90 * x/Math.abs(x) + 90;
+        }
+        else if (x == 0) { 
+            return -90 * y/Math.abs(y) + 180; 
+        }
+        
+        double ra = Math.abs(Math.toDegrees(Math.atan(y/x)));
+ 
+        if(x < 0 && y > 0) return 180 - ra;
+        else if(x < 0 && y < 0) return 180 + ra; 
+        else if(x > 0 && y < 0) return 360 - ra; 
+
+        return ra;
+    }
+
     private double GetSetpointHeading(){
         double x = joystick.getRightX();
         double y = joystick.getRightY();
 
-        if (x == 0 && y == 0){ 
-            return gyro.ContinuousHeading(); 
-        }
-        else if (y == 0) {
-            return gyro.ContinuousHeading() + Math.toDegrees(x/Math.abs(x)) - gyro.ContinuousHeading() % 360; 
-        }
-        else if (x == 0) { 
-            return gyro.ContinuousHeading() + Math.toDegrees(y/Math.abs(y)) - gyro.ContinuousHeading() % 360; 
-        }
-        else {
-            return gyro.ContinuousHeading() + Math.toDegrees(Math.atan(joystick.getRightY() / joystick.getRightX())) - gyro.ContinuousHeading() % 360;
-        }
+        System.out.print(String.format("x: %s y: %s ", x, y));
+        double jason = getReferenceAngle(x, y, gyro.Heading());
 
-        /*
-        if(x < 0  && y > 0) { ra = 180 - ra; }
-        else if(x < 0  && y < 0) { ra = 180 + ra; }
-        else if(x > 0  && y < 0) { ra = 360 - ra; }
-
-        ra = ra % 360 + (int)(gyro.ContinuousHeading() / 360);
-        */
+        if(jason > gyro.Heading() + 180){
+            return gyro.Heading() - gyro.Heading() % + jason;
+        }
+        else{
+            return gyro.Heading() - gyro.Heading() % - jason;
+        }
     }
 
     // Called when the command is initially scheduled.
@@ -66,10 +76,10 @@ public class SetpointDrive extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        System.out.println("execute");
-        double comp = controller.calculate(gyro.ContinuousHeading());
-        controller.setSetpoint(GetSetpointHeading());
-
+        double comp = controller.calculate(gyro.Heading());
+        double setpoint = GetSetpointHeading();
+        System.out.print(String.format("s: %s \n", setpoint));
+        controller.setSetpoint(setpoint);
         drive.aadilDrive(joystick.getRightTriggerAxis(), 
                          joystick.getLeftTriggerAxis(), 
                          Math.min(Math.max(comp, 1), -1)
@@ -79,14 +89,11 @@ public class SetpointDrive extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        
-        System.out.println("finished");
         return false;
     }
 

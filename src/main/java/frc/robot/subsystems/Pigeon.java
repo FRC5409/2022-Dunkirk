@@ -38,7 +38,8 @@ public class Pigeon extends SubsystemBase{
         gyro_pigeon = new WPI_PigeonIMU(kGyroSystem.CANPigeon);
         gyro_pigeon.reset();
         
-        SmartDashboard.putBoolean("Manual Override Enabled", false);
+        SmartDashboard.putBoolean("Manual Override Enabled", true);
+        SmartDashboard.putNumber("manual heading", 0);
 
         SmartDashboard.putNumber("manual roll", 0);
         SmartDashboard.putNumber("manual pitch", 0);
@@ -66,7 +67,6 @@ public class Pigeon extends SubsystemBase{
     }
 
     public double ContinuousHeading(){
-        System.out.println("cont heading");
         return continuous_heading;
     }
 
@@ -74,15 +74,15 @@ public class Pigeon extends SubsystemBase{
         return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual turn_rate", 0) : turn_rate;
     }
 
-    public double X_Acelleration(){
+    public double X_Acceleration(){
         return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual x_acceleration", 0) : x_acceleration;
     }
 
-    public double Y_Acelleration(){
+    public double Y_Acceleration(){
         return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual y_acceleration", 0) : y_acceleration;
     }
 
-    public double Z_Acelleration(){
+    public double Z_Acceleration(){
         return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual x_acceleration", 0) : x_acceleration;
     }
 
@@ -90,12 +90,13 @@ public class Pigeon extends SubsystemBase{
      * This method is called once per scheduler run and is used to update smart dashboard data.
      */
     public void periodic() {
-        SmartDashboard.putNumber("heading", heading);
+        SmartDashboard.putNumber("heading", Heading());
         updateAll();
     }
 
     @Override
     public void simulationPeriodic() {
+        
         updateAll();
     }
 

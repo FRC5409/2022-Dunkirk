@@ -15,7 +15,6 @@ public final class Convert {
     }
 
     public static double InchesToEncodeUnits(double inches){
-        System.out.println(inches);
         if(SmartDashboard.getBoolean("LowGear", true)){
             return inches * kDriveTrain.encoderCPR / kDriveTrain.lowGearConversionFactor / kDriveTrain.wheelCircumferenceInches;
         }
