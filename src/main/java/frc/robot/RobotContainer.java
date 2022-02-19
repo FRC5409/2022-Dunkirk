@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.SimpleDriveAuto;
 import frc.robot.commands.FastGear;
+import frc.robot.commands.IndexerActive;
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.TestIndexBelt;
@@ -51,9 +52,10 @@ public class RobotContainer {
   // Subsystems defined
   private final DriveTrain DriveTrain;
   private final Pigeon Pigeon;
-  //private final Indexer Indexer;
+  private final Indexer Indexer;
   private final Intake Intake;
   private final Pneumatics pneumatics; 
+  private final IndexerActive indexerActive; 
 
   // Commands defined
   //private final ExampleCommand m_autoCommand;
@@ -86,12 +88,13 @@ public class RobotContainer {
      // Initialize sub systems
      DriveTrain = new DriveTrain();
      Pigeon = new Pigeon();
-     //Indexer = new Indexer();
      Intake = new Intake();
      pneumatics = new Pneumatics();
+     Indexer = new Indexer();
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
+     indexerActive = new IndexerActive(Indexer, Intake);
     //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
     //  m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
     //  m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);

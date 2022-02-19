@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /** An example command that uses an example subsystem. */
 public class IndexerActive extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private Intake sys_intake;
   private Indexer sys_indexer;
+  private Intake sys_intake; 
 
   boolean TOF_Ent; 
   boolean TOF_Ball1; 
@@ -23,13 +23,13 @@ public class IndexerActive extends CommandBase {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param indexer The subsystem used by this command.
    */
-  public IndexerActive(Intake subsystem) {
-    sys_intake = subsystem;
+  public IndexerActive(Indexer indexer, Intake intake) {
+    sys_indexer = indexer;
+    sys_intake = intake; 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(sys_intake);
-    addRequirements(sys_indexer);
+    addRequirements(indexer, intake);
   }
 
   // Called when the command is initially scheduled.
