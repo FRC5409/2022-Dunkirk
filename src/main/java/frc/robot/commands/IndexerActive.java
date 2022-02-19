@@ -18,8 +18,6 @@ public class IndexerActive extends CommandBase {
   boolean TOF_Ball1; 
   boolean TOF_Ext;
 
-  int countBalls; 
-
   /**
    * Creates a new ExampleCommand.
    *

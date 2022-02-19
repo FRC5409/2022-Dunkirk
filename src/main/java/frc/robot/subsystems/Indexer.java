@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
@@ -47,6 +48,8 @@ public class Indexer extends SubsystemBase {
   double speedBelt = 0;
   double speedShoot = 0;
 
+  int countBalls = 0; 
+  boolean shooterReady = false; 
   // private boolean indexerEnabled;
   // private boolean preshooterEnabled;
 
@@ -170,6 +173,22 @@ public class Indexer extends SubsystemBase {
 
     setSpeedShoot(shuffleBoardFields.get("motor speed shoot").getDouble(50));
     shuffleBoardFields.get("current speed shoot").setDouble(getSpeedShoot());
+
+    if(ballDetectionEnter() == true){
+      countBalls = 1; 
+    } else if(ballDetectionBall1() == true && !ballDetectionEnter()){
+      countBalls = 2; 
+    } 
+
+    if(ballDetectionExit() == true){
+      shooterReady = true; 
+    } else {
+      shooterReady = false; 
+    }
+
+    SmartDashboard.putNumber("Number of Balls in Indexer", countBalls); 
+    SmartDashboard.putBoolean("Ready to Shoot", shooterReady);
+    
 
   }
 
