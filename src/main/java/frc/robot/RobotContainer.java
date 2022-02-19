@@ -108,6 +108,7 @@ public class RobotContainer {
 
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
+    Indexer.setDefaultCommand(indexerActive);
   }
 
   /**

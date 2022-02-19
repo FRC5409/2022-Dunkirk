@@ -38,7 +38,7 @@ public class IndexerActive extends CommandBase {
 
     //safety to stop running the intake when indexer is full
     if(!(sys_indexer.ballDetectionExit() && sys_indexer.isRangeValid_Ext())){
-      sys_intake.intakeOn(1);
+      sys_intake.intakeOn(0);
       sys_intake.solenoidsUp();
     }
   }
@@ -51,11 +51,9 @@ public class IndexerActive extends CommandBase {
     TOF_Ext = sys_indexer.ballDetectionExit();
 
     if(TOF_Ent){
-      sys_indexer.indexerOn(1);
-      countBalls++;
+      sys_indexer.indexerOn(0.5);
     } else if(TOF_Ball1 && !TOF_Ext){
       sys_indexer.indexerOn(0);
-      countBalls++;
     }
   }
 
@@ -73,6 +71,7 @@ public class IndexerActive extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (sys_indexer.ballDetectionExit() && sys_indexer.isRangeValid_Ext());
+    return false;
+    //(sys_indexer.ballDetectionExit() && sys_indexer.isRangeValid_Ext());
   }
 }
