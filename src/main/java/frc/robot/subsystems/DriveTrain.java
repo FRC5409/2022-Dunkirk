@@ -4,7 +4,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
+import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -28,6 +28,9 @@ public class DriveTrain extends SubsystemBase{
     private final WPI_TalonFX mot_leftRearDrive;
     private final WPI_TalonFX mot_rightFrontDrive;
     private final WPI_TalonFX mot_rightRearDrive;
+
+    private final WPI_CANCoder enc_left;
+    private final WPI_CANCoder enc_right;
 
     private double lmRPM = 0;
     private double rmRPM = 0;
@@ -149,6 +152,10 @@ public class DriveTrain extends SubsystemBase{
         driveMode = kDriveTrain.InitialDriveMode;
 
         applyAntiTip = kDriveTrain.startWithAntiTip;
+
+
+        enc_left  = new WPI_CANCoder(kID.CANCoderLeft);
+        enc_right = new WPI_CANCoder(kID.CANCoderRight);
 
         setBrakeMode(true);
 
@@ -354,7 +361,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderPositionLeft(){
-        return (mot_leftFrontDrive.getSelectedSensorPosition() + mot_leftRearDrive.getSelectedSensorPosition()) / 2;
+        return enc_left.getPosition();
     }
 
     /**
@@ -362,7 +369,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderPositionRight(){
-        return (mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition()) / 2;
+        return enc_right.getPosition();
     }
 
     /**
@@ -378,7 +385,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderVelocityLeft(){
-        return (mot_leftFrontDrive.getSelectedSensorVelocity() + mot_leftRearDrive.getSelectedSensorVelocity()) / 2;
+        return enc_left.getVelocity();
     }
 
     /**
@@ -386,11 +393,11 @@ public class DriveTrain extends SubsystemBase{
      * 
      */ 
     public double getEncoderVelocityRight(){
-        return (mot_rightFrontDrive.getSelectedSensorVelocity() + mot_rightRearDrive.getSelectedSensorVelocity()) / 2;
+        return enc_right.getVelocity();
     }
 
     public double getRPMRight(){
-        return (getEncoderVelocityRight() / 2048) * 600;
+        return (getEncoderVelocityRight() / 360) * 600;
     }
 
     /**
@@ -398,7 +405,8 @@ public class DriveTrain extends SubsystemBase{
      * 
      */ 
     public double getRPMLeft(){
-        return (getEncoderVelocityLeft() / 2048) * 600;
+        return (getEncoderVelocityLeft() / 360) * 600;
+        // return (getEncoderVelocityLeft() / 2048) * 600;
     }
     /**
      * Sets all encoders to 0
