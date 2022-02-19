@@ -17,13 +17,12 @@ import frc.robot.commands.FastGear;
 import frc.robot.commands.IndexerActive;
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.SlowGear;
-import frc.robot.commands.TestIndexBelt;
+
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
 
-import frc.robot.commands.IntakeIndexGo;
 import frc.robot.commands.IntakeSimulationTesting;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseIntakeIndexer;
