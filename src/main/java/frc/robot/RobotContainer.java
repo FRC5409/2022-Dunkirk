@@ -80,7 +80,7 @@ public class RobotContainer {
 
   private final Indexer Indexer;
   private final Intake Intake;
-  private final Pneumatics pneumatics; 
+   
 
 
 
@@ -125,7 +125,7 @@ public class RobotContainer {
      Pigeon = new Pigeon();
 
      Intake = new Intake();
-     pneumatics = new Pneumatics();
+    
      Indexer = new Indexer();
 
      // Init commands

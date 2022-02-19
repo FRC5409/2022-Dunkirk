@@ -94,7 +94,7 @@ public final class Constants {
     public static final class kIntake{
         public static final int kIntakeMotor = 11;
 
-        public static final int kIntakeMotorIn = 0; 
+        public static final int kIntakeMotorIn = 24; 
 
 
         public static final int kRightIntakeSolenoid1 = 2;
