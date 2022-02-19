@@ -95,6 +95,7 @@
       "/LiveWindow/ExampleSubsystem": "Subsystem",
       "/LiveWindow/IntakeIndexer": "Subsystem",
       "/LiveWindow/Pigeon": "Subsystem",
+      "/LiveWindow/Pneumatics": "Subsystem",
       "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler"
     }
