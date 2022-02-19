@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
     private CANSparkMax mot_intake;
+    private CANSparkMax mot_intakeIn; 
     private DoubleSolenoid intakeSolenoid_left;
     private DoubleSolenoid intakeSolenoid_right;
 
@@ -20,6 +21,11 @@ public class Intake extends SubsystemBase {
         mot_intake.setSmartCurrentLimit(20);
         mot_intake.setIdleMode(IdleMode.kBrake);
         mot_intake.burnFlash();
+
+        mot_intakeIn = new CANSparkMax(kIntake.kIntakeMotorIn, MotorType.kBrushless);
+        mot_intake.setSmartCurrentLimit(20);
+        mot_intakeIn.setIdleMode(IdleMode.kBrake);
+        mot_intakeIn.burnFlash();
 
         intakeSolenoid_left = new DoubleSolenoid(PneumaticsModuleType.REVPH, kIntake.kLeftIntakeSolenoid1, kIntake.kLeftIntakeSolenoid2);
         intakeSolenoid_right = new DoubleSolenoid(PneumaticsModuleType.REVPH, kIntake.kRightIntakeSolenoid1, kIntake.kRightIntakeSolenoid2);
@@ -31,6 +37,10 @@ public class Intake extends SubsystemBase {
 
     public void reverseIntake(double speed) {
         mot_intake.set(-speed);
+    }
+
+    public void intakeIn(double speed){
+        mot_intakeIn.set(speed);
     }
 
     public void solenoidsDown() {

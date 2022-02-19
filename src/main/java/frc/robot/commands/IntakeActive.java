@@ -30,6 +30,7 @@ public class IntakeActive extends CommandBase {
 	@Override
 	public void execute() {
         sys_Intake.intakeOn(0.15);
+		sys_Intake.intakeIn(0.15);
 
 	}
 
@@ -37,6 +38,7 @@ public class IntakeActive extends CommandBase {
 	@Override
 	public void end(boolean interrupted) {
 		sys_Intake.intakeOn(0);
+		sys_Intake.intakeIn(0);
         sys_Intake.solenoidsUp();
 
 	}
