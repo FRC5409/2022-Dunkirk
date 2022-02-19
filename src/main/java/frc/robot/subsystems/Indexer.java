@@ -165,7 +165,6 @@ public class Indexer extends SubsystemBase {
     SmartDashboard.putNumber("TOF Enter", TOF_Ent.getRange());
     SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
     SmartDashboard.putNumber("TOF Ball1", TOF_Ball1.getRange());
-    // SmartDashboard.putData(getFMS());
 
     setSpeedBelt(shuffleBoardFields.get("motor speed belt").getDouble(50));
     shuffleBoardFields.get("current speed of belt").setDouble(getSpeedBelt());

@@ -55,11 +55,12 @@ public class RobotContainer {
   private final Indexer Indexer;
   private final Intake Intake;
   private final Pneumatics pneumatics; 
-  private final IndexerActive indexerActive; 
 
   // Commands defined
   //private final ExampleCommand m_autoCommand;
   private final DefaultDrive defaultDrive;
+  private final ReverseIntakeIndexer reverse;
+  private final IndexerActive indexerActive;  
   //private final IntakeIndexGo m_intakeIndexGo;
   //private final ReverseIntakeIndexer m_reverseIntakeIndex;
   //private final IntakeSimulationTesting m_intakeSimulationTesting;
@@ -95,6 +96,7 @@ public class RobotContainer {
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
      indexerActive = new IndexerActive(Indexer, Intake);
+     reverse = new ReverseIntakeIndexer(Intake, Indexer);
     //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
     //  m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
     //  m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
@@ -128,7 +130,7 @@ public class RobotContainer {
 
     // but_main_A.whenPressed();
     but_main_X.whileHeld(new IntakeActive(Intake));
-    but_main_B.whileHeld(new ReverseIntake(Intake));
+    but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
 
   }
 
