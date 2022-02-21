@@ -8,11 +8,10 @@ import frc.robot.Constants.kIndexer;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.playinwithfusion.TimeOfFlight; 
+import com.playingwithfusion.TimeOfFlight; 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
