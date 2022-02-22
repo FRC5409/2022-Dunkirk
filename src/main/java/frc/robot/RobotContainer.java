@@ -13,6 +13,7 @@ import frc.robot.subsystems.Pigeon;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import frc.robot.commands.AutoAlign;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DefaultElevator;
 import frc.robot.commands.ElevateTo;
@@ -153,6 +154,7 @@ public class RobotContainer {
     but_main_B.whileHeld(new ReverseIntake(intake));
 
     but_main_Y.whenPressed(new FindElevatorZero(Climber));
+
     // but_main_A.whenActive( new MoveToDistance(DriveTrain));
     // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
 
@@ -160,6 +162,11 @@ public class RobotContainer {
     // but_sec_Left.whenPressed(() -> {
     // System.out.println(true);
     // });
+
+    but_sec_X.whenPressed(new AutoAlign(Climber, DriveTrain, Pigeon, 180));
+    but_sec_B.whenPressed(() -> {
+      Pigeon.reset();
+    });
 
   }
 

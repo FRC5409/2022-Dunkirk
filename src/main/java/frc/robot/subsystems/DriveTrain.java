@@ -47,10 +47,6 @@ public class DriveTrain extends SubsystemBase {
 
     public DifferentialDriveOdometry m_odometry;
 
-    private TimeOfFlight tof_front;
-
-    public ArrayList<Double> measuredDistances = new ArrayList<>();
-
     public DriveTrain() {
         // Left Front Drive
         mot_leftFrontDrive = new WPI_TalonFX(kID.LeftFrontDrive);
@@ -497,73 +493,5 @@ public class DriveTrain extends SubsystemBase {
         mot_leftFrontDrive.setVoltage(voltsLeft);
         mot_rightFrontDrive.setVoltage(voltsRight);
         m_drive.feed();
-    }
-
-    // ---------------------------- Auto Align ---------------------------- //
-
-    /**
-     * This method will return the distance read by the Time of Flight sensor.
-     * 
-     * @return distance in meters
-     */
-    public double getDistance() {
-        return tof_front.getRange() / 1000;
-    }
-
-    /**
-     * This method will return if the distance read from the Time Of Flight sensor
-     * is accurate.
-     * 
-     * @return valid or invalid.
-     */
-    public boolean getValidDistance() {
-        return tof_front.isRangeValid();
-    }
-
-    public void setDefaultControlMode() {
-        mot_rightFrontDrive.set(TalonFXControlMode.PercentOutput, 0);
-        mot_rightFrontDrive.setInverted(false);
-
-        mot_rightRearDrive.follow(mot_rightFrontDrive);
-        mot_rightRearDrive.setInverted(InvertType.FollowMaster);
-
-        mot_leftFrontDrive.set(TalonFXControlMode.PercentOutput, 0);
-        mot_leftFrontDrive.setInverted(true);
-
-        mot_leftRearDrive.follow(mot_leftFrontDrive);
-        mot_leftRearDrive.setInverted(InvertType.FollowMaster);
-    }
-
-    public void addDistance(double val) {
-        measuredDistances.add(val);
-    }
-
-    public void clearDistances() {
-        measuredDistances.clear();
-    }
-
-    public int getNumOfDistances() {
-        return measuredDistances.size();
-    }
-
-    public double getAvgDistance() {
-        System.out.print("DATA: ");
-        System.out.println(measuredDistances.toString());
-        double sum = 0.0;
-
-        double[] arr = new double[measuredDistances.size()];
-
-        for (int i = 0; i < measuredDistances.size(); i++) {
-            sum += measuredDistances.get(i);
-
-            arr[i] = measuredDistances.get(i);
-        }
-
-        double avg = sum / measuredDistances.size();
-
-        SmartDashboard.putNumberArray("Distances", arr);
-        SmartDashboard.putNumber("Avergae Distance", avg);
-        SmartDashboard.putBoolean("AVG CALLED", true);
-        return avg;
     }
 }

@@ -4,12 +4,14 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.playingwithfusion.TimeOfFlight;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -41,6 +43,8 @@ public class Climber extends SubsystemBase {
   private HashMap<String, NetworkTableEntry> shuffleboardFields;
 
   private final DigitalInput limitSwitch;
+  private final TimeOfFlight tof_front;
+  public ArrayList<Double> measuredDistances = new ArrayList<>();
 
   /**
    * Constructor for the climber.
@@ -68,6 +72,8 @@ public class Climber extends SubsystemBase {
     locked = false;
 
     limitSwitch = new DigitalInput(Constants.kClimber.DIGITAL_INPUT_PORT);
+    // tof_front = new TimeOfFlight(Constants.kID.ClimberTofMain);
+    tof_front = null;
 
     // Gives absolute motor positions of 0 - 360 degrees, all positive values.
     // mot_main.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
@@ -202,5 +208,68 @@ public class Climber extends SubsystemBase {
     }
 
     controller_main.setReference(value, ControlType.kDutyCycle);
+  }
+
+  // ---------------------------- Auto Align ---------------------------- //
+
+  /**
+   * This method will return the distance read by the Time of Flight sensor.
+   * 
+   * @return distance in meters
+   */
+  public double getDistance() {
+    return tof_front.getRange() / 1000;
+  }
+
+  /**
+   * This method will return if the distance read from the Time Of Flight sensor
+   * is accurate.
+   * 
+   * @return valid or invalid.
+   */
+  public boolean getValidDistance() {
+    return tof_front.isRangeValid();
+  }
+
+  public void addDistance(double val) {
+    measuredDistances.add(val);
+  }
+
+  public void clearDistances() {
+    measuredDistances.clear();
+  }
+
+  public int getNumOfDistances() {
+    return measuredDistances.size();
+  }
+
+  public double getAvgDistance() {
+    System.out.print("DATA: ");
+    System.out.println(measuredDistances.toString());
+    double sum = 0.0;
+
+    double[] arr = new double[measuredDistances.size()];
+
+    for (int i = 0; i < measuredDistances.size(); i++) {
+      sum += measuredDistances.get(i);
+
+      arr[i] = measuredDistances.get(i);
+    }
+
+    double avg = sum / measuredDistances.size();
+
+    SmartDashboard.putNumberArray("Distances", arr);
+    SmartDashboard.putNumber("Avergae Distance", avg);
+    SmartDashboard.putBoolean("AVG CALLED", true);
+    return avg;
+  }
+
+  public int getDirection() {
+    if (mot_main.getEncoder().getVelocity() > 0)
+      return Constants.kClimber.DIRECTION_EXTEND;
+    else if (mot_main.getEncoder().getVelocity() < 0)
+      return Constants.kClimber.DIRECTION_RETRACT;
+    else
+      return Constants.kClimber.DIRECTION_STATIONARY;
   }
 }

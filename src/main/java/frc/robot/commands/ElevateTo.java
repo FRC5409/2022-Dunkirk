@@ -74,6 +74,10 @@ public class ElevateTo extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs((climber.getPosition() - toPos)) / toPos <= 0.05 || climber.getPosition() >= toPos;
+        return Math.abs((climber.getPosition() - toPos)) / toPos <= 0.05
+                || (climber.getDirection() == Constants.kClimber.DIRECTION_EXTEND
+                        && climber.getPosition() >= toPos)
+                || (climber.getDirection() == Constants.kClimber.DIRECTION_RETRACT
+                        && climber.getPosition() <= toPos);
     }
 }

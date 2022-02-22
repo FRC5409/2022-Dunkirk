@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.Constants;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class DriveToMidRung extends CommandBase {
   @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
   private final DriveTrain sys_drive;
+  private final Climber sys_climber;
   boolean distanceValid = false;
 
   /**
@@ -19,8 +21,9 @@ public class DriveToMidRung extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveToMidRung(DriveTrain driveTrain) {
-    sys_drive = driveTrain;
+  public DriveToMidRung(Climber _climber, DriveTrain _driveTrain) {
+    sys_climber = _climber;
+    sys_drive = _driveTrain;
 
     addRequirements(sys_drive);
 
@@ -30,22 +33,21 @@ public class DriveToMidRung extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    sys_drive.clearDistances();
+    sys_climber.clearDistances();
     distanceValid = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double distance = sys_drive.getDistance();
+    double distance = sys_climber.getDistance();
 
     if (!distanceValid)
-      sys_drive.tankDrive(0.5f, 0.5f);
+      sys_drive.tankDrive(-0.5f, -0.5f);
 
-    if (sys_drive.getValidDistance() && distance <= Constants.kDriveTrain.DISTANCE_TO_MID_RUN_FROM_WALL) {
-      sys_drive.addDistance(distance);
-      // System.out.println(distance);
-      System.out.println(sys_drive.measuredDistances.toString());
+    if (sys_climber.getValidDistance() && distance <= Constants.kDriveTrain.DISTANCE_TO_MID_RUN_FROM_WALL) {
+      sys_climber.addDistance(distance);
+
       distanceValid = true;
     } else {
       distanceValid = false;
@@ -56,13 +58,11 @@ public class DriveToMidRung extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     sys_drive.tankDrive(0, 0);
-    System.out.println("Ended");
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return sys_drive.getNumOfDistances() >= 32;
-    // return true;
+    return sys_climber.getNumOfDistances() >= 32;
   }
 }
