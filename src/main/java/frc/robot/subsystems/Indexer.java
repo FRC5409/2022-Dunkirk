@@ -57,6 +57,7 @@ public class Indexer extends SubsystemBase {
     indexerBelt_neo = new CANSparkMax(kIndexer.indexerMotorBottom, MotorType.kBrushless);
     indexerBelt_neo.setSmartCurrentLimit(kIndexer.currentLimit);
     indexerBelt_neo.setIdleMode(IdleMode.kBrake);
+    indexerBelt_neo.setInverted(true);
     indexerBelt_neo.burnFlash();
 
     TOF_Ent = new TimeOfFlight(kIndexer.TOF_Ent);

@@ -111,15 +111,15 @@ public final class Constants {
         public static final int currentLimit = 20; 
         public static final int indexerMotorBottom = 8; 
 
-        public static final int TOF_Ent = 15; 
-        public static final int TOF_Ball1 = 16; 
-        public static final int TOF_Ext = 17; 
+        public static final int TOF_Ent = 25; 
+        public static final int TOF_Ball1 = 26; 
+        public static final int TOF_Ext = 27; 
 
         public static final int sampleTime = 24; 
 
-        public static final int rangeEnter = 250; 
-        public static final int rangeBall1 = 80; 
-        public static final int rangeExt = 100; 
+        public static final int rangeEnter = 180; 
+        public static final int rangeBall1 = 105; 
+        public static final int rangeExt = 80; 
     }
 
 
