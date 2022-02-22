@@ -59,6 +59,10 @@ public class Indexer extends SubsystemBase {
     indexerBelt_neo.setIdleMode(IdleMode.kBrake);
     indexerBelt_neo.burnFlash();
 
+    TOF_Ent = new TimeOfFlight(kIndexer.TOF_Ent);
+    TOF_Ball1 = new TimeOfFlight(kIndexer.TOF_Ball1);
+    TOF_Ext = new TimeOfFlight(kIndexer.TOF_Ext);
+
     // shuffleboard values
     shuffleBoardFields = new HashMap<String, NetworkTableEntry>();
     tab = Shuffleboard.getTab("Motors");
@@ -107,6 +111,10 @@ public class Indexer extends SubsystemBase {
 
   public double getRange_Ent() {
     return TOF_Ent.getRange();
+  }
+
+  public double getRange_Ball1(){
+    return TOF_Ball1.getRange();
   }
 
   public double getRange_Ext() {
@@ -164,11 +172,11 @@ public class Indexer extends SubsystemBase {
     SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
     SmartDashboard.putNumber("TOF Ball1", TOF_Ball1.getRange());
 
-    setSpeedBelt(shuffleBoardFields.get("motor speed belt").getDouble(50));
-    shuffleBoardFields.get("current speed of belt").setDouble(getSpeedBelt());
+    // setSpeedBelt(shuffleBoardFields.get("motor speed belt").getDouble(50));
+    // shuffleBoardFields.get("current speed of belt").setDouble(getSpeedBelt());
 
-    setSpeedShoot(shuffleBoardFields.get("motor speed shoot").getDouble(50));
-    shuffleBoardFields.get("current speed shoot").setDouble(getSpeedShoot());
+    // setSpeedShoot(shuffleBoardFields.get("motor speed shoot").getDouble(50));
+    // shuffleBoardFields.get("current speed shoot").setDouble(getSpeedShoot());
 
     if(ballDetectionEnter() == true){
       countBalls = 1; 
