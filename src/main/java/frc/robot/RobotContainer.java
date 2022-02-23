@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-
+import frc.robot.subsystems.Climber;
 // Subsystems
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
@@ -15,18 +15,16 @@ import frc.robot.subsystems.Pneumatics;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import frc.robot.commands.AutoAlign;
 import frc.robot.commands.DefaultDrive;
+import frc.robot.commands.DefaultElevator;
+import frc.robot.commands.ElevateTo;
 import frc.robot.commands.FastGear;
-
 import frc.robot.commands.IndexerActive;
-import frc.robot.commands.IntakeActive;
-
+import frc.robot.commands.FindElevatorZero;
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
-
 import frc.robot.commands.SlowGear;
-
-//Constants
 import frc.robot.Constants.kAuto;
 
 import java.util.List;
@@ -56,11 +54,13 @@ import frc.robot.subsystems.Pneumatics;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -69,23 +69,25 @@ public class RobotContainer {
 
   // Define main joystick
   private final XboxController joystick_main; // = new XboxController(0);
+  private final XboxController joystick_secondary;
   private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
       but_main_LAnalog, but_main_RAnalog, but_main_Back, but_main_Start;
-  
-      
+  private JoystickButton but_sec_A, but_sec_B, but_sec_X, but_sec_Y, but_sec_LBumper, but_sec_RBumper,
+      but_sec_LAnalog, but_sec_RAnalog, but_sec_Back, but_sec_Start, but_sec_Left, but_sec_Up, but_sec_Right,
+      but_sec_Down;
+
   // Subsystems defined
   private final DriveTrain DriveTrain;
-  private final Pneumatics Pneumatics;
   private final Pigeon Pigeon;
 
   private final Indexer Indexer;
   private final Intake Intake;
-   
-
-
+ 
+  private final Pneumatics Pneumatics;
+  private final Climber Climber;
 
   // Commands defined
-  //private final ExampleCommand m_autoCommand;
+  // private final ExampleCommand m_autoCommand;
   private final DefaultDrive defaultDrive;
 
   private final ReverseIntakeIndexer reverse;
@@ -101,11 +103,13 @@ public class RobotContainer {
   private final IntakeActive intakeActive; 
   //private final ReverseIntake reverseIntake; 
 
-
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     // Init controller
     joystick_main = new XboxController(0);
+    joystick_secondary = new XboxController(1);
 
     // Init button binds
     but_main_A = new JoystickButton(joystick_main, XboxController.Button.kA.value);
@@ -123,16 +127,16 @@ public class RobotContainer {
      DriveTrain = new DriveTrain();
      Pneumatics = new Pneumatics();
      Pigeon = new Pigeon();
-
      Intake = new Intake();
-    
      Indexer = new Indexer();
+     Climber = new Climber();
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
      indexerActive = new IndexerActive(Indexer);
      reverse = new ReverseIntakeIndexer(Intake, Indexer);
      intakeActive = new IntakeActive(Intake);
+ 
     //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
     //  m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
     //  m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
@@ -141,18 +145,32 @@ public class RobotContainer {
     //  m_testIndexShoot = new TestIndexShoot(Indexer);
 
  
+    but_sec_A = new JoystickButton(joystick_secondary, XboxController.Button.kA.value);
+    but_sec_B = new JoystickButton(joystick_secondary, XboxController.Button.kB.value);
+    but_sec_X = new JoystickButton(joystick_secondary, XboxController.Button.kX.value);
+    but_sec_Y = new JoystickButton(joystick_secondary, XboxController.Button.kY.value);
+    but_sec_LBumper = new JoystickButton(joystick_secondary, XboxController.Button.kLeftBumper.value);
+    but_sec_RBumper = new JoystickButton(joystick_secondary, XboxController.Button.kRightBumper.value);
+    but_sec_LAnalog = new JoystickButton(joystick_secondary, XboxController.Button.kLeftStick.value);
+    but_sec_RAnalog = new JoystickButton(joystick_secondary, XboxController.Button.kRightStick.value);
+    but_sec_Back = new JoystickButton(joystick_secondary, XboxController.Button.kBack.value);
+    but_sec_Start = new JoystickButton(joystick_secondary, XboxController.Button.kStart.value);
+   
     // Configure the button bindings
     configureButtonBindings();
 
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
     Indexer.setDefaultCommand(indexerActive);
+    Climber.setDefaultCommand(new DefaultElevator(Climber, joystick_secondary));
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
@@ -160,15 +178,29 @@ public class RobotContainer {
     // Bind start to go to the next drive mode
     but_main_Start.whenPressed(() -> DriveTrain.cycleDriveMode());
 
-    // Bind right bumper to 
+    // Bind right bumper to
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
-    but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
+    but_main_RBumper.whenReleased(new SlowGear(DriveTrain));
 
 
     // but_main_A.whenPressed();
     but_main_X.whileHeld(new IntakeActive(Intake));
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
 
+    but_main_Y.whenPressed(new FindElevatorZero(Climber));
+
+    // but_main_A.whenActive( new MoveToDistance(DriveTrain));
+    // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
+
+    // but_sec_Left.whenPressed(new ElevateTo(Climber, true, 0));
+    // but_sec_Left.whenPressed(() -> {
+    // System.out.println(true);
+    // });
+
+    but_sec_X.whenPressed(new AutoAlign(Climber, DriveTrain, Pigeon, 180));
+    but_sec_B.whenPressed(() -> {
+      Pigeon.reset();
+    });
 
   }
 
@@ -178,7 +210,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-     
+
     // creates configuration for trajectory
     var feedForward = new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
         kAuto.kaVoltSecondsSquaredPerMeter);
@@ -191,10 +223,9 @@ public class RobotContainer {
     // location
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
         List.of(
-          new Translation2d(1, 0)
-        ), 
-        new Pose2d(0, 1, new Rotation2d(0)), 
-        config); // new Translation2d(1, 1),  new Translation2d(2, -1)
+            new Translation2d(1, 0)),
+        new Pose2d(0, 1, new Rotation2d(0)),
+        config); // new Translation2d(1, 1), new Translation2d(2, -1)
 
     RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
