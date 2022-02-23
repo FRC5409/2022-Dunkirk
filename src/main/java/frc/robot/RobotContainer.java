@@ -15,6 +15,7 @@ import frc.robot.subsystems.Pneumatics;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import frc.robot.commands.AutoRoutine;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.FastGear;
 
@@ -53,6 +54,7 @@ import edu.wpi.first.wpilibj.XboxController;
 
 
 import frc.robot.commands.IntakeSimulationTesting;
+import frc.robot.commands.MoveToAngle;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseIntakeIndexer;
 import frc.robot.subsystems.Indexer;
@@ -176,7 +178,6 @@ public class RobotContainer {
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
 
-
     // but_main_A.whenPressed();
     but_main_X.whileHeld(new IntakeActive(Intake));
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
@@ -190,7 +191,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-     
+    /*
     // creates configuration for trajectory
     var feedForward = new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
         kAuto.kaVoltSecondsSquaredPerMeter);
@@ -223,5 +224,8 @@ public class RobotContainer {
     // returns the autonomous command
     // makes sure that after the auto command is finished running the robot stops.
     return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
+    sorry nicole */
+
+    return new AutoRoutine(DriveTrain, Pigeon, Intake, Indexer);
   }
 }
