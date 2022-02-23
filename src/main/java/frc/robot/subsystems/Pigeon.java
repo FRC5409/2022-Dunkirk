@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.kGyroSystem;
+import frc.robot.Constants.kID;
 
 public class Pigeon extends SubsystemBase{
     
@@ -35,7 +36,7 @@ public class Pigeon extends SubsystemBase{
 
 
     public Pigeon(){
-        gyro_pigeon = new WPI_PigeonIMU(kGyroSystem.CANPigeon);
+        gyro_pigeon = new WPI_PigeonIMU(kID.Pigeon);
         gyro_pigeon.reset();
         
         SmartDashboard.putBoolean("Manual Override Enabled", true);

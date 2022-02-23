@@ -11,6 +11,11 @@
           "open": true
         }
       },
+      "SPARK MAX [4]": {
+        "header": {
+          "open": true
+        }
+      },
       "Talon FX[0]": {
         "header": {
           "open": true
@@ -102,6 +107,9 @@
   },
   "NetworkTables": {
     "LiveWindow": {
+      "IntakeIndexer": {
+        "open": true
+      },
       "open": true
     },
     "SmartDashboard": {

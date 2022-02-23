@@ -1,7 +1,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+
+
 import frc.robot.subsystems.Intake;
+
 
 public class IntakeActive extends CommandBase{
     private final Intake sys_Intake;
@@ -22,6 +25,7 @@ public class IntakeActive extends CommandBase{
 	public void initialize() {
 
         sys_Intake.solenoidsDown();
+
 		sys_Intake.intakeOn(0.75);
 
 	}
@@ -29,7 +33,9 @@ public class IntakeActive extends CommandBase{
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-       
+
+        sys_Intake.intakeOn(0.75);
+		sys_Intake.intakeIn(0.75);
 
 	}
 
@@ -37,6 +43,8 @@ public class IntakeActive extends CommandBase{
 	@Override
 	public void end(boolean interrupted) {
 		sys_Intake.intakeOn(0);
+		sys_Intake.intakeIn(0);
+
         sys_Intake.solenoidsUp();
 
 	}
@@ -46,5 +54,7 @@ public class IntakeActive extends CommandBase{
 	public boolean isFinished() {
 		return false;
 	}
-    
+
+
 }
+

@@ -18,6 +18,7 @@ import frc.robot.utils.Gains;
  */
 public final class Constants {
 
+
     public static class kID{
         // Can IDs
         public final static int LeftFrontDrive = 1;
@@ -65,22 +66,7 @@ public final class Constants {
         public static final double MIN_PSI = 90;
         public static final double MAX_PSI = 110;
 
-        public final int LeftFrontDrive = 1;
-        public final int LeftRearDrive = 2;
-        public final int RightFrontDrive = 3;
-        public final int RightRearDrive = 4;
-
-        public final int CANCoderLeft = 5;
-        public final int CANCoderRight = 6;
-
         public final int Pigeon = 23;
-    }
-
-    public static class Pneumatics {
-        public static final int MODULE = 1;
-        public static final double MIN_PSI = 110;
-        public static final double MAX_PSI = 120;
-
     }
 
     public final class Climber {
@@ -99,29 +85,36 @@ public final class Constants {
     public static final class kIntake{
         public static final int kIntakeMotor = 11;
 
-        public static final int kRightIntakeSolenoid1 = 2;
-        public static final int kRightIntakeSolenoid2 = 3;
+        public static final int kIntakeMotorIn = 24; 
+
+
+        public static final int kRightIntakeSolenoid1 = 11;
+        public static final int kRightIntakeSolenoid2 = 10;
 
         public static final int kLeftIntakeSolenoid1 = 4;
         public static final int kLeftIntakeSolenoid2 = 5;
 
         public static final int velocityMaxIntakeJam = 1000;
+
     }
 
     public static final class kIndexer{
-        public static final int kIndexerMotor = 16; 
         public static final int currentLimit = 20; 
+        public static final int indexerMotorBottom = 8; 
+
+        public static final int TOF_Ent = 25; 
+        public static final int TOF_Ball1 = 26; 
+        public static final int TOF_Ext = 27; 
+
+        public static final int sampleTime = 24; 
+
+        public static final int rangeEnter = 180; 
+        public static final int rangeBall1 = 105; 
+        public static final int rangeExt = 80; 
     }
 
 
     public static final class kDriveTrain{
-
-        // CAN IDs 
-        public static final int CANLeftDriveFront = 1;
-        public static final int CANRightDriveFront = 3;
-        public static final int CANLeftDriveBack = 2;
-        public static final int CANRightDriveBack = 4;
-        
         // Current Limits
         public static final double CurrentLimit = 65;
         public static final double TriggerThresholdCurrent = 65;
@@ -171,11 +164,6 @@ public final class Constants {
         public static final double MAX_RPM_FOR_LOW_GEAR = 1000;
     }
 
-    public final class kGyroSystem{
-
-        public static final int CANPigeon = 23;
-    }
-
     public static final class kAuto{
         public static final double kTrackwidthMeters = Units.inchesToMeters(26.25);
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
@@ -197,5 +185,6 @@ public final class Constants {
         public static final double kRamseteZeta = 0.7;
 
     }
-
 }
+
+
