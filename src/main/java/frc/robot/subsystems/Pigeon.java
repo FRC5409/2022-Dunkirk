@@ -51,9 +51,6 @@ public class Pigeon extends SubsystemBase{
         SmartDashboard.putNumber("manual roll", 0);
         SmartDashboard.putNumber("manual pitch", 0);
         SmartDashboard.putNumber("manual yaw", 0);
-
-        m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
-
     }
 
     // getters
