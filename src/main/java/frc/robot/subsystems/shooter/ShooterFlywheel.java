@@ -64,7 +64,6 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         mot_feeder = new CANSparkMax(Constants.kID.ShooterNeo, MotorType.kBrushless);
         mot_feeder.setSmartCurrentLimit(20);
         mot_feeder.setIdleMode(IdleMode.kBrake);
-        mot_feeder.setInverted(true);
         mot_feeder.burnFlash();
 
         enc_feeder = mot_feeder.getEncoder();
@@ -77,13 +76,44 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         feederTarget = 0;
     
         SmartDashboard.putNumber("Feeder Velocity", enc_feeder.getVelocity());
+
+        fields = new HashMap<String, NetworkTableEntry>();
+
+        //shuffleboard setup
+        tab = Shuffleboard.getTab("FlywheelTuning");
+        ShuffleboardLayout pidTuningLayout = tab.getLayout("PID Tuning", BuiltInLayouts.kList);
+        fields.put("P", pidTuningLayout.add("P", 0.0).getEntry());
+        fields.put("I", pidTuningLayout.add("I", 0.0).getEntry());
+        fields.put("D", pidTuningLayout.add("D", 0.0).getEntry());
+        fields.put("F", pidTuningLayout.add("F", 0.0).getEntry());
+
+        fields.put("target", tab.add("Target", 0).getEntry());
+        fields.put("recorded", tab.add("Active Velocity", 0).getEntry());
+    }
+
+    public void configPIDS(){
+        disable();
+        MotorUtils.setGains(mot_main, 0, new Gains(
+            fields.get("P").getDouble(0), 
+            fields.get("I").getDouble(0), 
+            fields.get("D").getDouble(0), 
+            fields.get("F").getDouble(0), 
+            0, 
+            0));
+    }
+
+    public void testVelocity(){
+        enable();
+        setVelocity(fields.get("target").getDouble(1000));
     }
 
 
     @Override
     public void periodic() {
+        fields.get("recorded").setDouble(getVelocity());
         
     }
+    
     /**
      * Method for enabing the flywheel.
      */
@@ -115,6 +145,15 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
     }
 
     /**
+     * Spins the shooter at a setpoint speed from [-1.0,1.0]
+     * @param setpoint
+     */
+    public void set(double setpoint){
+        if(!enabled) return;
+        mot_main.set(ControlMode.PercentOutput, setpoint);
+    }
+
+    /**
      * Method for spinning the feeder to an RPM.
      * 
      * @param target Target RPM.
@@ -126,6 +165,17 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         feederTarget = target;
         feeder_controller.setReference(feederTarget, CANSparkMax.ControlType.kVelocity);
 
+    }
+
+    /**
+     * Spins the feeder at a setpoint speed from [-1.0,1.0]
+     * @param setpoint
+     */
+    public void spinFeederSetpoint(double setpoint){
+        if(!enabled) return;
+
+
+        feeder_controller.setReference(-1*setpoint, CANSparkMax.ControlType.kDutyCycle);
     }
 
     /**
