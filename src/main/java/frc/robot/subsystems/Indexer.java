@@ -1,18 +1,16 @@
 package frc.robot.subsystems;
 
-import java.util.HashMap;
 import frc.robot.Constants.kIndexer;
 import frc.robot.utils.Toggleable;
 
 import com.playingwithfusion.TimeOfFlight;
+
 import com.revrobotics.CANSparkMax;
-
-
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -20,6 +18,7 @@ public class Indexer extends SubsystemBase implements Toggleable{
 
   // indexer testing motors
   protected final CANSparkMax indexerBelt_neo;
+
 
   // time of flights
   protected TimeOfFlight TOF_Ext;
@@ -33,6 +32,11 @@ public class Indexer extends SubsystemBase implements Toggleable{
   protected double getRange_Ent;
 
 
+  protected final static int COMMAND_REGISTER_BIT = 0x80;
+
+  // indexer testing motors
+  protected final CANSparkMax indexerBelt_neo;
+
   // shuffleboard values
   HashMap<String, NetworkTableEntry> shuffleBoardFields;
   ShuffleboardTab tab;
@@ -41,6 +45,9 @@ public class Indexer extends SubsystemBase implements Toggleable{
   double speedShoot = 0;
 
   private boolean enabled;
+  
+  int countBalls = 0; 
+  boolean shooterReady = false; 
 
   public Indexer() {
 
@@ -60,8 +67,9 @@ public class Indexer extends SubsystemBase implements Toggleable{
 
     // test motor for belt on indexer prototype
     indexerBelt_neo = new CANSparkMax(kIndexer.kIndexBeltMotor, MotorType.kBrushless);
-    indexerBelt_neo.setSmartCurrentLimit(20);
+    indexerBelt_neo.setSmartCurrentLimit(kIndexer.currentLimit);
     indexerBelt_neo.setIdleMode(IdleMode.kBrake);
+    indexerBelt_neo.setInverted(true);
     indexerBelt_neo.burnFlash();
 
 
@@ -96,7 +104,33 @@ public class Indexer extends SubsystemBase implements Toggleable{
 
   @Override
   public void periodic() {
+    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("TOF Enter", TOF_Ent.getRange());
+    SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
+    SmartDashboard.putNumber("TOF Ball1", TOF_Ball1.getRange());
 
+    // setSpeedBelt(shuffleBoardFields.get("motor speed belt").getDouble(50));
+    // shuffleBoardFields.get("current speed of belt").setDouble(getSpeedBelt());
+
+    // setSpeedShoot(shuffleBoardFields.get("motor speed shoot").getDouble(50));
+    // shuffleBoardFields.get("current speed shoot").setDouble(getSpeedShoot());
+
+    if(ballDetectionEnter() == true){
+      countBalls = 1; 
+    } else if(ballDetectionBall1() == true && !ballDetectionEnter()){
+      countBalls = 2; 
+    } else if (!ballDetectionExit() && !ballDetectionEnter() && !ballDetectionBall1()){
+      countBalls = 0; 
+    }
+
+    if(ballDetectionExit() == true){
+      shooterReady = true; 
+    } else {
+      shooterReady = false; 
+    }
+
+    SmartDashboard.putNumber("Number of Balls in Indexer", countBalls); 
+    SmartDashboard.putBoolean("Ready to Shoot", shooterReady);
   }
 
 
@@ -139,95 +173,64 @@ public class Indexer extends SubsystemBase implements Toggleable{
   // TIME OF FLIGHT METHODS
   // ----------------------------------------------------------------------------
 
-  /**
-   * returns the range of the TOF
-   * 
-   * @return TOF_Exit.getRange()
-   */
   public double getRange_Ext() {
     return TOF_Ext.getRange();
   }
 
-  /**
-   * returns the range of the TOF
-   * 
-   * @return TOF_Ball1.getRange()
-   */
-  public double getRange_Ball1() {
-    return TOF_Ball1.getRange();
-  }
-
-  /**
-   * returns the range of the TOF
-   * 
-   * @return TOF_Ent.getRange()
-   */
   public double getRange_Ent() {
     return TOF_Ent.getRange();
   }
 
-  /**
-   * detects whether or not the ball is in range
-   * 
-   * @return true/false
-   */
+  public double getRange_Ball1(){
+    return TOF_Ball1.getRange();
+  }
+ 
+  public double getSpeedBelt() {
+    return speedBelt;
+  }
+
+  public void indexerOn(double speed) {
+    indexerBelt_neo.set(speed);
+  }
+
+  public void reverseIndexer(double speed) {
+    indexerBelt_neo.set(-speed);
+  }
+
+  public boolean ballDetectionEnter() {
+    double range = TOF_Ent.getRange();
+    if (range < kIndexer.rangeEnter) { // need to find the range to compare with
+      return true;
+    }
+    return false;
+  }
+
+  public boolean ballDetectionBall1() {
+    double range = TOF_Ball1.getRange();
+    if (range < kIndexer.rangeBall1) {
+      return true;
+    }
+    return false;
+  }
+
   public boolean ballDetectionExit() {
     double range = TOF_Ext.getRange();
 
-    if (range < 24) { // need to find number to compare with
+    if (range < kIndexer.rangeBall1) { // need to find number to compare with
       return true;
     }
     return false;
   }
 
-  /**
-   * detects whether or not the ball is in range
-   * 
-   * @return true/false
-   */
-  public boolean ballDetectionBall1() {
-    double range = TOF_Ball1.getRange();
 
-    if (range < 24) {
-      return true;
-    }
-
-    return false;
-
+  public boolean isRangeValid_Ent() {
+    return TOF_Ent.isRangeValid();
   }
 
-  /**
-   * detects whether the ball is in range or not
-   * 
-   * @return true/false
-   */
-  public boolean ballDetectionEnter() {
-    double range = TOF_Ent.getRange();
-
-    if (range < 24) {
-
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * checks whether the range is valid
-   * 
-   * @return TOF_Exit.isRangeValid()
-   */
-  public boolean isRangeValid_Ext() {
-    return TOF_Ext.isRangeValid();
-  }
-
-  /**
-   * checks whether the range is valid
-   * 
-   * @return TOF_Ball1.isRangeValid()
-   */
   public boolean isRangeValid_Ball1() {
     return TOF_Ball1.isRangeValid();
   }
+
 
   /**
    * checks whether the range is valid or not
@@ -238,16 +241,10 @@ public class Indexer extends SubsystemBase implements Toggleable{
     return TOF_Ent.isRangeValid();
   }
 
-  /**
-   * sets ranging mode
-   * 
-   * @param rangeModeIn
-   * @param sampleTime
-   */
   public void setRangingMode(TimeOfFlight.RangingMode rangeModeIn, double sampleTime) {
     if (sampleTime > 24) {
       sampleTime = 24;
-      TOF_Ext.setRangingMode(rangeModeIn, sampleTime);
+      TOF_Ent.setRangingMode(rangeModeIn, sampleTime);
     }
   }
 
@@ -257,4 +254,5 @@ public class Indexer extends SubsystemBase implements Toggleable{
   public void stopIndexer() {
     indexerBelt_neo.stopMotor();
   }
+  
 }

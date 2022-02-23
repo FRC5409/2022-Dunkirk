@@ -18,6 +18,7 @@ import frc.robot.utils.*;
  */
 public final class Constants {
 
+
     public static class kID{
         // Can IDs
 
@@ -85,15 +86,18 @@ public final class Constants {
     public static final class kIntake{
         public static final int kIntakeMotor = 11;
 
-        public static final int kRightIntakeSolenoid1 = 2;
-        public static final int kRightIntakeSolenoid2 = 3;
+        public static final int kIntakeMotorIn = 24; 
+
+
+        public static final int kRightIntakeSolenoid1 = 11;
+        public static final int kRightIntakeSolenoid2 = 10;
 
         public static final int kLeftIntakeSolenoid1 = 4;
         public static final int kLeftIntakeSolenoid2 = 5;
 
         public static final int velocityMaxIntakeJam = 1000;
-    }
 
+    }
 
     public static final class kDriveTrain{
         // Current Limits
@@ -145,10 +149,6 @@ public final class Constants {
         public static final double MAX_RPM_FOR_LOW_GEAR = 1000;
     }
 
-    public final class kGyroSystem{
-
-        
-    }
 
     
 
@@ -240,8 +240,8 @@ public final class Constants {
 
         public static final int rangeExit_1 = 140; 
         public static final int rangeExit_2 = 180;
-
-
+     
+        public static final int indexerMotorBottom = 8; 
     }
 
     public static final class Limelight {
