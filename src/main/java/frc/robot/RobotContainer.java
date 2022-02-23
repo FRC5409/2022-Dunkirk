@@ -108,7 +108,6 @@ public class RobotContainer {
   // private final TestIndexProto m_testIndexProto;
 
 
-  private final IntakeActive intakeActive; 
   //private final ReverseIntake reverseIntake; 
 
 
@@ -145,7 +144,7 @@ public class RobotContainer {
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
      indexerActive = new IndexerActive(Indexer);
      reverse = new ReverseIntakeIndexer(Intake, Indexer);
-     intakeActive = new IntakeActive(Intake);
+     //intakeActive = new IntakeActive(Intake, Indexer);
     //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
     //  m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
     //  m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
@@ -186,7 +185,7 @@ public class RobotContainer {
 
 
     // but_main_A.whenPressed();
-    but_main_X.whileHeld(new IntakeActive(Intake));
+    but_main_X.whileHeld(new IntakeActive(Intake, Indexer));
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
 
     joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
