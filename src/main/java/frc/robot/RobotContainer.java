@@ -21,12 +21,17 @@ import frc.robot.commands.FastGear;
 import frc.robot.commands.IndexerActive;
 import frc.robot.commands.IntakeActive;
 
+import frc.robot.commands.ReverseIntake;
+import frc.robot.commands.SetpointDrive;
+import frc.robot.commands.SlowGear;
+
+
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
 
+
 import frc.robot.commands.SlowGear;
 
-//Constants
 import frc.robot.Constants.kAuto;
 
 import java.util.List;
@@ -82,11 +87,10 @@ public class RobotContainer {
   private final Intake Intake;
    
 
-
-
   // Commands defined
   //private final ExampleCommand m_autoCommand;
   private final DefaultDrive defaultDrive;
+
 
   private final ReverseIntakeIndexer reverse;
   private final IndexerActive indexerActive;  
@@ -98,6 +102,8 @@ public class RobotContainer {
   // private final TestIndexProto m_testIndexProto;
 
 
+  private final SetpointDrive setpointDrive;
+
   private final IntakeActive intakeActive; 
   //private final ReverseIntake reverseIntake; 
 
@@ -108,27 +114,29 @@ public class RobotContainer {
     joystick_main = new XboxController(0);
 
     // Init button binds
-    but_main_A = new JoystickButton(joystick_main, XboxController.Button.kA.value);
-    but_main_B = new JoystickButton(joystick_main, XboxController.Button.kB.value);
-    but_main_X = new JoystickButton(joystick_main, XboxController.Button.kX.value);
-    but_main_Y = new JoystickButton(joystick_main, XboxController.Button.kY.value);
+    but_main_A       = new JoystickButton(joystick_main, XboxController.Button.kA.value);
+    but_main_B       = new JoystickButton(joystick_main, XboxController.Button.kB.value);
+    but_main_X       = new JoystickButton(joystick_main, XboxController.Button.kX.value);
+    but_main_Y       = new JoystickButton(joystick_main, XboxController.Button.kY.value);
     but_main_LBumper = new JoystickButton(joystick_main, XboxController.Button.kLeftBumper.value);
     but_main_RBumper = new JoystickButton(joystick_main, XboxController.Button.kRightBumper.value);
     but_main_LAnalog = new JoystickButton(joystick_main, XboxController.Button.kLeftStick.value);
     but_main_RAnalog = new JoystickButton(joystick_main, XboxController.Button.kRightStick.value);
-    but_main_Back = new JoystickButton(joystick_main, XboxController.Button.kBack.value);
-    but_main_Start = new JoystickButton(joystick_main, XboxController.Button.kStart.value);
+    but_main_Back    = new JoystickButton(joystick_main, XboxController.Button.kBack.value);
+    but_main_Start   = new JoystickButton(joystick_main, XboxController.Button.kStart.value);
 
      // Initialize sub systems
      DriveTrain = new DriveTrain();
      Pneumatics = new Pneumatics();
      Pigeon = new Pigeon();
 
+
      Intake = new Intake();
     
      Indexer = new Indexer();
 
      // Init commands
+
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
      indexerActive = new IndexerActive(Indexer);
      reverse = new ReverseIntakeIndexer(Intake, Indexer);
@@ -140,13 +148,17 @@ public class RobotContainer {
     //  m_testIndexProto = new TestIndexProto(Indexer);
     //  m_testIndexShoot = new TestIndexShoot(Indexer);
 
- 
+
+     setpointDrive = new SetpointDrive(DriveTrain, Pigeon, joystick_main);
+
     // Configure the button bindings
     configureButtonBindings();
 
     // Sets default command to be DefaultDrive
+
     DriveTrain.setDefaultCommand(defaultDrive);
     Indexer.setDefaultCommand(indexerActive);
+
   }
 
   /**

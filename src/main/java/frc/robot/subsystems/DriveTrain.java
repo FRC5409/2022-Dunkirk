@@ -171,8 +171,8 @@ public class DriveTrain extends SubsystemBase{
 
     @Override
     public void simulationPeriodic() {
-        displayEncoder();
-        displayDriveMode();
+        //displayEncoder();
+        //displayDriveMode();
     }
 
 
@@ -188,8 +188,9 @@ public class DriveTrain extends SubsystemBase{
      */
     public void aadilDrive(final double acceleration, final double deceleration, final double turn){
         double accelerate = (acceleration - deceleration);
-        
+
         m_drive.arcadeDrive(-accelerate, turn, true);
+
     }
     
     /**
@@ -252,7 +253,6 @@ public class DriveTrain extends SubsystemBase{
      *      REPEAT
      */
     public void cycleDriveMode(){
-        System.out.println("Cycling drive mode");
         switch(driveMode){
             case kDriveTrain.AADIL_DRIVE:
                 driveMode = kDriveTrain.TANK_DRIVE;
@@ -432,6 +432,25 @@ public class DriveTrain extends SubsystemBase{
     }
 
     // ------------------------ Setpoint Controls ------------------------ //
+    public void setDefaultControlMode(double value){
+        mot_leftFrontDrive.set(TalonFXControlMode.PercentOutput, value);
+        mot_leftFrontDrive.setInverted(false);
+
+        mot_leftRearDrive.set(TalonFXControlMode.Follower, value);
+        mot_leftRearDrive.follow(mot_leftFrontDrive);
+        mot_leftRearDrive.setInverted(InvertType.FollowMaster);
+
+        mot_rightFrontDrive.set(TalonFXControlMode.PercentOutput, value);
+        mot_rightFrontDrive.setInverted(true);
+
+        mot_rightRearDrive.set(TalonFXControlMode.Follower, value);
+        mot_rightRearDrive.follow(mot_rightFrontDrive);
+        mot_rightRearDrive.setInverted(InvertType.FollowMaster);
+    }
+
+    public void setDefaultControlMode(){
+        setDefaultControlMode(0);
+    }
 
     public void setControlMode(	TalonFXControlMode 	mode, double value){
         mot_leftFrontDrive.set(mode, value);

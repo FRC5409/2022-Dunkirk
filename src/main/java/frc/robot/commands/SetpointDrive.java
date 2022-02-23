@@ -1,5 +1,4 @@
 package frc.robot.commands;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -8,65 +7,88 @@ import frc.robot.Constants.kDriveTrain;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Pigeon;
 
+import frc.robot.utils.PIDController;
 
-public class SetpointDrive extends PIDCommand {
+
+public class SetpointDrive extends CommandBase {
 
     private final DriveTrain drive;
     private final Pigeon gyro;
     private final XboxController joystick;
 
-    public SetpointDrive(DriveTrain drive, Pigeon gyro, XboxController joystick) {
-        super(
-            new PIDController(kDriveTrain.kDistanceGains.kP, kDriveTrain.kDistanceGains.kI, kDriveTrain.kDistanceGains.kD), 
-            gyro::getAngle, 
-            0, 
-            output -> drive.aadilDrive(joystick.getRightTriggerAxis(), 
-                                       joystick.getLeftTriggerAxis(), 
-                                        output)
-            );
-        // Use addRequirements() here to declare subsystem dependencies.
+    private final PIDController controller;
 
-        this.drive = drive;
-        this.gyro = gyro;
-        this.joystick = joystick;
+    public SetpointDrive(DriveTrain _drive, Pigeon _gyro, XboxController _joystick) {
+                                                                 
+        controller = new PIDController(kDriveTrain.kAngleGains.kP, kDriveTrain.kAngleGains.kI, kDriveTrain.kAngleGains.kD);
+
+        drive = _drive;
+        gyro = _gyro;
+        joystick = _joystick;
+
+        System.out.println("Setpoint drive contr");
 
         addRequirements(drive);
+    }
+
+    private static double getReferenceAngle(double x, double y, double heading){
+
+        if (x == 0 && y == 0){ 
+            return heading; 
+        }
+        else if (y == 0) {
+            return -90 * x/Math.abs(x) + 90;
+        }
+        else if (x == 0) { 
+            return -90 * y/Math.abs(y) + 180; 
+        }
+        
+        double ra = Math.abs(Math.toDegrees(Math.atan(y/x)));
+ 
+        if(x < 0 && y > 0) return 180 - ra;
+        else if(x < 0 && y < 0) return 180 + ra; 
+        else if(x > 0 && y < 0) return 360 - ra; 
+
+        return ra;
     }
 
     private double GetSetpointHeading(){
         double x = joystick.getRightX();
         double y = joystick.getRightY();
 
-        if (x == 0 && y == 0){ return gyro.getAngle(); }
-        if (y == 0) {return x;}
-        if (x == 0) {return y;}
+        System.out.print(String.format("x: %s y: %s ", x, y));
+        double jason = getReferenceAngle(x, y, gyro.Heading());
 
-        double ra = Math.toDegrees(Math.abs(Math.atan(joystick.getRightY() / joystick.getRightX())));
-
-        if(x > 0  && y > 0) { return ra;      }
-        if(x < 0  && y > 0) { return 180 - ra;}
-        if(x < 0  && y < 0) { return 180 + ra;}
-        if(x > 0  && y < 0) {return 360 - ra; }
-        else return 0;
-
+        if(jason > gyro.Heading() + 180){
+            return gyro.Heading() - gyro.Heading() % + jason;
+        }
+        else{
+            return gyro.Heading() - gyro.Heading() % - jason;
+        }
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        
+        System.out.println("init");
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        getController().setSetpoint(GetSetpointHeading());
+        double comp = controller.calculate(gyro.Heading());
+        double setpoint = GetSetpointHeading();
+        System.out.print(String.format("s: %s \n", setpoint));
+        controller.setSetpoint(setpoint);
+        drive.aadilDrive(joystick.getRightTriggerAxis(), 
+                         joystick.getLeftTriggerAxis(), 
+                         Math.min(Math.max(comp, 1), -1)
+                         );
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        
     }
 
     // Returns true when the command should end.

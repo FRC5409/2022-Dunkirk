@@ -21,7 +21,6 @@ public final class Constants {
 
     public static class kID{
         // Can IDs
-
         public final static int LeftFrontDrive = 1;
         public final static int LeftRearDrive = 2;
         public final static int RightFrontDrive = 3;
@@ -164,9 +163,6 @@ public final class Constants {
 
         public static final double MAX_RPM_FOR_LOW_GEAR = 1000;
     }
-
-
-    
 
     public static final class kAuto{
         public static final double kTrackwidthMeters = Units.inchesToMeters(26.25);
