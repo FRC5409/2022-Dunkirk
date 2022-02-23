@@ -92,7 +92,7 @@ public final class Constants {
         public static final int DIRECTION_EXTEND = 1;
 
         public static final double EXTENSION_LENGTH = 106.5;
-        public static final double RETRACTION_LENGTH = 0;
+        public static final double RETRACTION_LENGTH = 0.5;
 
         public static final double ARM_SPEED = 1.8;
 
@@ -101,16 +101,16 @@ public final class Constants {
         public static final double CIRCUMFERENCE = 0.11427;
 
         // TODO: Find PIDF values
-        public static final double P = 0.16;
+        public static final double P = 0.8;
         public static final double I = 0;
-        public static final double D = 0;
+        public static final double D = 1.7;
         public static final double F = 0;
         public static final int DIGITAL_INPUT_PORT = 8;
 
         public static final double TO_MAX = 106.5;
         public static final double TO_MID_RUNG = 100.0;
         public static final double TO_LOW_RUNG = 80.0;
-        public static final double TO_MIN = 0.5;
+        public static final double TO_MIN = 5.0;
     }
 
     public static final class kIntake{
