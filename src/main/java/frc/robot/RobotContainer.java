@@ -17,8 +17,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.FastGear;
+
+import frc.robot.commands.IndexerActive;
+import frc.robot.commands.IntakeActive;
+
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
+
 import frc.robot.commands.SlowGear;
 
 //Constants
@@ -40,6 +45,15 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
+
+
+import frc.robot.commands.IntakeSimulationTesting;
+import frc.robot.commands.ReverseIntake;
+import frc.robot.commands.ReverseIntakeIndexer;
+import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Pneumatics;
+
 import edu.wpi.first.wpilibj2.command.Command;
 
 
@@ -63,13 +77,30 @@ public class RobotContainer {
   private final DriveTrain DriveTrain;
   private final Pneumatics Pneumatics;
   private final Pigeon Pigeon;
-  private final Intake intake; 
+
+  private final Indexer Indexer;
+  private final Intake Intake;
+   
+
+
 
   // Commands defined
   //private final ExampleCommand m_autoCommand;
   private final DefaultDrive defaultDrive;
+
+  private final ReverseIntakeIndexer reverse;
+  private final IndexerActive indexerActive;  
+  //private final IntakeIndexGo m_intakeIndexGo;
+  //private final ReverseIntakeIndexer m_reverseIntakeIndex;
+  //private final IntakeSimulationTesting m_intakeSimulationTesting;
+  // private final TestIndexBelt m_testIndexBelt;
+  // private final TestIndexShoot m_testIndexShoot;
+  // private final TestIndexProto m_testIndexProto;
+
+
   private final IntakeActive intakeActive; 
-  private final ReverseIntake reverseIntake; 
+  //private final ReverseIntake reverseIntake; 
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -92,19 +123,30 @@ public class RobotContainer {
      DriveTrain = new DriveTrain();
      Pneumatics = new Pneumatics();
      Pigeon = new Pigeon();
-     intake = new Intake();
 
+     Intake = new Intake();
+    
+     Indexer = new Indexer();
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
-     intakeActive = new IntakeActive(intake);
-     reverseIntake = new ReverseIntake(intake);
+     indexerActive = new IndexerActive(Indexer);
+     reverse = new ReverseIntakeIndexer(Intake, Indexer);
+     intakeActive = new IntakeActive(Intake);
+    //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
+    //  m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
+    //  m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
+    //  m_testIndexBelt = new TestIndexBelt(Indexer);
+    //  m_testIndexProto = new TestIndexProto(Indexer);
+    //  m_testIndexShoot = new TestIndexShoot(Indexer);
+
  
     // Configure the button bindings
     configureButtonBindings();
 
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
+    Indexer.setDefaultCommand(indexerActive);
   }
 
   /**
@@ -122,10 +164,11 @@ public class RobotContainer {
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
 
-    but_main_X.whileHeld(new IntakeActive(intake));
-    but_main_B.whileHeld(new ReverseIntake(intake));
-    // but_main_A.whenActive( new MoveToDistance(DriveTrain));
-    // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
+
+    // but_main_A.whenPressed();
+    but_main_X.whileHeld(new IntakeActive(Intake));
+    but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+
 
   }
 

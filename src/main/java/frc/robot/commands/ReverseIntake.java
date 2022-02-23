@@ -1,10 +1,12 @@
 package frc.robot.commands;
 
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Intake;
 
 public class ReverseIntake extends CommandBase{
     private final Intake sys_Intake;
+
 
     /**
      * Creates a new ReverseIntake.
@@ -23,6 +25,7 @@ public class ReverseIntake extends CommandBase{
     @Override
     public void execute() {
         sys_Intake.reverseIntake(0.75);
+
     }
 
     // Called once the command ends or is interrupted.
@@ -35,5 +38,7 @@ public class ReverseIntake extends CommandBase{
     public boolean isFinished() {
         return false;
     }
-    
+
 }
+
+
