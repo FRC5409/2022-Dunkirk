@@ -18,7 +18,6 @@ public class IntakeActive extends CommandBase{
 		sys_Intake = subsystem;
 		
 		addRequirements(sys_Intake);
-		System.out.println("intake command");
 	}
 
 	// Called when the command is initially scheduled.
@@ -29,9 +28,6 @@ public class IntakeActive extends CommandBase{
 
 		sys_Intake.intakeOn(0.75);
 
-		System.out.println("intake initialized");
-
-
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
@@ -40,9 +36,6 @@ public class IntakeActive extends CommandBase{
 
         sys_Intake.intakeOn(0.75);
 		sys_Intake.intakeIn(0.75);
-
-		System.out.println("intake executed");
-
 
 	}
 
@@ -53,8 +46,6 @@ public class IntakeActive extends CommandBase{
 		sys_Intake.intakeIn(0);
 
         sys_Intake.solenoidsUp();
-
-		System.out.println("intake end");
 
 	}
 
