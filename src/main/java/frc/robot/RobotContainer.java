@@ -130,7 +130,7 @@ public class RobotContainer {
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
-     indexerActive = new IndexerActive(Indexer, Intake);
+     indexerActive = new IndexerActive(Indexer);
      reverse = new ReverseIntakeIndexer(Intake, Indexer);
      intakeActive = new IntakeActive(Intake);
     //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);

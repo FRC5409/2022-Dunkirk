@@ -32,6 +32,7 @@ public class Intake extends SubsystemBase{
         mot_intakeIn = new CANSparkMax(kIntake.kIntakeMotorIn, MotorType.kBrushless);
         mot_intakeIn.setSmartCurrentLimit(20);
         mot_intakeIn.setIdleMode(IdleMode.kBrake);
+        mot_intakeIn.setInverted(true);
         mot_intakeIn.burnFlash();
 
         //intakeSolenoid_left = new DoubleSolenoid(PneumaticsModuleType.REVPH, kIntake.kLeftIntakeSolenoid1, kIntake.kLeftIntakeSolenoid2);
@@ -43,7 +44,7 @@ public class Intake extends SubsystemBase{
         // mot_intake.setIdleMode(IdleMode.kBrake);
         // mot_intake.burnFlash();
 
-        intakeSolenoid_left = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kIntake.kLeftIntakeSolenoid1, kIntake.kLeftIntakeSolenoid2);
+        //intakeSolenoid_left = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kIntake.kLeftIntakeSolenoid1, kIntake.kLeftIntakeSolenoid2);
         intakeSolenoid_right = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kIntake.kRightIntakeSolenoid1, kIntake.kRightIntakeSolenoid2);
 
     }
@@ -61,20 +62,26 @@ public class Intake extends SubsystemBase{
         mot_intakeIn.set(speed);
     }
 
+    public void reverseIntakeIn(double speed){
+        mot_intakeIn.set(-speed);
+    }
+
 
     public void solenoidsDown() {
-        intakeSolenoid_left.set(DoubleSolenoid.Value.kForward);
+        //intakeSolenoid_left.set(DoubleSolenoid.Value.kForward);
         intakeSolenoid_right.set(DoubleSolenoid.Value.kForward);
+        System.out.println("Intake down");
     }
 
     public void solenoidsUp() {
-        intakeSolenoid_left.set(DoubleSolenoid.Value.kReverse);
+        //intakeSolenoid_left.set(DoubleSolenoid.Value.kReverse);
         intakeSolenoid_right.set(DoubleSolenoid.Value.kReverse);
+        System.out.println("Intake up");
+
     }
 
     public boolean isExtended() {
-        return (intakeSolenoid_left.get() == DoubleSolenoid.Value.kForward)
-            && (intakeSolenoid_right.get() == DoubleSolenoid.Value.kForward);
+        return (intakeSolenoid_right.get() == DoubleSolenoid.Value.kForward);
     }
     
 }

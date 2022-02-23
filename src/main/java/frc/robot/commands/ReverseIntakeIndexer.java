@@ -29,6 +29,7 @@ public class ReverseIntakeIndexer extends CommandBase{
       public void execute() {
         sys_indexer.reverseIndexer(0.5);
         sys_intake.reverseIntake(0.75);
+        sys_intake.reverseIntakeIn(0.75);
 
       }
 
@@ -37,6 +38,7 @@ public class ReverseIntakeIndexer extends CommandBase{
       public void end(boolean interuppted){
           sys_intake.intakeOn(0);
           sys_indexer.indexerOn(0);
+          sys_intake.intakeIn(0);
       }
 
       // Returns true when when the command should end

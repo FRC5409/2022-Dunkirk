@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class IndexerActive extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private Indexer sys_indexer;
-  private Intake sys_intake; 
+  
 
   boolean TOF_Ent; 
   boolean TOF_Ball1; 
@@ -23,11 +23,10 @@ public class IndexerActive extends CommandBase {
    *
    * @param indexer The subsystem used by this command.
    */
-  public IndexerActive(Indexer indexer, Intake intake) {
+  public IndexerActive(Indexer indexer) {
     sys_indexer = indexer;
-    sys_intake = intake; 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(indexer, intake);
+    addRequirements(indexer);
   }
 
   // Called when the command is initially scheduled.
@@ -35,10 +34,10 @@ public class IndexerActive extends CommandBase {
   public void initialize() {
 
     //safety to stop running the intake when indexer is full
-    if(!(sys_indexer.ballDetectionExit() && sys_indexer.isRangeValid_Ext())){
-      sys_intake.intakeOn(0);
-      sys_intake.solenoidsUp();
-    }
+    // if(!(sys_indexer.ballDetectionExit() && sys_indexer.isRangeValid_Ext())){
+    //   sys_intake.intakeOn(0);
+    //   sys_intake.solenoidsUp();
+    // }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -61,11 +60,11 @@ public class IndexerActive extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     sys_indexer.indexerOn(0);
-    sys_intake.intakeOn(0);
+    // sys_intake.intakeOn(0);
 
-    if(sys_indexer.ballDetectionExit()){
-      sys_intake.solenoidsUp();
-    }
+    // if(sys_indexer.ballDetectionExit()){
+    //   sys_intake.solenoidsUp();
+    // }
   }
 
   // Returns true when the command should end.

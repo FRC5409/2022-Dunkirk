@@ -97,8 +97,8 @@ public final class Constants {
         public static final int kIntakeMotorIn = 24; 
 
 
-        public static final int kRightIntakeSolenoid1 = 2;
-        public static final int kRightIntakeSolenoid2 = 3;
+        public static final int kRightIntakeSolenoid1 = 11;
+        public static final int kRightIntakeSolenoid2 = 10;
 
         public static final int kLeftIntakeSolenoid1 = 4;
         public static final int kLeftIntakeSolenoid2 = 5;
