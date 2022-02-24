@@ -4,7 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
 import frc.robot.utils.Gains;
 
@@ -126,7 +129,7 @@ public final class Constants {
         // Encoders
         public static final double encoderToMeterConversionFactor = 1;
 
-        public static final double encoderCPR = 4096 / 4;
+        public static final double encoderCPR = 4096 / 4; // TODO: need to change to 4096 for characterization ?
         public static final double wheelCircumferenceInches = 4 * Math.PI;
         public static final double lowGearConversionFactor = 1/15.32;
         public static final double highGearConversionFactor = 1/7.08;
@@ -183,11 +186,6 @@ public final class Constants {
         public static final double kvVoltSecondsPerMeter = 1.6116;
         public static final double kaVoltSecondsSquaredPerMeter = 0.089259;
         public static final double kPDriveVel = 1.6064;
-
-        // public static final double ksVolts = 0.5788;
-        // public static final double kvVoltSecondsPerMeter = 4.1279*Math.pow(10, -6);
-        // public static final double kaVoltSecondsSquaredPerMeter = 2.0127*Math.pow(10, -7);
-        // public static final double kPDriveVel = 8.1401 * Math.pow(10, -1); // 8.1401*Math.pow(10, -6);
         
         // all units in meters and seconds: max speed & acceleration 3
         public static final double kMaxSpeed = 2;
@@ -198,6 +196,18 @@ public final class Constants {
         // https://docs.wpilib.org/en/latest/docs/software/advanced-controls/trajectories/ramsete.html#constructing-the-ramsete-controller-object
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
+
+        public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = 
+            new DifferentialDriveVoltageConstraint(
+                new SimpleMotorFeedforward(ksVolts, 
+                                           kvVoltSecondsPerMeter, 
+                                           kaVoltSecondsSquaredPerMeter),
+                kDriveKinematics, 10);
+
+        public static final TrajectoryConfig config = 
+            new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
+            .setKinematics(kDriveKinematics)
+            .addConstraint(autoVoltageConstraint);
 
     }
 

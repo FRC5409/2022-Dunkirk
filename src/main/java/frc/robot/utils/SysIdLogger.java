@@ -37,7 +37,7 @@ public class SysIdLogger {
       
         m_testType = SmartDashboard.getString("SysIdTestType", "");
         m_rotate = SmartDashboard.getBoolean("SysIdRotate", false);
-        m_voltageCommand = SmartDashboard.getNumber("SysIdVoltageCommand", 0.0);
+        m_voltageCommand = SmartDashboard.getNumber("SysIdVoltageCommand", 0.0); // 3
         m_startTime = Timer.getFPGATimestamp();
         m_data.clear();
       }

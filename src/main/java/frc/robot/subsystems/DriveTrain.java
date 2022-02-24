@@ -357,14 +357,13 @@ public class DriveTrain extends SubsystemBase{
         return (getEncoderPositionLeft() + getEncoderPositionRight())/ 2;
     }
 
-    //TODO: ENCODER UNIT CHANGE FROM DEGREE TO METERS
-
     /**
      * @return the  position of the left encoders 
      * 
      */
     public double getEncoderPositionLeft(){
-        return enc_left.getPosition();
+        double position = Convert.EncoderUnitsToInches((float)enc_left.getPosition());
+        return Units.inchesToMeters(position);
     }
 
     /**
@@ -372,7 +371,8 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderPositionRight(){
-        return enc_right.getPosition();
+        double position = Convert.EncoderUnitsToInches((float)enc_right.getPosition());
+        return Units.inchesToMeters(position);
     }
 
     /**
@@ -388,7 +388,8 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderVelocityLeft(){
-        return enc_left.getVelocity();
+        double velocity = Convert.EncoderUnitsToInches((float)enc_left.getVelocity());
+        return Units.inchesToMeters(velocity);
     }
 
     /**
@@ -396,7 +397,8 @@ public class DriveTrain extends SubsystemBase{
      * 
      */ 
     public double getEncoderVelocityRight(){
-        return enc_right.getVelocity();
+        double velocity = Convert.EncoderUnitsToInches((float)enc_right.getVelocity());
+        return Units.inchesToMeters(velocity);
     }
 
 
@@ -473,11 +475,7 @@ public class DriveTrain extends SubsystemBase{
      * Method gets the wheel speeds using the encoders get velocity methods.
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-
-        double leftEncoderVelocityInchesPerSecond = Convert.EncoderUnitsToInches((float)getEncoderVelocityLeft())*10;
-        double rightEncoderVelocityInchesPerSecond = Convert.EncoderUnitsToInches((float)getEncoderVelocityRight())*10;
-
-        return new DifferentialDriveWheelSpeeds(Units.inchesToMeters(leftEncoderVelocityInchesPerSecond), Units.inchesToMeters(rightEncoderVelocityInchesPerSecond));
+        return new DifferentialDriveWheelSpeeds(getEncoderVelocityLeft(), getEncoderVelocityRight());
     }
 
     /**
