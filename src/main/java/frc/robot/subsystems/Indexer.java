@@ -67,7 +67,7 @@ public class Indexer extends SubsystemBase implements Toggleable{
     indexerBelt_neo.burnFlash();
   }
 
-  }
+
 
   // INDEXER METHODS
   // ------------------------------------------------------------------------------------
@@ -212,6 +212,10 @@ public class Indexer extends SubsystemBase implements Toggleable{
 
   public boolean isRangeValid_Ball1() {
     return TOF_Ball1.isRangeValid();
+  }
+
+  public boolean isRangeValid_Ext() {
+    return TOF_Ext.isRangeValid();
   }
 
 
