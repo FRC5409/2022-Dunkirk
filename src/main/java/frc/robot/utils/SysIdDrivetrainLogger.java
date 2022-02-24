@@ -23,7 +23,7 @@ public class SysIdDrivetrainLogger extends SysIdLogger {
         m_data.add(rightPosition);
         m_data.add(leftVelocity);
         m_data.add(rightVelocity);
-        m_data.add( measuredAngle);
+        m_data.add(measuredAngle);
         m_data.add(angularRate);
         m_primaryMotorVoltage = (m_rotate ? -1 : 1) * m_motorVoltage;
         m_secondaryMotorVoltage = m_motorVoltage;

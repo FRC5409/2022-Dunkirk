@@ -332,20 +332,20 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public void displayEncoder(){
-        if (Math.abs(getRPMRight()) > rmRPM)
-            rmRPM = Math.abs(getRPMRight());
+        // if (Math.abs(getRPMRight()) > rmRPM)
+        //     rmRPM = Math.abs(getRPMRight());
 
-        if (Math.abs(getRPMLeft()) > lmRPM)
-            lmRPM = Math.abs(getRPMLeft());
+        // if (Math.abs(getRPMLeft()) > lmRPM)
+        //     lmRPM = Math.abs(getRPMLeft());
 
         SmartDashboard.putNumber("Left Position", getEncoderPositionLeft());
         SmartDashboard.putNumber("Left Velocity", getEncoderVelocityLeft());
-        SmartDashboard.putNumber("Left RPM", getRPMLeft());
+        // SmartDashboard.putNumber("Left RPM", getRPMLeft());
         SmartDashboard.putNumber("Left MAX RPM", lmRPM);
 
         SmartDashboard.putNumber("Right Position", getEncoderPositionRight());
         SmartDashboard.putNumber("Right Velocity", getEncoderVelocityRight());
-        SmartDashboard.putNumber("Right RPM", getRPMRight());
+        // SmartDashboard.putNumber("Right RPM", getRPMRight());
         SmartDashboard.putNumber("Right MAX RPM", rmRPM);
     }
 
@@ -401,19 +401,18 @@ public class DriveTrain extends SubsystemBase{
         return Units.inchesToMeters(velocity);
     }
 
+    // public double getRPMRight(){
+    //     return (getEncoderVelocityRight() / 2048) * 600;
+    // }
 
-    // TODO: CHANGE RPM - ASK
-    public double getRPMRight(){
-        return (getEncoderVelocityRight() / 2048) * 600;
-    }
+    // /**
+    //  * @return the average velocity of the right encoders 
+    //  * 
+    //  */ 
+    // public double getRPMLeft(){
+    //     return (getEncoderVelocityLeft() / 2048) * 600;
+    // }
 
-    /**
-     * @return the average velocity of the right encoders 
-     * 
-     */ 
-    public double getRPMLeft(){
-        return (getEncoderVelocityLeft() / 2048) * 600;
-    }
     /**
      * Sets all encoders to 0
      * 
