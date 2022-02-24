@@ -10,15 +10,17 @@ import frc.robot.subsystems.Pigeon;
 
 public class MoveToAngle extends PIDCommand{
     public DriveTrain drive;
+    public Pigeon pigeon;
 
-    public MoveToAngle(double targetDistance, DriveTrain _drive, Pigeon pigeon) {
+    public MoveToAngle(double targetAngle, DriveTrain _drive, Pigeon _pigeon) {
         super(
             new PIDController(kDriveTrain.kAngleGains.kP, kDriveTrain.kAngleGains.kI, kDriveTrain.kAngleGains.kD), 
-            pigeon::Heading, 
-            targetDistance, 
+            _pigeon::Heading, 
+            targetAngle, 
             (output) -> _drive.tankDrive(limitSpeed(output), -limitSpeed(output))
               );
 
+        pigeon = _pigeon;
         drive = _drive;
 
         addRequirements(drive);
@@ -29,22 +31,23 @@ public class MoveToAngle extends PIDCommand{
      * 
      */
     private static double limitSpeed(double output){
+        System.out.print(output);
         if(output >= 0){
-            return Math.min(output, -kDriveTrain.maxTurnSpeed);
+            return Math.min(output,  kDriveTrain.maxTurnSpeed);
         }
         else{
-            return Math.max(output,  kDriveTrain.maxTurnSpeed);
+            return Math.max(output, -kDriveTrain.maxTurnSpeed);
         }
     }
 
     @Override
     public void end(boolean interrupt){
-        drive.setDefaultControlMode();
+        //drive.setDefaultControlMode();
     }
     
     @Override
     public boolean isFinished() {
       // End when the controller is at the reference.
-      return getController().atSetpoint();
+      return Math.abs(Math.abs(pigeon.Heading() - getController().getSetpoint()) / getController().getSetpoint()) <= 0.05;
     }
 }

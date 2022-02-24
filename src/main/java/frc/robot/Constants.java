@@ -145,11 +145,16 @@ public final class Constants {
         public static final boolean kSensorPhase = true;
         
         public static final Gains kDistanceGains = new Gains(0.15, 0.0002, 0.1, 0.0, 0, 1.0);
-        public static final Gains kAngleGains = new Gains(0.15, 0.0, 0.1, 0.0, 0, 1.0);
+        public static final Gains kAngleGains = new Gains(0.15, 0.0003, 0.01, 0.0, 0, 1.0);
         
         // Speed limits for auto
-        public static final double maxStraightSpeed = 1;
-        public static final double maxTurnSpeed = 0.1d;
+        public static final double maxStraightSpeed = 0.5;
+        public static final double maxTurnSpeed = 0.5;
+
+        // ramp rate limits
+        public static final double forwardRampRate = 0.5;
+        public static final double backwardsRampRate = 0.3;
+        public static final double turningRampRate = 0.1;
 
         // Anti-tip compensation
         public static final double pitchCompensation = 0;

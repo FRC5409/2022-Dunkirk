@@ -58,14 +58,18 @@ public class DriveTrain extends SubsystemBase{
 
         mot_leftFrontDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
 		mot_leftFrontDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
+
 		mot_leftFrontDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
 		mot_leftFrontDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
+
 		mot_leftFrontDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
         
 		mot_leftFrontDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
 		mot_leftFrontDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
 		mot_leftFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
 		mot_leftFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
+
+        mot_leftFrontDrive.setInverted(kDriveTrain.CounterClockwise);
 
         // Left Rear Drive
         mot_leftRearDrive = new WPI_TalonFX(kID.LeftRearDrive);
@@ -84,8 +88,10 @@ public class DriveTrain extends SubsystemBase{
 
         mot_leftRearDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
 		mot_leftRearDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
+
 		mot_leftRearDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
 		mot_leftRearDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
+
 		mot_leftRearDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
         
 		mot_leftRearDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
@@ -107,15 +113,17 @@ public class DriveTrain extends SubsystemBase{
 
         mot_rightFrontDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
 		mot_rightFrontDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
+
 		mot_rightFrontDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
 		mot_rightFrontDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
+
 		mot_rightFrontDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
         
 		mot_rightFrontDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
 		mot_rightFrontDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
 		mot_rightFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
 		mot_rightFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
-        mot_rightFrontDrive.setInverted(kDriveTrain.CounterClockwise);
+        
 
         // Right Rear Drive
         mot_rightRearDrive = new WPI_TalonFX(kID.RightRearDrive);
@@ -133,8 +141,10 @@ public class DriveTrain extends SubsystemBase{
 
         mot_rightRearDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
 		mot_rightRearDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
+
 		mot_rightRearDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
 		mot_rightRearDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
+
 		mot_rightRearDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
         
 		mot_rightRearDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
@@ -144,6 +154,7 @@ public class DriveTrain extends SubsystemBase{
 
         m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
+        SetRampRate(kDriveTrain.forwardRampRate);
 
         //dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
@@ -189,7 +200,17 @@ public class DriveTrain extends SubsystemBase{
     public void aadilDrive(final double acceleration, final double deceleration, final double turn){
         double accelerate = (acceleration - deceleration);
 
-        m_drive.arcadeDrive(-accelerate, turn, true);
+        if(turn != 0 ){
+            SetRampRate(kDriveTrain.turningRampRate);
+        }
+        else if(accelerate >= 0){
+            SetRampRate(kDriveTrain.forwardRampRate);
+        }
+        else if(accelerate < 0){
+            SetRampRate(kDriveTrain.backwardsRampRate);
+        }
+
+        m_drive.arcadeDrive(accelerate, turn, true);
 
     }
     
@@ -200,6 +221,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public void tankDrive(double leftSpeed, double rightSpeed){
+        System.out.printf("\n (l: %s, r: %s)", leftSpeed, rightSpeed);
         m_drive.tankDrive(leftSpeed, rightSpeed);
     }
 
@@ -292,7 +314,6 @@ public class DriveTrain extends SubsystemBase{
         SmartDashboard.putNumber("Temp RB", mot_rightRearDrive.getTemperature());
     }
 
-
     // ---------------------------- Anti Tip ---------------------------- //
 
     /**
@@ -321,6 +342,18 @@ public class DriveTrain extends SubsystemBase{
         applyAntiTip = !applyAntiTip;
     }
 
+    /**
+     * sets the ramp rate
+     * 
+     * @param rampRate time to full throttle
+     * 
+     */
+    public void SetRampRate(double rampRate){
+        mot_leftFrontDrive.configClosedLoopPeakOutput(  kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs );
+        mot_leftRearDrive.configClosedLoopPeakOutput(   kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs );
+        mot_rightFrontDrive.configClosedLoopPeakOutput( kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs );
+        mot_rightRearDrive.configClosedLoopPeakOutput(  kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs );
+    }
     // ---------------------------- Encoders ---------------------------- //
 
     /**
