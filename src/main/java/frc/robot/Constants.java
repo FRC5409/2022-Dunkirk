@@ -236,7 +236,7 @@ public final class Constants {
 
     public static final class Limelight {
         public static final String NETWORK_TABLE_NAME = "limelight";
-    };
+    }
 
     public static final class Training {
         public static final Range  DISTANCE_RANGE = new Range(0.0, 20);
@@ -337,7 +337,4 @@ public final class Constants {
 
         public static final double ROTATION_P = 0.10;
     }
-
 }
-
-
