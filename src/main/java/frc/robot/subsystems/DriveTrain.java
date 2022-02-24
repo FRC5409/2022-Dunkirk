@@ -30,12 +30,15 @@ public class DriveTrain extends SubsystemBase{
     private final WPI_TalonFX mot_rightFrontDrive;
     private final WPI_TalonFX mot_rightRearDrive;
 
+    private final CANCoder enc_left;
+    private final CANCoder enc_right;
+
     private double lmRPM = 0;
     private double rmRPM = 0;
 
     private int driveMode;
 
-    private final DifferentialDrive m_drive;
+    public final DifferentialDrive m_drive;
 
     //private final DoubleSolenoid dsl_gear;
 
@@ -153,6 +156,9 @@ public class DriveTrain extends SubsystemBase{
         applyAntiTip = kDriveTrain.startWithAntiTip;
 
         setBrakeMode(true);
+
+        enc_left = new CANCoder(kDriveTrain.CANLeftEncoder);
+        enc_right = new CANCoder(kDriveTrain.CANRightEncoder);
 
         zeroEncoders();
         // 6630
@@ -326,20 +332,20 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public void displayEncoder(){
-        if (Math.abs(getRPMRight()) > rmRPM)
-            rmRPM = Math.abs(getRPMRight());
+        // if (Math.abs(getRPMRight()) > rmRPM)
+        //     rmRPM = Math.abs(getRPMRight());
 
-        if (Math.abs(getRPMLeft()) > lmRPM)
-            lmRPM = Math.abs(getRPMLeft());
+        // if (Math.abs(getRPMLeft()) > lmRPM)
+        //     lmRPM = Math.abs(getRPMLeft());
 
         SmartDashboard.putNumber("Left Position", getEncoderPositionLeft());
         SmartDashboard.putNumber("Left Velocity", getEncoderVelocityLeft());
-        SmartDashboard.putNumber("Left RPM", getRPMLeft());
+        // SmartDashboard.putNumber("Left RPM", getRPMLeft());
         SmartDashboard.putNumber("Left MAX RPM", lmRPM);
 
         SmartDashboard.putNumber("Right Position", getEncoderPositionRight());
         SmartDashboard.putNumber("Right Velocity", getEncoderVelocityRight());
-        SmartDashboard.putNumber("Right RPM", getRPMRight());
+        // SmartDashboard.putNumber("Right RPM", getRPMRight());
         SmartDashboard.putNumber("Right MAX RPM", rmRPM);
     }
 
@@ -352,11 +358,12 @@ public class DriveTrain extends SubsystemBase{
     }
 
     /**
-     * @return the average position of the left encoders 
+     * @return the  position of the left encoders 
      * 
      */
     public double getEncoderPositionLeft(){
-        return (mot_leftFrontDrive.getSelectedSensorPosition() + mot_leftRearDrive.getSelectedSensorPosition()) / 2;
+        double position = Convert.EncoderUnitsToInches((float)enc_left.getPosition());
+        return Units.inchesToMeters(position);
     }
 
     /**
@@ -364,7 +371,8 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderPositionRight(){
-        return (mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition()) / 2;
+        double position = Convert.EncoderUnitsToInches((float)enc_right.getPosition());
+        return Units.inchesToMeters(position);
     }
 
     /**
@@ -380,7 +388,8 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderVelocityLeft(){
-        return (mot_leftFrontDrive.getSelectedSensorVelocity() + mot_leftRearDrive.getSelectedSensorVelocity()) / 2;
+        double velocity = Convert.EncoderUnitsToInches((float)enc_left.getVelocity());
+        return Units.inchesToMeters(velocity);
     }
 
     /**
@@ -388,20 +397,22 @@ public class DriveTrain extends SubsystemBase{
      * 
      */ 
     public double getEncoderVelocityRight(){
-        return (mot_rightFrontDrive.getSelectedSensorVelocity() + mot_rightRearDrive.getSelectedSensorVelocity()) / 2;
+        double velocity = Convert.EncoderUnitsToInches((float)enc_right.getVelocity());
+        return Units.inchesToMeters(velocity);
     }
 
-    public double getRPMRight(){
-        return (getEncoderVelocityRight() / 2048) * 600;
-    }
+    // public double getRPMRight(){
+    //     return (getEncoderVelocityRight() / 2048) * 600;
+    // }
 
-    /**
-     * @return the average velocity of the right encoders 
-     * 
-     */ 
-    public double getRPMLeft(){
-        return (getEncoderVelocityLeft() / 2048) * 600;
-    }
+    // /**
+    //  * @return the average velocity of the right encoders 
+    //  * 
+    //  */ 
+    // public double getRPMLeft(){
+    //     return (getEncoderVelocityLeft() / 2048) * 600;
+    // }
+
     /**
      * Sets all encoders to 0
      * 
@@ -409,24 +420,18 @@ public class DriveTrain extends SubsystemBase{
      * 
      */ 
     public void zeroEncoders() {
-        mot_rightFrontDrive.setSelectedSensorPosition(0);
-        mot_rightRearDrive.setSelectedSensorPosition(0);
-        mot_leftFrontDrive.setSelectedSensorPosition(0);
-        mot_leftRearDrive.setSelectedSensorPosition(0);
+        enc_left.setPosition(0);
+        enc_right.setPosition(0);
     }
 
     public void setAllEncoders(double position) {
-        mot_rightFrontDrive.setSelectedSensorPosition(position);
-        mot_rightRearDrive.setSelectedSensorPosition(position);
-        mot_leftFrontDrive.setSelectedSensorPosition(position);
-        mot_leftRearDrive.setSelectedSensorPosition(position);
+        enc_left.setPosition(position);
+        enc_right.setPosition(position);
     }
 
     public void setEncodersSplit(double position_left, double position_right){
-        mot_rightFrontDrive.setSelectedSensorPosition(position_right);
-        mot_rightRearDrive.setSelectedSensorPosition(position_right);
-        mot_leftFrontDrive.setSelectedSensorPosition(position_left);
-        mot_leftRearDrive.setSelectedSensorPosition(position_left);
+        enc_left.setPosition(position_left);
+        enc_right.setPosition(position_right);
     }
 
     // ------------------------ Setpoint Controls ------------------------ //
@@ -469,12 +474,8 @@ public class DriveTrain extends SubsystemBase{
      * Method gets the wheel speeds using the encoders get velocity methods.
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-
-        double leftEncoderVelocityInchesPerSecond = Convert.EncoderUnitsToInches((float)getEncoderVelocityLeft())*10;
-        double rightEncoderVelocityInchesPerSecond = Convert.EncoderUnitsToInches((float)getEncoderVelocityRight())*10;
-
-        return new DifferentialDriveWheelSpeeds(Units.inchesToMeters(leftEncoderVelocityInchesPerSecond), Units.inchesToMeters(rightEncoderVelocityInchesPerSecond));
-      }
+        return new DifferentialDriveWheelSpeeds(getEncoderVelocityLeft(), getEncoderVelocityRight());
+    }
 
     /**
      * Tank drive that takes voltage inputs
