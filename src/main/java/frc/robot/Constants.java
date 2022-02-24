@@ -149,7 +149,7 @@ public final class Constants {
         
         // Speed limits for auto
         public static final double maxStraightSpeed = 1;
-        public static final double maxTurnSpeed = 1;
+        public static final double maxTurnSpeed = 0.1d;
 
         // Anti-tip compensation
         public static final double pitchCompensation = 0;

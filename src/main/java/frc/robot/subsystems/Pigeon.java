@@ -38,7 +38,7 @@ public class Pigeon extends SubsystemBase{
         gyro_pigeon = new WPI_PigeonIMU(kID.Pigeon);
         gyro_pigeon.reset();
         
-        SmartDashboard.putBoolean("Manual Override Enabled", true);
+        SmartDashboard.putBoolean("Manual Override Enabled", false);
         SmartDashboard.putNumber("manual heading", 0);
 
         SmartDashboard.putNumber("manual roll", 0);

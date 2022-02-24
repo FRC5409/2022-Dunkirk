@@ -10,14 +10,19 @@ import frc.robot.subsystems.Pigeon;
 public class AutoRoutine extends SequentialCommandGroup{
     public AutoRoutine(DriveTrain drive, Pigeon pigeon, Intake intake, Indexer indexer){
         addCommands(
+            new MoveToAngle(-90, drive, pigeon)
+            );
+        /*
+        addCommands(
             new MoveToDistance(drive, 10),
             // shoot
-            new MoveToAngle(drive, 90),
+            new MoveToAngle( 90, drive, pigeon),
             new MoveToDistance(drive, 10),
             // intake
             // index
-            new MoveToAngle(drive, -90)
+            new MoveToAngle(-90, drive, pigeon)
             // shoot
         );
+        */
     }
 }
