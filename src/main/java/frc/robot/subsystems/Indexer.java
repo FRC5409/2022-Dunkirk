@@ -60,7 +60,7 @@ public class Indexer extends SubsystemBase implements Toggleable{
 
 
     // test motor for belt on indexer prototype
-    indexerBelt_neo = new CANSparkMax(kIndexer.kIndexBeltMotor, MotorType.kBrushless);
+    indexerBelt_neo = new CANSparkMax(kIndexer.indexerMotorBottom, MotorType.kBrushless);
     indexerBelt_neo.setSmartCurrentLimit(kIndexer.currentLimit);
     indexerBelt_neo.setIdleMode(IdleMode.kBrake);
     indexerBelt_neo.setInverted(true);

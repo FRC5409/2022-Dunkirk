@@ -65,12 +65,16 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
 
         limit_switch = new DigitalInput(Constants.kID.TurretLimitSwitch1);
 
-        //dsl_hood = new DoubleSolenoid(Constants.Turret.HOOD_MODULE, PneumaticsModuleType.REVPH, 
-        //  Constants.Turret.HOOD_FORWARD_CHANNEL, Constants.Turret.HOOD_REVERSE_CHANNEL);
+        dsl_hood = new DoubleSolenoid(Constants.kID.PneumaticHub, PneumaticsModuleType.REVPH, 
+        Constants.Turret.HOOD_FORWARD_CHANNEL, Constants.Turret.HOOD_REVERSE_CHANNEL);
 
         enabled = false;
 
         MotorUtils.setGains(controller_main, Constants.Shooter.TURRET_GAINS);
+
+
+        fields = new HashMap<String, NetworkTableEntry>();
+        fields.put("hood", Shuffleboard.getTab("Turret").add("Hood position", "off").getEntry());
     }
 
     /**
@@ -82,13 +86,13 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
             enc_main.setPosition(0);
         }
         SmartDashboard.putNumber("encoderValue", enc_main.getPosition());
-        // if(dsl_hood.get().equals(Value.kForward)){
-        //     fields.get("hood").setString("Up");
-        // } else if (dsl_hood.get().equals(Value.kReverse)){
-        //     fields.get("hood").setString("Down");
-        // } else if (dsl_hood.get().equals(Value.kOff)){
-        //     fields.get("hood").setString("Off");
-        // }
+        if(dsl_hood.get().equals(Value.kForward)){
+            fields.get("hood").setString("Up");
+        } else if (dsl_hood.get().equals(Value.kReverse)){
+            fields.get("hood").setString("Down");
+        } else if (dsl_hood.get().equals(Value.kOff)){
+            fields.get("hood").setString("Off");
+        }
 
     }
 

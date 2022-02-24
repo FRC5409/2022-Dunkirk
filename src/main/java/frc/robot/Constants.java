@@ -38,9 +38,9 @@ public final class Constants {
         
         public final static int TurretNeo = 12;
         public final static int TurretLimitSwitch1 = 1;
-        public final static int ShooterFalconMotor1 = 16;
-        public final static int ShooterFalconMotor2 = 17;
-        public final static int ShooterNeo = 20;
+        public final static int ShooterFalconMotor1 = 5;
+        public final static int ShooterFalconMotor2 = 8;
+        public final static int ShooterNeo = 9;
 
         public final static int ClimberToF1 = 18;
         public final static int ClimberToF2 = 19;
@@ -52,8 +52,8 @@ public final class Constants {
     }
 
     public static class PneumaticsIDs{
-        public final int GearShiftHigh  = 15;
-        public final int GearShiftLow   = 0;
+        public final int GearShiftHigh  = 9;
+        public final int GearShiftLow   = 8;
         public final int IntakeRightIn  = 14;
         public final int IntakeRightOut = 1;
         public final int IntakeLeftIn   = 13;
@@ -114,8 +114,8 @@ public final class Constants {
         public static final double highGearConversionFactor = 1/7.08;
 
         // Double Solenoid
-        public static final int ForwardChannel = 0;
-        public static final int ReverseChannel = 1;
+        public static final int ForwardChannel = 8;
+        public static final int ReverseChannel = 9;
 
         // Drive Modes
         public static final int InitialDriveMode = 0;
@@ -175,11 +175,6 @@ public final class Constants {
     }
 
     public static final class ShooterFlywheel {
-        public static final int UPPER_MOTOR_ID = 10;
-        public static final int LOWER_MOTOR_ID = 7;
-        public static final int FEEDER_MOTOR_ID = 30;
-
-
         //in RPM
         public static final int SHOOTER_TOLERANCE = 240;
         public static final int FEEDER_TOLERANCE = 100;
@@ -199,16 +194,12 @@ public final class Constants {
         // Height in meters
         public static final double ROBOT_HEIGHT        = 4;
         public static final double FIXED_ANGLE         = 45;
-        public static final int    MAIN_MOTOR_ID       = 12;
         public static final Range  LIMITS              = new Range(-10, 20);
         public static final double ALIGNMENT_THRESHOLD = 0.14;
 
         //TODO fill in pneumatics constants.
-        public static final int HOOD_MODULE  =0;
-        public static final int HOOD_FORWARD_CHANNEL = 0;
-        public static final int HOOD_REVERSE_CHANNEL = 0;
-
-        public static final int LIMIT_SWITCH_CHANNEL = 1;
+        public static final int HOOD_FORWARD_CHANNEL = 13;
+        public static final int HOOD_REVERSE_CHANNEL = 12;
     }
 
     public final class Falcon500 {
@@ -223,7 +214,6 @@ public final class Constants {
         public static final int kIndexerMotor = 16; 
         public static final int currentLimit = 20; 
 
-        public static final int kIndexBeltMotor = 31;
         public static final int kIndexShooterMotor = 30;
 
         public static final int TOF_Ent = 15; 

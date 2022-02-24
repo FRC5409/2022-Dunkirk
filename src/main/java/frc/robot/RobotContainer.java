@@ -10,12 +10,14 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pigeon;
 import frc.robot.subsystems.Pneumatics;
-
-
+import frc.robot.subsystems.shooter.ShooterFlywheel;
+import frc.robot.subsystems.shooter.ShooterTurret;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import frc.robot.commands.ChangePIDS;
 import frc.robot.commands.DefaultDrive;
+import frc.robot.commands.DisableFlywheel;
 import frc.robot.commands.FastGear;
 
 import frc.robot.commands.IndexerActive;
@@ -25,9 +27,13 @@ import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
 
 import frc.robot.commands.SlowGear;
-
+import frc.robot.commands.TestingSpin;
+import frc.robot.commands.shooter.HoodDown;
+import frc.robot.commands.shooter.HoodUp;
 //Constants
 import frc.robot.Constants.kAuto;
+import frc.robot.base.Joystick;
+import frc.robot.base.Joystick.ButtonType;
 
 import java.util.List;
 
@@ -45,11 +51,12 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
-
-
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.commands.IntakeSimulationTesting;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseIntakeIndexer;
+import frc.robot.commands.ShooterTestOne;
+import frc.robot.commands.ShooterTestTwo;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pneumatics;
@@ -69,6 +76,7 @@ public class RobotContainer {
 
   // Define main joystick
   private final XboxController joystick_main; // = new XboxController(0);
+  private final Joystick joystick_secondary; 
   private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
       but_main_LAnalog, but_main_RAnalog, but_main_Back, but_main_Start;
   
@@ -80,6 +88,8 @@ public class RobotContainer {
 
   private final Indexer Indexer;
   private final Intake Intake;
+  private final ShooterFlywheel Flywheel;
+  private final ShooterTurret turret;
    
 
 
@@ -98,7 +108,6 @@ public class RobotContainer {
   // private final TestIndexProto m_testIndexProto;
 
 
-  private final IntakeActive intakeActive; 
   //private final ReverseIntake reverseIntake; 
 
 
@@ -107,6 +116,7 @@ public class RobotContainer {
     // Init controller
     joystick_main = new XboxController(0);
 
+    joystick_secondary = new Joystick(1);
     // Init button binds
     but_main_A = new JoystickButton(joystick_main, XboxController.Button.kA.value);
     but_main_B = new JoystickButton(joystick_main, XboxController.Button.kB.value);
@@ -127,12 +137,14 @@ public class RobotContainer {
      Intake = new Intake();
     
      Indexer = new Indexer();
+     Flywheel = new ShooterFlywheel();
+     turret = new ShooterTurret();
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
      indexerActive = new IndexerActive(Indexer);
      reverse = new ReverseIntakeIndexer(Intake, Indexer);
-     intakeActive = new IntakeActive(Intake);
+     //intakeActive = new IntakeActive(Intake, Indexer);
     //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
     //  m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
     //  m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
@@ -142,11 +154,18 @@ public class RobotContainer {
 
  
     // Configure the button bindings
+
+
+    Shuffleboard.getTab("FlywheelTuning").add("Disable", new DisableFlywheel(Flywheel));
+    Shuffleboard.getTab("FlywheelTuning").add("Change PIDS", new ChangePIDS(Flywheel));
+    Shuffleboard.getTab("FlywheelTuning").add("Spin", new TestingSpin(Flywheel));
+    Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
+    Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
     configureButtonBindings();
 
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
-    Indexer.setDefaultCommand(indexerActive);
+    //Indexer.setDefaultCommand(indexerActive);
   }
 
   /**
@@ -166,8 +185,13 @@ public class RobotContainer {
 
 
     // but_main_A.whenPressed();
-    but_main_X.whileHeld(new IntakeActive(Intake));
+    but_main_X.whileHeld(new IntakeActive(Intake, Indexer));
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+
+    joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
+    joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel,turret,Indexer));
+
+
 
 
   }
