@@ -221,21 +221,16 @@ public final class Constants {
 
         public static final int sampleTime = 24; 
 
-        public static final int rangeEnter_1 =  40; 
-        public static final int rangeEnter_2 = 105; 
-
-        public static final int rangeBall1_1 = 160; 
-        public static final int rangeBall1_2 = 150; 
-
-        public static final int rangeExit_1 = 140; 
-        public static final int rangeExit_2 = 180;
+        public static final int rangeEnter = 180;
+        public static final int rangeBall1 = 105;
+        public static final int rangeExit = 90; 
      
         public static final int indexerMotorBottom = 8; 
     }
 
     public static final class Limelight {
         public static final String NETWORK_TABLE_NAME = "limelight";
-    };
+    }
 
     public static final class Training {
         public static final Range  DISTANCE_RANGE = new Range(0.0, 20);
@@ -336,7 +331,4 @@ public final class Constants {
 
         public static final double ROTATION_P = 0.10;
     }
-
 }
-
-
