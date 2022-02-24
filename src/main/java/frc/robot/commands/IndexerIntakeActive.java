@@ -35,7 +35,7 @@ public class IndexerIntakeActive extends CommandBase {
   @Override
   public void initialize() {
 
-    if(!(sys_indexer.ballDetectionExit() && sys_indexer.isRangeValid_Ext())){
+    if(!(sys_indexer.ballDetectionExit())){
       sys_intake.intakeOn(0.5);
       sys_intake.intakeIn(1);
       sys_indexer.indexerOn(1);
@@ -50,12 +50,18 @@ public class IndexerIntakeActive extends CommandBase {
     TOF_Ball1 = sys_indexer.ballDetectionBall1();
     TOF_Ext = sys_indexer.ballDetectionExit();
 
-    if(TOF_Ent){
-      sys_indexer.indexerOn(0.75);
-    } else if(TOF_Ball1 && !TOF_Ext){
-      sys_indexer.indexerOn(0);
-    } else if(TOF_Ext){
-      sys_indexer.indexerOn(0);
+    // if(TOF_Ent){
+    //   sys_indexer.indexerOn(0.75);
+    // } else if(TOF_Ball1 && !TOF_Ext){
+    //   sys_indexer.indexerOn(0);
+    // } else if(TOF_Ext){
+    //   sys_indexer.indexerOn(0);
+    // }
+
+    if(TOF_Ball1){
+      sys_indexer.spinIndexer(0.75);
+    } else if (TOF_Ext){
+      sys_indexer.disable();
     }
   }
 
@@ -74,6 +80,6 @@ public class IndexerIntakeActive extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (sys_indexer.ballDetectionExit() && sys_indexer.isRangeValid_Ext());
+    return (sys_indexer.ballDetectionExit());
   }
 }
