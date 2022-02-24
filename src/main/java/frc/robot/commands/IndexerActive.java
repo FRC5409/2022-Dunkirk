@@ -35,7 +35,7 @@ public class IndexerActive extends CommandBase {
   @Override
   public void initialize() {
 
-    if(!(sys_indexer.ballDetectionExit() && sys_indexer.isRangeValid_Ext())){
+    if(!(sys_indexer.ballDetectionExit())){
       sys_intake.intakeOn(0.5);
       sys_intake.intakeIn(1);
       sys_indexer.indexerOn(1);

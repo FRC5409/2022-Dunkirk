@@ -19,6 +19,7 @@ import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.FastGear;
 
 import frc.robot.commands.IndexerActive;
+import frc.robot.commands.IndexerIntakeTest;
 import frc.robot.commands.IntakeActive;
 
 import frc.robot.commands.IntakeActive;
@@ -99,6 +100,7 @@ public class RobotContainer {
 
 
   private final IntakeActive intakeActive; 
+  private final IndexerIntakeTest test; 
   //private final ReverseIntake reverseIntake; 
 
 
@@ -133,6 +135,7 @@ public class RobotContainer {
      indexerActive = new IndexerActive(Indexer, Intake);
      reverse = new ReverseIntakeIndexer(Intake, Indexer);
      intakeActive = new IntakeActive(Intake);
+     test = new IndexerIntakeTest(Indexer, Intake);
     //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
     //  m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
     //  m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
@@ -165,7 +168,8 @@ public class RobotContainer {
 
 
     // but_main_A.whenPressed();
-    but_main_X.whileHeld(new IndexerActive(Indexer, Intake));
+    //but_main_X.whileHeld(new IndexerActive(Indexer, Intake));
+    but_main_Y.whileHeld(new IndexerIntakeTest(Indexer, Intake));
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
 
 
