@@ -25,7 +25,7 @@ public class ShooterTestTwo extends CommandBase{
 
     @Override
     public void execute() {
-        flywheel.set(0.5);
+        flywheel.setVelocity(4000);
         flywheel.spinFeederSetpoint(0.8);
         turret.hoodUpPosition();
         indexer.spinIndexer(0.5);

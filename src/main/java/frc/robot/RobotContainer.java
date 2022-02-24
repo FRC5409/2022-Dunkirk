@@ -108,9 +108,6 @@ public class RobotContainer {
 
     // Configure the button bindings
 
-    Shuffleboard.getTab("FlywheelTuning").add("Disable", new DisableFlywheel(Flywheel));
-    Shuffleboard.getTab("FlywheelTuning").add("Change PIDS", new ChangePIDS(Flywheel));
-    Shuffleboard.getTab("FlywheelTuning").add("Spin", new TestingSpin(Flywheel));
     Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
     Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
     
