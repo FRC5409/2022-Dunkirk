@@ -35,7 +35,7 @@ public class DriveTrain extends SubsystemBase{
 
     private int driveMode;
 
-    private final DifferentialDrive m_drive;
+    public final DifferentialDrive m_drive;
 
     //private final DoubleSolenoid dsl_gear;
 
@@ -474,7 +474,7 @@ public class DriveTrain extends SubsystemBase{
         double rightEncoderVelocityInchesPerSecond = Convert.EncoderUnitsToInches((float)getEncoderVelocityRight())*10;
 
         return new DifferentialDriveWheelSpeeds(Units.inchesToMeters(leftEncoderVelocityInchesPerSecond), Units.inchesToMeters(rightEncoderVelocityInchesPerSecond));
-      }
+    }
 
     /**
      * Tank drive that takes voltage inputs
