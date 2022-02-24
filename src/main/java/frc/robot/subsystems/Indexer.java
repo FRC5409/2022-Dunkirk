@@ -65,42 +65,44 @@ public class Indexer extends SubsystemBase {
     TOF_Ext = new TimeOfFlight(kIndexer.TOF_Ext);
 
     // shuffleboard values
-    shuffleBoardFields = new HashMap<String, NetworkTableEntry>();
-    tab = Shuffleboard.getTab("Motors");
-    ShuffleboardLayout mLayout = tab.getLayout("motor layout", BuiltInLayouts.kList);
-    shuffleBoardFields.put("motor speed belt",
-        mLayout.add("motor speed belt", speedBelt).withWidget(BuiltInWidgets.kNumberSlider)
-            .withProperties(Map.of("min", 0, "max", 100, "block increment", 10)).getEntry());
+    // shuffleBoardFields = new HashMap<String, NetworkTableEntry>();
+    // tab = Shuffleboard.getTab("Motors");
+    // ShuffleboardLayout mLayout = tab.getLayout("motor layout", BuiltInLayouts.kList);
+    // shuffleBoardFields.put("motor speed belt",
+    //     mLayout.add("motor speed belt", speedBelt).withWidget(BuiltInWidgets.kNumberSlider)
+    //         .withProperties(Map.of("min", 0, "max", 100, "block increment", 10)).getEntry());
 
-    shuffleBoardFields.put("current speed of belt", mLayout.add("Current belt speed", getSpeedBelt()).getEntry());
+    // shuffleBoardFields.put("current speed of belt", mLayout.add("Current belt speed", getSpeedBelt()).getEntry());
 
-    shuffleBoardFields.put("motor speed shooter",
-        mLayout.add("motor speed shooter", speedShoot).withWidget(BuiltInWidgets.kNumberSlider)
-            .withProperties(Map.of("min", 0, "max", 100, "block increment", 10)).getEntry());
+    // shuffleBoardFields.put("motor speed shooter",
+    //     mLayout.add("motor speed shooter", speedShoot).withWidget(BuiltInWidgets.kNumberSlider)
+    //         .withProperties(Map.of("min", 0, "max", 100, "block increment", 10)).getEntry());
 
-    shuffleBoardFields.put("current speed of shoot", mLayout.add("Current shooter speed", getSpeedBelt()).getEntry());
+    // shuffleBoardFields.put("current speed of shoot", mLayout.add("Current shooter speed", getSpeedBelt()).getEntry());
   }
 
   // test stuff
-  public void indexBeltOn() {
-    indexerBelt_neo.set(speedBelt);
-  }
+  // public void indexBeltOn() {
+  //   indexerBelt_neo.set(speedBelt);
+  // }
 
-  public void setSpeedBelt(double speed) {
-    speedBelt = speed;
-  }
+  // public void setSpeedBelt(double speed) {
+  //   speedBelt = speed;
+  // }
 
-  public void setSpeedShoot(double speed) {
-    speedShoot = speed;
-  }
+  // public void setSpeedShoot(double speed) {
+  //   speedShoot = speed;
+  // }
 
-  public double getSpeedBelt() {
-    return speedBelt;
-  }
+  // public double getSpeedBelt() {
+  //   return speedBelt;
+  // }
 
-  public double getSpeedShoot() {
-    return speedShoot;
-  }
+  // public double getSpeedShoot() {
+  //   return speedShoot;
+  // }
+
+  //ACTUAL INDEXER CODE
 
   public void indexerOn(double speed) {
     indexerBelt_neo.set(speed);

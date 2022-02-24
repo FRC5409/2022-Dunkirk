@@ -130,7 +130,7 @@ public class RobotContainer {
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
-     indexerActive = new IndexerActive(Indexer);
+     indexerActive = new IndexerActive(Indexer, Intake);
      reverse = new ReverseIntakeIndexer(Intake, Indexer);
      intakeActive = new IntakeActive(Intake);
     //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
@@ -146,7 +146,6 @@ public class RobotContainer {
 
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
-    Indexer.setDefaultCommand(indexerActive);
   }
 
   /**
@@ -166,7 +165,7 @@ public class RobotContainer {
 
 
     // but_main_A.whenPressed();
-    but_main_X.whileHeld(new IntakeActive(Intake));
+    but_main_X.whileHeld(new IndexerActive(Indexer, Intake));
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
 
 
