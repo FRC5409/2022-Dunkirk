@@ -58,6 +58,8 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         MotorUtils.setGains(mot_main, 0, Constants.ShooterFlywheel.UPPER_GAINS);
 
         mot_follower = new WPI_TalonFX(Constants.kID.ShooterFalconMotor2);
+        mot_follower.configFactoryDefault();
+        mot_follower.setNeutralMode(NeutralMode.Coast);
         mot_follower.follow(mot_main);
         mot_follower.setInverted(TalonFXInvertType.OpposeMaster);
 

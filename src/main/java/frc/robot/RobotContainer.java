@@ -190,10 +190,6 @@ public class RobotContainer {
 
     joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
     joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel,turret,Indexer));
-
-
-
-
   }
 
   /**
