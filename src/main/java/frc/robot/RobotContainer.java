@@ -139,8 +139,8 @@ public class RobotContainer {
 
     // Generates a trajectory that tells the robot to move from its original location
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-                                                                   List.of(),
-                                                                   new Pose2d(3, 0, new Rotation2d(0)), 
+                                                                   List.of(new Translation2d(1, 1)),
+                                                                   new Pose2d(2, 0, new Rotation2d(0)), 
                                                                    kAuto.config);
       
       // new Translation2d(1, 1), new Translation2d(2, -1))

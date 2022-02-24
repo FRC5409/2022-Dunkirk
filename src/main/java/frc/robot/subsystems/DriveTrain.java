@@ -59,7 +59,7 @@ public class DriveTrain extends SubsystemBase{
                                                                                         kDriveTrain.CurrentLimit, 
                                                                                         kDriveTrain.TriggerThresholdCurrent, 
                                                                                         kDriveTrain.triggerThresholdTime));
-        mot_leftFrontDrive.setInverted(kDriveTrain.Clockwise);
+        mot_leftFrontDrive.setInverted(kDriveTrain.CounterClockwise);
 
         mot_leftFrontDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
 		mot_leftFrontDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
@@ -120,7 +120,7 @@ public class DriveTrain extends SubsystemBase{
 		mot_rightFrontDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
 		mot_rightFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
 		mot_rightFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
-        mot_rightFrontDrive.setInverted(kDriveTrain.CounterClockwise);
+        mot_rightFrontDrive.setInverted(kDriveTrain.Clockwise);
 
         // Right Rear Drive
         mot_rightRearDrive = new WPI_TalonFX(kID.RightRearDrive);
