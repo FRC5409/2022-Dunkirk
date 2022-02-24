@@ -65,10 +65,8 @@ public class Indexer extends SubsystemBase implements Toggleable{
     indexerBelt_neo.setIdleMode(IdleMode.kBrake);
     indexerBelt_neo.setInverted(true);
     indexerBelt_neo.burnFlash();
+  }
 
-
-
-    TOF_Ext = new TimeOfFlight(0);
   }
 
   // INDEXER METHODS
@@ -139,6 +137,7 @@ public class Indexer extends SubsystemBase implements Toggleable{
     enabled = true;
     
   }
+
 
   @Override
   public void disable() {

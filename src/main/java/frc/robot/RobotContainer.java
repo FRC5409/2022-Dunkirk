@@ -20,7 +20,7 @@ import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DisableFlywheel;
 import frc.robot.commands.FastGear;
 
-import frc.robot.commands.IndexerActive;
+import frc.robot.commands.IndexerIntakeActive;
 import frc.robot.commands.IntakeActive;
 
 import frc.robot.commands.IntakeActive;
@@ -99,7 +99,7 @@ public class RobotContainer {
   private final DefaultDrive defaultDrive;
 
   private final ReverseIntakeIndexer reverse;
-  private final IndexerActive indexerActive;  
+  private final IndexerIntakeActive indexerIntakeActive;  
   //private final IntakeIndexGo m_intakeIndexGo;
   //private final ReverseIntakeIndexer m_reverseIntakeIndex;
   //private final IntakeSimulationTesting m_intakeSimulationTesting;
@@ -142,7 +142,7 @@ public class RobotContainer {
 
      // Init commands
      defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
-     indexerActive = new IndexerActive(Indexer);
+     indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake);
      reverse = new ReverseIntakeIndexer(Intake, Indexer);
      //intakeActive = new IntakeActive(Intake, Indexer);
     //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
@@ -165,7 +165,6 @@ public class RobotContainer {
 
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
-    //Indexer.setDefaultCommand(indexerActive);
   }
 
   /**
@@ -185,7 +184,9 @@ public class RobotContainer {
 
 
     // but_main_A.whenPressed();
-    but_main_X.whileHeld(new IntakeActive(Intake, Indexer));
+
+    but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
+
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
 
     joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
