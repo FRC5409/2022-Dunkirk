@@ -36,9 +36,10 @@ public class IndexerActive extends CommandBase {
   public void initialize() {
 
     if(!(sys_indexer.ballDetectionExit() && sys_indexer.isRangeValid_Ext())){
-      sys_intake.intakeOn(1);
+      sys_intake.intakeOn(0.5);
       sys_intake.intakeIn(1);
-      sys_intake.solenoidsUp();
+      sys_indexer.indexerOn(1);
+      sys_intake.solenoidsDown();
     }
   }
 
@@ -50,7 +51,7 @@ public class IndexerActive extends CommandBase {
     TOF_Ext = sys_indexer.ballDetectionExit();
 
     if(TOF_Ent){
-      sys_indexer.indexerOn(0.5);
+      sys_indexer.indexerOn(0.75);
     } else if(TOF_Ball1 && !TOF_Ext){
       sys_indexer.indexerOn(0);
     } else if(TOF_Ext){
