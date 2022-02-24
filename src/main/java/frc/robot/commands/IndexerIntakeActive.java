@@ -9,7 +9,7 @@ import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class IndexerActive extends CommandBase {
+public class IndexerIntakeActive extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private Indexer sys_indexer;
   private Intake sys_intake; 
@@ -24,7 +24,7 @@ public class IndexerActive extends CommandBase {
    *
    * @param indexer The subsystem used by this command.
    */
-  public IndexerActive(Indexer indexer, Intake intake) {
+  public IndexerIntakeActive(Indexer indexer, Intake intake) {
     sys_indexer = indexer;
     sys_intake = intake; 
     // Use addRequirements() here to declare subsystem dependencies.
