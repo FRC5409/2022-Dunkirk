@@ -137,33 +137,33 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
 
-    // // Generates a trajectory that tells the robot to move from its original location
-    // Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-    //                                                                List.of(new Translation2d(1, 0)),
-    //                                                                new Pose2d(3, 0, new Rotation2d(0)), 
-    //                                                                kAuto.config); 
+    // Generates a trajectory that tells the robot to move from its original location
+    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
+                                                                   List.of(),
+                                                                   new Pose2d(3, 0, new Rotation2d(0)), 
+                                                                   kAuto.config);
       
-    //   // new Translation2d(1, 1), new Translation2d(2, -1))
+      // new Translation2d(1, 1), new Translation2d(2, -1))
 
-    // // RamseteController controller = new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta);
-    // // controller.setEnabled(false);
+    // RamseteController controller = new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta);
+    // controller.setEnabled(false);
 
-    // RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
-    //     new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
-    //     new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-    //         kAuto.kaVoltSecondsSquaredPerMeter),
-    //     kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
-    //     new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
-    //     DriveTrain::tankDriveVolts, DriveTrain); // set p to 0
+    RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
+        new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
+        new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
+            kAuto.kaVoltSecondsSquaredPerMeter),
+        kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
+        new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
+        DriveTrain::tankDriveVolts, DriveTrain); // set p to 0
 
-    // // Reset odometry to the starting pose of the trajectory.
-    // DriveTrain.zeroEncoders();
-    // Pigeon.resetOdometry(trajectory.getInitialPose());
+    // Reset odometry to the starting pose of the trajectory.
+    DriveTrain.zeroEncoders();
+    Pigeon.resetOdometry(trajectory.getInitialPose());
 
-    // // returns the autonomous command
-    // // makes sure that after the auto command is finished running the robot stops.
-    // return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
+    // returns the autonomous command
+    // makes sure that after the auto command is finished running the robot stops.
+    return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
 
-    return new Characterize(DriveTrain, Pigeon);
+    // return new Characterize(DriveTrain, Pigeon);
   }
 }
