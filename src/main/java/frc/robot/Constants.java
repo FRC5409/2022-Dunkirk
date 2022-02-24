@@ -180,9 +180,8 @@ public final class Constants {
         public static final int FEEDER_TOLERANCE = 100;
         public static final int rpmTolerance = 1;
 
-        public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.00017,0,0);
-        public static final Gains UPPER_GAINS = new Gains(0.29873, 0, 0, 0.044265063,0,0);
-        public static final Gains LOWER_GAINS = new Gains(0.011, 0, 0, 0.047293811,0,0);
+        public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.000188,0,0);
+        public static final Gains SHOOTER_GAINS = new Gains(0.475, 0, 0, 0.049,0,0);
     }
 
 

@@ -15,7 +15,6 @@ import frc.robot.subsystems.shooter.ShooterTurret;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import frc.robot.commands.ChangePIDS;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DisableFlywheel;
 import frc.robot.commands.FastGear;
@@ -27,7 +26,6 @@ import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
 
 import frc.robot.commands.SlowGear;
-import frc.robot.commands.TestingSpin;
 import frc.robot.commands.shooter.HoodDown;
 import frc.robot.commands.shooter.HoodUp;
 //Constants
@@ -156,9 +154,6 @@ public class RobotContainer {
     // Configure the button bindings
 
 
-    Shuffleboard.getTab("FlywheelTuning").add("Disable", new DisableFlywheel(Flywheel));
-    Shuffleboard.getTab("FlywheelTuning").add("Change PIDS", new ChangePIDS(Flywheel));
-    Shuffleboard.getTab("FlywheelTuning").add("Spin", new TestingSpin(Flywheel));
     Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
     Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
     configureButtonBindings();
