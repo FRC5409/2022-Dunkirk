@@ -30,6 +30,9 @@ public class DriveTrain extends SubsystemBase{
     private final WPI_TalonFX mot_rightFrontDrive;
     private final WPI_TalonFX mot_rightRearDrive;
 
+    private final CANCoder enc_left;
+    private final CANCoder enc_right;
+
     private double lmRPM = 0;
     private double rmRPM = 0;
 
@@ -153,6 +156,9 @@ public class DriveTrain extends SubsystemBase{
         applyAntiTip = kDriveTrain.startWithAntiTip;
 
         setBrakeMode(true);
+
+        enc_left = new CANCoder(kDriveTrain.CANLeftEncoder);
+        enc_right = new CANCoder(kDriveTrain.CANRightEncoder);
 
         zeroEncoders();
         // 6630
@@ -351,12 +357,14 @@ public class DriveTrain extends SubsystemBase{
         return (getEncoderPositionLeft() + getEncoderPositionRight())/ 2;
     }
 
+    //TODO: ENCODER UNIT CHANGE FROM DEGREE TO METERS
+
     /**
-     * @return the average position of the left encoders 
+     * @return the  position of the left encoders 
      * 
      */
     public double getEncoderPositionLeft(){
-        return (mot_leftFrontDrive.getSelectedSensorPosition() + mot_leftRearDrive.getSelectedSensorPosition()) / 2;
+        return enc_left.getPosition();
     }
 
     /**
@@ -364,7 +372,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderPositionRight(){
-        return (mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition()) / 2;
+        return enc_right.getPosition();
     }
 
     /**
@@ -380,7 +388,7 @@ public class DriveTrain extends SubsystemBase{
      * 
      */
     public double getEncoderVelocityLeft(){
-        return (mot_leftFrontDrive.getSelectedSensorVelocity() + mot_leftRearDrive.getSelectedSensorVelocity()) / 2;
+        return enc_left.getVelocity();
     }
 
     /**
@@ -388,9 +396,11 @@ public class DriveTrain extends SubsystemBase{
      * 
      */ 
     public double getEncoderVelocityRight(){
-        return (mot_rightFrontDrive.getSelectedSensorVelocity() + mot_rightRearDrive.getSelectedSensorVelocity()) / 2;
+        return enc_right.getVelocity();
     }
 
+
+    // TODO: CHANGE RPM - ASK
     public double getRPMRight(){
         return (getEncoderVelocityRight() / 2048) * 600;
     }
@@ -409,24 +419,18 @@ public class DriveTrain extends SubsystemBase{
      * 
      */ 
     public void zeroEncoders() {
-        mot_rightFrontDrive.setSelectedSensorPosition(0);
-        mot_rightRearDrive.setSelectedSensorPosition(0);
-        mot_leftFrontDrive.setSelectedSensorPosition(0);
-        mot_leftRearDrive.setSelectedSensorPosition(0);
+        enc_left.setPosition(0);
+        enc_right.setPosition(0);
     }
 
     public void setAllEncoders(double position) {
-        mot_rightFrontDrive.setSelectedSensorPosition(position);
-        mot_rightRearDrive.setSelectedSensorPosition(position);
-        mot_leftFrontDrive.setSelectedSensorPosition(position);
-        mot_leftRearDrive.setSelectedSensorPosition(position);
+        enc_left.setPosition(position);
+        enc_right.setPosition(position);
     }
 
     public void setEncodersSplit(double position_left, double position_right){
-        mot_rightFrontDrive.setSelectedSensorPosition(position_right);
-        mot_rightRearDrive.setSelectedSensorPosition(position_right);
-        mot_leftFrontDrive.setSelectedSensorPosition(position_left);
-        mot_leftRearDrive.setSelectedSensorPosition(position_left);
+        enc_left.setPosition(position_left);
+        enc_right.setPosition(position_right);
     }
 
     // ------------------------ Setpoint Controls ------------------------ //

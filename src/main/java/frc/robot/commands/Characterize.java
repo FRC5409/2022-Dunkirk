@@ -40,28 +40,28 @@ public class Characterize extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        // double leftPosition = m_drivebase.getLeftEncoderMeters();
-        // double leftRate = m_drivebase.getLeftEncoderMetersPerSec();
-        // double rightPosition = m_drivebase.getRightEncoderMeters();
-        // double rightRate = m_drivebase.getRightEncoderMetersPerSec();
-        // double angularPosition = -Math.toRadians(m_gyro.getAngle());
-        // double deltaAngle = angularPosition - m_prevAngle;
-        // double now = Timer.getFPGATimestamp();
-        // double deltaTime = now - m_prevTime;
-        // double angularRate = m_prevTime==0 || deltaTime==0 ? 0.0 : deltaAngle/deltaTime;
-        // m_prevAngle = angularPosition;
-        // m_prevTime = now;
+        double leftPosition = m_drivebase.getEncoderPositionLeft();
+        double leftRate = m_drivebase.getEncoderVelocityLeft();
+        double rightPosition = m_drivebase.getEncoderPositionRight();
+        double rightRate = m_drivebase.getEncoderVelocityRight();
+        double angularPosition = -Math.toRadians(m_gyro.getAngle());
+        double deltaAngle = angularPosition - m_prevAngle;
+        double now = Timer.getFPGATimestamp();
+        double deltaTime = now - m_prevTime;
+        double angularRate = m_prevTime==0 || deltaTime==0 ? 0.0 : deltaAngle/deltaTime;
+        m_prevAngle = angularPosition;
+        m_prevTime = now;
 
-        // // Resetting encoders takes non-zero time on CAN-based encoders
-        // // Wait for the reset to complete
-        // if (!m_resetComplete) {
-        //     if (leftPosition > 0.01 || rightPosition > 0.01) return;
-        //     m_resetComplete = true;
-        // }
-        // m_logger.log(leftPosition, rightPosition, leftRate, 
-        //            rightRate, angularPosition, angularRate);
-        // m_drivebase.tankDriveVolts(m_logger.getLeftMotorVoltage(), 
-        //                        m_logger.getRightMotorVoltage());
+        // Resetting encoders takes non-zero time on CAN-based encoders
+        // Wait for the reset to complete
+        if (!m_resetComplete) {
+            if (leftPosition > 0.01 || rightPosition > 0.01) return;
+            m_resetComplete = true;
+        }
+        m_logger.log(leftPosition, rightPosition, leftRate, 
+                   rightRate, angularPosition, angularRate);
+        m_drivebase.tankDriveVolts(m_logger.getLeftMotorVoltage(), 
+                               m_logger.getRightMotorVoltage());
     }
 
     // Called once the command ends or is interrupted.

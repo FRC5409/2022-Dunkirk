@@ -114,6 +114,9 @@ public final class Constants {
         public static final int CANRightDriveFront = 3;
         public static final int CANLeftDriveBack = 2;
         public static final int CANRightDriveBack = 4;
+
+        public static final int CANLeftEncoder = 5;
+        public static final int CANRightEncoder = 6;
         
         // Current Limits
         public static final double CurrentLimit = 65;
