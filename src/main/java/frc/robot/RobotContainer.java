@@ -4,21 +4,21 @@
 
 package frc.robot;
 
-
 // Subsystems
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pigeon;
 import frc.robot.subsystems.Pneumatics;
-
-
+import frc.robot.subsystems.shooter.ShooterFlywheel;
+import frc.robot.subsystems.shooter.ShooterTurret;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import frc.robot.commands.ChangePIDS;
 import frc.robot.commands.DefaultDrive;
+import frc.robot.commands.DisableFlywheel;
 import frc.robot.commands.FastGear;
-
-import frc.robot.commands.IndexerActive;
+import frc.robot.commands.IndexerIntakeActive;
 import frc.robot.commands.IndexerIntakeTest;
 import frc.robot.commands.IntakeActive;
 
@@ -26,9 +26,13 @@ import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
 
 import frc.robot.commands.SlowGear;
-
+import frc.robot.commands.TestingSpin;
+import frc.robot.commands.shooter.HoodDown;
+import frc.robot.commands.shooter.HoodUp;
 //Constants
 import frc.robot.Constants.kAuto;
+import frc.robot.base.Joystick;
+import frc.robot.base.Joystick.ButtonType;
 
 import java.util.List;
 
@@ -46,22 +50,25 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
-
-
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.commands.IntakeSimulationTesting;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseIntakeIndexer;
+import frc.robot.commands.ShooterTestOne;
+import frc.robot.commands.ShooterTestTwo;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pneumatics;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -70,10 +77,10 @@ public class RobotContainer {
 
   // Define main joystick
   private final XboxController joystick_main; // = new XboxController(0);
+  private final Joystick joystick_secondary;
   private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
       but_main_LAnalog, but_main_RAnalog, but_main_Back, but_main_Start;
-  
-      
+
   // Subsystems defined
   private final DriveTrain DriveTrain;
   private final Pneumatics Pneumatics;
@@ -81,34 +88,34 @@ public class RobotContainer {
 
   private final Indexer Indexer;
   private final Intake Intake;
-   
-
-
+  private final ShooterFlywheel Flywheel;
+  private final ShooterTurret turret;
 
   // Commands defined
-  //private final ExampleCommand m_autoCommand;
+  // private final ExampleCommand m_autoCommand;
   private final DefaultDrive defaultDrive;
 
   private final ReverseIntakeIndexer reverse;
-  private final IndexerActive indexerActive;  
-  //private final IntakeIndexGo m_intakeIndexGo;
-  //private final ReverseIntakeIndexer m_reverseIntakeIndex;
-  //private final IntakeSimulationTesting m_intakeSimulationTesting;
+  private final IndexerIntakeActive indexerIntakeActive;
+  // private final IntakeIndexGo m_intakeIndexGo;
+  // private final ReverseIntakeIndexer m_reverseIntakeIndex;
+  // private final IntakeSimulationTesting m_intakeSimulationTesting;
   // private final TestIndexBelt m_testIndexBelt;
   // private final TestIndexShoot m_testIndexShoot;
   // private final TestIndexProto m_testIndexProto;
 
+  private final IntakeActive intakeActive;
+  private final IndexerIntakeTest test;
+  // private final ReverseIntake reverseIntake;
 
-  private final IntakeActive intakeActive; 
-  private final IndexerIntakeTest test; 
-  //private final ReverseIntake reverseIntake; 
-
-
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     // Init controller
     joystick_main = new XboxController(0);
 
+    joystick_secondary = new Joystick(1);
     // Init button binds
     but_main_A = new JoystickButton(joystick_main, XboxController.Button.kA.value);
     but_main_B = new JoystickButton(joystick_main, XboxController.Button.kB.value);
@@ -121,30 +128,37 @@ public class RobotContainer {
     but_main_Back = new JoystickButton(joystick_main, XboxController.Button.kBack.value);
     but_main_Start = new JoystickButton(joystick_main, XboxController.Button.kStart.value);
 
-     // Initialize sub systems
-     DriveTrain = new DriveTrain();
-     Pneumatics = new Pneumatics();
-     Pigeon = new Pigeon();
+    // Initialize sub systems
+    DriveTrain = new DriveTrain();
+    Pneumatics = new Pneumatics();
+    Pigeon = new Pigeon();
 
-     Intake = new Intake();
-    
-     Indexer = new Indexer();
+    Intake = new Intake();
 
-     // Init commands
-     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
-     indexerActive = new IndexerActive(Indexer, Intake);
-     reverse = new ReverseIntakeIndexer(Intake, Indexer);
-     intakeActive = new IntakeActive(Intake);
-     test = new IndexerIntakeTest(Indexer, Intake);
-    //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
-    //  m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
-    //  m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
-    //  m_testIndexBelt = new TestIndexBelt(Indexer);
-    //  m_testIndexProto = new TestIndexProto(Indexer);
-    //  m_testIndexShoot = new TestIndexShoot(Indexer);
+    Indexer = new Indexer();
+    Flywheel = new ShooterFlywheel();
+    turret = new ShooterTurret();
 
- 
+    // Init commands
+    defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
+    indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake);
+    reverse = new ReverseIntakeIndexer(Intake, Indexer);
+    intakeActive = new IntakeActive(Intake, Indexer);
+    test = new IndexerIntakeTest(Indexer, Intake);
+    // m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
+    // m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
+    // m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
+    // m_testIndexBelt = new TestIndexBelt(Indexer);
+    // m_testIndexProto = new TestIndexProto(Indexer);
+    // m_testIndexShoot = new TestIndexShoot(Indexer);
+
     // Configure the button bindings
+
+    Shuffleboard.getTab("FlywheelTuning").add("Disable", new DisableFlywheel(Flywheel));
+    Shuffleboard.getTab("FlywheelTuning").add("Change PIDS", new ChangePIDS(Flywheel));
+    Shuffleboard.getTab("FlywheelTuning").add("Spin", new TestingSpin(Flywheel));
+    Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
+    Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
     configureButtonBindings();
 
     // Sets default command to be DefaultDrive
@@ -152,9 +166,11 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
@@ -162,17 +178,21 @@ public class RobotContainer {
     // Bind start to go to the next drive mode
     but_main_Start.whenPressed(() -> DriveTrain.cycleDriveMode());
 
-    // Bind right bumper to 
+    // Bind right bumper to
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
-    but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
-
+    but_main_RBumper.whenReleased(new SlowGear(DriveTrain));
 
     // but_main_A.whenPressed();
-    //but_main_X.whileHeld(new IndexerActive(Indexer, Intake));
+    // but_main_X.whileHeld(new IndexerActive(Indexer, Intake));
     but_main_Y.whileHeld(new IndexerIntakeTest(Indexer, Intake));
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
 
+    but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
 
+    but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+
+    joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
+    joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
   }
 
   /**
@@ -181,38 +201,45 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    return null; 
      
     // creates configuration for trajectory
-    var feedForward = new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-        kAuto.kaVoltSecondsSquaredPerMeter);
-    var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(feedForward, kAuto.kDriveKinematics,
-        10);
+    // var feedForward = new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
+    //     kAuto.kaVoltSecondsSquaredPerMeter);
+    // var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(feedForward, kAuto.kDriveKinematics,
+    //     10);
 
-    TrajectoryConfig config = new TrajectoryConfig(kAuto.kMaxSpeed, kAuto.kMaxAcceleration);
-    config.setKinematics(kAuto.kDriveKinematics).addConstraint(autoVoltageConstraint);
-    // Generates a trajectory that tells the robot to move from its original
-    // location
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(
-          new Translation2d(1, 0)
-        ), 
-        new Pose2d(0, 1, new Rotation2d(0)), 
-        config); // new Translation2d(1, 1),  new Translation2d(2, -1)
+    // TrajectoryConfig config = new TrajectoryConfig(kAuto.kMaxSpeed, kAuto.kMaxAcceleration);
+    // config.setKinematics(kAuto.kDriveKinematics).addConstraint(autoVoltageConstraint);
+    // // Generates a trajectory that tells the robot to move from its original
+    // // location
+    // Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
+    //     List.of(
+    //       new Translation2d(1, 0)
+    //     ), 
+    //     new Pose2d(0, 1, new Rotation2d(0)), 
+    //     config); // new Translation2d(1, 1),  new Translation2d(2, -1)
 
-    RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
-        new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
-        new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-            kAuto.kMaxAcceleration),
-        kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
-        new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
-        DriveTrain::tankDriveVolts, DriveTrain);
+    // RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
+    //     new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
+    //     new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
+    //         kAuto.kMaxAcceleration),
+    //     kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
+    //     new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
+    //     DriveTrain::tankDriveVolts, DriveTrain);
 
-    // Reset odometry to the starting pose of the trajectory.
-    DriveTrain.zeroEncoders();
-    Pigeon.resetOdometry(trajectory.getInitialPose());
+    // // Reset odometry to the starting pose of the trajectory.
+    // DriveTrain.zeroEncoders();
+    // Pigeon.resetOdometry(trajectory.getInitialPose());
 
     // returns the autonomous command
     // makes sure that after the auto command is finished running the robot stops.
-    return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
+    //return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
   }
 }
+
+
+    
+            
+        
+         
