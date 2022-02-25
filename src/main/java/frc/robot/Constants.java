@@ -193,6 +193,8 @@ public final class Constants {
         // Height in meters
         public static final double ROBOT_HEIGHT        = 4;
         public static final double FIXED_ANGLE         = 45;
+        public static final double MAX_CLOCKWISE_ANGLE  =70;
+        public static final double MAX_COUNTER_CLOCKWISE_ANGLE = -52;
         public static final Range  LIMITS              = new Range(-10, 20);
         public static final double ALIGNMENT_THRESHOLD = 0.14;
 
