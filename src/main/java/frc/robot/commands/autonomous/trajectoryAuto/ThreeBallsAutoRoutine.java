@@ -41,7 +41,7 @@ public class ThreeBallsAutoRoutine extends SequentialCommandGroup{
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(new Translation2d(1, 1)),
                                                                    new Pose2d(2, 0, new Rotation2d(0)), 
-                                                                   kAuto.config);
+                                                                   kAuto.configNoStop);
 
         RamseteCommand r1 = new RamseteCommand(t1, m_pigeon::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
@@ -59,7 +59,7 @@ public class ThreeBallsAutoRoutine extends SequentialCommandGroup{
         Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(new Translation2d(1, 1)),
                                                                    new Pose2d(2, 0, new Rotation2d(0)), 
-                                                                   kAuto.config);
+                                                                   kAuto.configStop);
 
         RamseteCommand r2 = new RamseteCommand(t2, m_pigeon::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),

@@ -180,10 +180,18 @@ public final class Constants {
                                            kaVoltSecondsSquaredPerMeter),
                 kDriveKinematics, 10);
 
-        public static final TrajectoryConfig config = 
+        public static final TrajectoryConfig configStop = 
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint);
+            //TODO: Test .setEndVelocity(0);
+
+        public static final TrajectoryConfig configNoStop = 
+            new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
+            .setKinematics(kDriveKinematics)
+            .addConstraint(autoVoltageConstraint)    
+            .setEndVelocity(1.9);  
+
 
     }
 
