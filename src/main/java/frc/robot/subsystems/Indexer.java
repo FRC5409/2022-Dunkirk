@@ -65,10 +65,6 @@ public class Indexer extends SubsystemBase implements Toggleable{
     indexerBelt_neo.setIdleMode(IdleMode.kBrake);
     indexerBelt_neo.setInverted(true);
     indexerBelt_neo.burnFlash();
-
-
-
-    TOF_Ext = new TimeOfFlight(0);
   }
 
   // INDEXER METHODS
@@ -140,6 +136,7 @@ public class Indexer extends SubsystemBase implements Toggleable{
     
   }
 
+
   @Override
   public void disable() {
     enabled = false;
@@ -188,7 +185,7 @@ public class Indexer extends SubsystemBase implements Toggleable{
 
   public boolean ballDetectionEnter() {
     double range = TOF_Ent.getRange();
-    if (range < kIndexer.rangeEnter_1) { // need to find the range to compare with
+    if (range < kIndexer.rangeEnter) { // need to find the range to compare with
       return true;
     }
     return false;
@@ -196,7 +193,7 @@ public class Indexer extends SubsystemBase implements Toggleable{
 
   public boolean ballDetectionBall1() {
     double range = TOF_Ball1.getRange();
-    if (range < kIndexer.rangeBall1_1) {
+    if (range < kIndexer.rangeBall1) {
       return true;
     }
     return false;
@@ -205,7 +202,7 @@ public class Indexer extends SubsystemBase implements Toggleable{
   public boolean ballDetectionExit() {
     double range = TOF_Ext.getRange();
 
-    if (range < kIndexer.rangeBall1_1){ // need to find number to compare with
+    if (range < kIndexer.rangeExit){ // need to find number to compare with
       return true;
     }
     return false;
@@ -214,8 +211,6 @@ public class Indexer extends SubsystemBase implements Toggleable{
   public boolean isRangeValid_Ball1() {
     return TOF_Ball1.isRangeValid();
   }
-
-
   /**
    * checks whether the range is valid or not
    * 

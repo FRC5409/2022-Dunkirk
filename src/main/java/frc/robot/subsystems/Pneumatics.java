@@ -56,6 +56,7 @@ public class Pneumatics extends SubsystemBase {
    * This method will set the closed loop to be false.
    */
   private void endLoop() {
+    // System.out.println(true);
     compressor1.disable();
   }
 

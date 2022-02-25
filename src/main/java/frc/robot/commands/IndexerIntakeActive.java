@@ -9,35 +9,36 @@ import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class IndexerActive extends CommandBase {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+public class IndexerIntakeActive extends CommandBase {
+  @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
   private Indexer sys_indexer;
-  
+  private Intake sys_intake;
 
-  boolean TOF_Ent; 
-  boolean TOF_Ball1; 
-  boolean TOF_Ext;
+  boolean TOF_Ent = false;
+  boolean TOF_Ball1 = false;
+  boolean TOF_Ext = false;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param indexer The subsystem used by this command.
    */
-  public IndexerActive(Indexer indexer) {
+  public IndexerIntakeActive(Indexer indexer, Intake intake) {
     sys_indexer = indexer;
+    sys_intake = intake;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(indexer);
+    addRequirements(indexer, intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
 
-    //safety to stop running the intake when indexer is full
-    // if(!(sys_indexer.ballDetectionExit() && sys_indexer.isRangeValid_Ext())){
-    //   sys_intake.intakeOn(0);
-    //   sys_intake.solenoidsUp();
-    // }
+    sys_intake.intakeOn(0.3);
+    sys_intake.intakeIn(1);
+    sys_indexer.indexerOn(1);
+    sys_intake.solenoidsDown();
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -47,12 +48,18 @@ public class IndexerActive extends CommandBase {
     TOF_Ball1 = sys_indexer.ballDetectionBall1();
     TOF_Ext = sys_indexer.ballDetectionExit();
 
-    if(TOF_Ent){
-      sys_indexer.indexerOn(0.5);
-    } else if(TOF_Ball1 && !TOF_Ext){
+    // if(TOF_Ent){
+    // sys_indexer.indexerOn(0.75);
+    // } else if(TOF_Ball1 && !TOF_Ext){
+    // sys_indexer.indexerOn(0);
+    // } else if(TOF_Ext){
+    // sys_indexer.indexerOn(0);
+    // }
+
+    if(TOF_Ball1 && TOF_Ext){
       sys_indexer.indexerOn(0);
-    } else if(TOF_Ext){
-      sys_indexer.indexerOn(0);
+    } else if (TOF_Ball1) {
+      sys_indexer.indexerOn(0.75);
     }
   }
 
@@ -60,17 +67,23 @@ public class IndexerActive extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     sys_indexer.indexerOn(0);
-    // sys_intake.intakeOn(0);
-
-    // if(sys_indexer.ballDetectionExit()){
-    //   sys_intake.solenoidsUp();
-    // }
+    sys_intake.intakeOn(0);
+    sys_intake.intakeIn(0);
+    sys_intake.solenoidsUp();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+
+    System.out.println(TOF_Ball1);
+    System.out.println(TOF_Ext);
+
+    // if (TOF_Ball1 && TOF_Ext) {
+
+    //   return true;
+    // }
+
     return false;
-    //(sys_indexer.ballDetectionExit() && sys_indexer.isRangeValid_Ext());
   }
 }
