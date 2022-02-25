@@ -11,20 +11,19 @@ import frc.robot.training.BranchType;
 import frc.robot.training.Setpoint;
 import frc.robot.training.TrainerContext;
 import frc.robot.training.TrainerDashboard;
-import frc.robot.training.protocol.NetworkClient;
-import frc.robot.training.protocol.NetworkSocket;
-import frc.robot.training.protocol.SendableContext;
-import frc.robot.training.protocol.generic.ArraySendable;
-import frc.robot.training.protocol.generic.BundleSendable;
-import frc.robot.training.protocol.generic.StringSendable;
-import frc.robot.training.protocol.generic.ValueSendable;
+// import frc.robot.training.protocol.NetworkClient;
+// import frc.robot.training.protocol.NetworkSocket;
+// import frc.robot.training.protocol.SendableContext;
+// import frc.robot.training.protocol.generic.ArraySendable;
+// import frc.robot.training.protocol.generic.BundleSendable;
+// import frc.robot.training.protocol.generic.StringSendable;
+// import frc.robot.training.protocol.generic.ValueSendable;
 import frc.robot.utils.ShooterModel;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
-import frc.robot.commands.ChangePIDS;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DisableFlywheel;
 import frc.robot.commands.FastGear;
@@ -40,8 +39,6 @@ import frc.robot.commands.FindElevatorZero;
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.SlowGear;
-
-import frc.robot.commands.TestingSpin;
 import frc.robot.commands.shooter.HoodDown;
 import frc.robot.commands.shooter.HoodUp;
 
@@ -100,7 +97,7 @@ public class RobotContainer {
 
   private final TrainerContext       trainerContext;
   private final TrainerDashboard     trainerDashboard;
-  private       NetworkClient        trainerClient;
+  // private       NetworkClient        trainerClient;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -163,11 +160,11 @@ public class RobotContainer {
 
     trainerDashboard = new TrainerDashboard(trainerContext);
 
-    try {
-      configureTraining();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    // try {
+    //   configureTraining();
+    // } catch (IOException e) {
+    //   throw new RuntimeException(e);
+    // }
 
     configureButtonBindings();
 
@@ -194,15 +191,15 @@ public class RobotContainer {
       .whenPressed(() -> DriveTrain.cycleDriveMode());
 
     // Bind right bumper to
-    but_main_RBumper.whenPressed(new FastGear(DriveTrain));
-    but_main_RBumper.whenReleased(new SlowGear(DriveTrain));
+    joystick_main.getButton(ButtonType.kRightBumper).whenPressed(new FastGear(DriveTrain));
+    joystick_main.getButton(ButtonType.kRightBumper).whenReleased(new SlowGear(DriveTrain));
 
     // but_main_A.whenPressed();
     //but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
-    but_main_Y.whileHeld(new IndexerIntakeTest(Indexer, Intake));
-    but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+    joystick_main.getButton(ButtonType.kY).whileHeld(new IndexerIntakeTest(Indexer, Intake));
+    joystick_main.getButton(ButtonType.kB).whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
     
-    but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
+    joystick_main.getButton(ButtonType.kX).whileHeld(new IndexerIntakeActive(Indexer, Intake));
 
     // but_main_A.whenActive( new MoveToDistance(DriveTrain));
     // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
