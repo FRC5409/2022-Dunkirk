@@ -117,7 +117,9 @@ public final class Constants {
         public static final double forwardRampRate = 0.5;
         public static final double backwardsRampRate = 0.3;
         public static final double forwardTurnRampRate = 0.1;
-        public static final double backwardsTurnRampRate = 0.2;
+        public static final double backwardsTurnRampRate = 0.1;
+
+        public static final double highGearRampRate = 0.2;
 
         // Double Solenoid
         public static final int ForwardChannel = 8;
