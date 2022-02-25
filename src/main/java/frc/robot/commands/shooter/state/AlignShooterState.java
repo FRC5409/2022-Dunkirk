@@ -1,4 +1,4 @@
-package frc.robot.commands.shooter;
+package frc.robot.commands.shooter.state;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -24,8 +24,9 @@ public class AlignShooterState extends TimedStateCommand {
 
     @Override
     public void initialize() {
-        done = false;
         super.initialize();
+        
+        done = false;
     }
 
     @Override

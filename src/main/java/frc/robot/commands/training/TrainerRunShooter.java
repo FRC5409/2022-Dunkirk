@@ -1,9 +1,9 @@
 package frc.robot.commands.training;
 
 import frc.robot.base.StateCommandGroup;
-import frc.robot.commands.shooter.AlignShooterState;
-import frc.robot.commands.shooter.SearchShooterState;
-import frc.robot.commands.shooter.SweepShooterState;
+import frc.robot.commands.shooter.state.AlignShooterState;
+import frc.robot.commands.shooter.state.SearchShooterState;
+import frc.robot.commands.shooter.state.SweepShooterState;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;

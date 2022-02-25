@@ -1,4 +1,4 @@
-package frc.robot.commands.shooter;
+package frc.robot.commands.shooter.state;
 
 import org.jetbrains.annotations.NotNull;
 

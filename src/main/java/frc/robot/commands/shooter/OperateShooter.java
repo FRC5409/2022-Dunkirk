@@ -2,6 +2,10 @@ package frc.robot.commands.shooter;
 
 import frc.robot.Constants;
 import frc.robot.base.StateCommandGroup;
+import frc.robot.commands.shooter.state.AlignShooterState;
+import frc.robot.commands.shooter.state.OperateShooterState;
+import frc.robot.commands.shooter.state.SearchShooterState;
+import frc.robot.commands.shooter.state.SweepShooterState;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
