@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import frc.robot.subsystems.Climber;
+
 // Subsystems
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
@@ -13,7 +15,9 @@ import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+
 import frc.robot.commands.ChangePIDS;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DisableFlywheel;
@@ -22,13 +26,19 @@ import frc.robot.commands.IndexerIntakeActive;
 import frc.robot.commands.IndexerIntakeTest;
 import frc.robot.commands.IntakeActive;
 
+import frc.robot.commands.AutoAlign;
+import frc.robot.commands.DefaultElevator;
+import frc.robot.commands.ElevateTo;
+import frc.robot.commands.FindElevatorZero;
+
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
-
 import frc.robot.commands.SlowGear;
+
 import frc.robot.commands.TestingSpin;
 import frc.robot.commands.shooter.HoodDown;
 import frc.robot.commands.shooter.HoodUp;
+
 //Constants
 import frc.robot.Constants.kAuto;
 import frc.robot.base.Joystick;
@@ -77,19 +87,30 @@ public class RobotContainer {
 
   // Define main joystick
   private final XboxController joystick_main; // = new XboxController(0);
+  
   private final Joystick joystick_secondary;
   private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
       but_main_LAnalog, but_main_RAnalog, but_main_Back, but_main_Start;
+  
+  private final XboxController joystick_secondary;
+  private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
+      but_main_LAnalog, but_main_RAnalog, but_main_Back, but_main_Start;
+  private JoystickButton but_sec_A, but_sec_B, but_sec_X, but_sec_Y, but_sec_LBumper, but_sec_RBumper,
+      but_sec_LAnalog, but_sec_RAnalog, but_sec_Back, but_sec_Start, but_sec_Left, but_sec_Up, but_sec_Right,
+      but_sec_Down;
 
   // Subsystems defined
   private final DriveTrain DriveTrain;
-  private final Pneumatics Pneumatics;
   private final Pigeon Pigeon;
 
   private final Indexer Indexer;
   private final Intake Intake;
+
   private final ShooterFlywheel Flywheel;
   private final ShooterTurret turret;
+ 
+  private final Pneumatics Pneumatics;
+  private final Climber Climber;
 
   // Commands defined
   // private final ExampleCommand m_autoCommand;
@@ -107,13 +128,14 @@ public class RobotContainer {
   private final IntakeActive intakeActive;
   private final IndexerIntakeTest test;
   // private final ReverseIntake reverseIntake;
-
+  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Init controller
     joystick_main = new XboxController(0);
+    joystick_secondary = new XboxController(1);
 
     joystick_secondary = new Joystick(1);
     // Init button binds
@@ -138,6 +160,8 @@ public class RobotContainer {
     Indexer = new Indexer();
     Flywheel = new ShooterFlywheel();
     turret = new ShooterTurret();
+    
+    Climber = new Climber();
 
     // Init commands
     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
@@ -152,6 +176,18 @@ public class RobotContainer {
     // m_testIndexProto = new TestIndexProto(Indexer);
     // m_testIndexShoot = new TestIndexShoot(Indexer);
 
+ 
+    but_sec_A = new JoystickButton(joystick_secondary, XboxController.Button.kA.value);
+    but_sec_B = new JoystickButton(joystick_secondary, XboxController.Button.kB.value);
+    but_sec_X = new JoystickButton(joystick_secondary, XboxController.Button.kX.value);
+    but_sec_Y = new JoystickButton(joystick_secondary, XboxController.Button.kY.value);
+    but_sec_LBumper = new JoystickButton(joystick_secondary, XboxController.Button.kLeftBumper.value);
+    but_sec_RBumper = new JoystickButton(joystick_secondary, XboxController.Button.kRightBumper.value);
+    but_sec_LAnalog = new JoystickButton(joystick_secondary, XboxController.Button.kLeftStick.value);
+    but_sec_RAnalog = new JoystickButton(joystick_secondary, XboxController.Button.kRightStick.value);
+    but_sec_Back = new JoystickButton(joystick_secondary, XboxController.Button.kBack.value);
+    but_sec_Start = new JoystickButton(joystick_secondary, XboxController.Button.kStart.value);
+    
     // Configure the button bindings
 
     Shuffleboard.getTab("FlywheelTuning").add("Disable", new DisableFlywheel(Flywheel));
@@ -163,6 +199,9 @@ public class RobotContainer {
 
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
+    // Indexer.setDefaultCommand(indexerActive);
+    Climber.setDefaultCommand(new DefaultElevator(Climber, joystick_secondary));
+    CommandScheduler.getInstance().schedule(new FindElevatorZero(Climber));
   }
 
   /**
@@ -186,10 +225,26 @@ public class RobotContainer {
     //but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
     but_main_Y.whileHeld(new IndexerIntakeTest(Indexer, Intake));
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
-
+    
     but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
 
-   // but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+    // but_main_A.whenActive( new MoveToDistance(DriveTrain));
+    // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
+
+    // but_sec_Left.whenPressed(new ElevateTo(Climber, true, 0));
+    // but_sec_Left.whenPressed(() -> {
+    // System.out.println(true);
+    // });
+
+    but_sec_X.whenPressed(new AutoAlign(Climber, DriveTrain, Pigeon, 180));
+    but_sec_B.whenPressed(() -> {
+      Pigeon.reset();
+    });
+    but_sec_Y.whenPressed(() -> {
+      Climber.zeroEncoder();
+    });
+
+    but_sec_RBumper.whenPressed(new FindElevatorZero(Climber));
 
     joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
     //joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
@@ -201,36 +256,35 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return null; 
-     
     // creates configuration for trajectory
-    // var feedForward = new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-    //     kAuto.kaVoltSecondsSquaredPerMeter);
-    // var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(feedForward, kAuto.kDriveKinematics,
-    //     10);
+    var feedForward = new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
+        kAuto.kaVoltSecondsSquaredPerMeter);
+    var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(feedForward, kAuto.kDriveKinematics,
+        10);
 
-    // TrajectoryConfig config = new TrajectoryConfig(kAuto.kMaxSpeed, kAuto.kMaxAcceleration);
-    // config.setKinematics(kAuto.kDriveKinematics).addConstraint(autoVoltageConstraint);
-    // // Generates a trajectory that tells the robot to move from its original
-    // // location
-    // Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-    //     List.of(
-    //       new Translation2d(1, 0)
-    //     ), 
-    //     new Pose2d(0, 1, new Rotation2d(0)), 
-    //     config); // new Translation2d(1, 1),  new Translation2d(2, -1)
+    TrajectoryConfig config = new TrajectoryConfig(kAuto.kMaxSpeed, kAuto.kMaxAcceleration);
+    config.setKinematics(kAuto.kDriveKinematics).addConstraint(autoVoltageConstraint);
+    // Generates a trajectory that tells the robot to move from its original
+    // location
+    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
+        List.of(
+            new Translation2d(1, 0)),
+        new Pose2d(0, 1, new Rotation2d(0)),
+        config); // new Translation2d(1, 1), new Translation2d(2, -1)
 
-    // RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
-    //     new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
-    //     new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-    //         kAuto.kMaxAcceleration),
-    //     kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
-    //     new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
-    //     DriveTrain::tankDriveVolts, DriveTrain);
+    RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
+        new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
+        new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
+            kAuto.kMaxAcceleration),
+        kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
+        new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
+        DriveTrain::tankDriveVolts, DriveTrain);
 
-    // // Reset odometry to the starting pose of the trajectory.
-    // DriveTrain.zeroEncoders();
-    // Pigeon.resetOdometry(trajectory.getInitialPose());
+    // Reset odometry to the starting pose of the trajectory.
+    DriveTrain.zeroEncoders();
+    Pigeon.resetOdometry(trajectory.getInitialPose());
+    
+    return null;
 
     // returns the autonomous command
     // makes sure that after the auto command is finished running the robot stops.

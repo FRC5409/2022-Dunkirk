@@ -44,6 +44,7 @@ public final class Constants {
 
         public final static int ClimberToF1 = 18;
         public final static int ClimberToF2 = 19;
+        public static final int ClimberTofMain = 10;
         public final static int ClimberFalcon1 = 20;
         public final static int ClimbeFalcon2 = 21;
         public final static int PneumaticHub = 2;
@@ -60,7 +61,6 @@ public final class Constants {
         public final int IntakeLeftOut  = 2;
         public final int ElevatorUnlock = 12;
         public final int ElevatorLock   = 3;
-
     }
 
     public static class kPneumatics {
@@ -70,17 +70,40 @@ public final class Constants {
         public final int Pigeon = 23;
     }
 
-    public final class Climber {
-        public static final int mot_port = 0;
+    public static class Pneumatics {
+        public static final int MODULE = 1;
+        public static final double MIN_PSI = 20;
+        public static final double MAX_PSI = 30;
+    }
 
-        public static final int DIRECTION_EXTEND = 0;
-        public static final int DIRECTION_RETRACT = 1;
-        //TODO: determine the extension length
-        public static final double EXTENSION_LENGTH = 0;
-        public static final double RETRACTION_LENGTH = 0;
+    public final class kClimber {
+        public static final int CAN_MASTER_MOT = 20;
+        public static final int CAN_FOLLOWER_MOT = 21;
+
+        public static final int DIRECTION_RETRACT = -1;
+        public static final int DIRECTION_STATIONARY = 0; 
+        public static final int DIRECTION_EXTEND = 1;
+
+        public static final double EXTENSION_LENGTH = 106.5;
+        public static final double RETRACTION_LENGTH = 0.5;
 
         public static final double ARM_SPEED = 1.8;
 
+        public static final double GEAR_RATIO = 20;
+
+        public static final double CIRCUMFERENCE = 0.11427;
+
+        // TODO: Find PIDF values
+        public static final double P = 0.8;
+        public static final double I = 0;
+        public static final double D = 1.7;
+        public static final double F = 0;
+        public static final int DIGITAL_INPUT_PORT = 8;
+
+        public static final double TO_MAX = 106.5;
+        public static final double TO_MID_RUNG = 100.0;
+        public static final double TO_LOW_RUNG = 80.0;
+        public static final double TO_MIN = 10.0;
     }
 
     public static final class kIntake{
@@ -107,6 +130,7 @@ public final class Constants {
 
         // Encoders
         public static final double encoderToMeterConversionFactor = 1;
+        
 
         public static final double encoderCPR = 2048;
         public static final double wheelCircumferenceInches = 4 * Math.PI;
@@ -122,6 +146,7 @@ public final class Constants {
 
         public static final int AADIL_DRIVE = 0;
         public static final int TANK_DRIVE = 1;
+        public static final double MAX_RPM_LOW_GEAR = 1000;
 
         // PID Controls
         public static final int kSlotIdx = 0;
@@ -147,10 +172,9 @@ public final class Constants {
         public static final boolean Clockwise = true;
 
         public static final double MAX_RPM_FOR_LOW_GEAR = 1000;
+        public static final double DISTANCE_TO_MID_RUN_FROM_WALL = 2.2098;
+        public static final double METERS_TO_RSU = 12_832.0802;
     }
-
-
-    
 
     public static final class kAuto{
         public static final double kTrackwidthMeters = Units.inchesToMeters(26.25);
