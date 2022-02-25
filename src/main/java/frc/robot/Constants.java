@@ -113,6 +113,12 @@ public final class Constants {
         public static final double lowGearConversionFactor = 1/15.32;
         public static final double highGearConversionFactor = 1/7.08;
 
+        // ramp rate limits
+        public static final double forwardRampRate = 0.5;
+        public static final double backwardsRampRate = 0.3;
+        public static final double forwardTurnRampRate = 0.1;
+        public static final double backwardsTurnRampRate = 0.2;
+
         // Double Solenoid
         public static final int ForwardChannel = 8;
         public static final int ReverseChannel = 9;
