@@ -176,6 +176,19 @@ public class DriveTrain extends SubsystemBase{
     }
 
 
+    /**
+     * sets the ramp rate
+     * 
+     * @param rampRate time to full throttle
+     * 
+     */
+    public void setRampRate(double rampRate){
+        mot_leftFrontDrive.configClosedLoopPeakOutput(  kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs);
+        mot_leftRearDrive.configClosedLoopPeakOutput(   kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs);
+        mot_rightFrontDrive.configClosedLoopPeakOutput( kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs);
+        mot_rightRearDrive.configClosedLoopPeakOutput(  kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs);
+    }
+    
     // ------------------------- Drive Modes ------------------------- //
 
     /**
