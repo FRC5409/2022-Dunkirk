@@ -216,9 +216,9 @@ public final class Constants {
 
         public static final int kIndexShooterMotor = 30;
 
-        public static final int TOF_Ent = 15; 
-        public static final int TOF_Ball1 = 16; 
-        public static final int TOF_Ext = 17; 
+        public static final int TOF_Ent = 25; 
+        public static final int TOF_Ball1 = 26; 
+        public static final int TOF_Ext = 27; 
 
         public static final int sampleTime = 24; 
 
