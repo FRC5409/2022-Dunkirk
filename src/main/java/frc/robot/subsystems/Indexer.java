@@ -211,8 +211,6 @@ public class Indexer extends SubsystemBase implements Toggleable{
   public boolean isRangeValid_Ball1() {
     return TOF_Ball1.isRangeValid();
   }
-
-
   /**
    * checks whether the range is valid or not
    * 

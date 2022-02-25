@@ -183,16 +183,16 @@ public class RobotContainer {
     but_main_RBumper.whenReleased(new SlowGear(DriveTrain));
 
     // but_main_A.whenPressed();
-    // but_main_X.whileHeld(new IndexerActive(Indexer, Intake));
+    //but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
     but_main_Y.whileHeld(new IndexerIntakeTest(Indexer, Intake));
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
 
     but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
 
-    but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+   // but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
 
     joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
-    joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
+    //joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
   }
 
   /**
