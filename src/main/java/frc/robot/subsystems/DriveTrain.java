@@ -89,9 +89,6 @@ public class DriveTrain extends SubsystemBase{
         mot_leftRearDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
 		mot_leftRearDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
 
-		mot_leftRearDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
-		mot_leftRearDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
-
 		mot_leftRearDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
         
 		mot_leftRearDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
@@ -154,8 +151,8 @@ public class DriveTrain extends SubsystemBase{
 
         m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
-        SetRampRate(kDriveTrain.forwardRampRate);
-
+        setRampRate(kDriveTrain.forwardRampRate);
+        setSpeedLimit(kDriveTrain.teleopSpeed);
         //dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
         dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
@@ -186,6 +183,34 @@ public class DriveTrain extends SubsystemBase{
         //displayDriveMode();
     }
 
+    // -------------------------- Config ----------------------------- //
+
+    /**
+     * sets the ramp rate
+     * 
+     * @param rampRate time to full throttle
+     * 
+     */
+    public void setRampRate(double rampRate){
+        mot_leftFrontDrive.configClosedLoopPeakOutput(  kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs);
+        mot_leftRearDrive.configClosedLoopPeakOutput(   kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs);
+        mot_rightFrontDrive.configClosedLoopPeakOutput( kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs);
+        mot_rightRearDrive.configClosedLoopPeakOutput(  kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs);
+    }
+
+    public void setSpeedLimit(double limit){
+		mot_leftFrontDrive.configPeakOutputForward(  limit, kDriveTrain.kTimeoutMs);
+		mot_leftFrontDrive.configPeakOutputReverse( -limit, kDriveTrain.kTimeoutMs);
+
+        mot_leftRearDrive.configPeakOutputForward(   limit, kDriveTrain.kTimeoutMs);
+		mot_leftRearDrive.configPeakOutputReverse(  -limit, kDriveTrain.kTimeoutMs);
+
+        mot_rightFrontDrive.configPeakOutputForward( limit, kDriveTrain.kTimeoutMs);
+		mot_rightFrontDrive.configPeakOutputReverse(-limit, kDriveTrain.kTimeoutMs);
+
+        mot_rightRearDrive.configPeakOutputForward(  limit, kDriveTrain.kTimeoutMs);
+		mot_rightRearDrive.configPeakOutputReverse( -limit, kDriveTrain.kTimeoutMs);
+    }
 
     // ------------------------- Drive Modes ------------------------- //
 
@@ -201,13 +226,13 @@ public class DriveTrain extends SubsystemBase{
         double accelerate = (acceleration - deceleration);
 
         if(turn != 0 ){
-            SetRampRate(kDriveTrain.turningRampRate);
+            setRampRate(kDriveTrain.turningRampRate);
         }
         else if(accelerate >= 0){
-            SetRampRate(kDriveTrain.forwardRampRate);
+            setRampRate(kDriveTrain.forwardRampRate);
         }
         else if(accelerate < 0){
-            SetRampRate(kDriveTrain.backwardsRampRate);
+            setRampRate(kDriveTrain.backwardsRampRate);
         }
 
         m_drive.arcadeDrive(accelerate, turn, true);
@@ -342,18 +367,7 @@ public class DriveTrain extends SubsystemBase{
         applyAntiTip = !applyAntiTip;
     }
 
-    /**
-     * sets the ramp rate
-     * 
-     * @param rampRate time to full throttle
-     * 
-     */
-    public void SetRampRate(double rampRate){
-        mot_leftFrontDrive.configClosedLoopPeakOutput(  kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs );
-        mot_leftRearDrive.configClosedLoopPeakOutput(   kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs );
-        mot_rightFrontDrive.configClosedLoopPeakOutput( kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs );
-        mot_rightRearDrive.configClosedLoopPeakOutput(  kDriveTrain.kPIDLoopIdx, rampRate, kDriveTrain.kTimeoutMs );
-    }
+
     // ---------------------------- Encoders ---------------------------- //
 
     /**

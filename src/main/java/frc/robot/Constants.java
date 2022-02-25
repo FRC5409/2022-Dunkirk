@@ -150,6 +150,9 @@ public final class Constants {
         // Speed limits for auto
         public static final double maxStraightSpeed = 0.5;
         public static final double maxTurnSpeed = 0.5;
+        
+        public static double teleopSpeed = 1;
+        public static double autoSpeed   = 0.5;
 
         // ramp rate limits
         public static final double forwardRampRate = 0.5;
