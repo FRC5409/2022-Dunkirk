@@ -32,7 +32,10 @@ import frc.robot.utils.Toggleable;
  * @author Akil Pathiranage
  */
 public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
+    //multiplier for rpm to convert to talonfx velocity loop units
     public static final double FLYWHEEL_ROTATION_RATIO = Constants.Falcon500.unitsPerRotation / 600.0;
+
+    //conversion for sensor units to rpm
     public static final double FLYWHEEL_FORWARD_RATIO = 1 / FLYWHEEL_ROTATION_RATIO;
     
     private final WPI_TalonFX     mot_main;
@@ -55,7 +58,7 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         mot_main = new WPI_TalonFX(Constants.kID.ShooterFalconMotor1);
             mot_main.configFactoryDefault();
             mot_main.setNeutralMode(NeutralMode.Coast);
-        MotorUtils.setGains(mot_main, 0, Constants.ShooterFlywheel.UPPER_GAINS);
+        MotorUtils.setGains(mot_main, 0, Constants.ShooterFlywheel.SHOOTER_GAINS);
 
         mot_follower = new WPI_TalonFX(Constants.kID.ShooterFalconMotor2);
         mot_follower.configFactoryDefault();
@@ -64,7 +67,7 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         mot_follower.setInverted(TalonFXInvertType.OpposeMaster);
 
         mot_feeder = new CANSparkMax(Constants.kID.ShooterNeo, MotorType.kBrushless);
-        mot_feeder.setSmartCurrentLimit(20);
+        mot_feeder.setSmartCurrentLimit(40);
         mot_feeder.setIdleMode(IdleMode.kBrake);
         mot_feeder.burnFlash();
 
@@ -78,41 +81,12 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         feederTarget = 0;
     
         SmartDashboard.putNumber("Feeder Velocity", enc_feeder.getVelocity());
-
-        fields = new HashMap<String, NetworkTableEntry>();
-
-        //shuffleboard setup
-        tab = Shuffleboard.getTab("FlywheelTuning");
-        ShuffleboardLayout pidTuningLayout = tab.getLayout("PID Tuning", BuiltInLayouts.kList);
-        fields.put("P", pidTuningLayout.add("P", 0.0).getEntry());
-        fields.put("I", pidTuningLayout.add("I", 0.0).getEntry());
-        fields.put("D", pidTuningLayout.add("D", 0.0).getEntry());
-        fields.put("F", pidTuningLayout.add("F", 0.0).getEntry());
-
-        fields.put("target", tab.add("Target", 0).getEntry());
-        fields.put("recorded", tab.add("Active Velocity", 0).getEntry());
     }
 
-    public void configPIDS(){
-        disable();
-        MotorUtils.setGains(mot_main, 0, new Gains(
-            fields.get("P").getDouble(0), 
-            fields.get("I").getDouble(0), 
-            fields.get("D").getDouble(0), 
-            fields.get("F").getDouble(0), 
-            0, 
-            0));
-    }
-
-    public void testVelocity(){
-        enable();
-        setVelocity(fields.get("target").getDouble(1000));
-    }
 
 
     @Override
     public void periodic() {
-        fields.get("recorded").setDouble(getVelocity());
         
     }
     
@@ -144,15 +118,6 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         // 600 since its rotation speed is in position change/100ms
         shooterTarget = target;
         mot_main.set(ControlMode.Velocity, shooterTarget * FLYWHEEL_ROTATION_RATIO);
-    }
-
-    /**
-     * Spins the shooter at a setpoint speed from [-1.0,1.0]
-     * @param setpoint
-     */
-    public void set(double setpoint){
-        if(!enabled) return;
-        mot_main.set(ControlMode.PercentOutput, setpoint);
     }
 
     /**
