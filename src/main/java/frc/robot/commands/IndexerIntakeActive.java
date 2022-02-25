@@ -6,6 +6,9 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Indexer;
+
+import com.revrobotics.CANSparkMax.ControlType;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -18,6 +21,8 @@ public class IndexerIntakeActive extends CommandBase {
   boolean TOF_Ball1 = false;
   boolean TOF_Ext = false;
 
+  String state = "";
+
   /**
    * Creates a new ExampleCommand.
    *
@@ -26,6 +31,9 @@ public class IndexerIntakeActive extends CommandBase {
   public IndexerIntakeActive(Indexer indexer, Intake intake) {
     sys_indexer = indexer;
     sys_intake = intake;
+
+    
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(indexer, intake);
   }
@@ -39,6 +47,7 @@ public class IndexerIntakeActive extends CommandBase {
     sys_indexer.indexerOn(1);
     sys_intake.solenoidsDown();
 
+    state = "default";
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -56,10 +65,44 @@ public class IndexerIntakeActive extends CommandBase {
     // sys_indexer.indexerOn(0);
     // }
 
+
     if(TOF_Ball1 && TOF_Ext){
       sys_indexer.indexerOn(0);
     } else if (TOF_Ball1) {
       sys_indexer.indexerOn(0.75);
+    }
+
+    if(state == "default"){
+      sys_indexer.indexerOn(0);
+
+      // exit conditions
+      if(TOF_Ball1 && !TOF_Ext){
+        // running
+        state = "running";
+      }
+      else if(!TOF_Ball1 && !TOF_Ext){
+        // running
+        state = "running";
+      }
+      else if(TOF_Ball1 && TOF_Ext){
+        state = "holding";
+      }
+    }
+    else if(state == "running"){
+      sys_indexer.indexerOn(0.75);
+
+      if(TOF_Ball1 && TOF_Ext){
+        state = "run_back";
+      }
+    }
+    else if(state == "run_back"){
+      sys_indexer.setControlMode(-2, ControlType.kPosition);
+    }
+    else if(state == "holding"){
+      if(Math.abs(sys_indexer.encoderPosition() - -2d) < 0.05){
+        sys_indexer.setControlMode(0, ControlType.kDutyCycle);
+      }
+      // what do i do after it ends
     }
   }
 
