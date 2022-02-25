@@ -157,7 +157,8 @@ public final class Constants {
         // ramp rate limits
         public static final double forwardRampRate = 0.5;
         public static final double backwardsRampRate = 0.3;
-        public static final double turningRampRate = 0.1;
+        public static final double forwardTurnRampRate = 0.1;
+        public static final double backwardsTurnRampRate = 0.2;
 
         // Anti-tip compensation
         public static final double pitchCompensation = 0;

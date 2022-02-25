@@ -225,14 +225,17 @@ public class DriveTrain extends SubsystemBase{
     public void aadilDrive(final double acceleration, final double deceleration, final double turn){
         double accelerate = (acceleration - deceleration);
 
-        if(turn != 0 ){
-            setRampRate(kDriveTrain.turningRampRate);
-        }
-        else if(accelerate >= 0){
+        if(accelerate >= 0 && turn == 0){
             setRampRate(kDriveTrain.forwardRampRate);
         }
-        else if(accelerate < 0){
+        else if(accelerate < 0 && turn == 0){
             setRampRate(kDriveTrain.backwardsRampRate);
+        }
+        if(accelerate >= 0 && turn != 0){
+            setRampRate(kDriveTrain.forwardTurnRampRate);
+        }
+        else if(accelerate < 0 && turn != 0){
+            setRampRate(kDriveTrain.backwardsTurnRampRate);
         }
 
         m_drive.arcadeDrive(accelerate, turn, true);
