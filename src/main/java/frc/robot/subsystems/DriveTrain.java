@@ -149,7 +149,10 @@ public class DriveTrain extends SubsystemBase{
 
         m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
-        // dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
+        //dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
+
+        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
+
 
         driveMode = kDriveTrain.InitialDriveMode;
 
@@ -192,8 +195,7 @@ public class DriveTrain extends SubsystemBase{
      */
     public void aadilDrive(final double acceleration, final double deceleration, final double turn){
         double accelerate = (acceleration - deceleration);
-        
-        m_drive.arcadeDrive(accelerate, turn, true);
+        m_drive.arcadeDrive(accelerate*0.8, turn, false);
     }
     
     /**

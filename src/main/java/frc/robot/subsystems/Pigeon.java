@@ -10,6 +10,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.robot.Constants.kID;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.Constants.kGyroSystem;
 
@@ -41,7 +42,7 @@ public class Pigeon extends SubsystemBase{
 
 
     public Pigeon(){
-        gyro_pigeon = new WPI_PigeonIMU(kGyroSystem.CANPigeon);
+        gyro_pigeon = new WPI_PigeonIMU(kID.Pigeon);
         gyro_pigeon.reset();
 
         m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());

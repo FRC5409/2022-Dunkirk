@@ -1,10 +1,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+
+
 import frc.robot.subsystems.Intake;
 
+   
 public class IntakeActivateSolenoids extends CommandBase{
-    private final Intake sys_Intake;
+   
+private final Intake sys_Intake;
 
   public IntakeActivateSolenoids(Intake subsystem) {
     
@@ -43,5 +47,6 @@ public class IntakeActivateSolenoids extends CommandBase{
   public boolean isFinished() {
     return true;
   }
-    
+
 }
+

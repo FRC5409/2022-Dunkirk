@@ -4,50 +4,49 @@
 
 package frc.robot;
 
-
 // Subsystems
-import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Pigeon;
-import frc.robot.subsystems.Pneumatics;
-
-
+import frc.robot.training.BranchType;
+import frc.robot.training.Setpoint;
+import frc.robot.training.TrainerContext;
+import frc.robot.training.TrainerDashboard;
+import frc.robot.training.protocol.NetworkClient;
+import frc.robot.training.protocol.NetworkSocket;
+import frc.robot.training.protocol.SendableContext;
+import frc.robot.training.protocol.generic.ArraySendable;
+import frc.robot.training.protocol.generic.BundleSendable;
+import frc.robot.training.protocol.generic.StringSendable;
+import frc.robot.training.protocol.generic.ValueSendable;
+import frc.robot.utils.ShooterModel;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+
 import frc.robot.commands.Characterize;
-import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.FastGear;
-import frc.robot.commands.IntakeActive;
-import frc.robot.commands.ReverseIntake;
-import frc.robot.commands.SlowGear;
 
 //Constants
 import frc.robot.Constants.kAuto;
+import frc.robot.base.Joystick;
+import frc.robot.base.Joystick.ButtonType;
 
-import java.util.List;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import java.io.IOException;
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
+import frc.robot.commands.*;
+import frc.robot.commands.shooter.*;
+import frc.robot.commands.training.*;
+import frc.robot.subsystems.*;
+import frc.robot.subsystems.shooter.*;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -55,79 +54,174 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
   // Define main joystick
-  private final XboxController joystick_main; // = new XboxController(0);
-  private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
-      but_main_LAnalog, but_main_RAnalog, but_main_Back, but_main_Start;
-  
-      
+  private final Joystick             joystick_main; // = new XboxController(0);
+  private final Joystick             joystick_secondary;
+
   // Subsystems defined
-  private final DriveTrain DriveTrain;
-  private final Pneumatics Pneumatics;
-  private final Pigeon Pigeon;
-  private final Intake intake; 
+  private final DriveTrain           DriveTrain;
+  private final Pneumatics           Pneumatics;
+  private final Pigeon               Pigeon;
+  private final Indexer              Indexer;
+  private final Intake               Intake;
+  private final ShooterFlywheel      Flywheel;
+  private final ShooterTurret        turret;
+  private final Limelight            limelight;
 
-  // Commands defined
-  //private final ExampleCommand m_autoCommand;
-  private final DefaultDrive defaultDrive;
-  private final IntakeActive intakeActive; 
-  private final ReverseIntake reverseIntake; 
+  private final DefaultDrive         defaultDrive;
+  private final ReverseIntakeIndexer reverse;
+  private final IndexerIntakeActive  indexerIntakeActive;
+  private final IntakeActive         intakeActive;
+  private final IndexerIntakeTest    test;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  private final TrainerContext       trainerContext;
+  private final TrainerDashboard     trainerDashboard;
+  private       NetworkClient        trainerClient;
+
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     // Init controller
-    joystick_main = new XboxController(0);
+    joystick_main = new Joystick(0);
+    joystick_secondary = new Joystick(1);
 
-    // Init button binds
-    but_main_A = new JoystickButton(joystick_main, XboxController.Button.kA.value);
-    but_main_B = new JoystickButton(joystick_main, XboxController.Button.kB.value);
-    but_main_X = new JoystickButton(joystick_main, XboxController.Button.kX.value);
-    but_main_Y = new JoystickButton(joystick_main, XboxController.Button.kY.value);
-    but_main_LBumper = new JoystickButton(joystick_main, XboxController.Button.kLeftBumper.value);
-    but_main_RBumper = new JoystickButton(joystick_main, XboxController.Button.kRightBumper.value);
-    but_main_LAnalog = new JoystickButton(joystick_main, XboxController.Button.kLeftStick.value);
-    but_main_RAnalog = new JoystickButton(joystick_main, XboxController.Button.kRightStick.value);
-    but_main_Back = new JoystickButton(joystick_main, XboxController.Button.kBack.value);
-    but_main_Start = new JoystickButton(joystick_main, XboxController.Button.kStart.value);
+    // Initialize sub systems
+    DriveTrain  = new DriveTrain();
+    Pneumatics  = new Pneumatics();
+    Pigeon      = new Pigeon();
+    Intake      = new Intake();
+    Indexer     = new Indexer();
+    Flywheel    = new ShooterFlywheel();
+    turret      = new ShooterTurret();
+    limelight   = new Limelight();
 
-     // Initialize sub systems
-     DriveTrain = new DriveTrain();
-     Pneumatics = new Pneumatics();
-     Pigeon = new Pigeon();
-     intake = new Intake();
+    // Init commands
+    defaultDrive        = new DefaultDrive((DriveTrain), joystick_main.getController());
+    indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake);
+    reverse             = new ReverseIntakeIndexer(Intake, Indexer);
+    intakeActive        = new IntakeActive(Intake, Indexer);
+    test                = new IndexerIntakeTest(Indexer, Intake);
+    // m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
+    // m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
+    // m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
+    // m_testIndexBelt = new TestIndexBelt(Indexer);
+    // m_testIndexProto = new TestIndexProto(Indexer);
+    // m_testIndexShoot = new TestIndexShoot(Indexer);
 
-
-     // Init commands
-     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
-     intakeActive = new IntakeActive(intake);
-     reverseIntake = new ReverseIntake(intake);
- 
     // Configure the button bindings
+
+    Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
+    Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
+    
+    trainerContext = new TrainerContext(
+      new Setpoint(Constants.Training.DISTANCE_RANGE.mid(), Constants.Training.DISTANCE_RANGE),
+      new ShooterModel(
+        0.0, 0.0, 0.0, 0.0,
+        Constants.Training.DISTANCE_RANGE,
+        Constants.Shooter.SPEED_RANGE
+      )  
+    );
+
+    trainerDashboard = new TrainerDashboard(trainerContext);
+
+    try {
+      configureTraining();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
     configureButtonBindings();
 
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
   }
 
+
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
 
     // Bind start to go to the next drive mode
-    but_main_Start.whenPressed(() -> DriveTrain.cycleDriveMode());
+    joystick_main.getButton(ButtonType.kStart)
+      .whenPressed(() -> DriveTrain.cycleDriveMode());
 
-    // Bind right bumper to 
-    but_main_RBumper.whenPressed(new FastGear(DriveTrain));
-    but_main_RBumper.whenReleased( new SlowGear(DriveTrain));
+    // Bind right bumper to
+    joystick_main.getButton(ButtonType.kRightBumper)
+      .whenPressed(new FastGear(DriveTrain))
+      .whenReleased(new SlowGear(DriveTrain));
 
-    but_main_X.whileHeld(new IntakeActive(intake));
-    but_main_B.whileHeld(new ReverseIntake(intake));
-    // but_main_A.whenActive( new MoveToDistance(DriveTrain));
-    // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
+    // joystick_main.getButton(ButtonType.kA).whenPressed();
+    // joystick_main.getButton(ButtonType.kX).whileHeld(new IndexerActive(Indexer, Intake));
+    joystick_main.getButton(ButtonType.kY)
+      .whileHeld(new IndexerIntakeTest(Indexer, Intake));
 
+    joystick_main.getButton(ButtonType.kB)
+      .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+
+    joystick_main.getButton(ButtonType.kX)
+      .whileHeld(new IndexerIntakeActive(Indexer, Intake));
+
+    joystick_main.getButton(ButtonType.kB)
+      .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+
+    joystick_secondary.getButton(ButtonType.kRightBumper)
+      .whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
+
+    joystick_secondary.getButton(ButtonType.kLeftBumper)
+      .whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
+      
+    joystick_secondary.getButton(ButtonType.kX)
+      .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, BranchType.BRANCH_LEFT));
+
+    joystick_secondary.getButton(ButtonType.kB)
+      .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, BranchType.BRANCH_RIGHT));
+
+    joystick_secondary.getButton(ButtonType.kRightBumper)
+      .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, BranchType.BRANCH_CENTER));
+
+    joystick_secondary.getButton(ButtonType.kLeftBumper)
+      .whenPressed(new RequestModelUpdate(trainerDashboard, trainerClient, trainerContext));
+
+    joystick_secondary.getButton(ButtonType.kY)
+      .whenPressed(new FlipTargetSetpoint(trainerDashboard, trainerContext));
+      
+    joystick_secondary.getButton(ButtonType.kStart)
+      .whenPressed(new SubmitSetpointData(trainerDashboard, trainerClient, trainerContext));
+
+    joystick_secondary.getButton(ButtonType.kLeftStick)
+      .whenPressed(new ResetTargetSetpoint(trainerDashboard, trainerContext));
+
+    joystick_secondary.getButton(ButtonType.kA)
+      .whileHeld(new TrainerLookShooter(limelight, turret, trainerDashboard, trainerContext))
+      .whenReleased(new RotateTurret(turret, 0));
+
+      joystick_secondary.getButton(ButtonType.kBack)
+        .whenPressed(new UndoTargetSetpoint(trainerDashboard, trainerContext));
+  }  
+  
+  private void configureTraining() throws IOException {
+    SendableContext context = new SendableContext();
+      context.registerSendable(StringSendable.class);
+      context.registerSendable(ValueSendable.class);
+      context.registerSendable(BundleSendable.class);
+      context.registerSendable(ArraySendable.class);
+
+    NetworkSocket socket = NetworkSocket.create(Constants.Training.TRAINER_HOSTNAME);
+    trainerClient = new NetworkClient(socket, context);
+
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      try {
+        trainerClient.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }));
   }
 
   /**
@@ -136,7 +230,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-
     // Generates a trajectory that tells the robot to move from its original location
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(new Translation2d(1, 1)),
@@ -167,3 +260,9 @@ public class RobotContainer {
     // return new Characterize(DriveTrain, Pigeon);
   }
 }
+
+
+    
+            
+        
+         
