@@ -7,10 +7,12 @@ package frc.robot.subsystems;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.playingwithfusion.TimeOfFlight;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -19,9 +21,13 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
@@ -29,9 +35,16 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.NetworkButton;
 import frc.robot.Constants;
+import frc.robot.Constants.kID;
 import frc.robot.commands.ElevateTo;
+import frc.robot.commands.FindElevatorZero;
 
 public class Climber extends SubsystemBase {
   private CANSparkMax mot_main;
@@ -45,6 +58,7 @@ public class Climber extends SubsystemBase {
   private final DigitalInput limitSwitch;
   private final TimeOfFlight tof_front;
   public ArrayList<Double> measuredDistances = new ArrayList<>();
+  private final DoubleSolenoid dsl_lock;
 
   /**
    * Constructor for the climber.
@@ -75,6 +89,8 @@ public class Climber extends SubsystemBase {
     // tof_front = new TimeOfFlight(Constants.kID.ClimberTofMain);
     tof_front = null;
 
+    dsl_lock = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, 14, 15);
+
     // Gives absolute motor positions of 0 - 360 degrees, all positive values.
     // mot_main.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
     shuffleboardFields = new HashMap<String, NetworkTableEntry>();
@@ -99,6 +115,35 @@ public class Climber extends SubsystemBase {
 
     shuffleboardFields.put("limitSwitch",
         extras.add("LIMIT SWITCH", false).withWidget(BuiltInWidgets.kBooleanBox).getEntry());
+
+    shuffleboardFields.put("idleMode", extras.add("IDLE MODE", "BRAKE").getEntry());
+
+    extras.add("FIND ZERO", new FindElevatorZero(this))
+        .withWidget(BuiltInWidgets.kCommand);
+
+    new NetworkButton(extras.add("TOGGLE NEUTRAL MODE", true).withWidget(BuiltInWidgets.kToggleButton).getEntry())
+        .whenPressed(new InstantCommand(this::toggleIdleMode));
+  }
+
+  public void setIdleMode(IdleMode mode) {
+    mot_main.setIdleMode(mode);
+    mot_follower.setIdleMode(mode);
+  }
+
+  public void toggleIdleMode() {
+    String val;
+
+    System.out.println(true);
+    if (mot_main.getIdleMode() == IdleMode.kBrake) {
+      setIdleMode(IdleMode.kCoast);
+      val = "COAST";
+    } else {
+      setIdleMode(IdleMode.kBrake);
+
+      val = "BRAKE";
+    }
+
+    shuffleboardFields.get("idleMode").setString(val);
   }
 
   public void zeroEncoder() {
@@ -134,11 +179,25 @@ public class Climber extends SubsystemBase {
    * Method for retracting or extending the climber arm.
    */
   public void moveArm(double target) {
-
-    // TODO currently takes in a fixed rate.
     if (!locked) {
-      // currently moves the motor at a rate of 180 degrees per 100ms.
       controller_main.setReference(target, ControlType.kPosition);
+    } else {
+      disableMotors();
+    }
+  }
+
+  public void moveArm(double acceleration, double deceleration) {
+    double value = acceleration - deceleration;
+
+    if (value > 0 && getPosition() >= Constants.kClimber.TO_MAX) {
+      controller_main.setReference(0, ControlType.kDutyCycle);
+      return;
+    }
+
+    if (!locked) {
+      controller_main.setReference(value, ControlType.kDutyCycle);
+    } else {
+      disableMotors();
     }
   }
 
@@ -146,7 +205,8 @@ public class Climber extends SubsystemBase {
    * Method for locking the arm.
    */
   public void lockArm() {
-
+    System.out.println("Locking arm");
+    dsl_lock.set(DoubleSolenoid.Value.kForward);
     locked = true;
   }
 
@@ -154,6 +214,9 @@ public class Climber extends SubsystemBase {
    * Method for unlocking the arm.
    */
   public void unlockArm() {
+    System.out.println("Unlocking arm");
+
+    dsl_lock.set(DoubleSolenoid.Value.kReverse);
     locked = false;
   }
 
@@ -162,6 +225,11 @@ public class Climber extends SubsystemBase {
    */
   public void toggleLock() {
     locked = !locked;
+
+    if (locked)
+      lockArm();
+    else
+      unlockArm();
   }
 
   /**
@@ -191,23 +259,11 @@ public class Climber extends SubsystemBase {
   }
 
   public boolean getLimitSwitch() {
-    return limitSwitch.get();
+    return !limitSwitch.get();
   }
 
   public void findZero() {
-    controller_main.setReference(-4.0, ControlType.kVelocity);
-  }
-
-  public void moveArm(double acceleration, double deceleration) {
-    double value = acceleration - deceleration;
-
-    if (value < 0 && getPosition() <= Constants.kClimber.TO_MIN
-        || value > 0 && getPosition() >= Constants.kClimber.TO_MAX) {
-      controller_main.setReference(0, ControlType.kDutyCycle);
-      return;
-    }
-
-    controller_main.setReference(value, ControlType.kDutyCycle);
+    controller_main.setReference(-0.2, ControlType.kDutyCycle);
   }
 
   // ---------------------------- Auto Align ---------------------------- //
@@ -271,5 +327,13 @@ public class Climber extends SubsystemBase {
       return Constants.kClimber.DIRECTION_RETRACT;
     else
       return Constants.kClimber.DIRECTION_STATIONARY;
+  }
+
+  public double getRPM() {
+    return mot_main.getEncoder().getVelocity();
+  }
+
+  public boolean getLocked() {
+    return locked;
   }
 }
