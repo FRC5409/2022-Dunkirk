@@ -124,7 +124,7 @@ public class RobotContainer {
   // private final TestIndexProto m_testIndexProto;
 
   private final IntakeActive intakeActive;
-  private final IndexerIntakeTest test;
+  // private final IndexerIntakeTest test;
   // private final ReverseIntake reverseIntake;
   
   /**
@@ -166,7 +166,7 @@ public class RobotContainer {
     indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake);
     reverse = new ReverseIntakeIndexer(Intake, Indexer);
     intakeActive = new IntakeActive(Intake, Indexer);
-    test = new IndexerIntakeTest(Indexer, Intake);
+    //test = new IndexerIntakeTest(Indexer, Intake);
     // m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
     // m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
     // m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
@@ -220,7 +220,6 @@ public class RobotContainer {
     but_main_RBumper.whenReleased(new SlowGear(DriveTrain));
 
     // but_main_A.whenPressed();
-    //but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
     but_main_Y.whileHeld(new IndexerIntakeTest(Indexer, Intake));
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
     
