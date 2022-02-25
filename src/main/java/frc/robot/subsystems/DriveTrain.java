@@ -40,7 +40,7 @@ public class DriveTrain extends SubsystemBase{
 
     public final DifferentialDrive m_drive;
 
-    //private final DoubleSolenoid dsl_gear;
+    private final DoubleSolenoid dsl_gear;
 
     private boolean applyAntiTip;
 

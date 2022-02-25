@@ -21,7 +21,7 @@ import frc.robot.utils.ShooterModel;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
-import frc.robot.commands.Characterize;
+// import frc.robot.commands.Characterize;
 
 //Constants
 import frc.robot.Constants.kAuto;
@@ -29,6 +29,16 @@ import frc.robot.base.Joystick;
 import frc.robot.base.Joystick.ButtonType;
 
 import java.io.IOException;
+import java.util.List;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -238,9 +248,6 @@ public class RobotContainer {
       
       // new Translation2d(1, 1), new Translation2d(2, -1))
 
-    // RamseteController controller = new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta);
-    // controller.setEnabled(false);
-
     RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
         new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
@@ -256,13 +263,6 @@ public class RobotContainer {
     // returns the autonomous command
     // makes sure that after the auto command is finished running the robot stops.
     return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
-
-    // return new Characterize(DriveTrain, Pigeon);
   }
 }
-
-
     
-            
-        
-         

@@ -153,9 +153,6 @@ public final class Constants {
         public static final double MAX_RPM_FOR_LOW_GEAR = 1000;
     }
 
-
-    
-
     public static final class kAuto{
         public static final double kTrackwidthMeters = 0.78089;
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
