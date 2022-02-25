@@ -5,28 +5,44 @@
 package frc.robot;
 
 import frc.robot.subsystems.Climber;
+
 // Subsystems
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pigeon;
 import frc.robot.subsystems.Pneumatics;
-
-
+import frc.robot.subsystems.shooter.ShooterFlywheel;
+import frc.robot.subsystems.shooter.ShooterTurret;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import frc.robot.commands.AutoAlign;
+
+import frc.robot.commands.ChangePIDS;
 import frc.robot.commands.DefaultDrive;
+import frc.robot.commands.DisableFlywheel;
+import frc.robot.commands.FastGear;
+import frc.robot.commands.IndexerIntakeActive;
+import frc.robot.commands.IndexerIntakeTest;
+import frc.robot.commands.IntakeActive;
+
+import frc.robot.commands.AutoAlign;
 import frc.robot.commands.DefaultElevator;
 import frc.robot.commands.ElevateTo;
-import frc.robot.commands.FastGear;
-import frc.robot.commands.IndexerActive;
 import frc.robot.commands.FindElevatorZero;
+
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.SlowGear;
+
+import frc.robot.commands.TestingSpin;
+import frc.robot.commands.shooter.HoodDown;
+import frc.robot.commands.shooter.HoodUp;
+
+//Constants
 import frc.robot.Constants.kAuto;
+import frc.robot.base.Joystick;
+import frc.robot.base.Joystick.ButtonType;
 
 import java.util.List;
 
@@ -44,11 +60,12 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
-
-
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.commands.IntakeSimulationTesting;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseIntakeIndexer;
+import frc.robot.commands.ShooterTestOne;
+import frc.robot.commands.ShooterTestTwo;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pneumatics;
@@ -70,6 +87,11 @@ public class RobotContainer {
 
   // Define main joystick
   private final XboxController joystick_main; // = new XboxController(0);
+  
+  private final Joystick joystick_secondary;
+  private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
+      but_main_LAnalog, but_main_RAnalog, but_main_Back, but_main_Start;
+  
   private final XboxController joystick_secondary;
   private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
       but_main_LAnalog, but_main_RAnalog, but_main_Back, but_main_Start;
@@ -83,6 +105,9 @@ public class RobotContainer {
 
   private final Indexer Indexer;
   private final Intake Intake;
+
+  private final ShooterFlywheel Flywheel;
+  private final ShooterTurret turret;
  
   private final Pneumatics Pneumatics;
   private final Climber Climber;
@@ -92,18 +117,18 @@ public class RobotContainer {
   private final DefaultDrive defaultDrive;
 
   private final ReverseIntakeIndexer reverse;
-  private final IndexerActive indexerActive;  
-  //private final IntakeIndexGo m_intakeIndexGo;
-  //private final ReverseIntakeIndexer m_reverseIntakeIndex;
-  //private final IntakeSimulationTesting m_intakeSimulationTesting;
+  private final IndexerIntakeActive indexerIntakeActive;
+  // private final IntakeIndexGo m_intakeIndexGo;
+  // private final ReverseIntakeIndexer m_reverseIntakeIndex;
+  // private final IntakeSimulationTesting m_intakeSimulationTesting;
   // private final TestIndexBelt m_testIndexBelt;
   // private final TestIndexShoot m_testIndexShoot;
   // private final TestIndexProto m_testIndexProto;
 
-
-  private final IntakeActive intakeActive; 
-  //private final ReverseIntake reverseIntake; 
-
+  private final IntakeActive intakeActive;
+  private final IndexerIntakeTest test;
+  // private final ReverseIntake reverseIntake;
+  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -112,6 +137,7 @@ public class RobotContainer {
     joystick_main = new XboxController(0);
     joystick_secondary = new XboxController(1);
 
+    joystick_secondary = new Joystick(1);
     // Init button binds
     but_main_A = new JoystickButton(joystick_main, XboxController.Button.kA.value);
     but_main_B = new JoystickButton(joystick_main, XboxController.Button.kB.value);
@@ -124,26 +150,31 @@ public class RobotContainer {
     but_main_Back = new JoystickButton(joystick_main, XboxController.Button.kBack.value);
     but_main_Start = new JoystickButton(joystick_main, XboxController.Button.kStart.value);
 
-     // Initialize sub systems
-     DriveTrain = new DriveTrain();
-     Pneumatics = new Pneumatics();
-     Pigeon = new Pigeon();
-     Intake = new Intake();
-     Indexer = new Indexer();
-     Climber = new Climber();
+    // Initialize sub systems
+    DriveTrain = new DriveTrain();
+    Pneumatics = new Pneumatics();
+    Pigeon = new Pigeon();
 
-     // Init commands
-     defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
-     indexerActive = new IndexerActive(Indexer);
-     reverse = new ReverseIntakeIndexer(Intake, Indexer);
-     intakeActive = new IntakeActive(Intake);
- 
-    //  m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
-    //  m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
-    //  m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
-    //  m_testIndexBelt = new TestIndexBelt(Indexer);
-    //  m_testIndexProto = new TestIndexProto(Indexer);
-    //  m_testIndexShoot = new TestIndexShoot(Indexer);
+    Intake = new Intake();
+
+    Indexer = new Indexer();
+    Flywheel = new ShooterFlywheel();
+    turret = new ShooterTurret();
+    
+    Climber = new Climber();
+
+    // Init commands
+    defaultDrive = new DefaultDrive((DriveTrain), joystick_main);
+    indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake);
+    reverse = new ReverseIntakeIndexer(Intake, Indexer);
+    intakeActive = new IntakeActive(Intake, Indexer);
+    test = new IndexerIntakeTest(Indexer, Intake);
+    // m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
+    // m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
+    // m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
+    // m_testIndexBelt = new TestIndexBelt(Indexer);
+    // m_testIndexProto = new TestIndexProto(Indexer);
+    // m_testIndexShoot = new TestIndexShoot(Indexer);
 
  
     but_sec_A = new JoystickButton(joystick_secondary, XboxController.Button.kA.value);
@@ -156,8 +187,14 @@ public class RobotContainer {
     but_sec_RAnalog = new JoystickButton(joystick_secondary, XboxController.Button.kRightStick.value);
     but_sec_Back = new JoystickButton(joystick_secondary, XboxController.Button.kBack.value);
     but_sec_Start = new JoystickButton(joystick_secondary, XboxController.Button.kStart.value);
-   
+    
     // Configure the button bindings
+
+    Shuffleboard.getTab("FlywheelTuning").add("Disable", new DisableFlywheel(Flywheel));
+    Shuffleboard.getTab("FlywheelTuning").add("Change PIDS", new ChangePIDS(Flywheel));
+    Shuffleboard.getTab("FlywheelTuning").add("Spin", new TestingSpin(Flywheel));
+    Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
+    Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
     configureButtonBindings();
 
     // Sets default command to be DefaultDrive
@@ -184,12 +221,12 @@ public class RobotContainer {
     but_main_RBumper.whenPressed(new FastGear(DriveTrain));
     but_main_RBumper.whenReleased(new SlowGear(DriveTrain));
 
-
     // but_main_A.whenPressed();
-    but_main_X.whileHeld(new IntakeActive(Intake));
+    //but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
+    but_main_Y.whileHeld(new IndexerIntakeTest(Indexer, Intake));
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
-
-    but_main_Y.whenPressed(new FindElevatorZero(Climber));
+    
+    but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
 
     // but_main_A.whenActive( new MoveToDistance(DriveTrain));
     // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
@@ -209,6 +246,8 @@ public class RobotContainer {
 
     but_sec_RBumper.whenPressed(new FindElevatorZero(Climber));
 
+    joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
+    //joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
   }
 
   /**
@@ -217,7 +256,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-
     // creates configuration for trajectory
     var feedForward = new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
         kAuto.kaVoltSecondsSquaredPerMeter);
@@ -245,9 +283,17 @@ public class RobotContainer {
     // Reset odometry to the starting pose of the trajectory.
     DriveTrain.zeroEncoders();
     Pigeon.resetOdometry(trajectory.getInitialPose());
+    
+    return null;
 
     // returns the autonomous command
     // makes sure that after the auto command is finished running the robot stops.
-    return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
+    //return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
   }
 }
+
+
+    
+            
+        
+         

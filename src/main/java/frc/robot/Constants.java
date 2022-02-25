@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import frc.robot.utils.Gains;
+import frc.robot.utils.*;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -37,11 +37,11 @@ public final class Constants {
         public final static int IndexToFTop = 11;
         
         public final static int TurretNeo = 12;
-        public final static int TurretLimitSwitch1 = 13;
-        public final static int TurretLimitSwitch2 = 14;
-        public final static int TurretSwitchLimit3 = 15;
-        public final static int ShooterFalconMotor1 = 16;
-        public final static int ShooterFalconMotor2 = 17;
+        public final static int TurretLimitSwitch1 = 1;
+        public final static int ShooterFalconMotor1 = 5;
+        public final static int ShooterFalconMotor2 = 8;
+        public final static int ShooterNeo = 9;
+
         public final static int ClimberToF1 = 18;
         public final static int ClimberToF2 = 19;
         public static final int ClimberTofMain = 10;
@@ -53,8 +53,8 @@ public final class Constants {
     }
 
     public static class PneumaticsIDs{
-        public final int GearShiftHigh  = 15;
-        public final int GearShiftLow   = 0;
+        public final int GearShiftHigh  = 9;
+        public final int GearShiftLow   = 8;
         public final int IntakeRightIn  = 14;
         public final int IntakeRightOut = 1;
         public final int IntakeLeftIn   = 13;
@@ -122,22 +122,6 @@ public final class Constants {
 
     }
 
-    public static final class kIndexer{
-        public static final int currentLimit = 20; 
-        public static final int indexerMotorBottom = 8; 
-
-        public static final int TOF_Ent = 25; 
-        public static final int TOF_Ball1 = 26; 
-        public static final int TOF_Ext = 27; 
-
-        public static final int sampleTime = 24; 
-
-        public static final int rangeEnter = 180; 
-        public static final int rangeBall1 = 105; 
-        public static final int rangeExt = 80; 
-    }
-
-
     public static final class kDriveTrain{
         // Current Limits
         public static final double CurrentLimit = 65;
@@ -154,8 +138,8 @@ public final class Constants {
         public static final double highGearConversionFactor = 1/7.08;
 
         // Double Solenoid
-        public static final int ForwardChannel = 0;
-        public static final int ReverseChannel = 1;
+        public static final int ForwardChannel = 8;
+        public static final int ReverseChannel = 9;
 
         // Drive Modes
         public static final int InitialDriveMode = 0;
@@ -213,6 +197,163 @@ public final class Constants {
         public static final double kRamseteZeta = 0.7;
 
     }
+
+    public static final class ShooterFlywheel {
+        //in RPM
+        public static final int SHOOTER_TOLERANCE = 240;
+        public static final int FEEDER_TOLERANCE = 100;
+        public static final int rpmTolerance = 1;
+
+        public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.00017,0,0);
+        public static final Gains UPPER_GAINS = new Gains(0.29873, 0, 0, 0.044265063,0,0);
+        public static final Gains LOWER_GAINS = new Gains(0.011, 0, 0, 0.047293811,0,0);
+    }
+
+
+    public final static class Turret {
+        //Ratio including gearbox 
+        //126 : 1
+        public static final double GEAR_RATIO          = 126;
+
+        // Height in meters
+        public static final double ROBOT_HEIGHT        = 4;
+        public static final double FIXED_ANGLE         = 45;
+        public static final Range  LIMITS              = new Range(-10, 20);
+        public static final double ALIGNMENT_THRESHOLD = 0.14;
+
+        //TODO fill in pneumatics constants.
+        public static final int HOOD_FORWARD_CHANNEL = 13;
+        public static final int HOOD_REVERSE_CHANNEL = 12;
+    }
+
+    public final class Falcon500 {
+        public static final double unitsPerRotation = 2048;
+    }
+
+    public final class kColour {
+        public static final int proximityThreshold = 100;
+    }
+
+    public final class kIndexer {
+        public static final int kIndexerMotor = 16; 
+        public static final int currentLimit = 20; 
+
+        public static final int kIndexShooterMotor = 30;
+
+        public static final int TOF_Ent = 25; 
+        public static final int TOF_Ball1 = 26; 
+        public static final int TOF_Ext = 27; 
+
+        public static final int sampleTime = 24; 
+
+        public static final int rangeEnter = 180;
+        public static final int rangeBall1 = 105;
+        public static final int rangeExit = 90; 
+     
+        public static final int indexerMotorBottom = 8; 
+    }
+
+    public static final class Limelight {
+        public static final String NETWORK_TABLE_NAME = "limelight";
+    }
+
+    public static final class Training {
+        public static final Range  DISTANCE_RANGE = new Range(0.0, 20);
+        public static final String TRAINER_HOSTNAME = "10.54.9.150";
+    }
+    
+    public static final class Shooter {
+        public static final double GEAR_RATIO          = 126;
+
+        // Height in meters
+        public static final double ROBOT_HEIGHT        = 4;
+        public static final double FIXED_ANGLE         = 45;
+        public static final Range  TARGET_RANGE        = new Range(-10, 20);
+        public static final double ALIGNMENT_THRESHOLD = 0.14;
+        public static final double TURRET_MAX_SPEED    = 0.42;
+
+        // Range Configurations
+        public static final Range ROTATION_RANGE = new Range(
+            -28.571428571428573, 57.14285714285714
+        );
+
+        public static final Range SPEED_RANGE = new Range(
+            0, 5500
+        );
+
+        public static final Range DISTANCE_RANGE = new Range(
+            0, 25
+        );
+
+        
+    // Curve fitting Constants
+        public static final Equation DISTANCE_SPEED_CURVE = d -> {
+            return d*0;
+        };
+
+        public static final double CALIBRATE_SPEED = 0.07;
+
+
+    // Smooth Sweep Constants (experimental)
+        public static final double SHOOTER_SWEEP_PERIOD = 3.6;
+
+        public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
+            private final double kA = (2.0 * Math.PI) / SHOOTER_SWEEP_PERIOD;
+            private final double kB = 1.0 / ( 2.0 * ROTATION_RANGE.magnitude() );
+            private final double kC = ROTATION_RANGE.min();
+            
+            @Override
+            public double calculate(double x) {
+                //return (Math.cos(kA * x) + 1.0) * kB + kC;
+                return (Math.cos(2d*Math.PI*x/SHOOTER_SWEEP_PERIOD)+1d)/2d*ROTATION_RANGE.magnitude()+ROTATION_RANGE.min();
+            }
+        };
+
+        public static final Equation SHOOTER_SWEEP_INVERSE = new Equation() {
+            private final double kA = 2.0 * (1.0 / ROTATION_RANGE.magnitude());
+            private final double kB = 1.0 / ( 2.0 * Math.PI );
+            private final double kC = ROTATION_RANGE.min();
+            
+            @Override
+            public double calculate(double x) {
+                //return SHOOTER_SWEEP_PERIOD * Math.acos(kA * (x-kC) - 1.0) * kB;
+                 return SHOOTER_SWEEP_PERIOD * Math.acos(2d * (x-ROTATION_RANGE.min()) / ROTATION_RANGE.magnitude() - 1d) / (Math.PI*2d);
+            }
+        };
+        
+        public static final double SHOOTER_MAX_SWEEEP = 2;
+    
+        public static final Gains TURRET_GAINS = new Gains(
+            /*0.35d*/ 0.15d, 0.0, 1.852d, 0,0,0
+        );
+
+        public static final double ALIGNMENT_MAX_TIME = 2;
+
+        public static final double PRE_SHOOTER_DISTANCE = 0;
+    }
+    
+    public static final class Vision {
+        public static final double TARGET_HEIGHT = 104d/12.0d;
+        
+        public static final double LIMELIGHT_HEIGHT = 39.5d/12.0d;
+
+        public static final double LIMELIGHT_PITCH = 90 - 78.2;//13.4;//13.15
+
+        public static final double ACQUISITION_DELAY = 0.35;
+
+        public static final double ALIGNMENT_THRESHOLD = 1.13333;
+
+        protected static double DISTANCE_OFFSET = - 2.0;
+
+        public static final Equation DISTANCE_FUNCTION = new Equation() {
+            private final double height = Math.abs(TARGET_HEIGHT - LIMELIGHT_HEIGHT);
+            @Override
+            public double calculate(double x) {
+                return height / Math.tan(Math.toRadians(x + Constants.Vision.LIMELIGHT_PITCH)) + Constants.Vision.DISTANCE_OFFSET;
+            }
+            
+        };
+
+        public static final double ROTATION_P = 0.10;
+    }
 }
-
-
