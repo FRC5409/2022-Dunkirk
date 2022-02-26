@@ -223,7 +223,7 @@ public class DriveTrain extends SubsystemBase {
         }
         else if(accelerate < 0 && turn == 0 && drive_state != "backwards"){
             drive_state = "backwards";
-            setRampRate(kDriveTrain.backwardsRampRate);
+            setRampRate(kDriveTrain.backwardRampRate);
         }
         if(accelerate > 0 && turn != 0 && drive_state != "forward_turn"){
             drive_state = "forward_turn";
@@ -231,7 +231,7 @@ public class DriveTrain extends SubsystemBase {
         }
         else if(accelerate < 0 && turn != 0 && drive_state != "backward_turn"){
             drive_state = "backward_turn";
-            setRampRate(kDriveTrain.backwardsTurnRampRate);
+            setRampRate(kDriveTrain.backwardTurnRampRate);
         }
 
         m_drive.arcadeDrive(accelerate, turn, true);
