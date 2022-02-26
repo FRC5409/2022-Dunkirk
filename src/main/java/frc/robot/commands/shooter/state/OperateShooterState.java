@@ -5,12 +5,14 @@ import org.jetbrains.annotations.NotNull;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.base.StateCommandBase;
+import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.SweepDirection;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
-import frc.robot.utils.ShooterModel;
+import frc.robot.utils.Toggleable;
 import frc.robot.utils.Vector2;
 
 // TODO update doc
@@ -28,9 +30,10 @@ public class OperateShooterState extends StateCommandBase {
     private final ShooterFlywheel flywheel;
     private final ShooterTurret turret;
     private final Limelight limelight;
-    private final ShooterModel model;
     private final Indexer indexer;
-
+    
+    private final ShooterModel model;
+    
     public OperateShooterState(
         Limelight limelight,
         ShooterTurret turret,
@@ -49,6 +52,9 @@ public class OperateShooterState extends StateCommandBase {
 
     @Override
     public void initialize() {
+        if (!Toggleable.isEnabled(limelight, turret, flywheel, indexer))
+            throw new RuntimeException("Cannot operate shooter when requirements are not enabled.");
+
         flywheel.spinFeeder(4500);
     }
 

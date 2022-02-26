@@ -1,6 +1,8 @@
 package frc.robot.commands.training;
 
+import frc.robot.base.Property;
 import frc.robot.base.StateCommandGroup;
+import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.shooter.state.AlignShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
 import frc.robot.commands.shooter.state.SweepShooterState;
@@ -18,26 +20,27 @@ import frc.robot.training.TrainerDashboard;
  * @author Keith Davies
  */
 public final class TrainerLookShooter extends StateCommandGroup {
-    private final ShooterTurret   turret;
-    private final Limelight       limelight;
+    private final ShooterTurret turret;
+    private final Limelight     limelight;
 
     public TrainerLookShooter(
         Limelight limelight,
         ShooterTurret turret,
         TrainerDashboard dashboard,
-        TrainerContext context
+        TrainerContext context,
+        Property<SweepDirection> direction
     ) {
-        this.turret = turret;
-        this.limelight = limelight;
-
         addCommands(
             new SearchShooterState(limelight),
-            new SweepShooterState(limelight, turret),
+            new SweepShooterState(limelight, turret, direction),
             new AlignShooterState(limelight, turret),
             new TrainerLookShooterState(limelight, turret, dashboard, context)
         );
 
         setDefaultState("frc.robot.shooter:search");
+        
+        this.turret = turret;
+        this.limelight = limelight;
     }
 
     @Override

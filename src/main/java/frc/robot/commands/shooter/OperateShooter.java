@@ -1,7 +1,10 @@
 package frc.robot.commands.shooter;
 
 import frc.robot.Constants;
+import frc.robot.base.Property;
 import frc.robot.base.StateCommandGroup;
+import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.shooter.state.AlignShooterState;
 import frc.robot.commands.shooter.state.OperateShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
@@ -23,42 +26,41 @@ import frc.robot.utils.*;
  */
 public final class OperateShooter extends StateCommandGroup {
     private final ShooterFlywheel flywheel;
-    private final ShooterTurret   turret;
-    private final Limelight       limelight;
-    private final Indexer    indexer;
-
-    private final ShooterModel    model;
+    private final ShooterTurret turret;
+    private final ShooterModel model;
+    private final Limelight limelight;
+    private final Indexer indexer;
 
     public OperateShooter(
         Limelight limelight,
         ShooterTurret turret,
         ShooterFlywheel flywheel,
         Indexer indexer,
-        ShooterModel model
+        ShooterModel model,
+        Property<SweepDirection> direction
     ) {
-        this.flywheel = flywheel;
-        this.turret = turret;
-        this.limelight = limelight;
-        this.indexer = indexer;
-        this.model = model;
-
         addCommands(
             new SearchShooterState(limelight),
-            new SweepShooterState(limelight, turret),
+            new SweepShooterState(limelight, turret, direction),
             new AlignShooterState(limelight, turret),
             new OperateShooterState(limelight, turret, flywheel, indexer, model)
         );
 
         setDefaultState("frc.robot.shooter:search");
+
+        this.limelight = limelight;
+        this.flywheel = flywheel;
+        this.indexer = indexer;
+        this.turret = turret;
+        this.model = model;
     }
 
     @Override
     public void initialize() {
-        flywheel.enable();
         limelight.enable();
-        turret.enable();
-        
+        flywheel.enable();
         indexer.enable();
+        turret.enable();
         
         flywheel.setVelocity(
             model.calculate(Constants.Shooter.PRE_SHOOTER_DISTANCE)
@@ -72,10 +74,9 @@ public final class OperateShooter extends StateCommandGroup {
     public void end(boolean interrupted) {
         super.end(interrupted);
 
-        flywheel.disable();
-        turret.disable();
         limelight.disable();
-
+        flywheel.disable();
         indexer.disable();
+        turret.disable();
     }
 }

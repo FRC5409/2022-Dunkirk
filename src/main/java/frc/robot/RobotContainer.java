@@ -16,7 +16,6 @@ import frc.robot.training.protocol.generic.ArraySendable;
 import frc.robot.training.protocol.generic.BundleSendable;
 import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
-import frc.robot.utils.ShooterModel;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -24,7 +23,13 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 //Constants
 import frc.robot.Constants.kAuto;
 import frc.robot.base.Joystick;
+import frc.robot.base.Property;
+import frc.robot.base.ValueProperty;
+import frc.robot.base.WranglerCommand;
 import frc.robot.base.Joystick.ButtonType;
+import frc.robot.base.shooter.ShooterMode;
+import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.SweepDirection;
 
 import java.io.IOException;
 // Misc
@@ -52,28 +57,31 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
 
     // Define main joystick
-    private final Joystick             joystick_main; // = new XboxController(0);
-    private final Joystick             joystick_secondary;
+    private final Joystick                 joystick_main;
+    private final Joystick                 joystick_secondary;
 
     // Subsystems defined
-    private final DriveTrain           DriveTrain;
-    private final Pneumatics           Pneumatics;
-    private final Pigeon               Pigeon;
-    private final Indexer              Indexer;
-    private final Intake               Intake;
-    private final ShooterFlywheel      Flywheel;
-    private final ShooterTurret        turret;
-    private final Limelight            limelight;
+    private final DriveTrain               DriveTrain;
+    private final Pneumatics               Pneumatics;
+    private final Pigeon                   Pigeon;
+    private final Indexer                  Indexer;
+    private final Intake                   Intake;
+    private final ShooterFlywheel          Flywheel;
+    private final ShooterTurret            turret;
+    private final Limelight                limelight;
 
-    private final DefaultDrive         defaultDrive;
-    private final ReverseIntakeIndexer reverse;
-    private final IndexerIntakeActive  indexerIntakeActive;
-    private final IntakeActive         intakeActive;
-    private final IndexerIntakeTest    test;
+    private final DefaultDrive             defaultDrive;
+    private final ReverseIntakeIndexer     reverse;
+    private final IndexerIntakeActive      indexerIntakeActive;
+    private final IntakeActive             intakeActive;
+    private final IndexerIntakeTest        test;
 
-    private final TrainerContext       trainerContext;
-    private final TrainerDashboard     trainerDashboard;
-    private       NetworkClient        trainerClient;
+    private final TrainerContext           trainerContext;
+    private final TrainerDashboard         trainerDashboard;
+    private       NetworkClient            trainerClient;
+
+    private final Property<SweepDirection> shooterSweepDirection;
+    private final Property<ShooterMode>    shooterMode;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -102,24 +110,22 @@ public class RobotContainer {
 
         // Configure the button bindings
 
+        shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
+        shooterMode = new ValueProperty<>(ShooterMode.kFar);
+
         Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
         Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
         
         trainerContext = new TrainerContext(
-        new Setpoint(Constants.Training.DISTANCE_RANGE.mid(), Constants.Training.DISTANCE_RANGE),
-        new ShooterModel(
-            0.0, 0.0, 0.0, 0.0,
-            Constants.Training.DISTANCE_RANGE,
-            Constants.Shooter.SPEED_RANGE
-        )  
+            new Setpoint(Constants.Training.DISTANCE_RANGE.mid(), Constants.Training.DISTANCE_RANGE)
         );
 
         trainerDashboard = new TrainerDashboard(trainerContext);
 
         try {
-        configureTraining();
+            configureTraining();
         } catch (IOException e) {
-        throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
 
         configureButtonBindings();
@@ -190,7 +196,7 @@ public class RobotContainer {
             .whenPressed(new ResetTargetSetpoint(trainerDashboard, trainerContext));
 
         joystick_secondary.getButton(ButtonType.kA)
-            .whileHeld(new TrainerLookShooter(limelight, turret, trainerDashboard, trainerContext))
+            .whileHeld(new TrainerLookShooter(limelight, turret, trainerDashboard, trainerContext, shooterSweepDirection))
             .whenReleased(new RotateTurret(turret, 0));
 
         joystick_secondary.getButton(ButtonType.kBack)
@@ -199,10 +205,10 @@ public class RobotContainer {
     
     private void configureTraining() throws IOException {
         SendableContext context = new SendableContext();
-        context.registerSendable(StringSendable.class);
-        context.registerSendable(ValueSendable.class);
-        context.registerSendable(BundleSendable.class);
-        context.registerSendable(ArraySendable.class);
+            context.registerSendable(StringSendable.class);
+            context.registerSendable(ValueSendable.class);
+            context.registerSendable(BundleSendable.class);
+            context.registerSendable(ArraySendable.class);
 
         NetworkSocket socket = NetworkSocket.create(Constants.Training.TRAINER_HOSTNAME);
         trainerClient = new NetworkClient(socket, context);
