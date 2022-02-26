@@ -6,6 +6,9 @@ import frc.robot.utils.Toggleable;
 import com.playingwithfusion.TimeOfFlight;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -18,7 +21,8 @@ public class Indexer extends SubsystemBase implements Toggleable{
 
   // indexer testing motors
   protected final CANSparkMax indexerBelt_neo;
-
+  private final SparkMaxPIDController pid_indexerBelt;
+  private final RelativeEncoder enc_indexerBelt;
 
   // time of flights
   protected TimeOfFlight TOF_Ext;
@@ -65,6 +69,9 @@ public class Indexer extends SubsystemBase implements Toggleable{
     indexerBelt_neo.setIdleMode(IdleMode.kBrake);
     indexerBelt_neo.setInverted(true);
     indexerBelt_neo.burnFlash();
+
+    pid_indexerBelt = indexerBelt_neo.getPIDController();
+    enc_indexerBelt = indexerBelt_neo.getEncoder();
   }
 
   // INDEXER METHODS
@@ -153,6 +160,18 @@ public class Indexer extends SubsystemBase implements Toggleable{
     if(!enabled) return;
     speedBelt = target;
     indexerBelt_neo.set(speedBelt);
+  }
+
+  public void setControlMode(double setpoint, ControlType mode){
+    pid_indexerBelt.setReference(setpoint, mode);
+  }
+
+  public void zeroEncoder(){
+    enc_indexerBelt.setPosition(0);
+  }
+
+  public double encoderPosition(){
+      return enc_indexerBelt.getPosition();
   }
 
 

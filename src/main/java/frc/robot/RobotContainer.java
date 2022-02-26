@@ -53,6 +53,16 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
+import frc.robot.commands.IntakeSimulationTesting;
+import frc.robot.commands.ReverseIntake;
+import frc.robot.commands.ReverseIntakeIndexer;
+import frc.robot.commands.RunIndexerBack;
+import frc.robot.commands.ShooterTestOne;
+import frc.robot.commands.ShooterTestTwo;
+import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Pneumatics;
+
 import frc.robot.commands.*;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.training.*;
@@ -74,6 +84,18 @@ public class RobotContainer {
 
   // Define main joystick
 
+  private final XboxController joystick_main; // = new XboxController(0);
+  private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
+      but_main_LAnalog, but_main_RAnalog, but_main_Back, but_main_Start;
+  
+  private final Joystick joy_secondary; // TODO: tell lex why this here
+
+  private final XboxController joystick_secondary;
+  private JoystickButton but_sec_A, but_sec_B, but_sec_X, but_sec_Y, but_sec_LBumper, but_sec_RBumper,
+      but_sec_LAnalog, but_sec_RAnalog, but_sec_Back, but_sec_Start, but_sec_Left, but_sec_Up, but_sec_Right,
+      but_sec_Down;
+
+
 
   private final Joystick             joystick_main; // = new XboxController(0);
   private final Joystick             joystick_secondary;
@@ -91,6 +113,7 @@ public class RobotContainer {
 
   private final DefaultDrive         defaultDrive;
   private final ReverseIntakeIndexer reverse;
+
   private final IndexerIntakeActive  indexerIntakeActive;
   private final IntakeActive         intakeActive;
   private final IndexerIntakeTest    test;
@@ -104,8 +127,22 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Init controller
-    joystick_main = new Joystick(0);
-    joystick_secondary = new Joystick(1);
+
+    joystick_main = new XboxController(0);
+    joystick_secondary = new XboxController(1);
+
+    joy_secondary = new Joystick(1);
+    // Init button binds
+    but_main_A = new JoystickButton(joystick_main, XboxController.Button.kA.value);
+    but_main_B = new JoystickButton(joystick_main, XboxController.Button.kB.value);
+    but_main_X = new JoystickButton(joystick_main, XboxController.Button.kX.value);
+    but_main_Y = new JoystickButton(joystick_main, XboxController.Button.kY.value);
+    but_main_LBumper = new JoystickButton(joystick_main, XboxController.Button.kLeftBumper.value);
+    but_main_RBumper = new JoystickButton(joystick_main, XboxController.Button.kRightBumper.value);
+    but_main_LAnalog = new JoystickButton(joystick_main, XboxController.Button.kLeftStick.value);
+    but_main_RAnalog = new JoystickButton(joystick_main, XboxController.Button.kRightStick.value);
+    but_main_Back = new JoystickButton(joystick_main, XboxController.Button.kBack.value);
+    but_main_Start = new JoystickButton(joystick_main, XboxController.Button.kStart.value);
 
     // Initialize sub systems
 
@@ -122,9 +159,11 @@ public class RobotContainer {
     // Init commands
     defaultDrive        = new DefaultDrive((DriveTrain), joystick_main.getController());
     indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake);
+
     reverse             = new ReverseIntakeIndexer(Intake, Indexer);
     intakeActive        = new IntakeActive(Intake, Indexer);
     test                = new IndexerIntakeTest(Indexer, Intake);
+
     // m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
     // m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
     // m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
@@ -195,11 +234,13 @@ public class RobotContainer {
     joystick_main.getButton(ButtonType.kRightBumper).whenReleased(new SlowGear(DriveTrain));
 
     // but_main_A.whenPressed();
-    //but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
-    joystick_main.getButton(ButtonType.kY).whileHeld(new IndexerIntakeTest(Indexer, Intake));
-    joystick_main.getButton(ButtonType.kB).whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+
+    but_main_Y.whileHeld(new IndexerIntakeTest(Indexer, Intake));
+    but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
     
-    joystick_main.getButton(ButtonType.kX).whileHeld(new IndexerIntakeActive(Indexer, Intake));
+    // TODO: temp
+    but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
+    but_main_X.whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.1));
 
     // but_main_A.whenActive( new MoveToDistance(DriveTrain));
     // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
@@ -219,7 +260,7 @@ public class RobotContainer {
 
     joystick_secondary.getButton(ButtonType.kLeftBumper).whenPressed(new FindElevatorZero(Climber));
 
-    joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
+    joy_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
     //joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
     /*
     joystick_main.getButton(ButtonType.kRightBumper)
