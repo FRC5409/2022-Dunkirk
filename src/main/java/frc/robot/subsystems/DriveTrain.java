@@ -200,6 +200,7 @@ public class DriveTrain extends SubsystemBase {
         mot_rightFrontDrive.configOpenloopRamp(rampRate, kDriveTrain.kTimeoutMs);
     }
 
+
     // ------------------------- Drive Modes ------------------------- //
 
     /**
@@ -234,7 +235,6 @@ public class DriveTrain extends SubsystemBase {
         }
 
         m_drive.arcadeDrive(accelerate, turn, true);
-
     }
 
     /**
