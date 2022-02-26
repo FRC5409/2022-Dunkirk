@@ -3,6 +3,7 @@ package frc.robot.commands.training;
 import java.util.concurrent.Future;
 
 import frc.robot.Constants;
+import frc.robot.base.shooter.ShooterModel;
 import frc.robot.training.TrainerDashboard;
 import frc.robot.training.TrainerContext;
 
@@ -15,7 +16,6 @@ import frc.robot.training.protocol.generic.ArraySendable;
 import frc.robot.training.protocol.generic.BundleSendable;
 import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
-import frc.robot.utils.ShooterModel;
 
 public class RequestModelUpdate extends CommandBase {
     private final TrainerContext _context;
@@ -63,6 +63,7 @@ public class RequestModelUpdate extends CommandBase {
                         modelParameterB.getValue(double.class),
                         modelParameterC.getValue(double.class),
                         modelParameterD.getValue(double.class),
+                        1d, 1d, 1d,
                         Constants.Shooter.DISTANCE_RANGE,
                         Constants.Shooter.SPEED_RANGE
                     )

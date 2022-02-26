@@ -18,24 +18,65 @@ import frc.robot.training.TrainerDashboard;
 // import frc.robot.training.protocol.generic.BundleSendable;
 // import frc.robot.training.protocol.generic.StringSendable;
 // import frc.robot.training.protocol.generic.ValueSendable;
-import frc.robot.utils.ShooterModel;
+//import frc.robot.utils.ShooterModel;
+import frc.robot.training.protocol.NetworkClient;
+import frc.robot.training.protocol.NetworkSocket;
+import frc.robot.training.protocol.SendableContext;
+import frc.robot.training.protocol.generic.ArraySendable;
+import frc.robot.training.protocol.generic.BundleSendable;
+import frc.robot.training.protocol.generic.StringSendable;
+import frc.robot.training.protocol.generic.ValueSendable;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.DefaultDrive;
+import frc.robot.commands.DisableFlywheel;
+import frc.robot.commands.FastGear;
+import frc.robot.commands.IndexerIntakeActive;
+import frc.robot.commands.IndexerIntakeTest;
+import frc.robot.commands.IntakeActive;
+
+import frc.robot.commands.AutoAlign;
+import frc.robot.commands.DefaultElevator;
+import frc.robot.commands.ElevateTo;
+import frc.robot.commands.FindElevatorZero;
+
+import frc.robot.commands.IntakeActive;
+import frc.robot.commands.ReverseIntake;
+import frc.robot.commands.SlowGear;
+
 import frc.robot.commands.shooter.HoodDown;
 import frc.robot.commands.shooter.HoodUp;
 
 //Constants
 import frc.robot.Constants.kAuto;
 import frc.robot.base.Joystick;
+import frc.robot.base.Property;
+import frc.robot.base.ValueProperty;
 import frc.robot.base.Joystick.ButtonType;
+import frc.robot.base.shooter.ShooterMode;
+import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.SweepDirection;
 
 import java.io.IOException;
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+
+import frc.robot.commands.IntakeSimulationTesting;
+import frc.robot.commands.ReverseIntake;
+import frc.robot.commands.ReverseIntakeIndexer;
+import frc.robot.commands.RunIndexerBack;
+import frc.robot.commands.ShooterTestOne;
+import frc.robot.commands.ShooterTestTwo;
+import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Pneumatics;
 
 import frc.robot.commands.*;
 import frc.robot.commands.shooter.*;
@@ -53,12 +94,6 @@ import frc.robot.subsystems.shooter.*;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-
-  // The robot's subsystems and commands are defined here...
-
-  // Define main joystick
-
-
   private final Joystick             joystick_main; // = new XboxController(0);
   private final Joystick             joystick_secondary;
 
@@ -75,12 +110,13 @@ public class RobotContainer {
 
   private final DefaultDrive         defaultDrive;
   private final ReverseIntakeIndexer reverse;
+
   private final IndexerIntakeActive  indexerIntakeActive;
   private final IntakeActive         intakeActive;
   private final IndexerIntakeTest    test;
 
-  private final TrainerContext       trainerContext;
-  private final TrainerDashboard     trainerDashboard;
+  //private final TrainerContext       trainerContext;
+  //private final TrainerDashboard     trainerDashboard;
   // private       NetworkClient        trainerClient;
 
   /**
@@ -106,9 +142,11 @@ public class RobotContainer {
     // Init commands
     defaultDrive        = new DefaultDrive((DriveTrain), joystick_main.getController());
     indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake);
+
     reverse             = new ReverseIntakeIndexer(Intake, Indexer);
     intakeActive        = new IntakeActive(Intake, Indexer);
     test                = new IndexerIntakeTest(Indexer, Intake);
+
     // m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
     // m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
     // m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
@@ -133,6 +171,7 @@ public class RobotContainer {
     Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
     Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
     
+    /*
     trainerContext = new TrainerContext(
       new Setpoint(Constants.Training.DISTANCE_RANGE.mid(), Constants.Training.DISTANCE_RANGE),
       new ShooterModel(
@@ -141,9 +180,9 @@ public class RobotContainer {
         Constants.Shooter.SPEED_RANGE
       )  
     );
-
+    
     trainerDashboard = new TrainerDashboard(trainerContext);
-
+    */
     // try {
     //   configureTraining();
     // } catch (IOException e) {
@@ -179,11 +218,11 @@ public class RobotContainer {
     joystick_main.getButton(ButtonType.kRightBumper).whenReleased(new SlowGear(DriveTrain));
 
     // but_main_A.whenPressed();
-    //but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
-    joystick_main.getButton(ButtonType.kY).whileHeld(new IndexerIntakeTest(Indexer, Intake));
     joystick_main.getButton(ButtonType.kB).whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
     
+    // TODO: temp
     joystick_main.getButton(ButtonType.kX).whileHeld(new IndexerIntakeActive(Indexer, Intake));
+    joystick_main.getButton(ButtonType.kX).whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.2));
 
     // but_main_A.whenActive( new MoveToDistance(DriveTrain));
     // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
@@ -203,7 +242,8 @@ public class RobotContainer {
 
     joystick_secondary.getButton(ButtonType.kLeftBumper).whenPressed(new FindElevatorZero(Climber));
 
-    joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
+    //joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
+
 
     joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(Climber));
     //joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
@@ -324,9 +364,3 @@ public class RobotContainer {
     return null; 
   }
 }
-
-
-    
-            
-        
-         

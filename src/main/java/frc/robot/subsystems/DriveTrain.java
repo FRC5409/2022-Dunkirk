@@ -52,6 +52,8 @@ public class DriveTrain extends SubsystemBase {
 
     public DifferentialDriveOdometry m_odometry;
 
+    private String drive_state;
+
     public DriveTrain() {
         // Left Front Drive
         mot_leftFrontDrive = new WPI_TalonFX(kID.LeftFrontDrive);
@@ -186,6 +188,28 @@ public class DriveTrain extends SubsystemBase {
         mot_rightRearDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
         mot_rightRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
         mot_rightRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
+
+        m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
+
+
+        //dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
+
+        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
+
+
+        driveMode = kDriveTrain.InitialDriveMode;
+
+        applyAntiTip = kDriveTrain.startWithAntiTip;
+
+        drive_state = "";
+
+        setBrakeMode(true);
+
+        zeroEncoders();
+
+        // tof_front = new TimeOfFlight(Constants.kID.TOF_CLIMBER);
+        // tof_front.setRangingMode(RangingMode.Medium, 1000);
+        // 6630
     }
 
     /**
@@ -212,6 +236,19 @@ public class DriveTrain extends SubsystemBase {
         displayDriveMode();
     }
 
+
+    /**
+     * sets the ramp rate
+     * 
+     * @param rampRate time to full throttle
+     * 
+     */
+    public void setRampRate(double rampRate){
+        mot_leftFrontDrive.configOpenloopRamp(rampRate, kDriveTrain.kTimeoutMs);
+        mot_rightFrontDrive.configOpenloopRamp(rampRate, kDriveTrain.kTimeoutMs);
+    }
+
+
     // ------------------------- Drive Modes ------------------------- //
 
     /**
@@ -224,6 +261,26 @@ public class DriveTrain extends SubsystemBase {
      */
     public void aadilDrive(final double acceleration, final double deceleration, final double turn) {
         double accelerate = (acceleration - deceleration);
+
+
+        //double rampRateAdjustment = (dsl_gear.get() == DoubleSolenoid.Value.kForward ? kDriveTrain.highGearRampRate : 0);
+
+        if(accelerate > 0 && turn == 0 && drive_state != "forward"){
+            drive_state = "forward";
+            setRampRate(kDriveTrain.forwardRampRate);
+        }
+        else if(accelerate < 0 && turn == 0 && drive_state != "backwards"){
+            drive_state = "backwards";
+            setRampRate(kDriveTrain.backwardRampRate);
+        }
+        if(accelerate > 0 && turn != 0 && drive_state != "forward_turn"){
+            drive_state = "forward_turn";
+            setRampRate(kDriveTrain.forwardTurnRampRate);
+        }
+        else if(accelerate < 0 && turn != 0 && drive_state != "backward_turn"){
+            drive_state = "backward_turn";
+            setRampRate(kDriveTrain.backwardTurnRampRate);
+        }
 
         m_drive.arcadeDrive(accelerate, turn, true);
     }
