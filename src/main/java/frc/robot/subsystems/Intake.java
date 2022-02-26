@@ -47,6 +47,7 @@ public class Intake extends SubsystemBase{
         //intakeSolenoid_left = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kIntake.kLeftIntakeSolenoid1, kIntake.kLeftIntakeSolenoid2);
         intakeSolenoid_right = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kIntake.kRightIntakeSolenoid1, kIntake.kRightIntakeSolenoid2);
 
+        solenoidsUp();
     }
 
     public void intakeOn(double speed) {
