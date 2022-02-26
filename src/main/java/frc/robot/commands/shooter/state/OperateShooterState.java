@@ -1,17 +1,18 @@
-package frc.robot.commands.training;
+package frc.robot.commands.shooter.state;
 
 import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.base.StateCommandBase;
+import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.SweepDirection;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
-import frc.robot.training.TrainerDashboard;
-import frc.robot.training.TrainerContext;
+import frc.robot.utils.Toggleable;
 import frc.robot.utils.Vector2;
 
 // TODO update doc
@@ -25,40 +26,71 @@ import frc.robot.utils.Vector2;
  * Once both systems have reached their respective targets,
  * the indexer triggers, feeding powercells into the turret.</p>
  */
-public class TrainerRunShooterState extends StateCommandBase {
+public class OperateShooterState extends StateCommandBase {
     private final ShooterFlywheel flywheel;
     private final ShooterTurret turret;
     private final Limelight limelight;
     private final Indexer indexer;
-    private final TrainerDashboard dashboard;
-    private final TrainerContext context;
-
-    public TrainerRunShooterState(
+    
+    private final ShooterModel model;
+    private boolean linear;
+    
+    public OperateShooterState(
         Limelight limelight,
         ShooterTurret turret,
         ShooterFlywheel flywheel,
         Indexer indexer,
-        TrainerDashboard dashboard,
-        TrainerContext context
+        ShooterModel model
     ) {
         this.limelight = limelight;
         this.flywheel = flywheel;
         this.indexer = indexer;
         this.turret = turret;
-        this.dashboard = dashboard;
-        this.context = context;
+        this.model = model;
 
-        addRequirements(limelight, turret, flywheel);
+        addRequirements(limelight, turret, flywheel, indexer);
+    }
+
+    public OperateShooterState(
+        Limelight limelight,
+        ShooterTurret turret,
+        ShooterFlywheel flywheel,
+        Indexer indexer,
+        ShooterModel model, 
+        boolean linear
+    ) {
+        this.limelight = limelight;
+        this.flywheel = flywheel;
+        this.indexer = indexer;
+        this.turret = turret;
+        this.model = model;
+        this.linear = linear;
+
+        addRequirements(limelight, turret, flywheel, indexer);
+    }
+
+
+
+    @Override
+    public void initialize() {
+        if (!Toggleable.isEnabled(limelight, turret, flywheel, indexer))
+            throw new RuntimeException("Cannot operate shooter when requirements are not enabled.");
+
+        flywheel.spinFeeder(4500);
     }
 
     @Override
     public void execute() {
         Vector2 target = limelight.getTarget();
-        double velocity = context.getSetpoint().getTarget();
 
-        context.setDistance(
-            Constants.Vision.DISTANCE_FUNCTION.calculate(target.y)
-        );
+        double distance = Constants.Vision.DISTANCE_FUNCTION.calculate(target.y);
+        double velocity;
+        if(linear){
+            System.out.println("Linear calculation");
+            velocity = model.calculateLinear(distance);
+        } else {
+            velocity = model.calculate(distance);   
+        }
 
         // Set flywheel to estimated veloctity
         flywheel.setVelocity(velocity);
@@ -69,20 +101,22 @@ public class TrainerRunShooterState extends StateCommandBase {
 
         if (turret.isTargetReached() && flywheel.isTargetReached()) {
             indexer.spinIndexer(1);
-            flywheel.spinFeeder(4500*1.5);
-        }
+        } /*else {
+            indexer.moveIndexerMotor(0);
+        }*/
 
+        SmartDashboard.putNumber("Velocity Prediction", velocity);
         SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
+        
+        SmartDashboard.putNumber("Distance Prediction (ft)", distance);
         SmartDashboard.putNumber("Aligninment Offset", target.x);
 
-        SmartDashboard.putNumber("Shooter Velocity", flywheel.getVelocity());
-
-        dashboard.update();
     }
 
     @Override
     public void end(boolean interrupted) {
         flywheel.setVelocity(0);
+        indexer.stopIndexer();
     }
 
     @Override

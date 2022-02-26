@@ -1,4 +1,4 @@
-package frc.robot.commands.shooter;
+package frc.robot.commands.shooter.state;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -7,6 +7,7 @@ import frc.robot.base.TimedStateCommand;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.LedMode;
 import frc.robot.subsystems.Limelight.TargetType;
+import frc.robot.utils.Toggleable;
 
 // TODO update doc
 
@@ -33,6 +34,9 @@ public class SearchShooterState extends TimedStateCommand {
     @Override
     public void initialize() {
         super.initialize();
+        
+        if (!Toggleable.isEnabled(limelight))
+            throw new RuntimeException("Cannot search shooter when requirements are not enabled.");
 
         limelight.enable();
         limelight.setLedMode(LedMode.kModeOn);
