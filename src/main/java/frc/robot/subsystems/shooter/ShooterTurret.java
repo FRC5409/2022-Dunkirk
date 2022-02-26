@@ -31,8 +31,11 @@ import frc.robot.utils.Toggleable;
  * @author Akil Pathiranage, Keith Davies
  */
 public class ShooterTurret extends SubsystemBase implements Toggleable {
-    public static final double MOTOR_ROTATION_RATIO = (Constants.Shooter.GEAR_RATIO / 360);
-    public static final double MOTOR_TARGET_RATIO = 1 / MOTOR_ROTATION_RATIO;
+    //rotations per degree
+    public static final double ROTATIONS_PER_DEGREE = (Constants.Shooter.GEAR_RATIO / 360);
+
+    //degrees per rotation
+    public static final double DEGREES_PER_ROTATION = 1 / ROTATIONS_PER_DEGREE;
 
     // private WPI_TalonFX mot_main;
     private CANSparkMax                        mot_main;
@@ -130,7 +133,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         
         // TODO add safety
         controller_main.setReference(
-            MOTOR_ROTATION_RATIO * Constants.Shooter.ROTATION_RANGE.clamp(value), 
+            ROTATIONS_PER_DEGREE * Constants.Shooter.ROTATION_RANGE.clamp(value), 
             CANSparkMax.ControlType.kPosition);
         
         target = value;
@@ -151,7 +154,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
      * @return Angle in degrees.
      */
     public double getRotation() {
-        return enc_main.getPosition() * MOTOR_TARGET_RATIO;
+        return enc_main.getPosition() * DEGREES_PER_ROTATION;
     }
 
     /**
