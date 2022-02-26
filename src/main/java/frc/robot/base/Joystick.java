@@ -50,16 +50,16 @@ public class Joystick {
 
     public JoystickButton getButton(ButtonType type) {
         switch (type) {
-            case kLeftBumper: return m_buttonLeftBumper;
+            case kLeftBumper:  return m_buttonLeftBumper;
             case kRightBumper: return m_buttonRightBumper;
-            case kLeftStick: return m_buttonLeftStick;
-            case kRightStick: return m_buttonRightStick;
-            case kA: return m_buttonA;
-            case kB: return m_buttonB;
-            case kX: return m_buttonX;
-            case kY: return m_buttonY;
-            case kBack: return m_buttonBack;
-            case kStart: return m_buttonStart;
+            case kLeftStick:   return m_buttonLeftStick;
+            case kRightStick:  return m_buttonRightStick;
+            case kA:           return m_buttonA;
+            case kB:           return m_buttonB;
+            case kX:           return m_buttonX;
+            case kY:           return m_buttonY;
+            case kBack:        return m_buttonBack;
+            case kStart:       return m_buttonStart;
             default: throw new IllegalArgumentException();        
         }
     }
