@@ -16,12 +16,16 @@ public class IndexerIntakeTest extends CommandBase {
         addRequirements(indexer, intake);
     }
 
-    @Override
-    public void execute() {
+    public void initialize(){
         sys_intake.intakeOn(0.5);
         sys_intake.intakeIn(1);
         sys_indexer.indexerOn(1);
         sys_intake.solenoidsDown();
+    }
+
+    @Override
+    public void execute() {
+        
     }
 
     @Override
