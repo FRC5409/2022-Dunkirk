@@ -25,7 +25,6 @@ import frc.robot.Constants.kAuto;
 import frc.robot.base.Joystick;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
-import frc.robot.base.WranglerCommand;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterModel;
