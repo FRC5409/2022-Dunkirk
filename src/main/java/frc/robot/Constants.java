@@ -134,9 +134,8 @@ public final class Constants {
 
         // Encoders
         public static final double encoderToMeterConversionFactor = 1;
-        
 
-        public static final double encoderCPR = 2048; // need to change for characterization
+        public static final double encoderCPR = 2048;
         public static final double wheelCircumferenceInches = 4 * Math.PI;
         public static final double lowGearConversionFactor = 1/15.32;
         public static final double highGearConversionFactor = 1/7.08;
@@ -253,10 +252,6 @@ public final class Constants {
 
     public final class Falcon500 {
         public static final double unitsPerRotation = 2048;
-    }
-
-    public final class kColour {
-        public static final int proximityThreshold = 100;
     }
 
     public final class kIndexer {
