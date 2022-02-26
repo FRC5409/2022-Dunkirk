@@ -64,6 +64,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.commands.IntakeSimulationTesting;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseIntakeIndexer;
+import frc.robot.commands.RunIndexerBack;
 import frc.robot.commands.ShooterTestOne;
 import frc.robot.commands.ShooterTestTwo;
 import frc.robot.subsystems.Indexer;
@@ -223,7 +224,9 @@ public class RobotContainer {
     but_main_Y.whileHeld(new IndexerIntakeTest(Indexer, Intake));
     but_main_B.whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
     
-    but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
+    // TODO: temp
+    //but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
+    but_main_X.whileHeld(new RunIndexerBack(Intake, Indexer));
 
     // but_main_A.whenActive( new MoveToDistance(DriveTrain));
     // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));

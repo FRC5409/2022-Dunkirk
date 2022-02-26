@@ -166,6 +166,10 @@ public class Indexer extends SubsystemBase implements Toggleable{
     pid_indexerBelt.setReference(setpoint, mode);
   }
 
+  public void zeroEncoder(){
+    enc_indexerBelt.setPosition(0);
+  }
+
   public double encoderPosition(){
       return enc_indexerBelt.getPosition();
   }
