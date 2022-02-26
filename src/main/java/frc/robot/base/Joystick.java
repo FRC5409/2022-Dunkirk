@@ -1,6 +1,7 @@
 package frc.robot.base;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class Joystick {
@@ -14,7 +15,11 @@ public class Joystick {
         kX,
         kY,
         kBack,
-        kStart
+        kStart,
+        kLeftPov,
+        kRightPov,
+        kUpPov,
+        kDownPov
     }
 
     private final XboxController m_controller;
@@ -28,6 +33,10 @@ public class Joystick {
     private final JoystickButton m_buttonRightStick;
     private final JoystickButton m_buttonBack;
     private final JoystickButton m_buttonStart;
+    private final Button         m_buttonPovUp;
+    private final Button         m_buttonPovDown;
+    private final Button         m_buttonPovLeft;
+    private final Button         m_buttonPovRight;
 
     public Joystick(int port) {
         m_controller = new XboxController(port);
@@ -42,13 +51,41 @@ public class Joystick {
         m_buttonRightStick = new JoystickButton(m_controller, XboxController.Button.kRightStick.value);
         m_buttonBack = new JoystickButton(m_controller, XboxController.Button.kBack.value);
         m_buttonStart = new JoystickButton(m_controller, XboxController.Button.kStart.value);
+
+        m_buttonPovUp = new Button(
+            () -> {
+                int i = m_controller.getPOV();
+                return (i == 0) || (i == 45) || (i == 315);
+            }
+        );
+
+        m_buttonPovRight = new Button(
+            () -> {
+                int i = m_controller.getPOV();
+                return (i == 45) || (i == 90) || (i == 135);
+            }
+        );
+        
+        m_buttonPovDown = new Button(
+            () -> {
+                int i = m_controller.getPOV();
+                return (i == 135) || (i == 180) || (i == 225);
+            }
+        );
+        
+        m_buttonPovLeft = new Button(
+            () -> {
+                int i = m_controller.getPOV();
+                return (i == 225) || (i == 270) || (i == 315);
+            }
+        );
     }
 
     public XboxController getController() {
         return m_controller;
     }
 
-    public JoystickButton getButton(ButtonType type) {
+    public Button getButton(ButtonType type) {
         switch (type) {
             case kLeftBumper:  return m_buttonLeftBumper;
             case kRightBumper: return m_buttonRightBumper;
@@ -60,6 +97,10 @@ public class Joystick {
             case kY:           return m_buttonY;
             case kBack:        return m_buttonBack;
             case kStart:       return m_buttonStart;
+            case kLeftPov:     return m_buttonPovLeft;
+            case kRightPov:    return m_buttonPovRight;
+            case kUpPov:       return m_buttonPovUp;
+            case kDownPov:     return m_buttonPovDown;
             default: throw new IllegalArgumentException();        
         }
     }
