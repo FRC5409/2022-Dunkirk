@@ -14,9 +14,9 @@ public class DriveStraight extends CommandBase {
      *
      * @param subsystem The subsystem used by this command.
      */
-    public DriveStraight(DriveTrain subsystem, float speed) {
+    public DriveStraight(DriveTrain subsystem, float d) {
       sys_drive = subsystem;
-      driveSpeed = speed;
+      driveSpeed = d;
       // Use addRequirements() here to declare subsystem dependencies.
       addRequirements(sys_drive);
     }

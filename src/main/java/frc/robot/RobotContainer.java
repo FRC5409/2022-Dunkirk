@@ -23,22 +23,6 @@ import frc.robot.utils.ShooterModel;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-
-import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.DisableFlywheel;
-import frc.robot.commands.FastGear;
-import frc.robot.commands.IndexerIntakeActive;
-import frc.robot.commands.IndexerIntakeTest;
-import frc.robot.commands.IntakeActive;
-
-import frc.robot.commands.AutoAlign;
-import frc.robot.commands.DefaultElevator;
-import frc.robot.commands.ElevateTo;
-import frc.robot.commands.FindElevatorZero;
-
-import frc.robot.commands.IntakeActive;
-import frc.robot.commands.ReverseIntake;
-import frc.robot.commands.SlowGear;
 import frc.robot.commands.shooter.HoodDown;
 import frc.robot.commands.shooter.HoodUp;
 
@@ -52,7 +36,7 @@ import java.io.IOException;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.commands.*;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.training.*;
@@ -98,6 +82,8 @@ public class RobotContainer {
   private final TrainerContext       trainerContext;
   private final TrainerDashboard     trainerDashboard;
   // private       NetworkClient        trainerClient;
+
+  private final SendableChooser<Command> autoCommandSelector;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -148,6 +134,15 @@ public class RobotContainer {
 
     Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
     Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
+
+    // auto command selector
+    autoCommandSelector = new SendableChooser<Command>();
+    
+    autoCommandSelector.setDefaultOption("Default", new DriveStraight(DriveTrain, -0.1f));
+    autoCommandSelector.addOption("One", new DriveStraight(DriveTrain, -0.1f));
+    autoCommandSelector.addOption("Two", new DriveStraight(DriveTrain, -0.1f));
+    autoCommandSelector.addOption("Three", new DriveStraight(DriveTrain, -0.1f));
+
     
     trainerContext = new TrainerContext(
       new Setpoint(Constants.Training.DISTANCE_RANGE.mid(), Constants.Training.DISTANCE_RANGE),
@@ -335,7 +330,7 @@ public class RobotContainer {
     // makes sure that after the auto command is finished running the robot stops.
     //return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
     */
-    return null; 
+    return autoCommandSelector.getSelected(); 
   }
 }
 
