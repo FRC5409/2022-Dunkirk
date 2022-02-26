@@ -1,16 +1,16 @@
-package frc.robot.commands.shooter;
+package frc.robot.commands.training.state;
 
 import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.base.StateCommandBase;
-import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
-import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
-import frc.robot.utils.ShooterModel;
+import frc.robot.training.TrainerDashboard;
+import frc.robot.training.Setpoint;
+import frc.robot.training.TrainerContext;
 import frc.robot.utils.Vector2;
 
 // TODO update doc
@@ -24,32 +24,24 @@ import frc.robot.utils.Vector2;
  * Once both systems have reached their respective targets,
  * the indexer triggers, feeding powercells into the turret.</p>
  */
-public class OperateShooterState extends StateCommandBase {
-    private final ShooterFlywheel flywheel;
+public class TrainerLookShooterState extends StateCommandBase {
     private final ShooterTurret turret;
     private final Limelight limelight;
-    private final ShooterModel model;
-    private final Indexer indexer;
+    private final TrainerDashboard dashboard;
+    private final TrainerContext context;
 
-    public OperateShooterState(
+    public TrainerLookShooterState(
         Limelight limelight,
         ShooterTurret turret,
-        ShooterFlywheel flywheel,
-        Indexer indexer,
-        ShooterModel model
+        TrainerDashboard dashboard,
+        TrainerContext context
     ) {
         this.limelight = limelight;
-        this.flywheel = flywheel;
-        this.indexer = indexer;
         this.turret = turret;
-        this.model = model;
+        this.dashboard = dashboard;
+        this.context = context;
 
-        addRequirements(limelight, turret, flywheel, indexer);
-    }
-
-    @Override
-    public void initialize() {
-        flywheel.spinFeeder(4500);
+        addRequirements(limelight, turret);
     }
 
     @Override
@@ -57,33 +49,22 @@ public class OperateShooterState extends StateCommandBase {
         Vector2 target = limelight.getTarget();
 
         double distance = Constants.Vision.DISTANCE_FUNCTION.calculate(target.y);
-        double velocity = model.calculate(distance);
 
-        // Set flywheel to estimated veloctity
-        flywheel.setVelocity(velocity);
+        context.setDistance(distance);
+        context.setSetpoint(
+            new Setpoint(
+                context.getModel().calculate(distance),
+                Constants.Shooter.SPEED_RANGE
+            )
+        );
 
         // Continue aligning shooter
         if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
-            turret.setRotationTarget(turret.getRotation() + target.x* Constants.Vision.ROTATION_P);
-
-        if (turret.isTargetReached() && flywheel.isTargetReached()) {
-            indexer.spinIndexer(1);
-        } /*else {
-            indexer.moveIndexerMotor(0);
-        }*/
-
-        SmartDashboard.putNumber("Velocity Prediction", velocity);
-        SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
-        
-        SmartDashboard.putNumber("Distance Prediction (ft)", distance);
+            turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
+            
         SmartDashboard.putNumber("Aligninment Offset", target.x);
-
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        flywheel.setVelocity(0);
-        indexer.stopIndexer();
+        
+        dashboard.update();
     }
 
     @Override
