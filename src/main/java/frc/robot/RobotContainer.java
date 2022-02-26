@@ -238,7 +238,7 @@ public class RobotContainer {
     
     // TODO: temp
     but_main_X.whileHeld(new IndexerIntakeActive(Indexer, Intake));
-    but_main_X.whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.1));
+    but_main_X.whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.2));
 
     // but_main_A.whenActive( new MoveToDistance(DriveTrain));
     // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
