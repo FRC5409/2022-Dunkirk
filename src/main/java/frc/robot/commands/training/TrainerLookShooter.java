@@ -6,6 +6,7 @@ import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.shooter.state.AlignShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
 import frc.robot.commands.shooter.state.SweepShooterState;
+import frc.robot.commands.training.state.TrainerLookShooterState;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.training.TrainerContext;
@@ -58,5 +59,10 @@ public final class TrainerLookShooter extends StateCommandGroup {
 
         turret.disable();
         limelight.disable();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
     }
 }

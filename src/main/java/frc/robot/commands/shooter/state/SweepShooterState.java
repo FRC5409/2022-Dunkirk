@@ -52,7 +52,7 @@ public class SweepShooterState extends TimedStateCommand {
         if (!Toggleable.isEnabled(limelight, turret))
             throw new RuntimeException("Cannot sweep shooter when requirements are not enabled.");
 
-        direction = (sweepDirection.get() == SweepDirection.kRight) ? 1 : -1;
+        direction = (sweepDirection.get() == SweepDirection.kLeft) ? 1 : -1;
         offset = Constants.Shooter.SHOOTER_SWEEP_INVERSE.calculate(turret.getRotation());
         done = false;
     }

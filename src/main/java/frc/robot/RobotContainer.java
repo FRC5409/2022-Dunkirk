@@ -25,7 +25,6 @@ import frc.robot.Constants.kAuto;
 import frc.robot.base.Joystick;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
-import frc.robot.base.WranglerCommand;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterModel;
@@ -120,13 +119,33 @@ public class RobotContainer {
             new Setpoint(Constants.Training.DISTANCE_RANGE.mid(), Constants.Training.DISTANCE_RANGE)
         );
 
+        trainerContext.setModel(
+            ShooterMode.kFar, 
+            new ShooterModel(
+                0d, 0d, 0d, 0d, 1d, 1d, 1d,
+                Constants.Shooter.DISTANCE_RANGE,
+                Constants.Shooter.SPEED_RANGE
+            )
+        );
+
+        trainerContext.setModel(
+            ShooterMode.kNear, 
+            new ShooterModel(
+                0d, 0d, 0d, 0d, 1d, 1d, 1d,
+                Constants.Shooter.DISTANCE_RANGE,
+                Constants.Shooter.SPEED_RANGE
+            )
+        );
+
+        trainerContext.setMode(ShooterMode.kFar);
+
         trainerDashboard = new TrainerDashboard(trainerContext);
 
-        try {
-            configureTraining();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        // try {
+        //     //configureTraining();
+        // } catch (IOException e) {
+        //     throw new RuntimeException(e);
+        // }
 
         configureButtonBindings();
 
@@ -165,8 +184,10 @@ public class RobotContainer {
         joystick_main.getButton(ButtonType.kX)
             .whileHeld(new IndexerIntakeActive(Indexer, Intake));
 
-        joystick_main.getButton(ButtonType.kB)
-            .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+        joystick_main.getButton(ButtonType.kA)
+            .whileHeld(new TrainerRunShooter(limelight, turret, Flywheel, Indexer, trainerDashboard, trainerContext, shooterSweepDirection))
+            .whenReleased(new RotateTurret(turret, 0));
+
 
         joystick_secondary.getButton(ButtonType.kRightBumper)
             .whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
@@ -201,6 +222,22 @@ public class RobotContainer {
 
         joystick_secondary.getButton(ButtonType.kBack)
             .whenPressed(new UndoTargetSetpoint(trainerDashboard, trainerContext));
+
+        joystick_secondary.getButton(ButtonType.kUpPov)
+            .and(joystick_secondary.getButton(ButtonType.kA).negate())
+            .whenActive(new TrainerConfigureShooterMode(turret, limelight, trainerContext, trainerDashboard, shooterMode, ShooterMode.kFar));
+
+        joystick_secondary.getButton(ButtonType.kDownPov)
+            .and(joystick_secondary.getButton(ButtonType.kA).negate())
+            .whenActive(new TrainerConfigureShooterMode(turret, limelight, trainerContext, trainerDashboard, shooterMode, ShooterMode.kNear));
+
+        joystick_secondary.getButton(ButtonType.kLeftPov)
+            .and(joystick_secondary.getButton(ButtonType.kA).negate())
+            .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft));
+            
+        joystick_secondary.getButton(ButtonType.kRightPov)
+            .and(joystick_secondary.getButton(ButtonType.kA).negate())
+            .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight));
     }  
     
     private void configureTraining() throws IOException {

@@ -1,4 +1,4 @@
-package frc.robot.commands.training;
+package frc.robot.commands.training.state;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -68,7 +68,7 @@ public class TrainerRunShooterState extends StateCommandBase {
             turret.setRotationTarget(turret.getRotation() + target.x* Constants.Vision.ROTATION_P);
 
         if (turret.isTargetReached() && flywheel.isTargetReached()) {
-            indexer.spinIndexer(1);
+            indexer.indexerOn(1);
             flywheel.spinFeeder(4500*1.5);
         }
 
@@ -76,6 +76,8 @@ public class TrainerRunShooterState extends StateCommandBase {
         SmartDashboard.putNumber("Aligninment Offset", target.x);
 
         SmartDashboard.putNumber("Shooter Velocity", flywheel.getVelocity());
+        SmartDashboard.putBoolean("Is Turret Reached", turret.isTargetReached());
+        SmartDashboard.putBoolean("Is Flywheel Reached", flywheel.isTargetReached());
 
         dashboard.update();
     }

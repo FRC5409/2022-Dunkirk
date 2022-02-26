@@ -196,7 +196,7 @@ public final class Constants {
         public static final double MAX_ANGLE_CLOCKWISE = 70;
         public static final double MAX_ANGLE_COUNTERCLOCKWISE = -52;
         public static final Range  LIMITS              = new Range(MAX_ANGLE_COUNTERCLOCKWISE, MAX_ANGLE_CLOCKWISE);
-        public static final double ALIGNMENT_THRESHOLD = 0.14;
+        public static final double ALIGNMENT_THRESHOLD = 2.14;
 
         //TODO fill in pneumatics constants.
         public static final int HOOD_FORWARD_CHANNEL = 13;
@@ -251,7 +251,8 @@ public final class Constants {
 
         // Range Configurations
         public static final Range ROTATION_RANGE = new Range(
-            -28.571428571428573, 57.14285714285714
+            -61, 75
+            //-28.571428571428573, 57.14285714285714
         );
 
         public static final Range SPEED_RANGE = new Range(
@@ -272,7 +273,7 @@ public final class Constants {
 
 
     // Smooth Sweep Constants (experimental)
-        public static final double SHOOTER_SWEEP_PERIOD = 3.6;
+        public static final double SHOOTER_SWEEP_PERIOD = 2.6;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
             private final double kA = (2.0 * Math.PI) / SHOOTER_SWEEP_PERIOD;
@@ -331,6 +332,6 @@ public final class Constants {
             
         };
 
-        public static final double ROTATION_P = 0.10;
+        public static final double ROTATION_P = 0.50;
     }
 }

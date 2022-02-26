@@ -21,7 +21,7 @@ public class TrainerContext {
     }
 
     public void setModel(ShooterModel model) {
-        setModel(getMode(), model);
+        setModel(_mode, model);
     }
 
     public void setModel(ShooterMode mode, ShooterModel model) {
@@ -42,7 +42,7 @@ public class TrainerContext {
 
     @Nullable
     public ShooterModel getModel() {
-        return _models.get(getMode());
+        return _models.get(_mode);
     }
     
     @Nullable

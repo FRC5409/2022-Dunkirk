@@ -88,7 +88,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         if(!limit_switch.get()){
             enc_main.setPosition(0);
         }
-        SmartDashboard.putNumber("encoderValue", enc_main.getPosition());
+        SmartDashboard.putNumber("encoderValue", enc_main.getPosition() * DEGREES_PER_ROTATION);
         if(dsl_hood.get().equals(Value.kForward)){
             fields.get("hood").setString("Up");
         } else if (dsl_hood.get().equals(Value.kReverse)){

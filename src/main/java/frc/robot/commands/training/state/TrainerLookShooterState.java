@@ -1,4 +1,4 @@
-package frc.robot.commands.training;
+package frc.robot.commands.training.state;
 
 import org.jetbrains.annotations.NotNull;
 
