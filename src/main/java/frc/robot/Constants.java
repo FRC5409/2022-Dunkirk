@@ -101,7 +101,7 @@ public final class Constants {
         public static final int DIGITAL_INPUT_PORT = 8;
 
         public static final double TO_MAX = 106.5;
-        public static final double TO_MID_RUNG = 100.0;
+        public static final double TO_MID_RUNG = 104.0;
         public static final double TO_LOW_RUNG = 80.0;
         public static final double TO_MIN = 10.0;
     }

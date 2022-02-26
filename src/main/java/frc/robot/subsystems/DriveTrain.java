@@ -18,11 +18,13 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.kPneumatics;
+import frc.robot.utils.MotorUtils;
 import frc.robot.Constants.kID;
 import frc.robot.Constants;
 import frc.robot.Constants.kDriveTrain;
@@ -33,6 +35,9 @@ public class DriveTrain extends SubsystemBase {
     private final WPI_TalonFX mot_leftRearDrive;
     private final WPI_TalonFX mot_rightFrontDrive;
     private final WPI_TalonFX mot_rightRearDrive;
+
+    private final Timer timer = new Timer();
+    private final double refreshSeconds = 2.0;
 
     private double lmRPM = 0;
     private double rmRPM = 0;
@@ -50,6 +55,42 @@ public class DriveTrain extends SubsystemBase {
     public DriveTrain() {
         // Left Front Drive
         mot_leftFrontDrive = new WPI_TalonFX(kID.LeftFrontDrive);
+
+        // Left Rear Drive
+        mot_leftRearDrive = new WPI_TalonFX(kID.LeftRearDrive);
+
+        // Right Front Drive
+        mot_rightFrontDrive = new WPI_TalonFX(kID.RightFrontDrive);
+
+        // Right Rear Drive
+        mot_rightRearDrive = new WPI_TalonFX(kID.RightRearDrive);
+
+        configMotors();
+
+        m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
+
+        // dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.REVPH,
+        // kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
+
+        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel,
+                kDriveTrain.ReverseChannel);
+
+        driveMode = kDriveTrain.InitialDriveMode;
+
+        applyAntiTip = kDriveTrain.startWithAntiTip;
+
+        setBrakeMode(true);
+
+        zeroEncoders();
+
+        // tof_front = new TimeOfFlight(Constants.kID.TOF_CLIMBER);
+        // tof_front.setRangingMode(RangingMode.Medium, 1000);
+        // 6630
+        timer.start();
+    }
+
+    private void configMotors() {
+        // Left Front Drive
         mot_leftFrontDrive.configFactoryDefault();
         mot_leftFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
                 kDriveTrain.kPIDLoopIdx,
@@ -73,7 +114,6 @@ public class DriveTrain extends SubsystemBase {
         mot_leftFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
         // Left Rear Drive
-        mot_leftRearDrive = new WPI_TalonFX(kID.LeftRearDrive);
         mot_leftRearDrive.configFactoryDefault();
         mot_leftRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
                 kDriveTrain.kPIDLoopIdx,
@@ -86,6 +126,7 @@ public class DriveTrain extends SubsystemBase {
                 kDriveTrain.triggerThresholdTime));
         mot_leftRearDrive.follow(mot_leftFrontDrive);
         mot_leftRearDrive.setInverted(InvertType.FollowMaster);
+        MotorUtils.lowerFollowerStatusPeriod(mot_leftRearDrive);
 
         mot_leftRearDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
         mot_leftRearDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
@@ -99,7 +140,6 @@ public class DriveTrain extends SubsystemBase {
         mot_leftRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
         // Right Front Drive
-        mot_rightFrontDrive = new WPI_TalonFX(kID.RightFrontDrive);
         mot_rightFrontDrive.configFactoryDefault();
         mot_rightFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
                 kDriveTrain.kPIDLoopIdx,
@@ -123,7 +163,6 @@ public class DriveTrain extends SubsystemBase {
         mot_rightFrontDrive.setInverted(kDriveTrain.CounterClockwise);
 
         // Right Rear Drive
-        mot_rightRearDrive = new WPI_TalonFX(kID.RightRearDrive);
         mot_rightRearDrive.configFactoryDefault();
         mot_rightRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
                 kDriveTrain.kPIDLoopIdx,
@@ -135,6 +174,7 @@ public class DriveTrain extends SubsystemBase {
                 kDriveTrain.triggerThresholdTime));
         mot_rightRearDrive.follow(mot_rightFrontDrive);
         mot_rightRearDrive.setInverted(InvertType.FollowMaster);
+        MotorUtils.lowerFollowerStatusPeriod(mot_rightRearDrive);
 
         mot_rightRearDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
         mot_rightRearDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
@@ -146,26 +186,6 @@ public class DriveTrain extends SubsystemBase {
         mot_rightRearDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
         mot_rightRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
         mot_rightRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
-
-        m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
-
-
-        //dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
-
-        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
-
-
-        driveMode = kDriveTrain.InitialDriveMode;
-
-        applyAntiTip = kDriveTrain.startWithAntiTip;
-
-        setBrakeMode(true);
-
-        zeroEncoders();
-
-        // tof_front = new TimeOfFlight(Constants.kID.TOF_CLIMBER);
-        // tof_front.setRangingMode(RangingMode.Medium, 1000);
-        // 6630
     }
 
     /**
@@ -175,6 +195,14 @@ public class DriveTrain extends SubsystemBase {
     public void periodic() {
         displayEncoder();
         displayTemperatures();
+
+        if (timer.hasElapsed(refreshSeconds)) {
+            if (mot_leftFrontDrive.hasResetOccurred()) {
+                configMotors();
+            }
+
+            timer.reset();
+        }
 
     }
 

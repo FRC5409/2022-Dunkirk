@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants.kIndexer;
+import frc.robot.utils.MotorUtils;
 import frc.robot.utils.Toggleable;
 
 import com.playingwithfusion.TimeOfFlight;
@@ -64,6 +65,8 @@ public class Indexer extends SubsystemBase implements Toggleable{
     indexerBelt_neo.setSmartCurrentLimit(kIndexer.currentLimit);
     indexerBelt_neo.setIdleMode(IdleMode.kBrake);
     indexerBelt_neo.setInverted(true);
+    MotorUtils.lowerLeaderStatusPeriod(indexerBelt_neo);
+    
     indexerBelt_neo.burnFlash();
   }
 

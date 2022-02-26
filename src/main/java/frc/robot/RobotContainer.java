@@ -23,22 +23,6 @@ import frc.robot.utils.ShooterModel;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-
-import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.DisableFlywheel;
-import frc.robot.commands.FastGear;
-import frc.robot.commands.IndexerIntakeActive;
-import frc.robot.commands.IndexerIntakeTest;
-import frc.robot.commands.IntakeActive;
-
-import frc.robot.commands.AutoAlign;
-import frc.robot.commands.DefaultElevator;
-import frc.robot.commands.ElevateTo;
-import frc.robot.commands.FindElevatorZero;
-
-import frc.robot.commands.IntakeActive;
-import frc.robot.commands.ReverseIntake;
-import frc.robot.commands.SlowGear;
 import frc.robot.commands.shooter.HoodDown;
 import frc.robot.commands.shooter.HoodUp;
 
@@ -220,6 +204,8 @@ public class RobotContainer {
     joystick_secondary.getButton(ButtonType.kLeftBumper).whenPressed(new FindElevatorZero(Climber));
 
     joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
+
+    joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(Climber));
     //joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
     /*
     joystick_main.getButton(ButtonType.kRightBumper)

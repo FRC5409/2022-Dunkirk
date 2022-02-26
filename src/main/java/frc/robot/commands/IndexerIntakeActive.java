@@ -76,9 +76,6 @@ public class IndexerIntakeActive extends CommandBase {
   @Override
   public boolean isFinished() {
 
-    System.out.println(TOF_Ball1);
-    System.out.println(TOF_Ext);
-
     // if (TOF_Ball1 && TOF_Ext) {
 
     //   return true;

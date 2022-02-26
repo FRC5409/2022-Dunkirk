@@ -45,6 +45,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.kID;
 import frc.robot.commands.ElevateTo;
 import frc.robot.commands.FindElevatorZero;
+import frc.robot.utils.MotorUtils;
 
 public class Climber extends SubsystemBase {
   private CANSparkMax mot_main;
@@ -59,6 +60,8 @@ public class Climber extends SubsystemBase {
   private final TimeOfFlight tof_front;
   public ArrayList<Double> measuredDistances = new ArrayList<>();
   private final DoubleSolenoid dsl_lock;
+
+  private boolean active = false;
 
   /**
    * Constructor for the climber.
@@ -263,7 +266,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void findZero() {
-    controller_main.setReference(-0.2, ControlType.kDutyCycle);
+    controller_main.setReference(-0.3, ControlType.kDutyCycle);
   }
 
   // ---------------------------- Auto Align ---------------------------- //
@@ -334,6 +337,23 @@ public class Climber extends SubsystemBase {
   }
 
   public boolean getLocked() {
-    return locked;
+    return dsl_lock.get() == DoubleSolenoid.Value.kForward;
+  }
+
+  public boolean getActive() {
+    return active;
+  }
+
+  public void setActive(boolean val) {
+    active = val;
+  }
+
+  public void raiseFrames() {
+    MotorUtils.setDefaultStatusPeriod(mot_main);
+  }
+
+  public void lowerFrames() {
+    MotorUtils.lowerFollowerStatusPeriod(mot_main);
+    MotorUtils.lowerFollowerStatusPeriod(mot_follower);
   }
 }
