@@ -47,6 +47,8 @@ public class DriveTrain extends SubsystemBase {
 
     public DifferentialDriveOdometry m_odometry;
 
+    private String drive_state;
+
     public DriveTrain() {
         // Left Front Drive
         mot_leftFrontDrive = new WPI_TalonFX(kID.LeftFrontDrive);
@@ -159,6 +161,8 @@ public class DriveTrain extends SubsystemBase {
 
         applyAntiTip = kDriveTrain.startWithAntiTip;
 
+        drive_state = "";
+
         setBrakeMode(true);
 
         zeroEncoders();
@@ -193,9 +197,7 @@ public class DriveTrain extends SubsystemBase {
      */
     public void setRampRate(double rampRate){
         mot_leftFrontDrive.configOpenloopRamp(rampRate, kDriveTrain.kTimeoutMs);
-        mot_leftRearDrive.configOpenloopRamp(rampRate, kDriveTrain.kTimeoutMs);
         mot_rightFrontDrive.configOpenloopRamp(rampRate, kDriveTrain.kTimeoutMs);
-        mot_rightRearDrive.configOpenloopRamp(rampRate, kDriveTrain.kTimeoutMs);
     }
 
     // ------------------------- Drive Modes ------------------------- //
@@ -212,22 +214,23 @@ public class DriveTrain extends SubsystemBase {
         double accelerate = (acceleration - deceleration);
 
 
-        double rampRateAdjustment = (dsl_gear.get() == DoubleSolenoid.Value.kForward ? kDriveTrain.highGearRampRate : 0);
+        //double rampRateAdjustment = (dsl_gear.get() == DoubleSolenoid.Value.kForward ? kDriveTrain.highGearRampRate : 0);
 
-        if(accelerate > 0 && turn == 0){
-            setRampRate(kDriveTrain.forwardRampRate + rampRateAdjustment);
+        if(accelerate > 0 && turn == 0 && drive_state != "forward"){
+            drive_state = "forward";
+            setRampRate(kDriveTrain.forwardRampRate);
         }
-        else if(accelerate < 0 && turn == 0){
-            setRampRate(kDriveTrain.backwardsRampRate + rampRateAdjustment);
+        else if(accelerate < 0 && turn == 0 && drive_state != "backwards"){
+            drive_state = "backwards";
+            setRampRate(kDriveTrain.backwardsRampRate);
         }
-        if(accelerate > 0 && turn != 0){
-            setRampRate(kDriveTrain.forwardTurnRampRate + rampRateAdjustment);
+        if(accelerate > 0 && turn != 0 && drive_state != "forward_turn"){
+            drive_state = "forward_turn";
+            setRampRate(kDriveTrain.forwardTurnRampRate);
         }
-        else if(accelerate < 0 && turn != 0){
-            setRampRate(kDriveTrain.backwardsTurnRampRate + rampRateAdjustment);
-        }
-        else{
-            setRampRate(rampRateAdjustment);
+        else if(accelerate < 0 && turn != 0 && drive_state != "backward_turn"){
+            drive_state = "backward_turn";
+            setRampRate(kDriveTrain.backwardsTurnRampRate);
         }
 
         m_drive.arcadeDrive(accelerate, turn, true);
