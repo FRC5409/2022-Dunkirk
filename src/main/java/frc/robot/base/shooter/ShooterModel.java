@@ -45,4 +45,16 @@ public class ShooterModel implements Equation {
             
         return range.scale(kA*x*x*x + kB*x*x + kC*x + kD);
     }
+
+    /**
+     * Calculates speed to spin the shooter based on a distance. This one is a linear calculation. 
+     * @param x Distance
+     * @return Speed for the shooter.
+     */
+    public double calculateLinear(double dist){
+        double b = 0;
+        double m  = 0;
+
+        return dist*m + b;
+    }
 }
