@@ -56,7 +56,7 @@ public class IndexerIntakeActive extends CommandBase {
     TOF_Ent = sys_indexer.ballDetectionEnter();
     TOF_Ball1 = sys_indexer.ballDetectionBall1();
     TOF_Ext = sys_indexer.ballDetectionExit();
-
+    /*
     if(TOF_Ent){
       sys_indexer.indexerOn(0.75);
     } 
@@ -66,14 +66,14 @@ public class IndexerIntakeActive extends CommandBase {
     else if(TOF_Ext){
       sys_indexer.indexerOn(0);
     }
-
-    /*
+    */
+    
     if(TOF_Ball1 && TOF_Ext){
       sys_indexer.indexerOn(0);
-    } else if (TOF_Ball1) {
+    } else{
       sys_indexer.indexerOn(0.75);
     }
-    */
+    
     /*
     if(state == "default"){
       sys_indexer.indexerOn(0);

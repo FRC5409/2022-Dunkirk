@@ -23,11 +23,14 @@ public class RunIndexerBack extends CommandBase{
 
     @Override
     public void execute(){
-        sys_indexer.indexerOn(-0.5);
+		if(sys_indexer.ballDetectionExit()){
+			sys_indexer.indexerOn(-0.5);
+		}
     }
 
     @Override 
     public void end(boolean inter){
+		
         sys_indexer.indexerOn(0);
     }
 	// Returns true when the command should end.
