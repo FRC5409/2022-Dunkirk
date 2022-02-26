@@ -14,15 +14,10 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.utils.Gains;
 import frc.robot.utils.MotorUtils;
 import frc.robot.utils.Toggleable;
 
@@ -163,7 +158,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
      * @return True if its aligned, false if not.
      */
     public boolean isTargetReached() {
-        return Math.abs(getRotation() - target) < Constants.Turret.ALIGNMENT_THRESHOLD;
+        return Math.abs(getRotation() - target) < Constants.Turret.ALIGNMENT_TRESHOLD;
     }
 
 

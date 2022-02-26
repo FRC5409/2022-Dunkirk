@@ -69,7 +69,7 @@ public class TrainerRunShooterState extends StateCommandBase {
 
         if (turret.isTargetReached() && flywheel.isTargetReached()) {
             indexer.indexerOn(1);
-            flywheel.spinFeeder(4500*1.5);
+            flywheel.spinFeeder(-4500*1.5);
         }
 
         SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());

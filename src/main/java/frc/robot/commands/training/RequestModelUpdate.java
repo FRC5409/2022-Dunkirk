@@ -35,6 +35,7 @@ public class RequestModelUpdate extends CommandBase {
     public void initialize() {
         BundleSendable payload = new BundleSendable();
             payload.putSendable("trainer.topic", new StringSendable("trainer:getModel"));
+            payload.putSendable("trainer.configuration", new StringSendable(_context.getMode().name()));
 
         System.out.println("Sent request " + payload);
 
@@ -57,13 +58,17 @@ public class RequestModelUpdate extends CommandBase {
                 ValueSendable modelParameterC = (ValueSendable) parameters.get(1);
                 ValueSendable modelParameterD = (ValueSendable) parameters.get(0);
 
+                ShooterModel lastModel = _context.getModel();
+
                 _context.setModel(
                     new ShooterModel(
-                        modelParameterA.getValue(double.class),
-                        modelParameterB.getValue(double.class),
-                        modelParameterC.getValue(double.class),
-                        modelParameterD.getValue(double.class),
-                        1d, 1d, 1d,
+                        modelParameterA.getValue(Double.class),
+                        modelParameterB.getValue(Double.class),
+                        modelParameterC.getValue(Double.class),
+                        modelParameterD.getValue(Double.class),
+                        lastModel.kPitch,
+                        lastModel.kHeight,
+                        lastModel.kOffset,
                         Constants.Shooter.DISTANCE_RANGE,
                         Constants.Shooter.SPEED_RANGE
                     )
