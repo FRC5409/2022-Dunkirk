@@ -37,7 +37,7 @@ public class TwoBallsAuto extends SequentialCommandGroup{
 
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(),
-                                                                   new Pose2d(0.5, 0, new Rotation2d(0)), // 0.6? 0.7?
+                                                                   new Pose2d(0.5, 0, new Rotation2d(0)),
                                                                    kAuto.configNoStop);
 
         RamseteCommand r1 = new RamseteCommand(t1, m_pigeon::getPose,
@@ -51,7 +51,7 @@ public class TwoBallsAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        m_pigeon.resetOdometry(t1.getInitialPose());
+        m_pigeon.resetOdometry(t1.getInitialPose()); //TODO:test
 
         Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(),
