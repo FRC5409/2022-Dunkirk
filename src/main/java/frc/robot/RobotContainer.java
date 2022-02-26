@@ -23,7 +23,7 @@ import frc.robot.utils.ShooterModel;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DisableFlywheel;
 import frc.robot.commands.FastGear;
@@ -84,13 +84,11 @@ public class RobotContainer {
 
   // Define main joystick
 
-  private final XboxController joystick_main; // = new XboxController(0);
   private final JoystickButton but_main_A, but_main_B, but_main_X, but_main_Y, but_main_LBumper, but_main_RBumper,
       but_main_LAnalog, but_main_RAnalog, but_main_Back, but_main_Start;
   
   private final Joystick joy_secondary; // TODO: tell lex why this here
 
-  private final XboxController joystick_secondary;
   private JoystickButton but_sec_A, but_sec_B, but_sec_X, but_sec_Y, but_sec_LBumper, but_sec_RBumper,
       but_sec_LAnalog, but_sec_RAnalog, but_sec_Back, but_sec_Start, but_sec_Left, but_sec_Up, but_sec_Right,
       but_sec_Down;
@@ -128,21 +126,21 @@ public class RobotContainer {
   public RobotContainer() {
     // Init controller
 
-    joystick_main = new XboxController(0);
-    joystick_secondary = new XboxController(1);
+    joystick_main = new Joystick(0);
+    joystick_secondary = new Joystick(1);
 
     joy_secondary = new Joystick(1);
     // Init button binds
-    but_main_A = new JoystickButton(joystick_main, XboxController.Button.kA.value);
-    but_main_B = new JoystickButton(joystick_main, XboxController.Button.kB.value);
-    but_main_X = new JoystickButton(joystick_main, XboxController.Button.kX.value);
-    but_main_Y = new JoystickButton(joystick_main, XboxController.Button.kY.value);
-    but_main_LBumper = new JoystickButton(joystick_main, XboxController.Button.kLeftBumper.value);
-    but_main_RBumper = new JoystickButton(joystick_main, XboxController.Button.kRightBumper.value);
-    but_main_LAnalog = new JoystickButton(joystick_main, XboxController.Button.kLeftStick.value);
-    but_main_RAnalog = new JoystickButton(joystick_main, XboxController.Button.kRightStick.value);
-    but_main_Back = new JoystickButton(joystick_main, XboxController.Button.kBack.value);
-    but_main_Start = new JoystickButton(joystick_main, XboxController.Button.kStart.value);
+    but_main_A = new JoystickButton(joystick_main.getController(), XboxController.Button.kA.value);
+    but_main_B = new JoystickButton(joystick_main.getController(), XboxController.Button.kB.value);
+    but_main_X = new JoystickButton(joystick_main.getController(), XboxController.Button.kX.value);
+    but_main_Y = new JoystickButton(joystick_main.getController(), XboxController.Button.kY.value);
+    but_main_LBumper = new JoystickButton(joystick_main.getController(), XboxController.Button.kLeftBumper.value);
+    but_main_RBumper = new JoystickButton(joystick_main.getController(), XboxController.Button.kRightBumper.value);
+    but_main_LAnalog = new JoystickButton(joystick_main.getController(), XboxController.Button.kLeftStick.value);
+    but_main_RAnalog = new JoystickButton(joystick_main.getController(), XboxController.Button.kRightStick.value);
+    but_main_Back = new JoystickButton(joystick_main.getController(), XboxController.Button.kBack.value);
+    but_main_Start = new JoystickButton(joystick_main.getController(), XboxController.Button.kStart.value);
 
     // Initialize sub systems
 
