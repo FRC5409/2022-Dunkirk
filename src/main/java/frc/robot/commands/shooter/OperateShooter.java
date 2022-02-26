@@ -31,20 +31,24 @@ public final class OperateShooter extends StateCommandGroup {
     private final Limelight limelight;
     private final Indexer indexer;
 
+    private boolean linear;
+
     public OperateShooter(
         Limelight limelight,
         ShooterTurret turret,
         ShooterFlywheel flywheel,
         Indexer indexer,
         ShooterModel model,
-        Property<SweepDirection> direction
+        Property<SweepDirection> direction,
+        boolean linear
     ) {
+
         addCommands(
             new SearchShooterState(limelight),
             new SweepShooterState(limelight, turret, direction),
             new AlignShooterState(limelight, turret),
-            new OperateShooterState(limelight, turret, flywheel, indexer, model)
-        );
+            new OperateShooterState(limelight, turret, flywheel, indexer, model, true)
+        ); 
 
         setDefaultState("frc.robot.shooter:search");
 
@@ -53,6 +57,34 @@ public final class OperateShooter extends StateCommandGroup {
         this.indexer = indexer;
         this.turret = turret;
         this.model = model;
+
+        this.linear = linear;
+    }
+
+    public OperateShooter(
+        Limelight limelight,
+        ShooterTurret turret,
+        ShooterFlywheel flywheel,
+        Indexer indexer,
+        ShooterModel model,
+        Property<SweepDirection> direction
+    ) {
+
+        addCommands(
+            new SearchShooterState(limelight),
+            new SweepShooterState(limelight, turret, direction),
+            new AlignShooterState(limelight, turret),
+            new OperateShooterState(limelight, turret, flywheel, indexer, model)
+        ); 
+
+        setDefaultState("frc.robot.shooter:search");
+
+        this.limelight = limelight;
+        this.flywheel = flywheel;
+        this.indexer = indexer;
+        this.turret = turret;
+        this.model = model;
+        this.linear = false;
     }
 
     @Override
@@ -62,9 +94,9 @@ public final class OperateShooter extends StateCommandGroup {
         indexer.enable();
         turret.enable();
         
-        flywheel.setVelocity(
-            model.calculate(Constants.Shooter.PRE_SHOOTER_DISTANCE)
-        );
+        if(!linear){
+            flywheel.setVelocity(model.calculate(Constants.Shooter.PRE_SHOOTER_DISTANCE));
+        }
 
         super.initialize();
     }

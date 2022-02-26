@@ -33,6 +33,7 @@ public class OperateShooterState extends StateCommandBase {
     private final Indexer indexer;
     
     private final ShooterModel model;
+    private boolean linear;
     
     public OperateShooterState(
         Limelight limelight,
@@ -50,6 +51,26 @@ public class OperateShooterState extends StateCommandBase {
         addRequirements(limelight, turret, flywheel, indexer);
     }
 
+    public OperateShooterState(
+        Limelight limelight,
+        ShooterTurret turret,
+        ShooterFlywheel flywheel,
+        Indexer indexer,
+        ShooterModel model, 
+        boolean linear
+    ) {
+        this.limelight = limelight;
+        this.flywheel = flywheel;
+        this.indexer = indexer;
+        this.turret = turret;
+        this.model = model;
+        this.linear = linear;
+
+        addRequirements(limelight, turret, flywheel, indexer);
+    }
+
+
+
     @Override
     public void initialize() {
         if (!Toggleable.isEnabled(limelight, turret, flywheel, indexer))
@@ -63,7 +84,13 @@ public class OperateShooterState extends StateCommandBase {
         Vector2 target = limelight.getTarget();
 
         double distance = Constants.Vision.DISTANCE_FUNCTION.calculate(target.y);
-        double velocity = model.calculate(distance);
+        double velocity;
+        if(linear){
+            System.out.println("Linear calculation");
+            velocity = model.calculateLinear(distance);
+        } else {
+            velocity = model.calculate(distance);   
+        }
 
         // Set flywheel to estimated veloctity
         flywheel.setVelocity(velocity);
