@@ -189,14 +189,6 @@ public class DriveTrain extends SubsystemBase {
         mot_rightRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
         mot_rightRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
-        m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
-
-
-        //dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
-
-        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
-
-
         driveMode = kDriveTrain.InitialDriveMode;
 
         applyAntiTip = kDriveTrain.startWithAntiTip;
