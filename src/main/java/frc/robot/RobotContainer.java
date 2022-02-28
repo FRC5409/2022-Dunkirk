@@ -148,18 +148,24 @@ public class RobotContainer {
         );
 
         trainerContext.setModel(
-            ShooterMode.kFar, 
+            ShooterMode.kNear, 
             new ShooterModel(
-                0d, 0d, 0d, 0d, 1d, 1d, 1d,
+                0d, 0d, 0d, 0d,
+                90.0 - 45.5,
+                41.5 / 12.0,
+                1d,
                 Constants.Shooter.DISTANCE_RANGE,
                 Constants.Shooter.SPEED_RANGE
             )
         );
-
+// 80 in
         trainerContext.setModel(
-            ShooterMode.kNear, 
+            ShooterMode.kFar, 
             new ShooterModel(
-                0d, 0d, 0d, 0d, 1d, 1d, 1d,
+                0d, 0d, 0d, 0d,
+                90.0 - 61.5,
+                45 / 12.0,
+                1d,
                 Constants.Shooter.DISTANCE_RANGE,
                 Constants.Shooter.SPEED_RANGE
             )
