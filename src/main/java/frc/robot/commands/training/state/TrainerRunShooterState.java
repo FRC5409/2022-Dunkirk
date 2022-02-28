@@ -57,7 +57,7 @@ public class TrainerRunShooterState extends StateCommandBase {
         double velocity = context.getSetpoint().getTarget();
 
         context.setDistance(
-            Constants.Vision.DISTANCE_FUNCTION.calculate(target.y)
+            context.getModel().distance(target.y)
         );
 
         // Set flywheel to estimated veloctity

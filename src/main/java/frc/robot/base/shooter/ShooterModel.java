@@ -46,6 +46,10 @@ public class ShooterModel implements Equation {
         return range.scale(kA*x*x*x + kB*x*x + kC*x + kD);
     }
 
+    public double distance(double x) {
+        return kHeight / Math.tan(Math.toRadians(x + kPitch)) + kOffset;
+    }
+
     /**
      * Calculates speed to spin the shooter based on a distance. This one is a linear calculation. 
      * @param x Distance
