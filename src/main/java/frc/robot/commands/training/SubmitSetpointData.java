@@ -68,10 +68,10 @@ public class SubmitSetpointData extends CommandBase {
 
                 _context.setModel(
                     new ShooterModel(
-                        modelParameterA.getValue(Double.class),
-                        modelParameterB.getValue(Double.class),
-                        modelParameterC.getValue(Double.class),
-                        modelParameterD.getValue(Double.class),
+                        modelParameterA.getValue(double.class),
+                        modelParameterB.getValue(double.class),
+                        modelParameterC.getValue(double.class),
+                        modelParameterD.getValue(double.class),
                         lastModel.kPitch,
                         lastModel.kHeight,
                         lastModel.kOffset,
