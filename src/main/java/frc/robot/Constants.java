@@ -101,7 +101,7 @@ public final class Constants {
         public static final int DIGITAL_INPUT_PORT = 8;
 
         public static final double TO_MAX = 106.5;
-        public static final double TO_MID_RUNG = 100.0;
+        public static final double TO_MID_RUNG = 104.0;
         public static final double TO_LOW_RUNG = 80.0;
         public static final double TO_MIN = 10.0;
     }
@@ -160,6 +160,12 @@ public final class Constants {
         // Speed limits for auto
         public static final double maxStraightSpeed = 1;
         public static final double maxTurnSpeed = 1;
+
+        //
+        public static final double forwardRampRate = 0.3;
+        public static final double backwardRampRate = 0.2;
+        public static final double forwardTurnRampRate = 0.1;
+        public static final double backwardTurnRampRate = 0.1;
 
         // Anti-tip compensation
         public static final double pitchCompensation = 0;

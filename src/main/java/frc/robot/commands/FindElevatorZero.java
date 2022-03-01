@@ -45,15 +45,18 @@ public class FindElevatorZero extends CommandBase {
 
         timer.reset();
         timer.start();
+
+        if (climber.getLimitSwitch())
+            started = true;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (timer.hasElapsed(0.5) && !started) {
+        if (timer.hasElapsed(0.2) && !started) {
             climber.findZero();
 
-            if (climber.getRPM() > 0)
+            if (climber.getRPM() > 0 || timer.hasElapsed(0.4))
                 started = true;
         }
 
@@ -74,6 +77,6 @@ public class FindElevatorZero extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return climber.getRPM() == 0 && started;
+        return Math.abs(climber.getRPM()) < 1 && started;
     }
 }
