@@ -52,7 +52,7 @@ public class DriveTrain extends SubsystemBase {
 
     public final DifferentialDrive m_drive;
 
-    private final DoubleSolenoid dsl_gear;
+    // private final DoubleSolenoid dsl_gear;
 
     private boolean applyAntiTip;
 
@@ -80,8 +80,8 @@ public class DriveTrain extends SubsystemBase {
         // dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.REVPH,
         // kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
-        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel,
-                kDriveTrain.ReverseChannel);
+        // dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel,
+                // kDriveTrain.ReverseChannel);
 
         driveMode = kDriveTrain.InitialDriveMode;
 
