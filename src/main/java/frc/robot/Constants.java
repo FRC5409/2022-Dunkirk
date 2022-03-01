@@ -4,8 +4,14 @@
 
 package frc.robot;
 
+import java.util.Map;
+
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterMode;
+import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.VisionPipeline;
 import frc.robot.utils.*;
 
 /**
@@ -298,10 +304,6 @@ public final class Constants {
         public static final double SHOOTER_SWEEP_PERIOD = 2.6;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
-            private final double kA = (2.0 * Math.PI) / SHOOTER_SWEEP_PERIOD;
-            private final double kB = 1.0 / ( 2.0 * ROTATION_RANGE.magnitude() );
-            private final double kC = ROTATION_RANGE.min();
-            
             @Override
             public double calculate(double x) {
                 //return (Math.cos(kA * x) + 1.0) * kB + kC;
@@ -310,10 +312,6 @@ public final class Constants {
         };
 
         public static final Equation SHOOTER_SWEEP_INVERSE = new Equation() {
-            private final double kA = 2.0 * (1.0 / ROTATION_RANGE.magnitude());
-            private final double kB = 1.0 / ( 2.0 * Math.PI );
-            private final double kC = ROTATION_RANGE.min();
-            
             @Override
             public double calculate(double x) {
                 //return SHOOTER_SWEEP_PERIOD * Math.acos(kA * (x-kC) - 1.0) * kB;
@@ -330,6 +328,33 @@ public final class Constants {
         public static final double ALIGNMENT_MAX_TIME = 2;
 
         public static final double PRE_SHOOTER_DISTANCE = 0;
+
+
+        public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
+            ShooterMode.kFar, new ShooterConfiguration(
+                ShooterMode.kFar, VisionPipeline.FAR_TARGETING,
+                new ShooterModel(
+                    0d, 0d, 0d, 0d,
+                    90.0 - 45.5,
+                    41.5 / 12.0,
+                    1d,
+                    Constants.Shooter.DISTANCE_RANGE,
+                    Constants.Shooter.SPEED_RANGE
+                )
+            ),
+            
+            ShooterMode.kNear, new ShooterConfiguration(
+                ShooterMode.kNear, VisionPipeline.NEAR_TARGETING,
+                new ShooterModel(
+                    0d, 0d, 0d, 0d,
+                    90.0 - 61.5,
+                    45 / 12.0,
+                    1d,
+                    Constants.Shooter.DISTANCE_RANGE,
+                    Constants.Shooter.SPEED_RANGE
+                )
+            )
+        );
     }
     
     public static final class Vision {

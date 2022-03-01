@@ -4,11 +4,9 @@
 
 package frc.robot;
 
-import frc.robot.subsystems.Climber;
-
 // Subsystems
-import frc.robot.training.BranchType;
 import frc.robot.training.Setpoint;
+import frc.robot.training.SetpointType;
 import frc.robot.training.TrainerContext;
 import frc.robot.training.TrainerDashboard;
 import frc.robot.training.protocol.NetworkClient;
@@ -20,33 +18,22 @@ import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.DisableFlywheel;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.IndexerIntakeActive;
 import frc.robot.commands.IndexerIntakeTest;
 import frc.robot.commands.IntakeActive;
 
-import frc.robot.commands.AutoAlign;
-import frc.robot.commands.DefaultElevator;
-import frc.robot.commands.ElevateTo;
-import frc.robot.commands.FindElevatorZero;
-
-import frc.robot.commands.IntakeActive;
-import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.shooter.HoodDown;
 import frc.robot.commands.shooter.HoodUp;
 
 //Constants
-import frc.robot.Constants.kAuto;
 import frc.robot.base.Joystick;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.Joystick.ButtonType;
+import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterModel;
 import frc.robot.base.shooter.SweepDirection;
@@ -57,10 +44,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
-import frc.robot.commands.IntakeSimulationTesting;
-import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseIntakeIndexer;
-import frc.robot.commands.RunIndexerBack;
 import frc.robot.commands.ShooterTestOne;
 import frc.robot.commands.ShooterTestTwo;
 import frc.robot.subsystems.Indexer;
@@ -106,9 +90,9 @@ public class RobotContainer {
     private final TrainerContext           trainerContext;
     private final TrainerDashboard         trainerDashboard;
     private       NetworkClient            trainerClient;
-
-    private final Property<SweepDirection> shooterSweepDirection;
-    private final Property<ShooterMode>    shooterMode;
+    
+    private final Property<ShooterConfiguration> shooterConfiguration;
+    private final Property<SweepDirection>       shooterSweepDirection;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -138,7 +122,7 @@ public class RobotContainer {
         // Configure the button bindings
 
         shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
-        shooterMode = new ValueProperty<>(ShooterMode.kFar);
+        shooterConfiguration = new ValueProperty<>();
 
         Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
         Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
@@ -229,13 +213,13 @@ public class RobotContainer {
             .whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
         
         joystick_secondary.getButton(ButtonType.kX)
-            .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, BranchType.BRANCH_LEFT));
+            .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, SetpointType.kLeft));
 
         joystick_secondary.getButton(ButtonType.kB)
-            .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, BranchType.BRANCH_RIGHT));
+            .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, SetpointType.kRight));
 
         joystick_secondary.getButton(ButtonType.kRightBumper)
-            .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, BranchType.BRANCH_CENTER));
+            .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, SetpointType.kCenter));
 
         joystick_secondary.getButton(ButtonType.kLeftBumper)
             .whenPressed(new RequestModelUpdate(trainerDashboard, trainerClient, trainerContext));
@@ -249,6 +233,9 @@ public class RobotContainer {
         joystick_secondary.getButton(ButtonType.kLeftStick)
             .whenPressed(new ResetTargetSetpoint(trainerDashboard, trainerContext));
 
+        joystick_secondary.getButton(ButtonType.kRightStick)
+            .whenPressed(new UpdateTargetSetpoint(trainerDashboard, trainerContext));
+
         joystick_secondary.getButton(ButtonType.kA)
             .whileHeld(new TrainerLookShooter(limelight, turret, trainerDashboard, trainerContext, shooterSweepDirection))
             .whenReleased(new RotateTurret(turret, 0));
@@ -258,11 +245,11 @@ public class RobotContainer {
 
         joystick_secondary.getButton(ButtonType.kUpPov)
             .and(joystick_secondary.getButton(ButtonType.kA).negate())
-            .whenActive(new TrainerConfigureShooterMode(turret, limelight, trainerContext, trainerDashboard, shooterMode, ShooterMode.kFar));
+            .whenActive(new TrainerConfigureShooter(turret, limelight, trainerContext, trainerDashboard, shooterConfiguration, ShooterMode.kFar));
 
         joystick_secondary.getButton(ButtonType.kDownPov)
             .and(joystick_secondary.getButton(ButtonType.kA).negate())
-            .whenActive(new TrainerConfigureShooterMode(turret, limelight, trainerContext, trainerDashboard, shooterMode, ShooterMode.kNear));
+            .whenActive(new TrainerConfigureShooter(turret, limelight, trainerContext, trainerDashboard, shooterConfiguration, ShooterMode.kNear));
 
         joystick_secondary.getButton(ButtonType.kLeftPov)
             .and(joystick_secondary.getButton(ButtonType.kA).negate())
