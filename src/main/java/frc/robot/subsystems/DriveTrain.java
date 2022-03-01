@@ -9,13 +9,15 @@ import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import java.util.ArrayList;
 
+import com.ctre.phoenix.sensors.CANCoder;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Timer;
@@ -28,6 +30,7 @@ import frc.robot.utils.MotorUtils;
 import frc.robot.Constants.kID;
 import frc.robot.Constants;
 import frc.robot.Constants.kDriveTrain;
+import frc.robot.utils.Convert;
 
 public class DriveTrain extends SubsystemBase {
 
@@ -39,12 +42,15 @@ public class DriveTrain extends SubsystemBase {
     private final Timer timer = new Timer();
     private final double refreshSeconds = 2.0;
 
+    // private final CANCoder enc_left;
+    // private final CANCoder enc_right;
+
     private double lmRPM = 0;
     private double rmRPM = 0;
 
     private int driveMode;
 
-    private final DifferentialDrive m_drive;
+    public final DifferentialDrive m_drive;
 
     private final DoubleSolenoid dsl_gear;
 
@@ -196,6 +202,9 @@ public class DriveTrain extends SubsystemBase {
         drive_state = "";
 
         setBrakeMode(true);
+
+        // enc_left = new CANCoder(kDriveTrain.CANLeftEncoder);
+        // enc_right = new CANCoder(kDriveTrain.CANRightEncoder);
 
         zeroEncoders();
 
@@ -442,19 +451,25 @@ public class DriveTrain extends SubsystemBase {
     }
 
     /**
-     * @return the average position of the left encoders
+     * @return the  position of the left encoders 
      * 
      */
-    public double getEncoderPositionLeft() {
-        return (mot_leftFrontDrive.getSelectedSensorPosition() + mot_leftRearDrive.getSelectedSensorPosition()) / 2;
+    public double getEncoderPositionLeft(){
+        // double position = Convert.EncoderUnitsToInches((float)enc_left.getPosition());
+        // return Units.inchesToMeters(position);
+        double position = Convert.EncoderUnitsToInches((float)(mot_leftFrontDrive.getSelectedSensorPosition()+mot_leftRearDrive.getSelectedSensorPosition())/2);
+        return Units.inchesToMeters(position);
     }
 
     /**
      * @return the average position of the right encoders
      * 
      */
-    public double getEncoderPositionRight() {
-        return (mot_rightFrontDrive.getSelectedSensorPosition() + mot_rightRearDrive.getSelectedSensorPosition()) / 2;
+    public double getEncoderPositionRight(){
+        // double position = Convert.EncoderUnitsToInches((float)enc_right.getPosition());
+        // return Units.inchesToMeters(position);
+        double position = Convert.EncoderUnitsToInches((float)(mot_rightFrontDrive.getSelectedSensorPosition()+mot_rightRearDrive.getSelectedSensorPosition())/2);
+        return Units.inchesToMeters(position);
     }
 
     /**
@@ -469,16 +484,22 @@ public class DriveTrain extends SubsystemBase {
      * @return the average velocity of the left encoders
      * 
      */
-    public double getEncoderVelocityLeft() {
-        return (mot_leftFrontDrive.getSelectedSensorVelocity() + mot_leftRearDrive.getSelectedSensorVelocity()) / 2;
+    public double getEncoderVelocityLeft(){
+        // double velocity = Convert.EncoderUnitsToInches((float)enc_left.getVelocity());
+        // return Units.inchesToMeters(velocity);
+        double velocity = 10*Convert.EncoderUnitsToInches((float)(mot_leftFrontDrive.getSelectedSensorVelocity()+mot_leftRearDrive.getSelectedSensorVelocity())/2);
+        return Units.inchesToMeters(velocity);
     }
 
     /**
      * @return the average velocity of the right encoders
      * 
-     */
-    public double getEncoderVelocityRight() {
-        return (mot_rightFrontDrive.getSelectedSensorVelocity() + mot_rightRearDrive.getSelectedSensorVelocity()) / 2;
+     */ 
+    public double getEncoderVelocityRight(){
+        // double velocity = Convert.EncoderUnitsToInches((float)enc_right.getVelocity());
+        // return Units.inchesToMeters(velocity);
+        double velocity = 10*Convert.EncoderUnitsToInches((float)(mot_rightFrontDrive.getSelectedSensorVelocity()+mot_rightRearDrive.getSelectedSensorVelocity())/2);
+        return Units.inchesToMeters(velocity);
     }
 
     public double getRPMRight() {
@@ -501,6 +522,8 @@ public class DriveTrain extends SubsystemBase {
      * 
      */
     public void zeroEncoders() {
+        // enc_left.setPosition(0);
+        // enc_right.setPosition(0);
         mot_rightFrontDrive.setSelectedSensorPosition(0);
         mot_rightRearDrive.setSelectedSensorPosition(0);
         mot_leftFrontDrive.setSelectedSensorPosition(0);
@@ -508,13 +531,17 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public void setAllEncoders(double position) {
+        // enc_left.setPosition(position);
+        // enc_right.setPosition(position);
         mot_rightFrontDrive.setSelectedSensorPosition(position);
         mot_rightRearDrive.setSelectedSensorPosition(position);
         mot_leftFrontDrive.setSelectedSensorPosition(position);
         mot_leftRearDrive.setSelectedSensorPosition(position);
     }
 
-    public void setEncodersSplit(double position_left, double position_right) {
+    public void setEncodersSplit(double position_left, double position_right){
+        // enc_left.setPosition(position_left);
+        // enc_right.setPosition(position_right);
         mot_rightFrontDrive.setSelectedSensorPosition(position_right);
         mot_rightRearDrive.setSelectedSensorPosition(position_right);
         mot_leftFrontDrive.setSelectedSensorPosition(position_left);
@@ -544,7 +571,7 @@ public class DriveTrain extends SubsystemBase {
      */
     public void fastShift() {
         SmartDashboard.putString("Solenoid", "Fast");
-        dsl_gear.set(DoubleSolenoid.Value.kForward);
+        //dsl_gear.set(DoubleSolenoid.Value.kForward);
     }
 
     /**
@@ -552,7 +579,7 @@ public class DriveTrain extends SubsystemBase {
      */
     public void slowShift() {
         SmartDashboard.putString("Solenoid", "Slow");
-        dsl_gear.set(DoubleSolenoid.Value.kReverse);
+        //dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
 
     // ---------------------------- Auto ---------------------------- //

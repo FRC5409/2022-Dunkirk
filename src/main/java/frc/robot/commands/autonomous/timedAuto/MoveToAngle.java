@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.autonomous.timedAuto;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
