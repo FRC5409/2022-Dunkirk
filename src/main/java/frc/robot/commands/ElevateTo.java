@@ -69,9 +69,13 @@ public class ElevateTo extends CommandBase {
 
     @Override
     public void execute() {
-        if (timer.hasElapsed(0.5) && !started) {
+        if (timer.hasElapsed(0.2) || !climber.getLocked()) {
             climber.moveArm(toPos);
-            started = true;
+
+            if (!started)
+                started = true;
+
+            timer.stop();
         }
 
         if (Math.abs(climber.getRPM()) > 1.0)
@@ -82,8 +86,6 @@ public class ElevateTo extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         climber.disableMotors();
-
-        System.out.println(direction);
 
         if (direction == Constants.kClimber.DIRECTION_RETRACT)
             climber.lockArm();
