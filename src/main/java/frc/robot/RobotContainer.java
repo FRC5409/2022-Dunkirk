@@ -29,10 +29,6 @@ import frc.robot.commands.IndexerIntakeTest;
 import frc.robot.commands.IntakeActive;
 
 import frc.robot.commands.SlowGear;
-
-import frc.robot.commands.shooter.HoodDown;
-import frc.robot.commands.shooter.HoodUp;
-
 //Constants
 import frc.robot.base.Joystick;
 import frc.robot.base.Property;
@@ -42,6 +38,7 @@ import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterModel;
 import frc.robot.base.shooter.SweepDirection;
+import frc.robot.base.shooter.VisionPipeline;
 
 import java.io.IOException;
 // Misc
@@ -225,6 +222,19 @@ public class RobotContainer {
 
 
     joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(Climber));
+
+
+    ValueProperty<ShooterConfiguration> shooterConfigProp = new ValueProperty<ShooterConfiguration>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
+    ValueProperty<SweepDirection> directionProp = new ValueProperty<SweepDirection>(SweepDirection.kLeft);
+
+    joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(
+      new OperateShooter(limelight, turret, Flywheel, Indexer, directionProp, shooterConfigProp)
+    );
+
+    joystick_secondary.getButton(ButtonType.kUpPov).whenPressed(() -> {shooterConfigProp.set(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));});
+    joystick_secondary.getButton(ButtonType.kDownPov).whenPressed(() -> {shooterConfigProp.set(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kNear));});
+
+
     //joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
     /*
     joystick_main.getButton(ButtonType.kRightBumper)

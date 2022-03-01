@@ -350,9 +350,9 @@ public final class Constants {
             ),
             
             ShooterMode.kNear, new ShooterConfiguration(
-                ShooterMode.kNear, VisionPipeline.NEAR_TARGETING,
+                ShooterMode.kNear, VisionPipeline.NEAR_TARGETING, 
                 new ShooterModel(
-                    0d, 0d, 0d, 0d,
+                    0d, 0d, 0d, 2000,
                     90.0 - 61.5,
                     45 / 12.0,
                     1d,
