@@ -32,7 +32,7 @@ public class DefaultElevator extends CommandBase {
      * @param subsystem The subsystem used by this command.
      * @param joystick  The input device used by this command.
      */
-    public DefaultElevator(Climber _climber, /* Pigeon _pigeon, */ XboxController _joystick) {
+    public DefaultElevator(Climber _climber, XboxController _joystick) {
         climber = _climber;
         // pigeon = _pigeon;
         joystick = _joystick;

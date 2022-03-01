@@ -7,10 +7,12 @@ import frc.robot.training.protocol.NetworkClient;
 import frc.robot.training.protocol.NetworkStatus;
 import frc.robot.training.protocol.NetworkResponse;
 import frc.robot.training.protocol.NetworkRequest;
-import frc.robot.training.protocol.generic.KeyValueSendable;
+import frc.robot.training.protocol.generic.ArraySendable;
+import frc.robot.training.protocol.generic.BundleSendable;
 import frc.robot.training.protocol.generic.StringSendable;
-import frc.robot.utils.ShooterModel;
+import frc.robot.training.protocol.generic.ValueSendable;
 import frc.robot.Constants;
+import frc.robot.base.shooter.ShooterModel;
 import frc.robot.training.TrainerDashboard;
 import frc.robot.training.TrainerContext;
 
@@ -30,7 +32,7 @@ public class SubmitSetpointData extends CommandBase {
 
     @Override
     public void initialize() {
-        KeyValueSendable payload = new KeyValueSendable();
+        BundleSendable payload = new BundleSendable();
             payload.putSendable("trainer.topic", new StringSendable("trainer:submitData"));
             payload.putDouble("trainer.data.speed", _context.getSetpoint().getTarget() / Constants.Shooter.SPEED_RANGE.max());
             payload.putDouble("trainer.data.distance", _context.getDistance() / Constants.Shooter.DISTANCE_RANGE.max());
@@ -52,16 +54,22 @@ public class SubmitSetpointData extends CommandBase {
                 System.out.println("Received payload : " + response.getSendableResult());
 
             if (response.getStatus() == NetworkStatus.STATUS_OK) {
-                KeyValueSendable payload = (KeyValueSendable) response.getSendableResult();
-            
-                double modelA = payload.getDouble("trainer.model.parameters[3]");
-                double modelB = payload.getDouble("trainer.model.parameters[2]");
-                double modelC = payload.getDouble("trainer.model.parameters[1]");
-                double modelD = payload.getDouble("trainer.model.parameters[0]");
+                BundleSendable payload = (BundleSendable) response.getSendableResult();
+
+                ArraySendable parameters = (ArraySendable) payload.getSendable("trainer.model.parameters");
+
+                ValueSendable modelParameterA = (ValueSendable) parameters.get(3);
+                ValueSendable modelParameterB = (ValueSendable) parameters.get(2);
+                ValueSendable modelParameterC = (ValueSendable) parameters.get(1);
+                ValueSendable modelParameterD = (ValueSendable) parameters.get(0);
 
                 _context.setModel(
                     new ShooterModel(
-                        modelA, modelB, modelC, modelD,
+                        modelParameterA.getValue(double.class),
+                        modelParameterB.getValue(double.class),
+                        modelParameterC.getValue(double.class),
+                        modelParameterD.getValue(double.class),
+                        1d, 1d, 1d,
                         Constants.Shooter.DISTANCE_RANGE,
                         Constants.Shooter.SPEED_RANGE
                     )

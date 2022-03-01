@@ -204,9 +204,8 @@ public final class Constants {
         public static final int FEEDER_TOLERANCE = 100;
         public static final int rpmTolerance = 1;
 
-        public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.00017,0,0);
-        public static final Gains UPPER_GAINS = new Gains(0.29873, 0, 0, 0.044265063,0,0);
-        public static final Gains LOWER_GAINS = new Gains(0.011, 0, 0, 0.047293811,0,0);
+        public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.000188,0,0);
+        public static final Gains SHOOTER_GAINS = new Gains(0.475, 0, 0, 0.049,0,0);
     }
 
 
@@ -218,8 +217,6 @@ public final class Constants {
         // Height in meters
         public static final double ROBOT_HEIGHT        = 4;
         public static final double FIXED_ANGLE         = 45;
-        public static final Range  LIMITS              = new Range(-10, 20);
-        public static final double ALIGNMENT_THRESHOLD = 0.14;
 
         //TODO fill in pneumatics constants.
         public static final int HOOD_FORWARD_CHANNEL = 13;
@@ -274,7 +271,8 @@ public final class Constants {
 
         // Range Configurations
         public static final Range ROTATION_RANGE = new Range(
-            -28.571428571428573, 57.14285714285714
+            -61, 75
+            //-28.571428571428573, 57.14285714285714
         );
 
         public static final Range SPEED_RANGE = new Range(
@@ -295,7 +293,7 @@ public final class Constants {
 
 
     // Smooth Sweep Constants (experimental)
-        public static final double SHOOTER_SWEEP_PERIOD = 3.6;
+        public static final double SHOOTER_SWEEP_PERIOD = 2.6;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
             private final double kA = (2.0 * Math.PI) / SHOOTER_SWEEP_PERIOD;
@@ -354,6 +352,6 @@ public final class Constants {
             
         };
 
-        public static final double ROTATION_P = 0.10;
+        public static final double ROTATION_P = 0.50;
     }
 }
