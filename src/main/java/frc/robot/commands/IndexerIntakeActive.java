@@ -80,6 +80,7 @@ public class IndexerIntakeActive extends CommandBase {
       sys_indexer.indexerOn(0);
     } else if(TOF_Ext){
       sys_indexer.indexerOn(0);
+    }
     
     /*
     if(state == "default"){

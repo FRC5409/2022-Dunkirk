@@ -221,6 +221,8 @@ public final class Constants {
         //TODO fill in pneumatics constants.
         public static final int HOOD_FORWARD_CHANNEL = 13;
         public static final int HOOD_REVERSE_CHANNEL = 12;
+
+        public static final int ALIGNMENT_THRESHOLD = 0; 
     }
 
     public final class Falcon500 {
