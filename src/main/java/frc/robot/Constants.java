@@ -340,7 +340,10 @@ public final class Constants {
             ShooterMode.kFar, new ShooterConfiguration(
                 ShooterMode.kFar, VisionPipeline.FAR_TARGETING,
                 new ShooterModel(
-                    0d, 0d, 0d, 0d,
+                    2.125781774520874,
+                    0.06557995826005936,
+                    0.9416347146034241,
+                    -0.06884603947401047,
                     90.0 - 45.5,
                     41.5 / 12.0,
                     1d,
@@ -352,7 +355,7 @@ public final class Constants {
             ShooterMode.kNear, new ShooterConfiguration(
                 ShooterMode.kNear, VisionPipeline.NEAR_TARGETING, 
                 new ShooterModel(
-                    0d, 0d, 0d, 2000,
+                    0d, 0d, 0d, 1675.78125,
                     90.0 - 61.5,
                     45 / 12.0,
                     1d,
