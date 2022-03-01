@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.base.TimedStateCommand;
-import frc.robot.base.shooter.SweepDirection;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.utils.Toggleable;
@@ -15,8 +14,7 @@ import frc.robot.utils.Vector2;
 public class AlignShooterState extends TimedStateCommand {
     private final ShooterTurret turret;
     private final Limelight limelight;
-
-    private SweepDirection sweepDirection;
+    
     private boolean done;
 
     public AlignShooterState(Limelight limelight, ShooterTurret turret) {

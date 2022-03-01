@@ -4,11 +4,9 @@
 
 package frc.robot;
 
-import frc.robot.subsystems.Climber;
-
 // Subsystems
-import frc.robot.training.BranchType;
 import frc.robot.training.Setpoint;
+import frc.robot.training.SetpointType;
 import frc.robot.training.TrainerContext;
 import frc.robot.training.TrainerDashboard;
 import frc.robot.training.protocol.NetworkClient;
@@ -25,30 +23,22 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.DisableFlywheel;
 import frc.robot.commands.FastGear;
 import frc.robot.commands.IndexerIntakeActive;
 import frc.robot.commands.IndexerIntakeTest;
 import frc.robot.commands.IntakeActive;
 
-import frc.robot.commands.AutoAlign;
-import frc.robot.commands.DefaultElevator;
-import frc.robot.commands.ElevateTo;
-import frc.robot.commands.FindElevatorZero;
-
-import frc.robot.commands.IntakeActive;
-import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.SlowGear;
 
 import frc.robot.commands.shooter.HoodDown;
 import frc.robot.commands.shooter.HoodUp;
 
 //Constants
-import frc.robot.Constants.kAuto;
 import frc.robot.base.Joystick;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.Joystick.ButtonType;
+import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterModel;
 import frc.robot.base.shooter.SweepDirection;
@@ -60,10 +50,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
-import frc.robot.commands.IntakeSimulationTesting;
-import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseIntakeIndexer;
-import frc.robot.commands.RunIndexerBack;
 import frc.robot.commands.ShooterTestOne;
 import frc.robot.commands.ShooterTestTwo;
 import frc.robot.subsystems.Indexer;

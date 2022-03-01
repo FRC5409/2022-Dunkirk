@@ -54,11 +54,10 @@ public class TrainerRunShooterState extends StateCommandBase {
     @Override
     public void execute() {
         Vector2 target = limelight.getTarget();
+
         double velocity = context.getSetpoint().getTarget();
 
-        context.setDistance(
-            context.getModel().distance(target.y)
-        );
+        context.setDistance(context.getModel().distance(target.y));
 
         // Set flywheel to estimated veloctity
         flywheel.setVelocity(velocity);

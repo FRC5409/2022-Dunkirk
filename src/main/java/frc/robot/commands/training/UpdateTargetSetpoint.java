@@ -2,7 +2,6 @@ package frc.robot.commands.training;
 
 import frc.robot.Constants;
 import frc.robot.training.Setpoint;
-import frc.robot.training.SetpointType;
 import frc.robot.training.TrainerDashboard;
 import frc.robot.training.TrainerContext;
 
