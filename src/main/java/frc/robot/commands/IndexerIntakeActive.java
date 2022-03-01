@@ -68,11 +68,18 @@ public class IndexerIntakeActive extends CommandBase {
     }
     */
     
-    if(TOF_Ball1 && TOF_Ext){
-      sys_indexer.indexerOn(0);
-    } else{
+    // if(TOF_Ball1 && TOF_Ext){
+    //   sys_indexer.indexerOn(0);
+    // } else{
+    //   sys_indexer.indexerOn(0.75);
+    // }
+
+    if(TOF_Ent){
       sys_indexer.indexerOn(0.75);
-    }
+    } else if(TOF_Ball1 && !TOF_Ext){
+      sys_indexer.indexerOn(0);
+    } else if(TOF_Ext){
+      sys_indexer.indexerOn(0);
     
     /*
     if(state == "default"){
