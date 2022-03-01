@@ -57,53 +57,52 @@ public class IndexerIntakeActive extends CommandBase {
     TOF_Ball1 = sys_indexer.ballDetectionBall1();
     TOF_Ext = sys_indexer.ballDetectionExit();
 
-    // if(TOF_Ent){
-    // sys_indexer.indexerOn(0.75);
-    // } else if(TOF_Ball1 && !TOF_Ext){
-    // sys_indexer.indexerOn(0);
-    // } else if(TOF_Ext){
-    // sys_indexer.indexerOn(0);
+    if(TOF_Ent){
+    sys_indexer.indexerOn(0.75);
+    } else if(TOF_Ball1 && !TOF_Ext){
+    sys_indexer.indexerOn(0);
+    } else if(TOF_Ext){
+    sys_indexer.indexerOn(0);
+    }
+
+    // if(TOF_Ball1 && TOF_Ext){
+    //   sys_indexer.indexerOn(0);
+    // } else if (TOF_Ball1) {
+    //   sys_indexer.indexerOn(0.75);
     // }
 
+    // if(state == "default"){
+    //   sys_indexer.indexerOn(0);
 
-    if(TOF_Ball1 && TOF_Ext){
-      sys_indexer.indexerOn(0);
-    } else if (TOF_Ball1) {
-      sys_indexer.indexerOn(0.75);
-    }
+    //   // exit conditions
+    //   if(TOF_Ball1 && !TOF_Ext){
+    //     // running
+    //     state = "running";
+    //   }
+    //   else if(!TOF_Ball1 && !TOF_Ext){
+    //     // running
+    //     state = "running";
+    //   }
+    //   else if(TOF_Ball1 && TOF_Ext){
+    //     state = "holding";
+    //   }
+    // }
+    // else if(state == "running"){
+    //   sys_indexer.indexerOn(0.75);
 
-    if(state == "default"){
-      sys_indexer.indexerOn(0);
-
-      // exit conditions
-      if(TOF_Ball1 && !TOF_Ext){
-        // running
-        state = "running";
-      }
-      else if(!TOF_Ball1 && !TOF_Ext){
-        // running
-        state = "running";
-      }
-      else if(TOF_Ball1 && TOF_Ext){
-        state = "holding";
-      }
-    }
-    else if(state == "running"){
-      sys_indexer.indexerOn(0.75);
-
-      if(TOF_Ball1 && TOF_Ext){
-        state = "run_back";
-      }
-    }
-    else if(state == "run_back"){
-      sys_indexer.setControlMode(-2, ControlType.kPosition);
-    }
-    else if(state == "holding"){
-      if(Math.abs(sys_indexer.encoderPosition() - -2d) < 0.05){
-        sys_indexer.setControlMode(0, ControlType.kDutyCycle);
-      }
-      // what do i do after it ends
-    }
+    //   if(TOF_Ball1 && TOF_Ext){
+    //     state = "run_back";
+    //   }
+    // }
+    // else if(state == "run_back"){
+    //   sys_indexer.setControlMode(-2, ControlType.kPosition);
+    // }
+    // else if(state == "holding"){
+    //   if(Math.abs(sys_indexer.encoderPosition() - -2d) < 0.05){
+    //     sys_indexer.setControlMode(0, ControlType.kDutyCycle);
+    //   }
+    //   // what do i do after it ends
+    // }
   }
 
   // Called once the command ends or is interrupted.
