@@ -4,6 +4,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.kID;
 import frc.robot.Constants.kIntake;
+import frc.robot.utils.MotorUtils;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -26,13 +27,12 @@ public class Intake extends SubsystemBase{
     private DoubleSolenoid intakeSolenoid_right;
 
     public Intake() {
-
-       
-
         mot_intakeIn = new CANSparkMax(kIntake.kIntakeMotorIn, MotorType.kBrushless);
         mot_intakeIn.setSmartCurrentLimit(20);
         mot_intakeIn.setIdleMode(IdleMode.kBrake);
         mot_intakeIn.setInverted(true);
+        MotorUtils.lowerLeaderStatusPeriod(mot_intakeIn);
+
         mot_intakeIn.burnFlash();
 
         //intakeSolenoid_left = new DoubleSolenoid(PneumaticsModuleType.REVPH, kIntake.kLeftIntakeSolenoid1, kIntake.kLeftIntakeSolenoid2);
@@ -40,6 +40,7 @@ public class Intake extends SubsystemBase{
 
         mot_intake = new WPI_TalonFX(kIntake.kIntakeMotor);
         mot_intake.setInverted(true);
+        MotorUtils.lowerNonImportantPeriods(mot_intake);
         // mot_intake.setSmartCurrentLimit(20);
         // mot_intake.setIdleMode(IdleMode.kBrake);
         // mot_intake.burnFlash();
