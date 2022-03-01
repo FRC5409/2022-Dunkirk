@@ -228,9 +228,7 @@ public final class Constants {
         public static final int HOOD_FORWARD_CHANNEL = 13;
         public static final int HOOD_REVERSE_CHANNEL = 12;
 
-        // TODO: Ask keith what this is
-        // Initialize this
-        public static final double ALIGNMENT_THRESHOLD = 0;
+        public static final double ALIGNMENT_TRESHOLD = 4.5;
     }
 
     public final class Falcon500 {

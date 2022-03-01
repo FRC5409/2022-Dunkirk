@@ -48,12 +48,12 @@ public class TrainerLookShooterState extends StateCommandBase {
     public void execute() {
         Vector2 target = limelight.getTarget();
 
-        double distance = Constants.Vision.DISTANCE_FUNCTION.calculate(target.y);
+        double distance = context.getModel().distance(target.y);
 
         context.setDistance(distance);
         context.setSetpoint(
             new Setpoint(
-                context.getModel().calculate(distance),
+                context.getModel().calculate(target.y),
                 Constants.Shooter.SPEED_RANGE
             )
         );
