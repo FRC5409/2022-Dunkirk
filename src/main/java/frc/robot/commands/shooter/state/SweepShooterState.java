@@ -1,12 +1,15 @@
-package frc.robot.commands.shooter;
+package frc.robot.commands.shooter.state;
 
 import org.jetbrains.annotations.NotNull;
 
 import frc.robot.Constants;
+import frc.robot.base.Property;
 import frc.robot.base.TimedStateCommand;
+import frc.robot.base.shooter.SweepDirection;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;
+import frc.robot.utils.Toggleable;
 
 // TODO update doc
 
@@ -21,13 +24,21 @@ import frc.robot.subsystems.shooter.ShooterTurret;
  * that the limelight's led's may not be on for prolonged periods of time.</p>
  */
 public class SweepShooterState extends TimedStateCommand {
+    private final Property<SweepDirection> sweepDirection;
     private final ShooterTurret turret;
-    private final Limelight limelight;
-
-    private double offsetTime;
+    private final Limelight     limelight;
+    
+    private double  direction;
     private boolean done;
+    private double  offset;
+    
 
-    public SweepShooterState(Limelight limelight, ShooterTurret turret) {
+    public SweepShooterState(
+        Limelight limelight,
+        ShooterTurret turret, 
+        Property<SweepDirection> sweepDirection
+    ) {
+        this.sweepDirection = sweepDirection;
         this.limelight = limelight;
         this.turret = turret;
 
@@ -38,20 +49,26 @@ public class SweepShooterState extends TimedStateCommand {
     public void initialize() {
         super.initialize();
 
-        offsetTime = Constants.Shooter.SHOOTER_SWEEP_INVERSE.calculate(turret.getRotation());
+        if (!Toggleable.isEnabled(limelight, turret))
+            throw new RuntimeException("Cannot sweep shooter when requirements are not enabled.");
+
+        direction = (sweepDirection.get() == SweepDirection.kLeft) ? 1 : -1;
+        offset = Constants.Shooter.SHOOTER_SWEEP_INVERSE.calculate(turret.getRotation());
         done = false;
     }
 
     @Override
     public void execute() {
+        double elapsedTime = getElapsedTime();
+
         if (limelight.hasTarget() && limelight.getTargetType() == TargetType.kHub) {
             next("frc.robot.shooter:operate");
             done = true;
-        } else if (getElapsedTime() / Constants.Shooter.SHOOTER_SWEEP_PERIOD > Constants.Shooter.SHOOTER_MAX_SWEEEP) {
+        } else if (elapsedTime / Constants.Shooter.SHOOTER_SWEEP_PERIOD > Constants.Shooter.SHOOTER_MAX_SWEEEP) {
             done = true;
         } else {
             turret.setRotationTarget(
-                Constants.Shooter.SHOOTER_SWEEP_FUNCTION.calculate(getElapsedTime() + offsetTime)
+                Constants.Shooter.SHOOTER_SWEEP_FUNCTION.calculate(offset + elapsedTime*direction)
             );
         } 
     }

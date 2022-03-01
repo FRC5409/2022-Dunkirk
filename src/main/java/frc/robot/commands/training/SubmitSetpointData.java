@@ -11,8 +11,8 @@ import frc.robot.training.protocol.generic.ArraySendable;
 import frc.robot.training.protocol.generic.BundleSendable;
 import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
-import frc.robot.utils.ShooterModel;
 import frc.robot.Constants;
+import frc.robot.base.shooter.ShooterModel;
 import frc.robot.training.TrainerDashboard;
 import frc.robot.training.TrainerContext;
 
@@ -69,6 +69,7 @@ public class SubmitSetpointData extends CommandBase {
                         modelParameterB.getValue(double.class),
                         modelParameterC.getValue(double.class),
                         modelParameterD.getValue(double.class),
+                        1d, 1d, 1d,
                         Constants.Shooter.DISTANCE_RANGE,
                         Constants.Shooter.SPEED_RANGE
                     )

@@ -1,20 +1,31 @@
 package frc.robot.training;
 
-import frc.robot.utils.ShooterModel;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.jetbrains.annotations.Nullable;
+
+import frc.robot.base.shooter.ShooterMode;
+import frc.robot.base.shooter.ShooterModel;
 
 public class TrainerContext {
-    private ShooterModel _model;
+    private Map<ShooterMode, ShooterModel> _models;
+    private ShooterMode _mode;
     private Setpoint _target;
     private double _distance;
 
-    public TrainerContext(Setpoint initialTarget, ShooterModel model) {
-        _model = model;
+    public TrainerContext(Setpoint initialTarget) {
+        _models = new HashMap<>();
         _target = initialTarget;
         _distance = 0.0;
     }
 
     public void setModel(ShooterModel model) {
-        _model = model;
+        setModel(_mode, model);
+    }
+
+    public void setModel(ShooterMode mode, ShooterModel model) {
+        _models.put(mode, model);
     }
     
     public void setSetpoint(Setpoint target) {
@@ -25,8 +36,18 @@ public class TrainerContext {
         _distance = distance;
     }
 
+    public void setMode(ShooterMode mode) {
+        _mode = mode;
+    }
+
+    @Nullable
     public ShooterModel getModel() {
-        return _model;
+        return _models.get(_mode);
+    }
+    
+    @Nullable
+    public ShooterModel getModel(ShooterMode mode) {
+        return _models.get(mode);
     }
 
     public Setpoint getSetpoint() {
@@ -35,5 +56,9 @@ public class TrainerContext {
 
     public double getDistance() {
         return _distance;
+    }
+
+    public ShooterMode getMode() {
+        return _mode;
     }
 }

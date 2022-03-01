@@ -11,6 +11,10 @@ public final class Range {
     private final double _min;
     private final double _max;
 
+    public static <T extends Comparable<T>> boolean contains(T min, T value, T max) {
+        return min.compareTo(value) >= 0 && max.compareTo(value) <= 0;
+    }
+    
     /**
      * Constructs a range.
      * 

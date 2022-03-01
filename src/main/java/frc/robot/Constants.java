@@ -104,7 +104,7 @@ public final class Constants {
         public static final int DIGITAL_INPUT_PORT = 8;
 
         public static final double TO_MAX = 106.5;
-        public static final double TO_MID_RUNG = 100.0;
+        public static final double TO_MID_RUNG = 104.0;
         public static final double TO_LOW_RUNG = 80.0;
         public static final double TO_MIN = 10.0;
     }
@@ -163,6 +163,12 @@ public final class Constants {
         // Speed limits for auto
         public static final double maxStraightSpeed = 1;
         public static final double maxTurnSpeed = 1;
+
+        //
+        public static final double forwardRampRate = 0.3;
+        public static final double backwardRampRate = 0.2;
+        public static final double forwardTurnRampRate = 0.1;
+        public static final double backwardTurnRampRate = 0.1;
 
         // Anti-tip compensation
         public static final double pitchCompensation = 0;
@@ -240,14 +246,14 @@ public final class Constants {
         // Height in meters
         public static final double ROBOT_HEIGHT        = 4;
         public static final double FIXED_ANGLE         = 45;
-        public static final double MAX_CLOCKWISE_ANGLE  =70;
-        public static final double MAX_COUNTER_CLOCKWISE_ANGLE = -52;
-        public static final Range  LIMITS              = new Range(-10, 20);
-        public static final double ALIGNMENT_THRESHOLD = 0.14;
 
         //TODO fill in pneumatics constants.
         public static final int HOOD_FORWARD_CHANNEL = 13;
         public static final int HOOD_REVERSE_CHANNEL = 12;
+
+        // TODO: Ask keith what this is
+        // Initialize this
+        public static final double ALIGNMENT_THRESHOLD = 0;
     }
 
     public final class Falcon500 {
@@ -294,7 +300,8 @@ public final class Constants {
 
         // Range Configurations
         public static final Range ROTATION_RANGE = new Range(
-            -28.571428571428573, 57.14285714285714
+            -61, 75
+            //-28.571428571428573, 57.14285714285714
         );
 
         public static final Range SPEED_RANGE = new Range(
@@ -315,7 +322,7 @@ public final class Constants {
 
 
     // Smooth Sweep Constants (experimental)
-        public static final double SHOOTER_SWEEP_PERIOD = 3.6;
+        public static final double SHOOTER_SWEEP_PERIOD = 2.6;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
             private final double kA = (2.0 * Math.PI) / SHOOTER_SWEEP_PERIOD;
@@ -374,6 +381,6 @@ public final class Constants {
             
         };
 
-        public static final double ROTATION_P = 0.10;
+        public static final double ROTATION_P = 0.50;
     }
 }
