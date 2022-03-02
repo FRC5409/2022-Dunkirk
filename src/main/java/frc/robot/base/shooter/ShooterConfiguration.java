@@ -1,12 +1,14 @@
 package frc.robot.base.shooter;
 
 public class ShooterConfiguration {
-    private ShooterMode mode;
-    private ShooterModel model;
+    private final ShooterMode mode;
+    private final ShooterModel model;
+    private final VisionPipeline pipeline;
 
-    public ShooterConfiguration(ShooterMode mode, ShooterModel model) {
+    public ShooterConfiguration(ShooterMode mode, VisionPipeline pipeline, ShooterModel model) {
         this.mode = mode;
         this.model = model;
+        this.pipeline = pipeline;
     }
 
     public ShooterMode getMode() {
@@ -15,5 +17,9 @@ public class ShooterConfiguration {
 
     public ShooterModel getModel() {
         return model;
+    }
+
+    public VisionPipeline getPipeline() {
+        return pipeline;
     }
 }

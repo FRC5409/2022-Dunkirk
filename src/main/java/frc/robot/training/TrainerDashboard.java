@@ -28,18 +28,4 @@ public class TrainerDashboard {
         SmartDashboard.putNumber("Estimated Distance", _context.getDistance());
         SmartDashboard.putNumber("Estimated Target", model.calculate(_context.getDistance()));
     }
-
-    public void sync() {
-        double newSetpointTarget = SmartDashboard.getNumber("Setpoint Target", 0.0);
-
-        Setpoint setpoint = _context.getSetpoint();
-        if (newSetpointTarget != setpoint.getTarget()) {
-            newSetpointTarget = setpoint.getRange().clamp(newSetpointTarget);
-            SmartDashboard.putNumber("Setpoint Target", newSetpointTarget);
-
-            _context.setSetpoint(
-                new Setpoint(setpoint.getParent(), newSetpointTarget, setpoint.getRange(), setpoint.getType())
-            );
-        }
-    }
 }
