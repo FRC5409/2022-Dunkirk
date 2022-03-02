@@ -32,19 +32,18 @@ public class ConfigureShooter extends CommandBase {
         turret.enable();
         limelight.enable();
 
-        configuration.set(
-            Constants.Shooter.CONFIGURATIONS.get(target)
-        );
+        
+        ShooterConfiguration configuration = Constants.Shooter.CONFIGURATIONS.get(target);
+        this.configuration.set(configuration);
+        limelight.setPipelineIndex(configuration.getPipeline().id());
         
         switch (target) {
             case kNear: {
                 turret.hoodDownPosition();
-                limelight.setPipelineIndex(1);
                 break;
             }
             case kFar: {
                 turret.hoodUpPosition();
-                limelight.setPipelineIndex(2);
                 break;
             }
         }

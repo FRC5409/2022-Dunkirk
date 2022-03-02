@@ -22,13 +22,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.FastGear;
-import frc.robot.commands.IndexerIntakeActive;
-import frc.robot.commands.IndexerIntakeTest;
-import frc.robot.commands.IntakeActive;
-
-import frc.robot.commands.SlowGear;
 //Constants
 import frc.robot.base.Joystick;
 import frc.robot.base.Property;
@@ -46,10 +39,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-
-import frc.robot.commands.ReverseIntakeIndexer;
-import frc.robot.commands.ShooterTestOne;
-import frc.robot.commands.ShooterTestTwo;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pneumatics;
@@ -224,15 +213,28 @@ public class RobotContainer {
     joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(Climber));
 
 
-    ValueProperty<ShooterConfiguration> shooterConfigProp = new ValueProperty<ShooterConfiguration>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
-    ValueProperty<SweepDirection> directionProp = new ValueProperty<SweepDirection>(SweepDirection.kLeft);
+    ValueProperty<ShooterConfiguration> shooterConfiguration = new ValueProperty<ShooterConfiguration>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
+    ValueProperty<SweepDirection> shooterSweepDirection = new ValueProperty<SweepDirection>(SweepDirection.kLeft);
 
     joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(
-      new OperateShooter(limelight, turret, Flywheel, Indexer, directionProp, shooterConfigProp)
+      new OperateShooter(limelight, turret, Flywheel, Indexer, shooterSweepDirection, shooterConfiguration)
     );
 
-    joystick_secondary.getButton(ButtonType.kUpPov).whenPressed(() -> {shooterConfigProp.set(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));});
-    joystick_secondary.getButton(ButtonType.kDownPov).whenPressed(() -> {shooterConfigProp.set(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kNear));});
+    joystick_secondary.getButton(ButtonType.kUpPov)
+        .and(joystick_secondary.getButton(ButtonType.kA).negate())
+        .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar));
+
+    joystick_secondary.getButton(ButtonType.kDownPov)
+        .and(joystick_secondary.getButton(ButtonType.kA).negate())
+        .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear));
+
+    joystick_secondary.getButton(ButtonType.kLeftPov)
+        .and(joystick_secondary.getButton(ButtonType.kA).negate())
+        .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft));
+
+    joystick_secondary.getButton(ButtonType.kLeftPov)
+        .and(joystick_secondary.getButton(ButtonType.kA).negate())
+        .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight));
 
 
     //joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
