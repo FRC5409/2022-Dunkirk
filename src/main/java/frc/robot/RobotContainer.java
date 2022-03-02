@@ -20,7 +20,7 @@ import frc.robot.training.protocol.generic.ValueSendable;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-
+import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.kAuto;
 //Constants
@@ -48,7 +48,6 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -92,6 +91,8 @@ public class RobotContainer {
   private final IntakeActive         intakeActive;
   private final IndexerIntakeTest    test;
 
+  private ValueProperty<Boolean> climberActive = new ValueProperty<Boolean>(false);
+
   //private final TrainerContext       trainerContext;
   //private final TrainerDashboard     trainerDashboard;
   // private       NetworkClient        trainerClient;
@@ -106,7 +107,7 @@ public class RobotContainer {
 
     // Initialize sub systems
 
-    Climber = new Climber();
+    Climber = new Climber(climberActive);
     DriveTrain  = new DriveTrain();
     Pneumatics  = new Pneumatics();
     // Pigeon      = new Pigeon();
@@ -209,46 +210,56 @@ public class RobotContainer {
     // System.out.println(true);
     // });
 
-    joystick_secondary.getButton(ButtonType.kX).whenPressed(new AutoAlign(Climber, DriveTrain, 180));
-    joystick_secondary.getButton(ButtonType.kB).whenPressed(() -> {
-      DriveTrain.resetGyro();
-    });
-    joystick_secondary.getButton(ButtonType.kY).whenPressed(() -> {
-      Climber.zeroEncoder();
-    });
-
-    joystick_secondary.getButton(ButtonType.kLeftBumper).whenPressed(new FindElevatorZero(Climber));
-
     //joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
 
+    Button climberToggleTrigger = new Button(){
+      @Override
+      public boolean get() {
+          return climberActive.get();
+      }
+    };
 
-    joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(joystick_secondary, Climber, Indexer, turret, Flywheel, limelight, DriveTrain));
+    joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber));
+
 
 
     ValueProperty<ShooterConfiguration> shooterConfiguration = new ValueProperty<ShooterConfiguration>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
     ValueProperty<SweepDirection> shooterSweepDirection = new ValueProperty<SweepDirection>(SweepDirection.kLeft);
 
-    joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(
+
+    joystick_secondary.getButton(ButtonType.kX).and(climberToggleTrigger).whenActive(new AutoAlign(Climber, DriveTrain, 180));
+    joystick_secondary.getButton(ButtonType.kB).and(climberToggleTrigger).whenActive(() -> {
+      DriveTrain.resetGyro();
+    });
+    joystick_secondary.getButton(ButtonType.kY).and(climberToggleTrigger).whenActive(() -> {
+      Climber.zeroEncoder();
+    });
+
+    joystick_secondary.getButton(ButtonType.kLeftBumper).and(climberToggleTrigger).whenActive(new FindElevatorZero(Climber));
+
+
+
+    joystick_secondary.getButton(ButtonType.kRightBumper).and(climberToggleTrigger.negate()).whileActiveContinuous(
       new OperateShooter(limelight, turret, Flywheel, Indexer, shooterSweepDirection, shooterConfiguration)
-    ).whenReleased(new RotateTurret(turret, 0));
+    ).whenInactive(new RotateTurret(turret, 0));
 
     joystick_secondary.getButton(ButtonType.kUpPov)
-        .and(joystick_secondary.getButton(ButtonType.kA).negate())
+        .and(joystick_secondary.getButton(ButtonType.kA).negate()).and(climberToggleTrigger.negate())
         .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar));
 
     joystick_secondary.getButton(ButtonType.kDownPov)
-        .and(joystick_secondary.getButton(ButtonType.kA).negate())
+        .and(joystick_secondary.getButton(ButtonType.kA).negate()).and(climberToggleTrigger.negate())
         .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear));
 
     joystick_secondary.getButton(ButtonType.kLeftPov)
-        .and(joystick_secondary.getButton(ButtonType.kA).negate())
+        .and(joystick_secondary.getButton(ButtonType.kA).negate()).and(climberToggleTrigger.negate())
         .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft));
 
-    joystick_secondary.getButton(ButtonType.kLeftPov)
-        .and(joystick_secondary.getButton(ButtonType.kA).negate())
+    joystick_secondary.getButton(ButtonType.kRightPov)
+        .and(joystick_secondary.getButton(ButtonType.kA).negate()).and(climberToggleTrigger.negate())
         .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight));
 
-    joystick_secondary.getButton(ButtonType.kA).whileHeld(new RunShooter(Flywheel, Indexer, 900));
+    joystick_secondary.getButton(ButtonType.kA).and(climberToggleTrigger.negate()).whileActiveContinuous(new RunShooter(Flywheel, Indexer, 900));
   }
 
   /**
