@@ -218,7 +218,7 @@ public class RobotContainer {
 
     joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(
       new OperateShooter(limelight, turret, Flywheel, Indexer, shooterSweepDirection, shooterConfiguration)
-    );
+    ).whenReleased(new RotateTurret(turret, 0));
 
     joystick_secondary.getButton(ButtonType.kUpPov)
         .and(joystick_secondary.getButton(ButtonType.kA).negate())

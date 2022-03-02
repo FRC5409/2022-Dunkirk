@@ -58,7 +58,7 @@ public class OperateShooterState extends StateCommandBase {
         if (!Toggleable.isEnabled(limelight, turret, flywheel, indexer))
             throw new RuntimeException("Cannot operate shooter when requirements are not enabled.");
 
-        flywheel.spinFeeder(4500);
+        //flywheel.spinFeeder(4500);
         model = configuration.get().getModel();
     }
 

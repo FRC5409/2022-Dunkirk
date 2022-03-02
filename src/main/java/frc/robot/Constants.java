@@ -339,9 +339,9 @@ public final class Constants {
                     0.06557995826005936,
                     0.9416347146034241,
                     -0.06884603947401047,
-                    90.0 - 45.5,
+                    90.0 - 61.5,
                     41.5 / 12.0,
-                    1d,
+                    2d,
                     Constants.Shooter.DISTANCE_RANGE,
                     Constants.Shooter.SPEED_RANGE
                 )
@@ -351,7 +351,7 @@ public final class Constants {
                 ShooterMode.kNear, VisionPipeline.NEAR_TARGETING, 
                 new ShooterModel(
                     0d, 0d, 0d, Constants.Shooter.SPEED_RANGE.normalize(1675.78125),
-                    90.0 - 61.5,
+                    90.0 - 45.5,
                     45 / 12.0,
                     1d,
                     Constants.Shooter.DISTANCE_RANGE,
