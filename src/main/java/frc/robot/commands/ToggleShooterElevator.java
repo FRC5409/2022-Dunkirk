@@ -28,16 +28,14 @@ public class ToggleShooterElevator extends CommandBase {
     private final ShooterFlywheel flywheel;
     private final Indexer indexer;
     private final DriveTrain drive;
-    private final Pigeon pigeon;
 
-    public ToggleShooterElevator(Joystick joystick, Climber climber, Indexer indexer, ShooterTurret turret, ShooterFlywheel flywheel, Limelight limelight, Pigeon pigeon, DriveTrain drive) {
+    public ToggleShooterElevator(Joystick joystick, Climber climber, Indexer indexer, ShooterTurret turret, ShooterFlywheel flywheel, Limelight limelight, DriveTrain drive) {
         this.joystick = joystick;
         this.turret = turret;
         this.flywheel = flywheel;
         this.limelight = limelight;
         this.climber = climber;
         this.indexer = indexer;
-        this.pigeon = pigeon;
         this.drive = drive;
 
 
@@ -76,9 +74,9 @@ public class ToggleShooterElevator extends CommandBase {
             // Shooter activate
         } else {
 
-            joystick.getButton(ButtonType.kX).whenPressed(new AutoAlign(climber, drive, pigeon, 180));
+            joystick.getButton(ButtonType.kX).whenPressed(new AutoAlign(climber, drive, 180));
             joystick.getButton(ButtonType.kB).whenPressed(() -> {
-            pigeon.reset();
+            drive.resetGyro();
             });
             joystick.getButton(ButtonType.kY).whenPressed(() -> {
             climber.zeroEncoder();

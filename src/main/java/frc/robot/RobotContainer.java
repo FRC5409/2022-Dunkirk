@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.kAuto;
 //Constants
 import frc.robot.base.Joystick;
 import frc.robot.base.Property;
@@ -220,7 +221,7 @@ public class RobotContainer {
     //joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
 
 
-    joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(joystick_secondary, Climber, Indexer, turret, Flywheel, limelight, Pigeon, DriveTrain));
+    joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(joystick_secondary, Climber, Indexer, turret, Flywheel, limelight, DriveTrain));
 
 
     ValueProperty<ShooterConfiguration> shooterConfiguration = new ValueProperty<ShooterConfiguration>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
