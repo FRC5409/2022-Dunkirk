@@ -210,7 +210,7 @@ public class RobotContainer {
     //joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
 
 
-    joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(Climber));
+    joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(joystick_secondary, Climber, Indexer, turret, Flywheel, limelight, Pigeon, DriveTrain));
 
 
     ValueProperty<ShooterConfiguration> shooterConfiguration = new ValueProperty<ShooterConfiguration>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
@@ -236,79 +236,7 @@ public class RobotContainer {
         .and(joystick_secondary.getButton(ButtonType.kA).negate())
         .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight));
 
-
-    //joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
-    /*
-    joystick_main.getButton(ButtonType.kRightBumper)
-      .whenPressed(new FastGear(DriveTrain))
-      .whenReleased(new SlowGear(DriveTrain));
-
-    // joystick_main.getButton(ButtonType.kA).whenPressed();
-    // joystick_main.getButton(ButtonType.kX).whileHeld(new IndexerActive(Indexer, Intake));
-    joystick_main.getButton(ButtonType.kY)
-      .whileHeld(new IndexerIntakeTest(Indexer, Intake));
-
-    joystick_main.getButton(ButtonType.kB)
-      .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
-
-    joystick_main.getButton(ButtonType.kX)
-      .whileHeld(new IndexerIntakeActive(Indexer, Intake));
-
-    joystick_main.getButton(ButtonType.kB)
-      .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
-
-    joystick_secondary.getButton(ButtonType.kRightBumper)
-      .whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
-
-    joystick_secondary.getButton(ButtonType.kLeftBumper)
-      .whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
-      
-    joystick_secondary.getButton(ButtonType.kX)
-      .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, BranchType.BRANCH_LEFT));
-
-    joystick_secondary.getButton(ButtonType.kB)
-      .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, BranchType.BRANCH_RIGHT));
-
-    joystick_secondary.getButton(ButtonType.kRightBumper)
-      .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, BranchType.BRANCH_CENTER));
-
-    joystick_secondary.getButton(ButtonType.kLeftBumper)
-      .whenPressed(new RequestModelUpdate(trainerDashboard, trainerClient, trainerContext));
-
-    joystick_secondary.getButton(ButtonType.kY)
-      .whenPressed(new FlipTargetSetpoint(trainerDashboard, trainerContext));
-      
-    joystick_secondary.getButton(ButtonType.kStart)
-      .whenPressed(new SubmitSetpointData(trainerDashboard, trainerClient, trainerContext));
-
-    joystick_secondary.getButton(ButtonType.kLeftStick)
-      .whenPressed(new ResetTargetSetpoint(trainerDashboard, trainerContext));
-
-    joystick_secondary.getButton(ButtonType.kA)
-      .whileHeld(new TrainerLookShooter(limelight, turret, trainerDashboard, trainerContext))
-      .whenReleased(new RotateTurret(turret, 0));
-
-      joystick_secondary.getButton(ButtonType.kBack)
-        .whenPressed(new UndoTargetSetpoint(trainerDashboard, trainerContext));
-  }  
-  
-  private void configureTraining() throws IOException {
-    SendableContext context = new SendableContext();
-      context.registerSendable(StringSendable.class);
-      context.registerSendable(ValueSendable.class);
-      context.registerSendable(BundleSendable.class);
-      context.registerSendable(ArraySendable.class);
-
-    NetworkSocket socket = NetworkSocket.create(Constants.Training.TRAINER_HOSTNAME);
-    trainerClient = new NetworkClient(socket, context);
-
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      try {
-        trainerClient.close();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }));*/
+    joystick_secondary.getButton(ButtonType.kA).whileHeld(new RunShooter(Flywheel, Indexer, 900));
   }
 
   /**
