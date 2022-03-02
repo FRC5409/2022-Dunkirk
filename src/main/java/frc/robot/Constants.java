@@ -6,7 +6,10 @@ package frc.robot;
 
 import java.util.Map;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
@@ -189,14 +192,14 @@ public final class Constants {
     }
 
     public static final class kAuto{
-        public static final double kTrackwidthMeters = Units.inchesToMeters(26.25);
+        public static final double kTrackwidthMeters = 0.78089;
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
 
         // robot characterization
-        public static final double ksVolts = 0.5788;
-        public static final double kvVoltSecondsPerMeter = 4.1279*Math.pow(10, -6);
-        public static final double kaVoltSecondsSquaredPerMeter = 2.0127*Math.pow(10, -7);
-        public static final double kPDriveVel = 8.1401*Math.pow(10, -6);
+        public static final double ksVolts = 0.61192;
+        public static final double kvVoltSecondsPerMeter = 5.041;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.31042;
+        public static final double kPDriveVel = 5.7255;
         
         // all units in meters and seconds: max speed & acceleration 3
         public static final double kMaxSpeed = 2;
@@ -208,6 +211,24 @@ public final class Constants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
 
+        public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = 
+            new DifferentialDriveVoltageConstraint(
+                new SimpleMotorFeedforward(ksVolts, 
+                                           kvVoltSecondsPerMeter, 
+                                           kaVoltSecondsSquaredPerMeter),
+                kDriveKinematics, 10);
+
+        public static final TrajectoryConfig configStop = 
+            new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
+            .setKinematics(kDriveKinematics)
+            .addConstraint(autoVoltageConstraint);
+            //TODO: Test .setEndVelocity(0);
+
+        public static final TrajectoryConfig configNoStop = 
+            new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
+            .setKinematics(kDriveKinematics)
+            .addConstraint(autoVoltageConstraint)    
+            .setEndVelocity(1.9);
     }
 
     public final class Falcon500 {
