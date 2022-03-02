@@ -350,7 +350,7 @@ public final class Constants {
             ShooterMode.kNear, new ShooterConfiguration(
                 ShooterMode.kNear, VisionPipeline.NEAR_TARGETING, 
                 new ShooterModel(
-                    0d, 0d, 0d, 1675.78125,
+                    0d, 0d, 0d, Constants.Shooter.SPEED_RANGE.normalize(1675.78125),
                     90.0 - 61.5,
                     45 / 12.0,
                     1d,
