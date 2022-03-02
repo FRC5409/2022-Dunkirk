@@ -110,7 +110,7 @@ public class RobotContainer {
   // Subsystems defined
   private final DriveTrain           DriveTrain;
   private final Pneumatics           Pneumatics;
-  private final Pigeon               Pigeon;
+  // private final Pigeon               Pigeon;
   private final Indexer              Indexer;
   private final Intake               Intake;
   private final ShooterFlywheel      Flywheel;
@@ -142,7 +142,7 @@ public class RobotContainer {
     Climber = new Climber();
     DriveTrain  = new DriveTrain();
     Pneumatics  = new Pneumatics();
-    Pigeon      = new Pigeon();
+    // Pigeon      = new Pigeon();
     Intake      = new Intake();
     Indexer     = new Indexer();
     Flywheel    = new ShooterFlywheel();
@@ -242,9 +242,9 @@ public class RobotContainer {
     // System.out.println(true);
     // });
 
-    joystick_secondary.getButton(ButtonType.kX).whenPressed(new AutoAlign(Climber, DriveTrain, Pigeon, 180));
+    joystick_secondary.getButton(ButtonType.kX).whenPressed(new AutoAlign(Climber, DriveTrain, 180));
     joystick_secondary.getButton(ButtonType.kB).whenPressed(() -> {
-      Pigeon.reset();
+      DriveTrain.resetGyro();
     });
     joystick_secondary.getButton(ButtonType.kY).whenPressed(() -> {
       Climber.zeroEncoder();
@@ -345,7 +345,7 @@ public class RobotContainer {
       
       // new Translation2d(1, 1), new Translation2d(2, -1))
 
-    RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
+    RamseteCommand autoCommand = new RamseteCommand(trajectory, DriveTrain::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
         new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
             kAuto.kaVoltSecondsSquaredPerMeter),
@@ -354,8 +354,7 @@ public class RobotContainer {
         DriveTrain::tankDriveVolts, DriveTrain);
 
     // Reset odometry to the starting pose of the trajectory.
-    DriveTrain.zeroEncoders();
-    Pigeon.resetOdometry(trajectory.getInitialPose());
+    DriveTrain.resetOdometry(trajectory.getInitialPose());
 
     // returns the autonomous command
     // makes sure that after the auto command is finished running the robot stops.
