@@ -253,7 +253,7 @@ public class RobotContainer {
         .and(joystick_secondary.getButton(ButtonType.kA).negate()).and(climberToggleTrigger.negate())
         .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft));
 
-    joystick_secondary.getButton(ButtonType.kLeftPov)
+    joystick_secondary.getButton(ButtonType.kRightPov)
         .and(joystick_secondary.getButton(ButtonType.kA).negate()).and(climberToggleTrigger.negate())
         .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight));
 
