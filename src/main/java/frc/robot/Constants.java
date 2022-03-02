@@ -196,8 +196,9 @@ public final class Constants {
         public static final double kPDriveVel = 5.7255;
         
         // all units in meters and seconds: max speed & acceleration 3
-        public static final double kMaxSpeed = 2;
-        public static final double kMaxAcceleration = 2;
+        public static final double kMaxSpeed = 2.5; 
+        // TODO: work fine in 2.5, gives error when generating trajectory when exceed that value
+        public static final double kMaxAcceleration = 3; // any
 
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
         // works for most robots, if needs to be tuned: 
@@ -215,8 +216,8 @@ public final class Constants {
         public static final TrajectoryConfig configStop = 
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
             .setKinematics(kDriveKinematics)
-            .addConstraint(autoVoltageConstraint);
-            //TODO: Test .setEndVelocity(0);
+            .addConstraint(autoVoltageConstraint)
+            .setEndVelocity(0);
 
         public static final TrajectoryConfig configNoStop = 
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)

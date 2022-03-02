@@ -47,7 +47,7 @@ import frc.robot.commands.FindElevatorZero;
 import frc.robot.commands.IntakeActive;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.SlowGear;
-
+import frc.robot.commands.autonomous.ZeroBallAuto;
 import frc.robot.commands.shooter.HoodDown;
 import frc.robot.commands.shooter.HoodUp;
 
@@ -337,27 +337,29 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     
-    // Generates a trajectory that tells the robot to move from its original location
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-                                                                   List.of(),
-                                                                   new Pose2d(2, 0, new Rotation2d(0)), 
-                                                                   kAuto.configStop);
+    // // Generates a trajectory that tells the robot to move from its original location
+    // Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
+    //                                                                List.of(new Translation2d(1, 1)),
+    //                                                                new Pose2d(2, 0, new Rotation2d(0)), 
+    //                                                                kAuto.configStop);
       
-      // new Translation2d(1, 1), new Translation2d(2, -1))
+    //   // new Translation2d(1, 1), new Translation2d(2, -1))
 
-    RamseteCommand autoCommand = new RamseteCommand(trajectory, DriveTrain::getPose,
-        new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
-        new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-            kAuto.kaVoltSecondsSquaredPerMeter),
-        kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
-        new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
-        DriveTrain::tankDriveVolts, DriveTrain);
+    // RamseteCommand autoCommand = new RamseteCommand(trajectory, DriveTrain::getPose,
+    //     new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
+    //     new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
+    //         kAuto.kaVoltSecondsSquaredPerMeter),
+    //     kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
+    //     new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
+    //     DriveTrain::tankDriveVolts, DriveTrain);
 
-    // Reset odometry to the starting pose of the trajectory.
-    DriveTrain.resetOdometry(trajectory.getInitialPose());
+    // // Reset odometry to the starting pose of the trajectory.
+    // DriveTrain.resetOdometry(trajectory.getInitialPose());
 
-    // returns the autonomous command
-    // makes sure that after the auto command is finished running the robot stops.
-    return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
+    // // returns the autonomous command
+    // // makes sure that after the auto command is finished running the robot stops.
+    // return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
+    // return new ZeroBallAuto(DriveTrain).andThen(() -> DriveTrain.tankDrive(0, 0));
+    return new ZeroBallAuto(DriveTrain);
   }
 }
