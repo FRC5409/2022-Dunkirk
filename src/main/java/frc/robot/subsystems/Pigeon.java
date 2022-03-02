@@ -85,7 +85,7 @@ public class Pigeon extends SubsystemBase{
      * This method is called once per scheduler run and is used to update smart dashboard data.
      */
     public void periodic() {
-        m_odometry.update(Rotation2d.fromDegrees(getHeading()), driveTrain.getEncoderPositionLeft(),
+        m_odometry.update(gyro_pigeon.getRotation2d(), driveTrain.getEncoderPositionLeft(),
         driveTrain.getEncoderPositionRight()); // TODO: causes drivetrain to move weirdly 
     }
 
