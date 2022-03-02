@@ -77,10 +77,10 @@ public class OperateShooterState extends StateCommandBase {
             turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
 
         if (turret.isTargetReached() && flywheel.isTargetReached()) {
-            indexer.spinIndexer(1);
-        } /*else {
-            indexer.moveIndexerMotor(0);
-        }*/
+            indexer.indexerOn(1);
+            flywheel.spinFeeder(-4500*1.5);
+        }
+    
 
         SmartDashboard.putNumber("Velocity Prediction", velocity);
         SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
