@@ -255,7 +255,7 @@ public final class Constants {
 
         public static final int rangeEnter = 180;
         public static final int rangeBall1 = 105;
-        public static final int rangeExit = 90; 
+        public static final int rangeExit = 80; 
      
         public static final int indexerMotorBottom = 8; 
     }
