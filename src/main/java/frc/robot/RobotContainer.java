@@ -62,6 +62,16 @@ import frc.robot.base.shooter.ShooterModel;
 import frc.robot.base.shooter.SweepDirection;
 
 import java.io.IOException;
+import java.util.List;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -326,27 +336,19 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    /*
-    // creates configuration for trajectory
-    var feedForward = new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-        kAuto.kaVoltSecondsSquaredPerMeter);
-    var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(feedForward, kAuto.kDriveKinematics,
-        10);
-
-    TrajectoryConfig config = new TrajectoryConfig(kAuto.kMaxSpeed, kAuto.kMaxAcceleration);
-    config.setKinematics(kAuto.kDriveKinematics).addConstraint(autoVoltageConstraint);
-    // Generates a trajectory that tells the robot to move from its original
-    // location
+    
+    // Generates a trajectory that tells the robot to move from its original location
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(
-            new Translation2d(1, 0)),
-        new Pose2d(0, 1, new Rotation2d(0)),
-        config); // new Translation2d(1, 1), new Translation2d(2, -1)
+                                                                   List.of(),
+                                                                   new Pose2d(2, 0, new Rotation2d(0)), 
+                                                                   kAuto.configStop);
+      
+      // new Translation2d(1, 1), new Translation2d(2, -1))
 
     RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
         new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-            kAuto.kMaxAcceleration),
+            kAuto.kaVoltSecondsSquaredPerMeter),
         kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
         new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
         DriveTrain::tankDriveVolts, DriveTrain);
@@ -354,13 +356,9 @@ public class RobotContainer {
     // Reset odometry to the starting pose of the trajectory.
     DriveTrain.zeroEncoders();
     Pigeon.resetOdometry(trajectory.getInitialPose());
-    
-    return null;
 
     // returns the autonomous command
     // makes sure that after the auto command is finished running the robot stops.
-    //return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
-    */
-    return null; 
+    return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
   }
 }
