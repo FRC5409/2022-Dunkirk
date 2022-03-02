@@ -9,8 +9,6 @@ import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import java.util.ArrayList;
 
-import com.ctre.phoenix.sensors.CANCoder;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -41,9 +39,6 @@ public class DriveTrain extends SubsystemBase {
 
     private final Timer timer = new Timer();
     private final double refreshSeconds = 2.0;
-
-    // private final CANCoder enc_left;
-    // private final CANCoder enc_right;
 
     private double lmRPM = 0;
     private double rmRPM = 0;
@@ -202,9 +197,6 @@ public class DriveTrain extends SubsystemBase {
         drive_state = "";
 
         setBrakeMode(true);
-
-        // enc_left = new CANCoder(kDriveTrain.CANLeftEncoder);
-        // enc_right = new CANCoder(kDriveTrain.CANRightEncoder);
 
         zeroEncoders();
 
@@ -455,8 +447,6 @@ public class DriveTrain extends SubsystemBase {
      * 
      */
     public double getEncoderPositionLeft(){
-        // double position = Convert.EncoderUnitsToInches((float)enc_left.getPosition());
-        // return Units.inchesToMeters(position);
         double position = Convert.EncoderUnitsToInches((float)(mot_leftFrontDrive.getSelectedSensorPosition()+mot_leftRearDrive.getSelectedSensorPosition())/2);
         return Units.inchesToMeters(position);
     }
@@ -466,8 +456,6 @@ public class DriveTrain extends SubsystemBase {
      * 
      */
     public double getEncoderPositionRight(){
-        // double position = Convert.EncoderUnitsToInches((float)enc_right.getPosition());
-        // return Units.inchesToMeters(position);
         double position = Convert.EncoderUnitsToInches((float)(mot_rightFrontDrive.getSelectedSensorPosition()+mot_rightRearDrive.getSelectedSensorPosition())/2);
         return Units.inchesToMeters(position);
     }
@@ -485,8 +473,6 @@ public class DriveTrain extends SubsystemBase {
      * 
      */
     public double getEncoderVelocityLeft(){
-        // double velocity = Convert.EncoderUnitsToInches((float)enc_left.getVelocity());
-        // return Units.inchesToMeters(velocity);
         double velocity = 10*Convert.EncoderUnitsToInches((float)(mot_leftFrontDrive.getSelectedSensorVelocity()+mot_leftRearDrive.getSelectedSensorVelocity())/2);
         return Units.inchesToMeters(velocity);
     }
@@ -496,8 +482,6 @@ public class DriveTrain extends SubsystemBase {
      * 
      */ 
     public double getEncoderVelocityRight(){
-        // double velocity = Convert.EncoderUnitsToInches((float)enc_right.getVelocity());
-        // return Units.inchesToMeters(velocity);
         double velocity = 10*Convert.EncoderUnitsToInches((float)(mot_rightFrontDrive.getSelectedSensorVelocity()+mot_rightRearDrive.getSelectedSensorVelocity())/2);
         return Units.inchesToMeters(velocity);
     }
@@ -522,8 +506,6 @@ public class DriveTrain extends SubsystemBase {
      * 
      */
     public void zeroEncoders() {
-        // enc_left.setPosition(0);
-        // enc_right.setPosition(0);
         mot_rightFrontDrive.setSelectedSensorPosition(0);
         mot_rightRearDrive.setSelectedSensorPosition(0);
         mot_leftFrontDrive.setSelectedSensorPosition(0);
@@ -531,8 +513,6 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public void setAllEncoders(double position) {
-        // enc_left.setPosition(position);
-        // enc_right.setPosition(position);
         mot_rightFrontDrive.setSelectedSensorPosition(position);
         mot_rightRearDrive.setSelectedSensorPosition(position);
         mot_leftFrontDrive.setSelectedSensorPosition(position);
@@ -540,8 +520,6 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public void setEncodersSplit(double position_left, double position_right){
-        // enc_left.setPosition(position_left);
-        // enc_right.setPosition(position_right);
         mot_rightFrontDrive.setSelectedSensorPosition(position_right);
         mot_rightRearDrive.setSelectedSensorPosition(position_right);
         mot_leftFrontDrive.setSelectedSensorPosition(position_left);
