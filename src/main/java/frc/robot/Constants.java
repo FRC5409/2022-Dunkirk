@@ -212,8 +212,8 @@ public final class Constants {
 
     public static final class ShooterFlywheel {
         //in RPM
-        public static final int SHOOTER_TOLERANCE = 240;
-        public static final int FEEDER_TOLERANCE = 100;
+        public static final int SHOOTER_TOLERANCE = 25;
+        public static final int FEEDER_TOLERANCE = 40;
         public static final int rpmTolerance = 1;
 
         public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.000188,0,0);
