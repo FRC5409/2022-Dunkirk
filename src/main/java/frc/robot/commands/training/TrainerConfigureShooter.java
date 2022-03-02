@@ -1,27 +1,29 @@
 package frc.robot.commands.training;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.base.Property;
+import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.training.TrainerContext;
 import frc.robot.training.TrainerDashboard;
 
-public class TrainerConfigureShooterMode extends CommandBase {
-    private final Property<ShooterMode> property;
-    private final ShooterMode           target;
-    private final ShooterTurret         turret;
-    private final Limelight             limelight;
-    private final TrainerContext        context;
-    private final TrainerDashboard      dashboard;
+public class TrainerConfigureShooter extends CommandBase {
+    private final Limelight limelight;
+    private final ShooterMode target;
+    private final ShooterTurret turret;
+    private final TrainerContext context;
+    private final TrainerDashboard dashboard;
+    private final Property<ShooterConfiguration> property;
 
-    public TrainerConfigureShooterMode(
+    public TrainerConfigureShooter(
         ShooterTurret turret,
         Limelight limelight,
         TrainerContext context,
         TrainerDashboard dashboard,
-        Property<ShooterMode> property,
+        Property<ShooterConfiguration> property,
         ShooterMode target
     ) {
         this.property  = property;
@@ -37,18 +39,20 @@ public class TrainerConfigureShooterMode extends CommandBase {
         turret.enable();
         limelight.enable();
 
-        property.set(target);
         context.setMode(target);
+        
+        ShooterConfiguration configuration = Constants.Shooter.CONFIGURATIONS.get(target);
+
+        property.set(configuration);
+        limelight.setPipelineIndex(configuration.getPipeline().id());
 
         switch (target) {
             case kNear: {
                 turret.hoodDownPosition();
-                limelight.setPipelineIndex(1);
                 break;
             }
             case kFar: {
                 turret.hoodUpPosition();
-                limelight.setPipelineIndex(2);
                 break;
             }
         }

@@ -4,21 +4,11 @@
 
 package frc.robot;
 
-import frc.robot.subsystems.Climber;
-
 // Subsystems
-import frc.robot.training.BranchType;
 import frc.robot.training.Setpoint;
+import frc.robot.training.SetpointType;
 import frc.robot.training.TrainerContext;
 import frc.robot.training.TrainerDashboard;
-// import frc.robot.training.protocol.NetworkClient;
-// import frc.robot.training.protocol.NetworkSocket;
-// import frc.robot.training.protocol.SendableContext;
-// import frc.robot.training.protocol.generic.ArraySendable;
-// import frc.robot.training.protocol.generic.BundleSendable;
-// import frc.robot.training.protocol.generic.StringSendable;
-// import frc.robot.training.protocol.generic.ValueSendable;
-//import frc.robot.utils.ShooterModel;
 import frc.robot.training.protocol.NetworkClient;
 import frc.robot.training.protocol.NetworkSocket;
 import frc.robot.training.protocol.SendableContext;
@@ -32,36 +22,18 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.DisableFlywheel;
-import frc.robot.commands.FastGear;
-import frc.robot.commands.IndexerIntakeActive;
-import frc.robot.commands.IndexerIntakeTest;
-import frc.robot.commands.IntakeActive;
 
-import frc.robot.commands.AutoAlign;
-import frc.robot.commands.DefaultElevator;
-import frc.robot.commands.ElevateTo;
-import frc.robot.commands.FindElevatorZero;
-
-import frc.robot.commands.IntakeActive;
-import frc.robot.commands.ReverseIntake;
-import frc.robot.commands.SlowGear;
-
-import frc.robot.commands.shooter.HoodDown;
-import frc.robot.commands.shooter.HoodUp;
-
-// import frc.robot.commands.Characterize;
-
-//Constants
 import frc.robot.Constants.kAuto;
+//Constants
 import frc.robot.base.Joystick;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.Joystick.ButtonType;
+import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterModel;
 import frc.robot.base.shooter.SweepDirection;
+import frc.robot.base.shooter.VisionPipeline;
 
 import java.io.IOException;
 import java.util.List;
@@ -79,18 +51,12 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-
-import frc.robot.commands.IntakeSimulationTesting;
-import frc.robot.commands.ReverseIntake;
-import frc.robot.commands.ReverseIntakeIndexer;
-import frc.robot.commands.RunIndexerBack;
-import frc.robot.commands.ShooterTestOne;
-import frc.robot.commands.ShooterTestTwo;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pneumatics;
 
 import frc.robot.commands.*;
+import frc.robot.commands.autonomous.trajectoryAuto.ZeroBallAuto;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.training.*;
 import frc.robot.subsystems.*;
@@ -112,7 +78,7 @@ public class RobotContainer {
   // Subsystems defined
   private final DriveTrain           DriveTrain;
   private final Pneumatics           Pneumatics;
-  private final Pigeon               Pigeon;
+  // private final Pigeon               Pigeon;
   private final Indexer              Indexer;
   private final Intake               Intake;
   private final ShooterFlywheel      Flywheel;
@@ -144,7 +110,7 @@ public class RobotContainer {
     Climber = new Climber();
     DriveTrain  = new DriveTrain();
     Pneumatics  = new Pneumatics();
-    Pigeon      = new Pigeon();
+    // Pigeon      = new Pigeon();
     Intake      = new Intake();
     Indexer     = new Indexer();
     Flywheel    = new ShooterFlywheel();
@@ -234,7 +200,7 @@ public class RobotContainer {
     
     // TODO: temp
     joystick_main.getButton(ButtonType.kX).whileHeld(new IndexerIntakeActive(Indexer, Intake));
-    joystick_main.getButton(ButtonType.kX).whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.2));
+    joystick_main.getButton(ButtonType.kX).whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.25));
 
     // but_main_A.whenActive( new MoveToDistance(DriveTrain));
     // but_main_B.toggleWhenPressed( new MoveToAngle(DriveTrain));
@@ -244,9 +210,9 @@ public class RobotContainer {
     // System.out.println(true);
     // });
 
-    joystick_secondary.getButton(ButtonType.kX).whenPressed(new AutoAlign(Climber, DriveTrain, Pigeon, 180));
+    joystick_secondary.getButton(ButtonType.kX).whenPressed(new AutoAlign(Climber, DriveTrain, 180));
     joystick_secondary.getButton(ButtonType.kB).whenPressed(() -> {
-      Pigeon.reset();
+      DriveTrain.resetGyro();
     });
     joystick_secondary.getButton(ButtonType.kY).whenPressed(() -> {
       Climber.zeroEncoder();
@@ -257,79 +223,33 @@ public class RobotContainer {
     //joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
 
 
-    joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(Climber));
-    //joystick_secondary.getButton(ButtonType.kLeftBumper).whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
-    /*
-    joystick_main.getButton(ButtonType.kRightBumper)
-      .whenPressed(new FastGear(DriveTrain))
-      .whenReleased(new SlowGear(DriveTrain));
+    joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(joystick_secondary, Climber, Indexer, turret, Flywheel, limelight, DriveTrain));
 
-    // joystick_main.getButton(ButtonType.kA).whenPressed();
-    // joystick_main.getButton(ButtonType.kX).whileHeld(new IndexerActive(Indexer, Intake));
-    joystick_main.getButton(ButtonType.kY)
-      .whileHeld(new IndexerIntakeTest(Indexer, Intake));
 
-    joystick_main.getButton(ButtonType.kB)
-      .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+    ValueProperty<ShooterConfiguration> shooterConfiguration = new ValueProperty<ShooterConfiguration>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
+    ValueProperty<SweepDirection> shooterSweepDirection = new ValueProperty<SweepDirection>(SweepDirection.kLeft);
 
-    joystick_main.getButton(ButtonType.kX)
-      .whileHeld(new IndexerIntakeActive(Indexer, Intake));
+    joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(
+      new OperateShooter(limelight, turret, Flywheel, Indexer, shooterSweepDirection, shooterConfiguration)
+    ).whenReleased(new RotateTurret(turret, 0));
 
-    joystick_main.getButton(ButtonType.kB)
-      .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+    joystick_secondary.getButton(ButtonType.kUpPov)
+        .and(joystick_secondary.getButton(ButtonType.kA).negate())
+        .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar));
 
-    joystick_secondary.getButton(ButtonType.kRightBumper)
-      .whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
+    joystick_secondary.getButton(ButtonType.kDownPov)
+        .and(joystick_secondary.getButton(ButtonType.kA).negate())
+        .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear));
 
-    joystick_secondary.getButton(ButtonType.kLeftBumper)
-      .whileHeld(new ShooterTestOne(Flywheel, turret, Indexer));
-      
-    joystick_secondary.getButton(ButtonType.kX)
-      .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, BranchType.BRANCH_LEFT));
+    joystick_secondary.getButton(ButtonType.kLeftPov)
+        .and(joystick_secondary.getButton(ButtonType.kA).negate())
+        .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft));
 
-    joystick_secondary.getButton(ButtonType.kB)
-      .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, BranchType.BRANCH_RIGHT));
+    joystick_secondary.getButton(ButtonType.kLeftPov)
+        .and(joystick_secondary.getButton(ButtonType.kA).negate())
+        .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight));
 
-    joystick_secondary.getButton(ButtonType.kRightBumper)
-      .whenPressed(new BranchTargetSetpoint(trainerDashboard, trainerContext, BranchType.BRANCH_CENTER));
-
-    joystick_secondary.getButton(ButtonType.kLeftBumper)
-      .whenPressed(new RequestModelUpdate(trainerDashboard, trainerClient, trainerContext));
-
-    joystick_secondary.getButton(ButtonType.kY)
-      .whenPressed(new FlipTargetSetpoint(trainerDashboard, trainerContext));
-      
-    joystick_secondary.getButton(ButtonType.kStart)
-      .whenPressed(new SubmitSetpointData(trainerDashboard, trainerClient, trainerContext));
-
-    joystick_secondary.getButton(ButtonType.kLeftStick)
-      .whenPressed(new ResetTargetSetpoint(trainerDashboard, trainerContext));
-
-    joystick_secondary.getButton(ButtonType.kA)
-      .whileHeld(new TrainerLookShooter(limelight, turret, trainerDashboard, trainerContext))
-      .whenReleased(new RotateTurret(turret, 0));
-
-      joystick_secondary.getButton(ButtonType.kBack)
-        .whenPressed(new UndoTargetSetpoint(trainerDashboard, trainerContext));
-  }  
-  
-  private void configureTraining() throws IOException {
-    SendableContext context = new SendableContext();
-      context.registerSendable(StringSendable.class);
-      context.registerSendable(ValueSendable.class);
-      context.registerSendable(BundleSendable.class);
-      context.registerSendable(ArraySendable.class);
-
-    NetworkSocket socket = NetworkSocket.create(Constants.Training.TRAINER_HOSTNAME);
-    trainerClient = new NetworkClient(socket, context);
-
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      try {
-        trainerClient.close();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }));*/
+    joystick_secondary.getButton(ButtonType.kA).whileHeld(new RunShooter(Flywheel, Indexer, 900));
   }
 
   /**
@@ -338,29 +258,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-
-    // Generates a trajectory that tells the robot to move from its original location
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-                                                                   List.of(new Translation2d(1, 1)),
-                                                                   new Pose2d(2, 0, new Rotation2d(0)), 
-                                                                   kAuto.configStop);
-      
-      // new Translation2d(1, 1), new Translation2d(2, -1))
-
-    RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
-        new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
-        new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-            kAuto.kaVoltSecondsSquaredPerMeter),
-        kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
-        new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
-        DriveTrain::tankDriveVolts, DriveTrain);
-
-    // Reset odometry to the starting pose of the trajectory.
-    DriveTrain.zeroEncoders();
-    Pigeon.resetOdometry(trajectory.getInitialPose());
-
-    // returns the autonomous command
-    // makes sure that after the auto command is finished running the robot stops.
-    return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
+   
+    // return new ZeroBallAuto(DriveTrain).andThen(() -> DriveTrain.tankDrive(0, 0));
+    return new ZeroBallAuto(DriveTrain);
   }
 }

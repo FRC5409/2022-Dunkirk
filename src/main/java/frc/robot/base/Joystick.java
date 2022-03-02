@@ -41,16 +41,16 @@ public class Joystick {
     public Joystick(int port) {
         m_controller = new XboxController(port);
 
-        m_buttonA = new JoystickButton(m_controller, XboxController.Button.kA.value);
-        m_buttonB = new JoystickButton(m_controller, XboxController.Button.kB.value);
-        m_buttonX = new JoystickButton(m_controller, XboxController.Button.kX.value);
-        m_buttonY = new JoystickButton(m_controller, XboxController.Button.kY.value);
-        m_buttonLeftBumper = new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value);
+        m_buttonA           = new JoystickButton(m_controller, XboxController.Button.kA.value);
+        m_buttonB           = new JoystickButton(m_controller, XboxController.Button.kB.value);
+        m_buttonX           = new JoystickButton(m_controller, XboxController.Button.kX.value);
+        m_buttonY           = new JoystickButton(m_controller, XboxController.Button.kY.value);
+        m_buttonLeftBumper  = new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value);
         m_buttonRightBumper = new JoystickButton(m_controller, XboxController.Button.kRightBumper.value);
-        m_buttonLeftStick = new JoystickButton(m_controller, XboxController.Button.kLeftStick.value);
-        m_buttonRightStick = new JoystickButton(m_controller, XboxController.Button.kRightStick.value);
-        m_buttonBack = new JoystickButton(m_controller, XboxController.Button.kBack.value);
-        m_buttonStart = new JoystickButton(m_controller, XboxController.Button.kStart.value);
+        m_buttonLeftStick   = new JoystickButton(m_controller, XboxController.Button.kLeftStick.value);
+        m_buttonRightStick  = new JoystickButton(m_controller, XboxController.Button.kRightStick.value);
+        m_buttonBack        = new JoystickButton(m_controller, XboxController.Button.kBack.value);
+        m_buttonStart       = new JoystickButton(m_controller, XboxController.Button.kStart.value);
 
         m_buttonPovUp = new Button(
             () -> {
