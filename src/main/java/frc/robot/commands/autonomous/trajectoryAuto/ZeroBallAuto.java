@@ -47,6 +47,6 @@ public class ZeroBallAuto extends SequentialCommandGroup{
 
         addCommands(
             r1
-        ); // where set volts 0?
+        );
     }
 }
