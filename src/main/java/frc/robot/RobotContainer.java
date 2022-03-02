@@ -90,6 +90,8 @@ public class RobotContainer {
   private final IntakeActive         intakeActive;
   private final IndexerIntakeTest    test;
 
+  private ValueProperty<Boolean> climberActive = new ValueProperty<Boolean>(false);
+
   //private final TrainerContext       trainerContext;
   //private final TrainerDashboard     trainerDashboard;
   // private       NetworkClient        trainerClient;
@@ -104,7 +106,7 @@ public class RobotContainer {
 
     // Initialize sub systems
 
-    Climber = new Climber();
+    Climber = new Climber(climberActive);
     DriveTrain  = new DriveTrain();
     Pneumatics  = new Pneumatics();
     // Pigeon      = new Pigeon();
@@ -208,8 +210,6 @@ public class RobotContainer {
     // });
 
     //joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(new ShooterTestTwo(Flywheel, turret, Indexer));
-
-    ValueProperty<Boolean> climberActive = new ValueProperty<Boolean>(false);
 
     Button climberToggleTrigger = new Button(){
       @Override
