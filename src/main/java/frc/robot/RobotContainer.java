@@ -80,6 +80,11 @@ public class RobotContainer {
   private final IntakeActive         intakeActive;
   private final IndexerIntakeTest    test;
 
+  private final ValueProperty<ShooterConfiguration> shooterConfiguration;
+  private final ValueProperty<SweepDirection> shooterSweepDirection;
+  private final ValueProperty<Integer> shooterOffset;
+
+
   //private final TrainerContext       trainerContext;
   //private final TrainerDashboard     trainerDashboard;
   // private       NetworkClient        trainerClient;
@@ -112,6 +117,10 @@ public class RobotContainer {
     intakeActive        = new IntakeActive(Intake, Indexer);
     test                = new IndexerIntakeTest(Indexer, Intake);
 
+    shooterConfiguration = new ValueProperty<>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
+    shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
+    shooterOffset = new ValueProperty<>(0);
+
     // m_intakeIndexGo = new IntakeIndexGo(Indexer, Intake);
     // m_reverseIntakeIndex = new ReverseIntakeIndexer(Intake);
     // m_intakeSimulationTesting = new IntakeSimulationTesting(Intake);
@@ -133,8 +142,10 @@ public class RobotContainer {
     
     // Configure the button bindings
 
-    Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
-    Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
+    Shuffleboard.getTab("Shooter").add("Hood up", new HoodUp(turret));
+    Shuffleboard.getTab("Shooter").add("Hood down", new HoodDown(turret));
+    Shuffleboard.getTab("Shooter").add("Shooter Offset - Increment", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() + Constants.Shooter.OFFSET_INCREMENT)));
+    Shuffleboard.getTab("Shooter").add("Shooter Offset - Decrement", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() - Constants.Shooter.OFFSET_INCREMENT)));
     
     /*
     trainerContext = new TrainerContext(
@@ -155,12 +166,18 @@ public class RobotContainer {
     // }
 
     configureButtonBindings();
+    configureCommands();
+  }
 
+
+  private void configureCommands() {
     // Sets default command to be DefaultDrive
     DriveTrain.setDefaultCommand(defaultDrive);
     // Indexer.setDefaultCommand(indexerActive);
     Climber.setDefaultCommand(new DefaultElevator(Climber, joystick_secondary.getController()));
+
     CommandScheduler.getInstance().schedule(new FindElevatorZero(Climber));
+    CommandScheduler.getInstance().schedule(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar));
   }
 
 
@@ -212,12 +229,10 @@ public class RobotContainer {
 
     joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(Climber));
 
-
-    ValueProperty<ShooterConfiguration> shooterConfiguration = new ValueProperty<ShooterConfiguration>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
-    ValueProperty<SweepDirection> shooterSweepDirection = new ValueProperty<SweepDirection>(SweepDirection.kLeft);
-
     joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(
-      new OperateShooter(limelight, turret, Flywheel, Indexer, shooterSweepDirection, shooterConfiguration)
+      new OperateShooter(
+        limelight, turret, Flywheel, Indexer,
+        shooterSweepDirection, shooterConfiguration, shooterOffset)
     ).whenReleased(new RotateTurret(turret, 0));
 
     joystick_secondary.getButton(ButtonType.kUpPov)
