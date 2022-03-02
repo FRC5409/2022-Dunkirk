@@ -201,9 +201,9 @@ public final class Constants {
         public static final double kaVoltSecondsSquaredPerMeter = 0.31042;
         public static final double kPDriveVel = 5.7255;
         
-        // all units in meters and seconds: max speed & acceleration 3
+        // all units in meters and seconds
         public static final double kMaxSpeed = 2.5; 
-        // TODO: work fine in 2.5, gives error when generating trajectory when exceed that value
+        // work fine in 2.5, gives error when generating trajectory when exceed that value
         public static final double kMaxAcceleration = 3; // any
 
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds

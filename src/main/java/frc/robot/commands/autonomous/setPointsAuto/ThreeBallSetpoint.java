@@ -1,4 +1,4 @@
-package frc.robot.commands.auto;
+package frc.robot.commands.autonomous.setPointsAuto;
 
 
 import frc.robot.Constants;
@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import frc.robot.commands.IndexerIntakeActive;
+import frc.robot.commands.MoveToAngle;
 import frc.robot.commands.MoveToDistance;
 import frc.robot.commands.shooter.OperateShooter;
 import frc.robot.commands.shooter.RotateTurret;
@@ -26,7 +27,7 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
-public class OneBallSetpoint extends SequentialCommandGroup {
+public class ThreeBallSetpoint extends SequentialCommandGroup {
 
     private final DriveTrain driveTrain;
     private final Intake intake;
@@ -36,7 +37,7 @@ public class OneBallSetpoint extends SequentialCommandGroup {
     private final Limelight limelight;
     
 
-    public OneBallSetpoint(DriveTrain driveTrain, Intake intake, Indexer indexer, Limelight limelight, ShooterTurret turret, ShooterFlywheel flywheel) {
+    public ThreeBallSetpoint(DriveTrain driveTrain, Intake intake, Indexer indexer, Limelight limelight, ShooterTurret turret, ShooterFlywheel flywheel) {
         
         this.driveTrain = driveTrain;
         this.intake     = intake;
@@ -48,9 +49,25 @@ public class OneBallSetpoint extends SequentialCommandGroup {
         ValueProperty<ShooterConfiguration> shooterConfiguration = new ValueProperty<ShooterConfiguration>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
         ValueProperty<SweepDirection> shooterSweepDirection = new ValueProperty<SweepDirection>(SweepDirection.kLeft);
 
+
         addCommands(
+            new ParallelRaceGroup(
+                new MoveToDistance(driveTrain, -10f),
+                new IndexerIntakeActive(indexer, intake)
+            ),
+            new OperateShooter(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration),
+            new RotateTurret(turret, 0),
+
+            new MoveToAngle(driveTrain, 90),
+
+            new ParallelRaceGroup(
+                new MoveToDistance(driveTrain, 10f),
+                new IndexerIntakeActive(indexer, intake)
+            ),
+
             new OperateShooter(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration),
             new RotateTurret(turret, 0)
+
         );
 
 
