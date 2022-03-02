@@ -58,7 +58,7 @@ public class DriveTrain extends SubsystemBase {
 
     public final WPI_PigeonIMU gyro_pigeon;
 
-    private DifferentialDriveOdometry m_odometry;
+    public DifferentialDriveOdometry m_odometry;
 
     // The robot's RPY
     public double roll;
