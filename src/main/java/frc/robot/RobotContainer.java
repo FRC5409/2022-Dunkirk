@@ -9,6 +9,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.kAuto;
 //Constants
@@ -159,7 +160,6 @@ public class RobotContainer {
     Climber.setDefaultCommand(new DefaultElevator(Climber, joystick_secondary.getController()));
 
     CommandScheduler.getInstance().schedule(new FindElevatorZero(Climber));
-    CommandScheduler.getInstance().schedule(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar));
   }
 
 
@@ -227,7 +227,12 @@ public class RobotContainer {
         .and(joystick_secondary.getButton(ButtonType.kA).negate()).and(climberToggleTrigger.negate())
         .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight));
 
-    joystick_secondary.getButton(ButtonType.kA).and(climberToggleTrigger.negate()).whileActiveContinuous(new RunShooter(Flywheel, Indexer, 900));
+    joystick_secondary.getButton(ButtonType.kA)
+      .and(climberToggleTrigger.negate())
+      .whileActiveContinuous(
+        new SequentialCommandGroup(  
+          new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
+          new RunShooter(Flywheel, Indexer, 400, 0.5)));
   }
 
   /**

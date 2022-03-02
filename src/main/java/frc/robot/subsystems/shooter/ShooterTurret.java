@@ -169,7 +169,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
      * @return True if its aligned, false if not.
      */
     public boolean isTargetReached() {
-        return Math.abs(getRotation() - target) < Constants.Shooter.ALIGNMENT_THRESHOLD;
+        return Math.abs(getRotation() - target) < Constants.Vision.ALIGNMENT_THRESHOLD;
     }
 
 

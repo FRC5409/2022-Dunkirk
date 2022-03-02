@@ -25,6 +25,8 @@ public class ConfigureShooter extends CommandBase {
         this.limelight = limelight;
         this.target = target;
         this.turret = turret;
+
+        addRequirements(turret, limelight);
     }
 
     @Override
