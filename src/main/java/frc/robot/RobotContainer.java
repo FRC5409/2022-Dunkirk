@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
 import frc.robot.Constants.kAuto;
 //Constants
 import frc.robot.base.Joystick;
@@ -257,29 +258,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    
-    // // Generates a trajectory that tells the robot to move from its original location
-    // Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-    //                                                                List.of(new Translation2d(1, 1)),
-    //                                                                new Pose2d(2, 0, new Rotation2d(0)), 
-    //                                                                kAuto.configStop);
-      
-    //   // new Translation2d(1, 1), new Translation2d(2, -1))
-
-    // RamseteCommand autoCommand = new RamseteCommand(trajectory, DriveTrain::getPose,
-    //     new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
-    //     new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-    //         kAuto.kaVoltSecondsSquaredPerMeter),
-    //     kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
-    //     new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
-    //     DriveTrain::tankDriveVolts, DriveTrain);
-
-    // // Reset odometry to the starting pose of the trajectory.
-    // DriveTrain.resetOdometry(trajectory.getInitialPose());
-
-    // // returns the autonomous command
-    // // makes sure that after the auto command is finished running the robot stops.
-    // return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
+   
     // return new ZeroBallAuto(DriveTrain).andThen(() -> DriveTrain.tankDrive(0, 0));
     return new ZeroBallAuto(DriveTrain);
   }

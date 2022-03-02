@@ -132,6 +132,7 @@ public final class Constants {
     }
 
     public static final class kDriveTrain{
+        
         // Current Limits
         public static final double CurrentLimit = 65;
         public static final double TriggerThresholdCurrent = 65;
@@ -139,7 +140,6 @@ public final class Constants {
 
         // Encoders
         public static final double encoderToMeterConversionFactor = 1;
-        
 
         public static final double encoderCPR = 2048;
         public static final double wheelCircumferenceInches = 4 * Math.PI;
@@ -230,6 +230,7 @@ public final class Constants {
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)    
             .setEndVelocity(1.9);
+
     }
 
     public static final class ShooterFlywheel {
@@ -261,10 +262,6 @@ public final class Constants {
 
     public final class Falcon500 {
         public static final double unitsPerRotation = 2048;
-    }
-
-    public final class kColour {
-        public static final int proximityThreshold = 100;
     }
 
     public final class kIndexer {
