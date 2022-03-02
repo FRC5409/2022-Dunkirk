@@ -276,16 +276,18 @@ public final class Constants {
     public static final class Shooter {
         public static final double GEAR_RATIO          = 126;
 
+        // Range Configurations
+               
         // Height in meters
         public static final double ROBOT_HEIGHT        = 4;
         public static final double FIXED_ANGLE         = 45;
         public static final Range  TARGET_RANGE        = new Range(-10, 20);
-        public static final double ALIGNMENT_THRESHOLD = 0.14;
+        public static final double ALIGNMENT_THRESHOLD = 0.08;
         public static final double TURRET_MAX_SPEED    = 0.42;
 
         // Range Configurations
         public static final Range ROTATION_RANGE = new Range(
-            -61, 75
+            -250, 250 
             //-28.571428571428573, 57.14285714285714
         );
 
@@ -297,17 +299,11 @@ public final class Constants {
             0, 25
         );
 
-        
-    // Curve fitting Constants
-        public static final Equation DISTANCE_SPEED_CURVE = d -> {
-            return d*0;
-        };
-
         public static final double CALIBRATE_SPEED = 0.07;
 
 
     // Smooth Sweep Constants (experimental)
-        public static final double SHOOTER_SWEEP_PERIOD = 2.6;
+        public static final double SHOOTER_SWEEP_PERIOD = 3.6;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
             @Override
@@ -334,7 +330,6 @@ public final class Constants {
         public static final double ALIGNMENT_MAX_TIME = 2;
 
         public static final double PRE_SHOOTER_DISTANCE = 0;
-
 
         public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
             ShooterMode.kFar, new ShooterConfiguration(
@@ -378,15 +373,6 @@ public final class Constants {
         public static final double ALIGNMENT_THRESHOLD = 1.13333;
 
         protected static double DISTANCE_OFFSET = - 2.0;
-
-        public static final Equation DISTANCE_FUNCTION = new Equation() {
-            private final double height = Math.abs(TARGET_HEIGHT - LIMELIGHT_HEIGHT);
-            @Override
-            public double calculate(double x) {
-                return height / Math.tan(Math.toRadians(x + Constants.Vision.LIMELIGHT_PITCH)) + Constants.Vision.DISTANCE_OFFSET;
-            }
-            
-        };
 
         public static final double ROTATION_P = 0.50;
     }
