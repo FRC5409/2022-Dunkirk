@@ -3,6 +3,8 @@ package frc.robot.commands.shooter;
 import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.StateCommandGroup;
+import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterModel;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.shooter.state.AlignShooterState;
@@ -14,8 +16,6 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
-import frc.robot.utils.*;
-
 /**
  * This command runs the turret flywheel at a speed
  * porportional to the distance of the turret from the
@@ -25,66 +25,35 @@ import frc.robot.utils.*;
  * @author Keith Davies
  */
 public final class OperateShooter extends StateCommandGroup {
+    private final Property<ShooterConfiguration> configuration;
     private final ShooterFlywheel flywheel;
     private final ShooterTurret turret;
-    private final ShooterModel model;
     private final Limelight limelight;
     private final Indexer indexer;
 
-    private boolean linear;
-
     public OperateShooter(
         Limelight limelight,
         ShooterTurret turret,
         ShooterFlywheel flywheel,
         Indexer indexer,
-        ShooterModel model,
         Property<SweepDirection> direction,
-        boolean linear
+        Property<ShooterConfiguration> configuration
     ) {
 
         addCommands(
             new SearchShooterState(limelight),
             new SweepShooterState(limelight, turret, direction),
             new AlignShooterState(limelight, turret),
-            new OperateShooterState(limelight, turret, flywheel, indexer, model, true)
+            new OperateShooterState(limelight, turret, flywheel, indexer, configuration)
         ); 
 
         setDefaultState("frc.robot.shooter:search");
 
+        this.configuration = configuration;
         this.limelight = limelight;
         this.flywheel = flywheel;
         this.indexer = indexer;
         this.turret = turret;
-        this.model = model;
-
-        this.linear = linear;
-    }
-
-    public OperateShooter(
-        Limelight limelight,
-        ShooterTurret turret,
-        ShooterFlywheel flywheel,
-        Indexer indexer,
-        ShooterModel model,
-        Property<SweepDirection> direction
-    ) {
-
-        addCommands(
-            new SearchShooterState(limelight),
-            new SweepShooterState(limelight, turret, direction),
-            new AlignShooterState(limelight, turret),
-            new OperateShooterState(limelight, turret, flywheel, indexer, model)
-        ); 
-
-        setDefaultState("frc.robot.shooter:search");
-
-        this.limelight = limelight;
-        this.flywheel = flywheel;
-        this.indexer = indexer;
-        this.turret = turret;
-        this.model = model;
-        this.linear = false;
     }
 
     @Override
@@ -93,10 +62,10 @@ public final class OperateShooter extends StateCommandGroup {
         flywheel.enable();
         indexer.enable();
         turret.enable();
-        
-        if(!linear){
-            flywheel.setVelocity(model.calculate(Constants.Shooter.PRE_SHOOTER_DISTANCE));
-        }
+
+        flywheel.setVelocity(
+            configuration.get().getModel().calculate(Constants.Shooter.PRE_SHOOTER_DISTANCE)
+        );
 
         super.initialize();
     }

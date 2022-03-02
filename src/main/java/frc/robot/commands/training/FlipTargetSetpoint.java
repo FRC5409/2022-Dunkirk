@@ -24,10 +24,10 @@ public class FlipTargetSetpoint extends CommandBase {
     public void execute() {    
         Setpoint target = _context.getSetpoint();
         
-        if (target.getType() == SetpointType.LEFT)
-            _context.setSetpoint(target.getParent().branch(false));
-        else if (target.getType() == SetpointType.RIGHT)
-            _context.setSetpoint(target.getParent().branch(true));
+        if (target.getType() == SetpointType.kLeft)
+            _context.setSetpoint(target.getParent().branch(SetpointType.kRight));
+        else if (target.getType() == SetpointType.kRight)
+            _context.setSetpoint(target.getParent().branch(SetpointType.kLeft));
         
         _dasboard.update();
     }

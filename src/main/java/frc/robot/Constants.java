@@ -4,11 +4,17 @@
 
 package frc.robot;
 
+import java.util.Map;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
+import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterMode;
+import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.VisionPipeline;
 import frc.robot.utils.*;
 
 /**
@@ -227,8 +233,8 @@ public final class Constants {
 
     public static final class ShooterFlywheel {
         //in RPM
-        public static final int SHOOTER_TOLERANCE = 240;
-        public static final int FEEDER_TOLERANCE = 100;
+        public static final int SHOOTER_TOLERANCE = 25;
+        public static final int FEEDER_TOLERANCE = 40;
         public static final int rpmTolerance = 1;
 
         public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.000188,0,0);
@@ -249,9 +255,7 @@ public final class Constants {
         public static final int HOOD_FORWARD_CHANNEL = 13;
         public static final int HOOD_REVERSE_CHANNEL = 12;
 
-        // TODO: Ask keith what this is
-        // Initialize this
-        public static final double ALIGNMENT_THRESHOLD = 0;
+        public static final double ALIGNMENT_TRESHOLD = 4.5;
     }
 
     public final class Falcon500 {
@@ -293,16 +297,18 @@ public final class Constants {
     public static final class Shooter {
         public static final double GEAR_RATIO          = 126;
 
+        // Range Configurations
+               
         // Height in meters
         public static final double ROBOT_HEIGHT        = 4;
         public static final double FIXED_ANGLE         = 45;
         public static final Range  TARGET_RANGE        = new Range(-10, 20);
-        public static final double ALIGNMENT_THRESHOLD = 0.14;
+        public static final double ALIGNMENT_THRESHOLD = 0.08;
         public static final double TURRET_MAX_SPEED    = 0.42;
 
         // Range Configurations
         public static final Range ROTATION_RANGE = new Range(
-            -61, 75
+            -250, 250 
             //-28.571428571428573, 57.14285714285714
         );
 
@@ -314,23 +320,13 @@ public final class Constants {
             0, 25
         );
 
-        
-    // Curve fitting Constants
-        public static final Equation DISTANCE_SPEED_CURVE = d -> {
-            return d*0;
-        };
-
         public static final double CALIBRATE_SPEED = 0.07;
 
 
     // Smooth Sweep Constants (experimental)
-        public static final double SHOOTER_SWEEP_PERIOD = 2.6;
+        public static final double SHOOTER_SWEEP_PERIOD = 3.6;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
-            private final double kA = (2.0 * Math.PI) / SHOOTER_SWEEP_PERIOD;
-            private final double kB = 1.0 / ( 2.0 * ROTATION_RANGE.magnitude() );
-            private final double kC = ROTATION_RANGE.min();
-            
             @Override
             public double calculate(double x) {
                 //return (Math.cos(kA * x) + 1.0) * kB + kC;
@@ -339,10 +335,6 @@ public final class Constants {
         };
 
         public static final Equation SHOOTER_SWEEP_INVERSE = new Equation() {
-            private final double kA = 2.0 * (1.0 / ROTATION_RANGE.magnitude());
-            private final double kB = 1.0 / ( 2.0 * Math.PI );
-            private final double kC = ROTATION_RANGE.min();
-            
             @Override
             public double calculate(double x) {
                 //return SHOOTER_SWEEP_PERIOD * Math.acos(kA * (x-kC) - 1.0) * kB;
@@ -359,6 +351,35 @@ public final class Constants {
         public static final double ALIGNMENT_MAX_TIME = 2;
 
         public static final double PRE_SHOOTER_DISTANCE = 0;
+
+        public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
+            ShooterMode.kFar, new ShooterConfiguration(
+                ShooterMode.kFar, VisionPipeline.FAR_TARGETING,
+                new ShooterModel(
+                    2.125781774520874,
+                    0.06557995826005936,
+                    0.9416347146034241,
+                    -0.06884603947401047,
+                    90.0 - 61.5,
+                    41.5 / 12.0,
+                    2d,
+                    Constants.Shooter.DISTANCE_RANGE,
+                    Constants.Shooter.SPEED_RANGE
+                )
+            ),
+            
+            ShooterMode.kNear, new ShooterConfiguration(
+                ShooterMode.kNear, VisionPipeline.NEAR_TARGETING, 
+                new ShooterModel(
+                    0d, 0d, 0d, Constants.Shooter.SPEED_RANGE.normalize(1675.78125),
+                    90.0 - 45.5,
+                    45 / 12.0,
+                    1d,
+                    Constants.Shooter.DISTANCE_RANGE,
+                    Constants.Shooter.SPEED_RANGE
+                )
+            )
+        );
     }
     
     public static final class Vision {
@@ -373,15 +394,6 @@ public final class Constants {
         public static final double ALIGNMENT_THRESHOLD = 1.13333;
 
         protected static double DISTANCE_OFFSET = - 2.0;
-
-        public static final Equation DISTANCE_FUNCTION = new Equation() {
-            private final double height = Math.abs(TARGET_HEIGHT - LIMELIGHT_HEIGHT);
-            @Override
-            public double calculate(double x) {
-                return height / Math.tan(Math.toRadians(x + Constants.Vision.LIMELIGHT_PITCH)) + Constants.Vision.DISTANCE_OFFSET;
-            }
-            
-        };
 
         public static final double ROTATION_P = 0.50;
     }
