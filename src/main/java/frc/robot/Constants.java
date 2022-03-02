@@ -223,7 +223,6 @@ public final class Constants {
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)    
             .setEndVelocity(1.9);
-
     }
 
     public static final class ShooterFlywheel {
