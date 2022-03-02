@@ -1,8 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
@@ -13,16 +10,9 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.utils.Gains;
 import frc.robot.utils.MotorUtils;
 import frc.robot.utils.Toggleable;
 
@@ -32,24 +22,22 @@ import frc.robot.utils.Toggleable;
  * @author Akil Pathiranage
  */
 public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
-    //multiplier for rpm to convert to talonfx velocity loop units
+    // Rpm to  velocity loop units
     public static final double FLYWHEEL_ROTATION_RATIO = Constants.Falcon500.unitsPerRotation / 600.0;
 
-    //conversion for sensor units to rpm
+    // Ssensor units to rpm
     public static final double FLYWHEEL_FORWARD_RATIO = 1 / FLYWHEEL_ROTATION_RATIO;
     
-    private final WPI_TalonFX     mot_main;
-    private final WPI_TalonFX     mot_follower;
+    private final WPI_TalonFX           mot_main;
+    private final WPI_TalonFX           mot_follower;
+    private final CANSparkMax           mot_feeder;
+    private final SparkMaxPIDController ctr_feeder;
+    private final RelativeEncoder       enc_feeder;
 
-    private final CANSparkMax     mot_feeder;
-    private final SparkMaxPIDController feeder_controller;
-    private final RelativeEncoder enc_feeder;
-    private double                shooterTarget;
-    private double                feederTarget;
-    private boolean               enabled;
+    private double                      shooterTarget;
+    private double                      feederTarget;
 
-    private ShuffleboardTab       tab;
-    private HashMap<String, NetworkTableEntry> fields;
+    private boolean                     enabled;
 
     /**
      * Constructs a flywheel subsystem.
@@ -58,36 +46,28 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         mot_main = new WPI_TalonFX(Constants.kID.ShooterFalconMotor1);
             mot_main.configFactoryDefault();
             mot_main.setNeutralMode(NeutralMode.Coast);
-        MotorUtils.setGains(mot_main, 0, Constants.ShooterFlywheel.SHOOTER_GAINS);
+        MotorUtils.setGains(mot_main, 0, Constants.Shooter.FLYWHEEL_GAINS);
 
         mot_follower = new WPI_TalonFX(Constants.kID.ShooterFalconMotor2);
-        mot_follower.configFactoryDefault();
-        mot_follower.setNeutralMode(NeutralMode.Coast);
-        mot_follower.follow(mot_main);
-        mot_follower.setInverted(TalonFXInvertType.OpposeMaster);
+            mot_follower.configFactoryDefault();
+            mot_follower.setNeutralMode(NeutralMode.Coast);
+            mot_follower.follow(mot_main);
+            mot_follower.setInverted(TalonFXInvertType.OpposeMaster);
 
         mot_feeder = new CANSparkMax(Constants.kID.ShooterNeo, MotorType.kBrushless);
-        mot_feeder.setSmartCurrentLimit(40);
-        mot_feeder.setIdleMode(IdleMode.kBrake);
-        mot_feeder.burnFlash();
+            mot_feeder.setSmartCurrentLimit(40);
+            mot_feeder.setIdleMode(IdleMode.kBrake);
+            mot_feeder.burnFlash();
 
         enc_feeder = mot_feeder.getEncoder();
-        feeder_controller = mot_feeder.getPIDController();
-        MotorUtils.setGains(feeder_controller, Constants.ShooterFlywheel.FEEDER_GAINS);
+        ctr_feeder = mot_feeder.getPIDController();
+        MotorUtils.setGains(ctr_feeder, Constants.Shooter.FEEDER_GAINS);
 
-    
         enabled = false;
         shooterTarget = 0;
         feederTarget = 0;
     
         SmartDashboard.putNumber("Feeder Velocity", enc_feeder.getVelocity());
-    }
-
-
-
-    @Override
-    public void periodic() {
-        
     }
     
     /**
@@ -130,7 +110,7 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         if(!enabled) return;
 
         feederTarget = target;
-        feeder_controller.setReference(feederTarget, CANSparkMax.ControlType.kVelocity);
+        ctr_feeder.setReference(feederTarget, CANSparkMax.ControlType.kVelocity);
 
     }
 
@@ -142,7 +122,7 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         if(!enabled) return;
 
 
-        feeder_controller.setReference(-1*setpoint, CANSparkMax.ControlType.kDutyCycle);
+        ctr_feeder.setReference(-1*setpoint, CANSparkMax.ControlType.kDutyCycle);
     }
 
     /**
@@ -154,10 +134,8 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         return mot_main.getSelectedSensorVelocity() * FLYWHEEL_FORWARD_RATIO;
     }
 
-
-
     public boolean isTargetReached() {
-        return Math.abs(shooterTarget - getVelocity()) <= Constants.ShooterFlywheel.SHOOTER_TOLERANCE;
+        return Math.abs(shooterTarget - getVelocity()) <= Constants.Shooter.FLYWHEEL_TOLERANCE;
     }
 
     /**
@@ -177,7 +155,7 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
     }
 
     public boolean feederReachedTarget() {
-        return Math.abs(feederTarget - getFeederRpm()) <= Constants.ShooterFlywheel.FEEDER_TOLERANCE;
+        return Math.abs(feederTarget - getFeederRpm()) <= Constants.Shooter.FEEDER_TOLERANCE;
     }
 
     private double getFeederRpm() {

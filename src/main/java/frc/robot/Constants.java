@@ -232,33 +232,6 @@ public final class Constants {
             .setEndVelocity(1.9);
     }
 
-    public static final class ShooterFlywheel {
-        //in RPM
-        public static final int SHOOTER_TOLERANCE = 25;
-        public static final int FEEDER_TOLERANCE = 40;
-        public static final int rpmTolerance = 1;
-
-        public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.000188,0,0);
-        public static final Gains SHOOTER_GAINS = new Gains(0.475, 0, 0, 0.049,0,0);
-    }
-
-
-    public final static class Turret {
-        //Ratio including gearbox 
-        //126 : 1
-        public static final double GEAR_RATIO          = 126;
-
-        // Height in meters
-        public static final double ROBOT_HEIGHT        = 4;
-        public static final double FIXED_ANGLE         = 45;
-
-        //TODO fill in pneumatics constants.
-        public static final int HOOD_FORWARD_CHANNEL = 13;
-        public static final int HOOD_REVERSE_CHANNEL = 12;
-
-        public static final double ALIGNMENT_TRESHOLD = 4.5;
-    }
-
     public final class Falcon500 {
         public static final double unitsPerRotation = 2048;
     }
@@ -296,41 +269,40 @@ public final class Constants {
     }
     
     public static final class Shooter {
+        public static final boolean ZERO_LIMIT_POLARITY = false;
+
+        public static final int HOOD_FORWARD_CHANNEL = 13;
+        public static final int HOOD_REVERSE_CHANNEL = 12;
+
+        public static final int FLYWHEEL_TOLERANCE = 25;
+        public static final int FEEDER_TOLERANCE = 40;
+
+        public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.000188,0,0);
+        public static final Gains FLYWHEEL_GAINS = new Gains(0.475, 0, 0, 0.049,0,0);
+
         public static final double GEAR_RATIO          = 126;
 
         // Range Configurations
                
         // Height in meters
-        public static final double ROBOT_HEIGHT        = 4;
-        public static final double FIXED_ANGLE         = 45;
-        public static final Range  TARGET_RANGE        = new Range(-10, 20);
         public static final double ALIGNMENT_THRESHOLD = 0.08;
         public static final double TURRET_MAX_SPEED    = 0.42;
 
         // Range Configurations
-        public static final Range ROTATION_RANGE = new Range(
-            -250, 250 
-            //-28.571428571428573, 57.14285714285714
-        );
-
-        public static final Range SPEED_RANGE = new Range(
-            0, 5500
-        );
-
-        public static final Range DISTANCE_RANGE = new Range(
-            0, 25
-        );
+        public static final Range ROTATION_RANGE = new Range(-250, 250);
+        public static final Range SPEED_RANGE = new Range(0, 5500);
+        public static final Range DISTANCE_RANGE = new Range(0, 25);
 
         public static final double CALIBRATE_SPEED = 0.07;
 
 
-    // Smooth Sweep Constants (experimental)
-        public static final double SHOOTER_SWEEP_PERIOD = 3.6;
+        // Smooth Sweep Constants
+        public static final double   SHOOTER_SWEEP_PERIOD = 3.6;
+        public static final double   SHOOTER_MAX_SWEEEP = 2;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
             @Override
             public double calculate(double x) {
-                //return (Math.cos(kA * x) + 1.0) * kB + kC;
                 return (Math.cos(2d*Math.PI*x/SHOOTER_SWEEP_PERIOD)+1d)/2d*ROTATION_RANGE.magnitude()+ROTATION_RANGE.min();
             }
         };
@@ -338,12 +310,9 @@ public final class Constants {
         public static final Equation SHOOTER_SWEEP_INVERSE = new Equation() {
             @Override
             public double calculate(double x) {
-                //return SHOOTER_SWEEP_PERIOD * Math.acos(kA * (x-kC) - 1.0) * kB;
                  return SHOOTER_SWEEP_PERIOD * Math.acos(2d * (x-ROTATION_RANGE.min()) / ROTATION_RANGE.magnitude() - 1d) / (Math.PI*2d);
             }
         };
-        
-        public static final double SHOOTER_MAX_SWEEEP = 2;
     
         public static final Gains TURRET_GAINS = new Gains(
             /*0.35d*/ 0.15d, 0.0, 1.852d, 0,0,0
@@ -351,7 +320,7 @@ public final class Constants {
 
         public static final double ALIGNMENT_MAX_TIME = 2;
 
-        public static final double PRE_SHOOTER_DISTANCE = 0;
+        public static final double PRE_SHOOTER_VELOCITY = 0;
 
         public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
             ShooterMode.kFar, new ShooterConfiguration(
@@ -381,6 +350,10 @@ public final class Constants {
                 )
             )
         );
+
+        public static final double FEEDER_VELOCITY = -4500*1.5;
+
+        public static final int OFFSET_INCREMENT = 50;
     }
     
     public static final class Vision {
