@@ -109,15 +109,16 @@ public class Indexer extends SubsystemBase implements Toggleable{
     SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
     SmartDashboard.putNumber("TOF Ball1", TOF_Ball1.getRange());
 
-
+    // counts how many balls are in the indexer
     if(ballDetectionEnter() == true){
       countBalls = 1; 
-    } else if(ballDetectionBall1() == true && !ballDetectionEnter()){
+    } else if(ballDetectionBall1() == true && ballDetectionExit() == true){
       countBalls = 2; 
     } else if (!ballDetectionExit() && !ballDetectionEnter() && !ballDetectionBall1()){
       countBalls = 0; 
     }
 
+    //checks if there is a ball at the shooter and is ready to shoot
     if(ballDetectionExit() == true){
       shooterReady = true; 
     } else {
@@ -126,6 +127,7 @@ public class Indexer extends SubsystemBase implements Toggleable{
 
     SmartDashboard.putNumber("Number of Balls in Indexer", countBalls); 
     SmartDashboard.putBoolean("Ready to Shoot", shooterReady);
+
   }
 
 
@@ -207,7 +209,7 @@ public class Indexer extends SubsystemBase implements Toggleable{
 
   public boolean ballDetectionEnter() {
     double range = TOF_Ent.getRange();
-    if (range < kIndexer.rangeEnter) { // need to find the range to compare with
+    if (range < kIndexer.rangeEnter) { 
       return true;
     }
     return false;

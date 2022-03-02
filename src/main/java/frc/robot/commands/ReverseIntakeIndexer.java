@@ -30,6 +30,7 @@ public class ReverseIntakeIndexer extends CommandBase{
         sys_indexer.reverseIndexer(0.5);
         sys_intake.reverseIntake(0.75);
         sys_intake.reverseIntakeIn(0.75);
+        sys_intake.solenoidsDown();
 
       }
 
@@ -39,6 +40,7 @@ public class ReverseIntakeIndexer extends CommandBase{
           sys_intake.intakeOn(0);
           sys_indexer.indexerOn(0);
           sys_intake.intakeIn(0);
+          sys_intake.solenoidsUp();
       }
 
       // Returns true when when the command should end

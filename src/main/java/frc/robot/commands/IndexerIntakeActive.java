@@ -7,8 +7,6 @@ package frc.robot.commands;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Indexer;
 
-import com.revrobotics.CANSparkMax.ControlType;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
