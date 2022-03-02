@@ -34,6 +34,16 @@ import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.VisionPipeline;
 
 import java.io.IOException;
+import java.util.List;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -65,7 +75,7 @@ public class RobotContainer {
   // Subsystems defined
   private final DriveTrain           DriveTrain;
   private final Pneumatics           Pneumatics;
-  private final Pigeon               Pigeon;
+  // private final Pigeon               Pigeon;
   private final Indexer              Indexer;
   private final Intake               Intake;
   private final ShooterFlywheel      Flywheel;
@@ -97,7 +107,7 @@ public class RobotContainer {
     Climber = new Climber();
     DriveTrain  = new DriveTrain();
     Pneumatics  = new Pneumatics();
-    Pigeon      = new Pigeon();
+    // Pigeon      = new Pigeon();
     Intake      = new Intake();
     Indexer     = new Indexer();
     Flywheel    = new ShooterFlywheel();
@@ -197,9 +207,9 @@ public class RobotContainer {
     // System.out.println(true);
     // });
 
-    joystick_secondary.getButton(ButtonType.kX).whenPressed(new AutoAlign(Climber, DriveTrain, Pigeon, 180));
+    joystick_secondary.getButton(ButtonType.kX).whenPressed(new AutoAlign(Climber, DriveTrain, 180));
     joystick_secondary.getButton(ButtonType.kB).whenPressed(() -> {
-      Pigeon.reset();
+      DriveTrain.resetGyro();
     });
     joystick_secondary.getButton(ButtonType.kY).whenPressed(() -> {
       Climber.zeroEncoder();
@@ -245,41 +255,28 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    /*
-    // creates configuration for trajectory
-    var feedForward = new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-        kAuto.kaVoltSecondsSquaredPerMeter);
-    var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(feedForward, kAuto.kDriveKinematics,
-        10);
-
-    TrajectoryConfig config = new TrajectoryConfig(kAuto.kMaxSpeed, kAuto.kMaxAcceleration);
-    config.setKinematics(kAuto.kDriveKinematics).addConstraint(autoVoltageConstraint);
-    // Generates a trajectory that tells the robot to move from its original
-    // location
+    
+    // Generates a trajectory that tells the robot to move from its original location
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(
-            new Translation2d(1, 0)),
-        new Pose2d(0, 1, new Rotation2d(0)),
-        config); // new Translation2d(1, 1), new Translation2d(2, -1)
+                                                                   List.of(),
+                                                                   new Pose2d(2, 0, new Rotation2d(0)), 
+                                                                   kAuto.configStop);
+      
+      // new Translation2d(1, 1), new Translation2d(2, -1))
 
-    RamseteCommand autoCommand = new RamseteCommand(trajectory, Pigeon::getPose,
+    RamseteCommand autoCommand = new RamseteCommand(trajectory, DriveTrain::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
         new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-            kAuto.kMaxAcceleration),
+            kAuto.kaVoltSecondsSquaredPerMeter),
         kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
         new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
         DriveTrain::tankDriveVolts, DriveTrain);
 
     // Reset odometry to the starting pose of the trajectory.
-    DriveTrain.zeroEncoders();
-    Pigeon.resetOdometry(trajectory.getInitialPose());
-    
-    return null;
+    DriveTrain.resetOdometry(trajectory.getInitialPose());
 
     // returns the autonomous command
     // makes sure that after the auto command is finished running the robot stops.
-    //return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
-    */
-    return null; 
+    return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
   }
 }

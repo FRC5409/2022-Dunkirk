@@ -32,6 +32,7 @@ public class Pigeon extends SubsystemBase{
     public double y_acceleration;
     public double z_acceleration;
 
+    DriveTrain driveTrain = new DriveTrain();
 
     public Pigeon(){
         gyro_pigeon = new WPI_PigeonIMU(kID.Pigeon);
@@ -84,6 +85,9 @@ public class Pigeon extends SubsystemBase{
      * This method is called once per scheduler run and is used to update smart dashboard data.
      */
     public void periodic() {
+        m_odometry.update(
+            gyro_pigeon.getRotation2d(), driveTrain.getEncoderPositionLeft(), driveTrain.getEncoderPositionRight()); 
+        // TODO: causes drivetrain to move weirdly, also cause doiuble solenoid to return error
     }
 
     @Override
@@ -211,6 +215,15 @@ public class Pigeon extends SubsystemBase{
 
     public DifferentialDriveOdometry getOdometry(){
         return m_odometry;
+    }
+
+    /**
+     * Returns the heading of the robot.
+     *
+     * @return the robot's heading in degrees, from -180 to 180
+     */
+    public double getHeading() {
+        return gyro_pigeon.getRotation2d().getDegrees();
     }
 
     public void resetOdometry(Pose2d pose) {
