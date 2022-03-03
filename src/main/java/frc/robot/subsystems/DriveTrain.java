@@ -50,7 +50,7 @@ public class DriveTrain extends SubsystemBase {
 
     public final DifferentialDrive m_drive;
 
-    // private final DoubleSolenoid dsl_gear;
+    private final DoubleSolenoid dsl_gear;
 
     private boolean applyAntiTip;
 
@@ -96,8 +96,8 @@ public class DriveTrain extends SubsystemBase {
         // dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.REVPH,
         // kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
-        // dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel,
-        //         kDriveTrain.ReverseChannel);
+        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel,
+                kDriveTrain.ReverseChannel);
 
         driveMode = kDriveTrain.InitialDriveMode;
 
@@ -587,7 +587,7 @@ public class DriveTrain extends SubsystemBase {
      */
     public void fastShift() {
         SmartDashboard.putString("Solenoid", "Fast");
-        // dsl_gear.set(DoubleSolenoid.Value.kForward);
+        dsl_gear.set(DoubleSolenoid.Value.kForward);
 
     }
 
@@ -596,7 +596,7 @@ public class DriveTrain extends SubsystemBase {
      */
     public void slowShift() {
         SmartDashboard.putString("Solenoid", "Slow");
-        // dsl_gear.set(DoubleSolenoid.Value.kReverse);
+        dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
 
     // ---------------------------- Pigeon ---------------------------- //

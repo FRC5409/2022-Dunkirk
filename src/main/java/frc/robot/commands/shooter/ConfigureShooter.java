@@ -25,6 +25,8 @@ public class ConfigureShooter extends CommandBase {
         this.limelight = limelight;
         this.target = target;
         this.turret = turret;
+
+        addRequirements(turret, limelight);
     }
 
     @Override
@@ -35,14 +37,14 @@ public class ConfigureShooter extends CommandBase {
         
         ShooterConfiguration configuration = Constants.Shooter.CONFIGURATIONS.get(target);
         this.configuration.set(configuration);
+
         limelight.setPipelineIndex(configuration.getPipeline().id());
-        
-        switch (target) {
-            case kNear: {
+        switch (configuration.getHoodPosition()) {
+            case kDown: {
                 turret.hoodDownPosition();
                 break;
             }
-            case kFar: {
+            case kUp: {
                 turret.hoodUpPosition();
                 break;
             }
