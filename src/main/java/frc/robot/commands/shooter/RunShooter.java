@@ -1,6 +1,7 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 
@@ -16,15 +17,26 @@ public final class RunShooter extends CommandBase {
     private final ShooterFlywheel flywheel;
     private final Indexer indexer;
     private final double target;
+    private final double indexerTarget;
 
+    public RunShooter(
+        ShooterFlywheel flywheel,
+        Indexer indexer,
+        double target,
+        double indexerTarget
+    ) {
+        this.flywheel = flywheel;
+        this.indexer = indexer;
+        this.indexerTarget = indexerTarget;
+        this.target = target;
+    }
+    
     public RunShooter(
         ShooterFlywheel flywheel,
         Indexer indexer,
         double target
     ) {
-        this.flywheel = flywheel;
-        this.indexer = indexer;
-        this.target = target;
+        this(flywheel, indexer, target, 1);
     }
 
     @Override
@@ -33,6 +45,14 @@ public final class RunShooter extends CommandBase {
         indexer.enable();
 
         flywheel.setVelocity(target);
+    }
+
+    @Override
+    public void execute() {     
+        if (flywheel.isTargetReached()) {
+            flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
+            indexer.indexerOn(indexerTarget);
+        }
     }
 
 

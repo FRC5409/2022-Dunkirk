@@ -2,6 +2,7 @@ package frc.robot.commands.autonomous.setPointsAuto;
 
 
 import frc.robot.Constants;
+import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
@@ -36,7 +37,17 @@ public class OneBallSetpoint extends SequentialCommandGroup {
     private final Limelight limelight;
     
 
-    public OneBallSetpoint(DriveTrain driveTrain, Intake intake, Indexer indexer, Limelight limelight, ShooterTurret turret, ShooterFlywheel flywheel) {
+    public OneBallSetpoint(
+        DriveTrain driveTrain,
+        Intake intake,
+        Indexer indexer,
+        Limelight limelight,
+        ShooterTurret turret,
+        ShooterFlywheel flywheel,
+        Property<ShooterConfiguration> shooterConfiguration,
+        Property<SweepDirection> shooterSweepDirection,
+        Property<Integer> shooterOffset
+    ) {
         
         this.driveTrain = driveTrain;
         this.intake     = intake;
@@ -45,11 +56,8 @@ public class OneBallSetpoint extends SequentialCommandGroup {
         this.turret     = turret;
         this.limelight  = limelight;
 
-        ValueProperty<ShooterConfiguration> shooterConfiguration = new ValueProperty<ShooterConfiguration>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
-        ValueProperty<SweepDirection> shooterSweepDirection = new ValueProperty<SweepDirection>(SweepDirection.kLeft);
-
         addCommands(
-            new OperateShooter(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration),
+            new OperateShooter(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration, shooterOffset),
             new RotateTurret(turret, 0)
         );
 

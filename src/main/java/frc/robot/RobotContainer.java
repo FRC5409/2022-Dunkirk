@@ -160,7 +160,6 @@ public class RobotContainer {
     Climber.setDefaultCommand(new DefaultElevator(Climber, joystick_secondary.getController()));
 
     CommandScheduler.getInstance().schedule(new FindElevatorZero(Climber));
-    CommandScheduler.getInstance().schedule(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar));
   }
 
 
