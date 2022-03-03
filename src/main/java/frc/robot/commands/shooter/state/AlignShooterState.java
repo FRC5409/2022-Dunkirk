@@ -46,7 +46,8 @@ public class AlignShooterState extends TimedStateCommand {
         else
             turret.setRotationTarget(turret.getRotation() + target.x);
         
-        SmartDashboard.putNumber("Alignment Offset", target.x);
+    
+        if(Constants.kConfig.DEBUG) SmartDashboard.putNumber("Alignment Offset", target.x);
     }
 
     @Override

@@ -67,7 +67,9 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         shooterTarget = 0;
         feederTarget = 0;
     
-        SmartDashboard.putNumber("Feeder Velocity", enc_feeder.getVelocity());
+        if(Constants.kConfig.DEBUG){
+            SmartDashboard.putNumber("Feeder Velocity", enc_feeder.getVelocity());
+        }
     }
     
     /**

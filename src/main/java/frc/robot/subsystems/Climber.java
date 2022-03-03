@@ -320,9 +320,11 @@ public class Climber extends SubsystemBase {
 
     double avg = sum / measuredDistances.size();
 
-    SmartDashboard.putNumberArray("Distances", arr);
-    SmartDashboard.putNumber("Avergae Distance", avg);
-    SmartDashboard.putBoolean("AVG CALLED", true);
+    if(Constants.kConfig.DEBUG){
+      SmartDashboard.putNumberArray("Distances", arr);
+      SmartDashboard.putNumber("Avergae Distance", avg);
+      SmartDashboard.putBoolean("AVG CALLED", true);
+    }
     return avg;
   }
 

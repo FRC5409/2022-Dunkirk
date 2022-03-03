@@ -42,16 +42,18 @@ public class SlowGear extends CommandBase {
     double rpmLeft = Math.abs(sys_drive.getRPMLeft());
     double rpmRight = Math.abs(sys_drive.getRPMRight());
 
-    SmartDashboard.putNumber("SHIFT LRPM", rpmLeft);
-    SmartDashboard.putNumber("SHIFT RRPM", rpmRight);
+    if(Constants.kConfig.DEBUG){
+      SmartDashboard.putNumber("SHIFT LRPM", rpmLeft);
+      SmartDashboard.putNumber("SHIFT RRPM", rpmRight);
+    }
 
     if (rpmLeft < Constants.kDriveTrain.MAX_RPM_FOR_LOW_GEAR
         && rpmRight < Constants.kDriveTrain.MAX_RPM_FOR_LOW_GEAR && !hasShift) {
       sys_drive.slowShift();
       hasShift = true;
-      SmartDashboard.putBoolean("Slow Shift True", true);
+      if(Constants.kConfig.DEBUG) SmartDashboard.putBoolean("Slow Shift True", true);
     } else {
-      SmartDashboard.putBoolean("Slow Shift False", true);
+      if(Constants.kConfig.DEBUG) SmartDashboard.putBoolean("Slow Shift False", true);
     }
   }
 

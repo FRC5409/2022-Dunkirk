@@ -21,6 +21,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
@@ -242,7 +243,10 @@ public class DriveTrain extends SubsystemBase {
      * dashboard data.
      */
     public void periodic() {
-        displayEncoder();
+        if(Constants.kConfig.DEBUG){
+            displayEncoder();
+        }
+
         displayTemperatures();
 
         if (timer.hasElapsed(refreshSeconds)) {
@@ -260,10 +264,10 @@ public class DriveTrain extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
-        displayEncoder();
-        displayDriveMode();
-        updateAll();
-        displayAngle();
+        // displayEncoder();
+        // displayDriveMode();
+        // updateAll();
+        // displayAngle();
     }
 
 
@@ -585,7 +589,9 @@ public class DriveTrain extends SubsystemBase {
      * shifts the gear shift to fast
      */
     public void fastShift() {
-        SmartDashboard.putString("Solenoid", "Fast");
+        if(Constants.kConfig.DEBUG){
+            SmartDashboard.putString("Solenoid", "Fast");
+        }
         dsl_gear.set(DoubleSolenoid.Value.kForward);
     }
 
@@ -593,7 +599,9 @@ public class DriveTrain extends SubsystemBase {
      * shifts the gear shift to slow
      */
     public void slowShift() {
-        SmartDashboard.putString("Solenoid", "Slow");
+        if(Constants.kConfig.DEBUG){
+            SmartDashboard.putString("Solenoid", "Slow");
+        }
         dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
 

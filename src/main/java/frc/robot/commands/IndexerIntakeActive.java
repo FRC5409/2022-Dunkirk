@@ -51,6 +51,18 @@ public class IndexerIntakeActive extends CommandBase {
     addRequirements(indexer, intake);
   }
 
+  public IndexerIntakeActive(Indexer indexer, Intake intake) {
+    sys_indexer = indexer;
+    sys_intake = intake;
+
+    joyMain = new XboxController(0);
+    joySecondary = new XboxController(1);
+    
+
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(indexer, intake);
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -66,6 +78,7 @@ public class IndexerIntakeActive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    /*
     // controller rumble
     if(!TOF_Ball1 && sys_indexer.ballDetectionBall1()){
       rumbleTimer.reset();
@@ -91,6 +104,7 @@ public class IndexerIntakeActive extends CommandBase {
     if(rumbleTimer.get() > timeout){
       isRumbling = false;
     }
+    */
 
     TOF_Ent = sys_indexer.ballDetectionEnter();
     TOF_Ball1 = sys_indexer.ballDetectionBall1();

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -92,12 +93,15 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
 
         switch(dsl_hood.get()) {
             case kForward:
+                SmartDashboard.putBoolean("hoodIsUp", true);
                 fields.get("hood").setString("Up");
                 break;
             case kReverse:
+            SmartDashboard.putBoolean("hoodIsUp", false);
                 fields.get("hood").setString("Down");
                 break;
             default:
+                SmartDashboard.putBoolean("hoodIsUp", false);
                 fields.get("hood").setString("Off");
                 break;
         }

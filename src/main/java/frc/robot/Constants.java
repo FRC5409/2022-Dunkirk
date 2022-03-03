@@ -27,6 +27,9 @@ import frc.robot.utils.*;
  */
 public final class Constants {
 
+    public static class kConfig{
+        public final static boolean DEBUG = false;
+    }
 
     public static class kID{
         // Can IDs
