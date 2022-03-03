@@ -212,6 +212,8 @@ public final class Constants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
 
+        public static final double kDistanceRatio = -0.95;
+
         public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = 
             new DifferentialDriveVoltageConstraint(
                 new SimpleMotorFeedforward(ksVolts, 
@@ -223,8 +225,8 @@ public final class Constants {
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)
-            .setEndVelocity(0);
-            // .setReversed(true);
+            .setEndVelocity(0)
+            .setReversed(true);
 
         public static final TrajectoryConfig configNoStop = 
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)

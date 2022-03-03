@@ -56,6 +56,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pneumatics;
 
 import frc.robot.commands.*;
+import frc.robot.commands.autonomous.trajectoryAuto.OneBallAuto;
 import frc.robot.commands.autonomous.trajectoryAuto.ZeroBallAuto;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.training.*;
@@ -92,6 +93,11 @@ public class RobotContainer {
   private final IndexerIntakeActive  indexerIntakeActive;
   private final IntakeActive         intakeActive;
   private final IndexerIntakeTest    test;
+
+
+  ValueProperty<ShooterConfiguration> shooterConfiguration = new ValueProperty<ShooterConfiguration>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
+  ValueProperty<SweepDirection> shooterSweepDirection = new ValueProperty<SweepDirection>(SweepDirection.kLeft);
+
 
   //private final TrainerContext       trainerContext;
   //private final TrainerDashboard     trainerDashboard;
@@ -225,10 +231,6 @@ public class RobotContainer {
 
     joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(joystick_secondary, Climber, Indexer, turret, Flywheel, limelight, DriveTrain));
 
-
-    ValueProperty<ShooterConfiguration> shooterConfiguration = new ValueProperty<ShooterConfiguration>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
-    ValueProperty<SweepDirection> shooterSweepDirection = new ValueProperty<SweepDirection>(SweepDirection.kLeft);
-
     joystick_secondary.getButton(ButtonType.kRightBumper).whileHeld(
       new OperateShooter(limelight, turret, Flywheel, Indexer, shooterSweepDirection, shooterConfiguration)
     ).whenReleased(new RotateTurret(turret, 0));
@@ -260,6 +262,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
    
     // return new ZeroBallAuto(DriveTrain).andThen(() -> DriveTrain.tankDrive(0, 0));
-    return new ZeroBallAuto(DriveTrain);
+    return new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection);
   }
 }
