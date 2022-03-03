@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
+import frc.robot.base.shooter.HoodPosition;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterModel;
@@ -324,7 +325,9 @@ public final class Constants {
 
         public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
             ShooterMode.kFar, new ShooterConfiguration(
-                ShooterMode.kFar, VisionPipeline.FAR_TARGETING,
+                ShooterMode.kFar,
+                VisionPipeline.FAR_TARGETING,
+                HoodPosition.kUp,
                 new ShooterModel(
                     2.125781774520874,
                     0.06557995826005936,
@@ -339,7 +342,9 @@ public final class Constants {
             ),
             
             ShooterMode.kNear, new ShooterConfiguration(
-                ShooterMode.kNear, VisionPipeline.NEAR_TARGETING, 
+                ShooterMode.kNear,
+                VisionPipeline.NEAR_TARGETING, 
+                HoodPosition.kDown,
                 new ShooterModel(
                     0d, 0d, 0d, Constants.Shooter.SPEED_RANGE.normalize(1675.78125),
                     90.0 - 45.5,
@@ -348,12 +353,27 @@ public final class Constants {
                     Constants.Shooter.DISTANCE_RANGE,
                     Constants.Shooter.SPEED_RANGE
                 )
+            ),
+            
+            ShooterMode.kLow, new ShooterConfiguration(
+                ShooterMode.kLow,
+                VisionPipeline.DEFAULT, 
+                HoodPosition.kUp
+            ),
+            
+            ShooterMode.kGuard, new ShooterConfiguration(
+                ShooterMode.kGuard,
+                VisionPipeline.DEFAULT, 
+                HoodPosition.kUp
             )
         );
 
         public static final double FEEDER_VELOCITY = -4500*1.5;
 
         public static final int OFFSET_INCREMENT = 50;
+
+        public static final double LOW_FLYWHEEL_VELOCITY = 0;
+        public static final double GUARD_FLYWHEEL_VELOCITY = 0;
     }
     
     public static final class Vision {

@@ -9,6 +9,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.kAuto;
 //Constants
@@ -188,12 +189,7 @@ public class RobotContainer {
     joystick_main.getButton(ButtonType.kX).whileHeld(new IndexerIntakeActive(Indexer, Intake));
     joystick_main.getButton(ButtonType.kX).whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.25));
 
-    Trigger climberToggleTrigger = new Trigger(){
-      @Override
-      public boolean get() {
-          return climberActive.get();
-      }
-    };
+    Trigger climberToggleTrigger = new Trigger(climberActive::get);
 
     joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber));
 
@@ -228,6 +224,21 @@ public class RobotContainer {
         .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight));
 
     joystick_secondary.getButton(ButtonType.kA).and(climberToggleTrigger.negate()).whileActiveContinuous(new RunShooter(Flywheel, Indexer, 900));
+    
+    joystick_secondary.getButton(ButtonType.kA)
+      .and(climberToggleTrigger.negate())
+      .whileActiveContinuous(
+        new SequentialCommandGroup(  
+          new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kLow),
+          new RunShooter(Flywheel, Indexer, Constants.Shooter.LOW_FLYWHEEL_VELOCITY, 0.5)));
+
+          
+    joystick_secondary.getButton(ButtonType.kB)
+      .and(climberToggleTrigger.negate())
+      .whileActiveContinuous(
+        new SequentialCommandGroup(  
+          new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kGuard),
+          new RunShooter(Flywheel, Indexer, Constants.Shooter.GUARD_FLYWHEEL_VELOCITY, 0.5)));
   }
 
   /**
