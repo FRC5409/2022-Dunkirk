@@ -19,7 +19,7 @@ import frc.robot.utils.Toggleable;
 /**
  * Controls and operators the Shooter Flywheel.
  * 
- * @author Akil Pathiranage
+ * @author Akil Pathiranage, Keith Davies
  */
 public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
     // Rpm to  velocity loop units
@@ -134,6 +134,10 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         return mot_main.getSelectedSensorVelocity() * FLYWHEEL_FORWARD_RATIO;
     }
 
+    /**
+     * Method for getting if the flywheel wheels have reached the target velocity. 
+     * @return true if the target has been reached, false if not.
+     */
     public boolean isTargetReached() {
         return Math.abs(shooterTarget - getVelocity()) <= Constants.Shooter.FLYWHEEL_TOLERANCE;
     }
@@ -154,10 +158,18 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         mot_feeder.stopMotor();
     }
 
+    /**
+     * Method for seeing if the feeder target was reached. 
+     * @return returns true if it has reached the feeder target speed, false if not.
+     */
     public boolean feederReachedTarget() {
         return Math.abs(feederTarget - getFeederRpm()) <= Constants.Shooter.FEEDER_TOLERANCE;
     }
 
+    /**
+     * Method for getting the feeder wheel rpm. 
+     * @return The feeder RPM. 
+     */
     private double getFeederRpm() {
         return enc_feeder.getVelocity();
     }

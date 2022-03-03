@@ -112,6 +112,10 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         enabled = true;
     }
 
+
+    /**
+     * Brings the turret to its zero position. 
+     */
     public void reset() {
         setRotationTarget(0);
     }
@@ -124,6 +128,10 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         mot_main.disable();
     }
 
+    /**
+     * Method for getting if the turret has been enabled. 
+     * @return true if the turret has been enabled, false if not.
+     */
     public boolean isEnabled() {
         return enabled;
     }
