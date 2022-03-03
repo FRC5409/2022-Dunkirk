@@ -14,11 +14,17 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.kAuto;
+import frc.robot.base.ValueProperty;
+import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.IndexerIntakeActive;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Pigeon;
+import frc.robot.subsystems.shooter.ShooterFlywheel;
+import frc.robot.subsystems.shooter.ShooterTurret;
 
 public class ThreeBallsAuto extends SequentialCommandGroup{
 
@@ -27,7 +33,7 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
     Intake m_intake;
     Indexer m_indexer;
 
-    public ThreeBallsAuto(DriveTrain drive, Pigeon pigeon, Intake intake, Indexer indexer){
+    public ThreeBallsAuto(DriveTrain drive, Pigeon pigeon, Intake intake, Indexer indexer, Limelight limelight, ShooterTurret turret, ShooterFlywheel shooterFlywheel, ValueProperty<ShooterConfiguration> shooterConfiguration, ValueProperty<SweepDirection> shooterSweepDirection){
 
         m_drive   = drive;
         m_pigeon  = pigeon;

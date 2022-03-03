@@ -224,12 +224,14 @@ public final class Constants {
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)
             .setEndVelocity(0);
+            // .setReversed(true);
 
         public static final TrajectoryConfig configNoStop = 
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)    
-            .setEndVelocity(1.6);
+            .setEndVelocity(1.6)
+            .setReversed(true);
 
     }
 
