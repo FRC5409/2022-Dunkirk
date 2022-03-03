@@ -10,19 +10,20 @@ This script will:
 
 
 import json
+import os
 
 
 
 # Change these variables to change the JSON file
 # ------------------------------
 
-DIRECTORY = 'Characterization'
+DIRECTORY = os.path.join(os.getcwd(), 'Characterization')
 
 # JSON data input
-JSON_DATA = f'{DIRECTORY}/sysid_data20220224-153404.json'
+JSON_DATA = os.path.join(DIRECTORY, 'sysid_data20220224-153404.json')
 
 # JSON data output
-JSON_OUTPUT = f'{DIRECTORY}/new_data.json'
+JSON_OUTPUT = os.path.join(DIRECTORY, 'new_data.json')
 
 # ------------------------------
 
