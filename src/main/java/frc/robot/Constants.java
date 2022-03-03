@@ -287,7 +287,6 @@ public final class Constants {
         // Range Configurations
                
         // Height in meters
-        public static final double ALIGNMENT_THRESHOLD = 0.08;
         public static final double TURRET_MAX_SPEED    = 0.42;
 
         // Range Configurations

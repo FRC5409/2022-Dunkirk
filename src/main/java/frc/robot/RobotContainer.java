@@ -39,6 +39,7 @@ import frc.robot.subsystems.Pneumatics;
 
 import frc.robot.commands.*;
 import frc.robot.commands.autonomous.trajectoryAuto.OneBallAuto;
+import frc.robot.commands.autonomous.trajectoryAuto.TwoBallsAuto;
 import frc.robot.commands.autonomous.trajectoryAuto.ZeroBallAuto;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.training.*;
@@ -250,6 +251,8 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
    
     // return new ZeroBallAuto(DriveTrain).andThen(() -> DriveTrain.tankDrive(0, 0));
-    return new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection);
+    // return new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset);
+    return new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset);
+
   }
 }

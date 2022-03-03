@@ -12,7 +12,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.kAuto;
-import frc.robot.base.ValueProperty;
+import frc.robot.base.Property;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
@@ -33,10 +33,20 @@ public class OneBallAuto extends SequentialCommandGroup{
     Limelight m_limelight;
     ShooterTurret m_turret;
     ShooterFlywheel m_flywheel;
-    ValueProperty<ShooterConfiguration> m_shooterConfiguration;
-    ValueProperty<SweepDirection> m_shooterSweepDirection;
+    Property<ShooterConfiguration> m_shooterConfiguration;
+    Property<SweepDirection> m_shooterSweepDirection;
+    Property<Integer> m_shooterOffset;
 
-    public OneBallAuto(DriveTrain drive, Indexer indexer, Limelight limelight, ShooterTurret turret, ShooterFlywheel shooterFlywheel, ValueProperty<ShooterConfiguration> shooterConfiguration, ValueProperty<SweepDirection> shooterSweepDirection){
+    public OneBallAuto(
+        DriveTrain drive, 
+        Indexer indexer, 
+        Limelight limelight, 
+        ShooterTurret turret, 
+        ShooterFlywheel shooterFlywheel, 
+        Property<ShooterConfiguration> shooterConfiguration, 
+        Property<SweepDirection> shooterSweepDirection,
+        Property<Integer> shooterOffset
+        ){
 
         m_drive   = drive;
         m_indexer = indexer;
@@ -45,6 +55,7 @@ public class OneBallAuto extends SequentialCommandGroup{
         m_flywheel = shooterFlywheel;
         m_shooterConfiguration = shooterConfiguration;
         m_shooterSweepDirection = shooterSweepDirection;
+        m_shooterOffset = shooterOffset;
 
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(),
@@ -64,11 +75,10 @@ public class OneBallAuto extends SequentialCommandGroup{
 
         m_drive.resetOdometry(t1.getInitialPose());
 
-        new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear);
-
         addCommands(
-            new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration),
-            r1
+            r1,
+            new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
+            new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
         );
     }
 }
