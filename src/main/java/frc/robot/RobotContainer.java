@@ -171,8 +171,6 @@ public class RobotContainer {
     DriveTrain.setDefaultCommand(defaultDrive);
     // Indexer.setDefaultCommand(indexerActive);
     Climber.setDefaultCommand(new DefaultElevator(Climber, joystick_secondary.getController()));
-
-    CommandScheduler.getInstance().schedule(new FindElevatorZero(Climber));
   }
 
 
@@ -214,7 +212,6 @@ public class RobotContainer {
     joystick_secondary.getButton(ButtonType.kY).and(climberToggleTrigger).whenActive(() -> {
       Climber.zeroEncoder();
     });
-
     joystick_secondary.getButton(ButtonType.kLeftBumper).and(climberToggleTrigger).whenActive(new FindElevatorZero(Climber));
 
     joystick_secondary.getButton(ButtonType.kRightBumper).and(climberToggleTrigger.negate()).whileActiveContinuous(
@@ -261,5 +258,15 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
    
     return autoCommandSelector.getSelected(); 
+  }
+
+  /**
+   * Method for scheduling commands at the beginning of teleop.
+   */
+  public void teleopInitCommands(){
+    CommandScheduler.getInstance().schedule(
+      new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
+      new FindElevatorZero(Climber)
+    );
   }
 }
