@@ -142,10 +142,10 @@ public class RobotContainer {
 
     autoCommandSelector = new SendableChooser<Command>();
     
-    autoCommandSelector.setDefaultOption("Default", new DriveStraight(DriveTrain, -0.1f));
-    autoCommandSelector.addOption("One", new DriveStraight(DriveTrain, -0.1f));
-    autoCommandSelector.addOption("Two", new DriveStraight(DriveTrain, -0.1f));
-    autoCommandSelector.addOption("Three", new DriveStraight(DriveTrain, -0.1f));
+    autoCommandSelector.setDefaultOption("Default", new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
+    autoCommandSelector.addOption("One", new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
+    autoCommandSelector.addOption("Two", new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
+    autoCommandSelector.addOption("Three", new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
 
 
     Shuffleboard.getTab("Shooter").add("Hood up", new HoodUp(turret));
@@ -247,8 +247,6 @@ public class RobotContainer {
         .and(joystick_secondary.getButton(ButtonType.kA).negate()).and(climberToggleTrigger.negate())
         .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight));
 
-    joystick_secondary.getButton(ButtonType.kA).and(climberToggleTrigger.negate()).whileActiveContinuous(new RunShooter(Flywheel, Indexer, 900));
-    
     joystick_secondary.getButton(ButtonType.kA)
       .and(climberToggleTrigger.negate())
       .whileActiveContinuous(
@@ -272,16 +270,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
    
-    // return new ZeroBallAuto(DriveTrain).andThen(() -> DriveTrain.tankDrive(0, 0));
-    // return new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset);
-    return new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset);
-
-
-    // returns the autonomous command
-    // makes sure that after the auto command is finished running the robot stops.
-    //return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
-    */
     return autoCommandSelector.getSelected(); 
-
   }
 }

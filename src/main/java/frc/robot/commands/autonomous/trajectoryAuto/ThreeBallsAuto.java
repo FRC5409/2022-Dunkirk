@@ -53,6 +53,12 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_drive   = drive;
         m_intake  = intake;
         m_indexer = indexer;
+        m_limelight = limelight;
+        m_turret = turret;
+        m_flywheel = shooterFlywheel;
+        m_shooterConfiguration = shooterConfiguration;
+        m_shooterSweepDirection = shooterSweepDirection;
+        m_shooterOffset = shooterOffset;
 
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(

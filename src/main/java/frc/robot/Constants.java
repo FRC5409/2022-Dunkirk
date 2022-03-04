@@ -326,6 +326,10 @@ public final class Constants {
 
         public static final double PRE_SHOOTER_VELOCITY = 0;
 
+        public static final double LOW_FLYWHEEL_VELOCITY = 600;
+        public static final double GUARD_FLYWHEEL_VELOCITY = 800;
+        public static final double NEAR_FLYWHEEL_VELOCITY = 2000;
+
         public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
             ShooterMode.kFar, new ShooterConfiguration(
                 ShooterMode.kFar,
@@ -349,7 +353,7 @@ public final class Constants {
                 VisionPipeline.NEAR_TARGETING, 
                 HoodPosition.kDown,
                 new ShooterModel(
-                    0d, 0d, 0d, Constants.Shooter.SPEED_RANGE.normalize(1675.78125),
+                    0d, 0d, 0d, Constants.Shooter.SPEED_RANGE.normalize(NEAR_FLYWHEEL_VELOCITY),
                     90.0 - 45.5,
                     45 / 12.0,
                     1d,
@@ -374,9 +378,6 @@ public final class Constants {
         public static final double FEEDER_VELOCITY = -4500*1.5;
 
         public static final int OFFSET_INCREMENT = 50;
-
-        public static final double LOW_FLYWHEEL_VELOCITY = 0;
-        public static final double GUARD_FLYWHEEL_VELOCITY = 0;
     }
     
     public static final class Vision {

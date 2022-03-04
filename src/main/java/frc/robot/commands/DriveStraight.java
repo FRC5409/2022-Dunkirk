@@ -9,6 +9,7 @@ public class DriveStraight extends CommandBase {
     private DriveTrain sys_drive;
     double leftSpeed;
     double rightSpeed;
+}
   
     /**
      * Creates a new ExampleCommand.
@@ -46,3 +47,4 @@ public class DriveStraight extends CommandBase {
       return false;
     }
   }
+  **/
