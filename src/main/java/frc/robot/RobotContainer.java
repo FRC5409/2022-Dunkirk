@@ -9,8 +9,13 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+
+import frc.robot.commands.shooter.HoodDown;
+import frc.robot.commands.shooter.HoodUp;
+
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.robot.Constants.kAuto;
 //Constants
 import frc.robot.base.Joystick;
@@ -32,11 +37,18 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pneumatics;
 
+
 import frc.robot.commands.*;
+import frc.robot.commands.autonomous.trajectoryAuto.OneBallAuto;
+import frc.robot.commands.autonomous.trajectoryAuto.ThreeBallsAuto;
+import frc.robot.commands.autonomous.trajectoryAuto.TwoBallsAuto;
 import frc.robot.commands.autonomous.trajectoryAuto.ZeroBallAuto;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.training.*;
@@ -83,6 +95,8 @@ public class RobotContainer {
   //private final TrainerDashboard     trainerDashboard;
   // private       NetworkClient        trainerClient;
 
+  private final SendableChooser<Command> autoCommandSelector;
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -124,6 +138,15 @@ public class RobotContainer {
     // m_testIndexShoot = new TestIndexShoot(Indexer);
     
     // Configure the button bindings
+
+
+    autoCommandSelector = new SendableChooser<Command>();
+    
+    autoCommandSelector.setDefaultOption("Default", new DriveStraight(DriveTrain, -0.1f));
+    autoCommandSelector.addOption("One", new DriveStraight(DriveTrain, -0.1f));
+    autoCommandSelector.addOption("Two", new DriveStraight(DriveTrain, -0.1f));
+    autoCommandSelector.addOption("Three", new DriveStraight(DriveTrain, -0.1f));
+
 
     Shuffleboard.getTab("Shooter").add("Hood up", new HoodUp(turret));
     Shuffleboard.getTab("Shooter").add("Hood down", new HoodDown(turret));
@@ -248,30 +271,17 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    
-    // // Generates a trajectory that tells the robot to move from its original location
-    // Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-    //                                                                List.of(new Translation2d(1, 1)),
-    //                                                                new Pose2d(2, 0, new Rotation2d(0)), 
-    //                                                                kAuto.configStop);
-      
-    //   // new Translation2d(1, 1), new Translation2d(2, -1))
-
-    // RamseteCommand autoCommand = new RamseteCommand(trajectory, DriveTrain::getPose,
-    //     new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
-    //     new SimpleMotorFeedforward(kAuto.ksVolts, kAuto.kvVoltSecondsPerMeter,
-    //         kAuto.kaVoltSecondsSquaredPerMeter),
-    //     kAuto.kDriveKinematics, DriveTrain::getWheelSpeeds,
-    //     new PIDController(kAuto.kPDriveVel, 0, 0), new PIDController(kAuto.kPDriveVel, 0, 0),
-    //     DriveTrain::tankDriveVolts, DriveTrain);
-
-    // // Reset odometry to the starting pose of the trajectory.
-    // DriveTrain.resetOdometry(trajectory.getInitialPose());
-
-    // // returns the autonomous command
-    // // makes sure that after the auto command is finished running the robot stops.
-    // return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
+   
     // return new ZeroBallAuto(DriveTrain).andThen(() -> DriveTrain.tankDrive(0, 0));
-    return new ZeroBallAuto(DriveTrain);
+    // return new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset);
+    return new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset);
+
+
+    // returns the autonomous command
+    // makes sure that after the auto command is finished running the robot stops.
+    //return autoCommand.andThen(() -> DriveTrain.tankDriveVolts(0, 0));
+    */
+    return autoCommandSelector.getSelected(); 
+
   }
 }

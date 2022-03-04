@@ -32,6 +32,7 @@ import frc.robot.utils.MotorUtils;
 import frc.robot.Constants.kID;
 import frc.robot.Constants;
 import frc.robot.Constants.kDriveTrain;
+import frc.robot.utils.Convert;
 
 public class DriveTrain extends SubsystemBase {
 
@@ -48,7 +49,7 @@ public class DriveTrain extends SubsystemBase {
 
     private int driveMode;
 
-    private final DifferentialDrive m_drive;
+    public final DifferentialDrive m_drive;
 
     private final DoubleSolenoid dsl_gear;
 
@@ -58,7 +59,7 @@ public class DriveTrain extends SubsystemBase {
 
     public final WPI_PigeonIMU gyro_pigeon;
 
-    private DifferentialDriveOdometry m_odometry;
+    public DifferentialDriveOdometry m_odometry;
 
     // The robot's RPY
     public double roll;
@@ -484,7 +485,7 @@ public class DriveTrain extends SubsystemBase {
     }
 
     /**
-     * @return the average position of the left encoders
+     * @return the  position of the left encoders 
      * 
      */
     public double getEncoderPositionLeft() {
@@ -560,7 +561,7 @@ public class DriveTrain extends SubsystemBase {
         mot_leftRearDrive.setSelectedSensorPosition(position);
     }
 
-    public void setEncodersSplit(double position_left, double position_right) {
+    public void setEncodersSplit(double position_left, double position_right){
         mot_rightFrontDrive.setSelectedSensorPosition(position_right);
         mot_rightRearDrive.setSelectedSensorPosition(position_right);
         mot_leftFrontDrive.setSelectedSensorPosition(position_left);
@@ -593,6 +594,7 @@ public class DriveTrain extends SubsystemBase {
             SmartDashboard.putString("Solenoid", "Fast");
         }
         dsl_gear.set(DoubleSolenoid.Value.kForward);
+
     }
 
     /**
