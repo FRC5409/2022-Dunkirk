@@ -11,8 +11,8 @@ import frc.robot.training.protocol.generic.ArraySendable;
 import frc.robot.training.protocol.generic.BundleSendable;
 import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
-import frc.robot.utils.ShooterModel;
 import frc.robot.Constants;
+import frc.robot.base.shooter.ShooterModel;
 import frc.robot.training.TrainerDashboard;
 import frc.robot.training.TrainerContext;
 
@@ -34,6 +34,7 @@ public class SubmitSetpointData extends CommandBase {
     public void initialize() {
         BundleSendable payload = new BundleSendable();
             payload.putSendable("trainer.topic", new StringSendable("trainer:submitData"));
+            payload.putSendable("trainer.configuration", new StringSendable(_context.getMode().name()));
             payload.putDouble("trainer.data.speed", _context.getSetpoint().getTarget() / Constants.Shooter.SPEED_RANGE.max());
             payload.putDouble("trainer.data.distance", _context.getDistance() / Constants.Shooter.DISTANCE_RANGE.max());
 
@@ -63,12 +64,17 @@ public class SubmitSetpointData extends CommandBase {
                 ValueSendable modelParameterC = (ValueSendable) parameters.get(1);
                 ValueSendable modelParameterD = (ValueSendable) parameters.get(0);
 
+                ShooterModel lastModel = _context.getModel();
+
                 _context.setModel(
                     new ShooterModel(
                         modelParameterA.getValue(double.class),
                         modelParameterB.getValue(double.class),
                         modelParameterC.getValue(double.class),
                         modelParameterD.getValue(double.class),
+                        lastModel.kPitch,
+                        lastModel.kHeight,
+                        lastModel.kOffset,
                         Constants.Shooter.DISTANCE_RANGE,
                         Constants.Shooter.SPEED_RANGE
                     )

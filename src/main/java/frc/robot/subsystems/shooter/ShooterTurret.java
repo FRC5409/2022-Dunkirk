@@ -8,21 +8,15 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import edu.wpi.first.networktables.NetworkTableEntry;
+
 import frc.robot.Constants;
-import frc.robot.utils.Gains;
 import frc.robot.utils.MotorUtils;
 import frc.robot.utils.Toggleable;
 
@@ -31,22 +25,22 @@ import frc.robot.utils.Toggleable;
  * @author Akil Pathiranage, Keith Davies
  */
 public class ShooterTurret extends SubsystemBase implements Toggleable {
-    public static final double MOTOR_ROTATION_RATIO = (Constants.Shooter.GEAR_RATIO / 360);
-    public static final double MOTOR_TARGET_RATIO = 1 / MOTOR_ROTATION_RATIO;
+    public static final double ROTATIONS_PER_DEGREE = (Constants.Shooter.GEAR_RATIO / 360); // Rotations per degree
+    public static final double DEGREES_PER_ROTATION = 1 / ROTATIONS_PER_DEGREE; // Degrees per rotation
+
+    private final HashMap<String, NetworkTableEntry> fields;
 
     // private WPI_TalonFX mot_main;
-    private CANSparkMax                        mot_main;
-    private RelativeEncoder                    enc_main;
-    private SparkMaxPIDController              controller_main;
+    private final CANSparkMax                        mot_main;
+    private final RelativeEncoder                    enc_main;
+    private final SparkMaxPIDController              ctr_main;
+    
+    private final DoubleSolenoid                     dsl_hood; 
+    private final DigitalInput                       lim_zero;
 
-    private boolean                            enabled;
-
-    private HashMap<String, NetworkTableEntry> fields;
-    private double                             target;
-
-    private DoubleSolenoid                     dsl_hood; 
-
-    private DigitalInput                       limit_switch;
+    private boolean                                  calibrated;
+    private double                                   target;
+    private boolean                                  enabled;
     
 
     /**
@@ -60,21 +54,25 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         enc_main = mot_main.getEncoder();
             enc_main.setPosition(0);
 
-        controller_main = mot_main.getPIDController();
-            controller_main.setOutputRange(-0.5, 0.5);
+        ctr_main = mot_main.getPIDController();
+            ctr_main.setOutputRange(-0.5, 0.5);
+        MotorUtils.setGains(ctr_main, Constants.Shooter.TURRET_GAINS);
 
-        limit_switch = new DigitalInput(Constants.kID.TurretLimitSwitch1);
+        lim_zero = new DigitalInput(Constants.kID.TurretLimitSwitch1);
 
-        dsl_hood = new DoubleSolenoid(Constants.kID.PneumaticHub, PneumaticsModuleType.REVPH, 
-        Constants.Turret.HOOD_FORWARD_CHANNEL, Constants.Turret.HOOD_REVERSE_CHANNEL);
-
-        enabled = false;
-
-        MotorUtils.setGains(controller_main, Constants.Shooter.TURRET_GAINS);
-
+        dsl_hood = new DoubleSolenoid(
+            Constants.kID.PneumaticHub, PneumaticsModuleType.REVPH, 
+            Constants.Shooter.HOOD_FORWARD_CHANNEL, Constants.Shooter.HOOD_REVERSE_CHANNEL);
 
         fields = new HashMap<String, NetworkTableEntry>();
-        fields.put("hood", Shuffleboard.getTab("Turret").add("Hood position", "off").getEntry());
+        fields.put("hood", Shuffleboard.getTab("Turret")
+            .add("Hood position", "off").getEntry());
+        fields.put("rotation", Shuffleboard.getTab("Turret")
+            .add("Turret Rotation", 0).getEntry());
+
+        enabled = false;
+        target = 0;
+        calibrated = false;
     }
 
     /**
@@ -82,18 +80,29 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
      */
     @Override
     public void periodic() {
-        if(!limit_switch.get()){
-            enc_main.setPosition(0);
-        }
-        SmartDashboard.putNumber("encoderValue", enc_main.getPosition());
-        if(dsl_hood.get().equals(Value.kForward)){
-            fields.get("hood").setString("Up");
-        } else if (dsl_hood.get().equals(Value.kReverse)){
-            fields.get("hood").setString("Down");
-        } else if (dsl_hood.get().equals(Value.kOff)){
-            fields.get("hood").setString("Off");
+        if(lim_zero.get() == Constants.Shooter.ZERO_LIMIT_POLARITY) {
+            if (!calibrated) {
+                enc_main.setPosition(0);
+                calibrated = true;
+            }
+        } else {
+            if (!calibrated)
+                calibrated = false;
         }
 
+        switch(dsl_hood.get()) {
+            case kForward:
+                fields.get("hood").setString("Up");
+                break;
+            case kReverse:
+                fields.get("hood").setString("Down");
+                break;
+            default:
+                fields.get("hood").setString("Off");
+                break;
+        }
+
+        fields.get("rotation").setNumber(getRotation());
     }
 
     /**
@@ -103,6 +112,10 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         enabled = true;
     }
 
+
+    /**
+     * Brings the turret to its zero position. 
+     */
     public void reset() {
         setRotationTarget(0);
     }
@@ -115,6 +128,10 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         mot_main.disable();
     }
 
+    /**
+     * Method for getting if the turret has been enabled. 
+     * @return true if the turret has been enabled, false if not.
+     */
     public boolean isEnabled() {
         return enabled;
     }
@@ -129,8 +146,8 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         if (!enabled) return;
         
         // TODO add safety
-        controller_main.setReference(
-            MOTOR_ROTATION_RATIO * Constants.Shooter.ROTATION_RANGE.clamp(value), 
+        ctr_main.setReference(
+            ROTATIONS_PER_DEGREE * Constants.Shooter.ROTATION_RANGE.clamp(value), 
             CANSparkMax.ControlType.kPosition);
         
         target = value;
@@ -151,7 +168,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
      * @return Angle in degrees.
      */
     public double getRotation() {
-        return enc_main.getPosition() * MOTOR_TARGET_RATIO;
+        return enc_main.getPosition() * DEGREES_PER_ROTATION;
     }
 
     /**
@@ -160,24 +177,24 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
      * @return True if its aligned, false if not.
      */
     public boolean isTargetReached() {
-        return Math.abs(getRotation() - target) < Constants.Turret.ALIGNMENT_THRESHOLD;
+        return Math.abs(getRotation() - target) < Constants.Vision.ALIGNMENT_THRESHOLD;
     }
 
 
     /**
      * Method for setting the hood to the up position.
      */
-    public void hoodUpPosition(){
+    public void hoodUpPosition() {
         if(!enabled) return;
-        dsl_hood.set(Value.kForward);
+        dsl_hood.set(DoubleSolenoid.Value.kForward);
     }
 
     /**
      * Method for setting the hood to the down position.
      */
-    public void hoodDownPosition(){
+    public void hoodDownPosition() {
         if(!enabled) return;
-        dsl_hood.set(Value.kReverse);
+        dsl_hood.set(DoubleSolenoid.Value.kReverse);
     }
 
 }

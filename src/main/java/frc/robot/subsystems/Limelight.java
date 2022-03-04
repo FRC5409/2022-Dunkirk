@@ -81,6 +81,8 @@ public class Limelight extends SubsystemBase implements Toggleable  {
         data_entry_led_mode    = limelight_data.getEntry("ledMode");
         data_entry_pipeline    = limelight_data.getEntry("pipeline");
         
+        data_entry_led_mode.setDouble(LedMode.kModeOn.value);
+
         data_entry_has_targets = limelight_data.getEntry("tv");
 
         track_data             = new Vector3(0, 0, 0);

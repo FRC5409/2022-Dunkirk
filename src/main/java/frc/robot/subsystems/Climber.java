@@ -43,8 +43,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.NetworkButton;
 import frc.robot.Constants;
 import frc.robot.Constants.kID;
+import frc.robot.base.ValueProperty;
 import frc.robot.commands.ElevateTo;
 import frc.robot.commands.FindElevatorZero;
+import frc.robot.utils.MotorUtils;
 
 public class Climber extends SubsystemBase {
   private CANSparkMax mot_main;
@@ -60,10 +62,12 @@ public class Climber extends SubsystemBase {
   public ArrayList<Double> measuredDistances = new ArrayList<>();
   private final DoubleSolenoid dsl_lock;
 
+  private ValueProperty<Boolean> climberActive;
+
   /**
    * Constructor for the climber.
    */
-  public Climber() {
+  public Climber(ValueProperty<Boolean> climberActive) {
     mot_main = new CANSparkMax(Constants.kClimber.CAN_MASTER_MOT, MotorType.kBrushless);
     mot_main.setInverted(false);
     mot_main.setIdleMode(IdleMode.kBrake);
@@ -90,6 +94,8 @@ public class Climber extends SubsystemBase {
     tof_front = null;
 
     dsl_lock = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, 14, 15);
+
+    this.climberActive = climberActive;
 
     // Gives absolute motor positions of 0 - 360 degrees, all positive values.
     // mot_main.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
@@ -263,7 +269,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void findZero() {
-    controller_main.setReference(-0.2, ControlType.kDutyCycle);
+    controller_main.setReference(-0.3, ControlType.kDutyCycle);
   }
 
   // ---------------------------- Auto Align ---------------------------- //
@@ -334,6 +340,19 @@ public class Climber extends SubsystemBase {
   }
 
   public boolean getLocked() {
-    return locked;
+    return dsl_lock.get() == DoubleSolenoid.Value.kForward;
+  }
+
+  public boolean getActive() {
+    return climberActive.get();
+  }
+
+  public void raiseFrames() {
+    MotorUtils.setDefaultStatusPeriod(mot_main);
+  }
+
+  public void lowerFrames() {
+    MotorUtils.lowerFollowerStatusPeriod(mot_main);
+    MotorUtils.lowerFollowerStatusPeriod(mot_follower);
   }
 }

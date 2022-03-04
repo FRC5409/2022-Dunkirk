@@ -6,17 +6,20 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DriveStraight extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    private float driveSpeed;
     private DriveTrain sys_drive;
+    double leftSpeed;
+    double rightSpeed;
   
     /**
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
-     */
-    public DriveStraight(DriveTrain subsystem, float d) {
+
+    public DriveStraight(DriveTrain subsystem, double d, double e) {
       sys_drive = subsystem;
-      driveSpeed = d;
+      leftSpeed = d;
+      rightSpeed = e;
+
       // Use addRequirements() here to declare subsystem dependencies.
       addRequirements(sys_drive);
     }
@@ -28,7 +31,7 @@ public class DriveStraight extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        sys_drive.tankDrive(driveSpeed, driveSpeed);
+        sys_drive.tankDrive(leftSpeed, rightSpeed);
     }
   
     // Called once the command ends or is interrupted.
