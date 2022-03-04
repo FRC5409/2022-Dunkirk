@@ -14,11 +14,12 @@ public class DriveStraight extends CommandBase {
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
-     */
+
     public DriveStraight(DriveTrain subsystem, double d, double e) {
       sys_drive = subsystem;
       leftSpeed = d;
       rightSpeed = e;
+
       // Use addRequirements() here to declare subsystem dependencies.
       addRequirements(sys_drive);
     }
