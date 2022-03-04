@@ -213,7 +213,9 @@ public class RobotContainer {
 
     Trigger climberToggleTrigger = new Trigger(climberActive::get);
 
-    joystick_secondary.getButton(ButtonType.kStart).whenPressed(new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber));
+    joystick_secondary.getButton(ButtonType.kStart)
+      .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber))
+      .beforeStarting(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear)));
 
     joystick_secondary.getButton(ButtonType.kX).and(climberToggleTrigger).whenActive(new AutoAlign(Climber, DriveTrain, 180));
     joystick_secondary.getButton(ButtonType.kB).and(climberToggleTrigger).whenActive(() -> {

@@ -9,7 +9,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants;
 import frc.robot.Constants.kID;
 import frc.robot.subsystems.DriveTrain;
 
@@ -41,12 +41,16 @@ public class Pigeon extends SubsystemBase{
         gyro_pigeon.reset();
 
         m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
-        
-        SmartDashboard.putBoolean("Manual Override Enabled", false);
 
-        SmartDashboard.putNumber("manual roll", 0);
-        SmartDashboard.putNumber("manual pitch", 0);
-        SmartDashboard.putNumber("manual yaw", 0);
+        if(Constants.kConfig.DEBUG){
+            SmartDashboard.putBoolean("Manual Override Enabled", false);
+            SmartDashboard.putNumber("manual roll", 0);
+            SmartDashboard.putNumber("manual pitch", 0);
+            SmartDashboard.putNumber("manual yaw", 0);
+        }
+
+        m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
+
     }
 
     // getters

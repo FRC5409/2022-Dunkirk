@@ -63,7 +63,7 @@ public class TrainerLookShooterState extends StateCommandBase {
         if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
             turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
             
-        SmartDashboard.putNumber("Aligninment Offset", target.x);
+        if(Constants.kConfig.DEBUG) SmartDashboard.putNumber("Aligninment Offset", target.x);
         
         dashboard.update();
     }

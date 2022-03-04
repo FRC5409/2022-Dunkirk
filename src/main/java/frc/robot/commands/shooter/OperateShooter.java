@@ -18,10 +18,9 @@ import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.Constants;
 
 /**
- * This command runs the turret flywheel at a speed
- * porportional to the distance of the turret from the
- * shooting target and operates the indexer once the rpm
- * reaches it's setpoint.
+ * This is a StateCommandGroup commmand that handles all the states for the shooter. 
+ * The states are the Search state, Sweep state, Align state, and the OperateShooter state. 
+ * The default state is the search state. 
  * 
  * @author Keith Davies
  */

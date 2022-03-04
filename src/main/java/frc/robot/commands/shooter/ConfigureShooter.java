@@ -8,6 +8,10 @@ import frc.robot.base.shooter.ShooterMode;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
+/**
+ * Command for configuring the shooter. Whenever you want
+ * to change a part of the configuration for the shooter, use this command. 
+ */
 public class ConfigureShooter extends CommandBase {
     private final Property<ShooterConfiguration> configuration;
     private final ShooterMode target;
@@ -15,6 +19,13 @@ public class ConfigureShooter extends CommandBase {
     private final ShooterTurret turret;
     private final Limelight limelight;
 
+    /**
+     * 
+     * @param turret
+     * @param limelight
+     * @param configuration Configuration to apply the new config to, pass in the current config you are using for the shooter. 
+     * @param target
+     */
     public ConfigureShooter(
         ShooterTurret turret,
         Limelight limelight,

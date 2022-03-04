@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import frc.robot.Constants;
 import frc.robot.Constants.kIndexer;
 import frc.robot.utils.MotorUtils;
 import frc.robot.utils.Toggleable;
@@ -29,6 +30,11 @@ public class Indexer extends SubsystemBase implements Toggleable{
   protected TimeOfFlight TOF_Ext;
   protected TimeOfFlight TOF_Ent;
   protected TimeOfFlight TOF_Ball1;
+
+  public boolean isBallAtEnt   = false;
+  public boolean isBallAtExt   = false;
+  public boolean isBallAtBall1 = false;
+
   protected boolean isRangeValid_Ball1;
   protected boolean isRangeValid_Ext;
   protected boolean isRangeValid_Ent;
@@ -77,6 +83,7 @@ public class Indexer extends SubsystemBase implements Toggleable{
     enc_indexerBelt = indexerBelt_neo.getEncoder();
   }
 
+
   // INDEXER METHODS
   // ------------------------------------------------------------------------------------
 
@@ -105,10 +112,15 @@ public class Indexer extends SubsystemBase implements Toggleable{
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("TOF Enter", TOF_Ent.getRange());
-    SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
-    SmartDashboard.putNumber("TOF Ball1", TOF_Ball1.getRange());
+    if(Constants.kConfig.DEBUG){
+      SmartDashboard.putNumber("TOF Enter", TOF_Ent.getRange());
+      SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
+      SmartDashboard.putNumber("TOF Ball1", TOF_Ball1.getRange());
+    }
 
+    isBallAtBall1 = ballDetectionBall1();
+    isBallAtEnt = ballDetectionEnter();
+    isBallAtExt = ballDetectionExit(); 
 
     if(ballDetectionEnter() == true){
       countBalls = 1; 
@@ -123,9 +135,10 @@ public class Indexer extends SubsystemBase implements Toggleable{
     } else {
       shooterReady = false; 
     }
-
-    SmartDashboard.putNumber("Number of Balls in Indexer", countBalls); 
-    SmartDashboard.putBoolean("Ready to Shoot", shooterReady);
+    if(Constants.kConfig.DEBUG){
+      SmartDashboard.putNumber("Number of Balls in Indexer", countBalls); 
+      SmartDashboard.putBoolean("Ready to Shoot", shooterReady);
+    }
   }
 
 
