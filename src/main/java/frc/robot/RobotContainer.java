@@ -50,10 +50,6 @@ import frc.robot.subsystems.Pneumatics;
 
 
 import frc.robot.commands.*;
-import frc.robot.commands.autonomous.trajectoryAuto.OneBallAuto;
-import frc.robot.commands.autonomous.trajectoryAuto.ThreeBallsAuto;
-import frc.robot.commands.autonomous.trajectoryAuto.TwoBallsAuto;
-import frc.robot.commands.autonomous.trajectoryAuto.ZeroBallAuto;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.training.*;
 import frc.robot.subsystems.*;
@@ -87,7 +83,6 @@ public class RobotContainer {
     // Subsystems defined
     private final DriveTrain               DriveTrain;
     private final Pneumatics               Pneumatics;
-    private final Pigeon                   Pigeon;
     private final Indexer                  Indexer;
     private final Intake                   Intake;
     private final ShooterFlywheel          Flywheel;
@@ -118,7 +113,6 @@ public class RobotContainer {
         // Initialize sub systems
         DriveTrain  = new DriveTrain();
         Pneumatics  = new Pneumatics();
-        Pigeon      = new Pigeon();
         Intake      = new Intake();
         Indexer     = new Indexer();
         Flywheel    = new ShooterFlywheel();

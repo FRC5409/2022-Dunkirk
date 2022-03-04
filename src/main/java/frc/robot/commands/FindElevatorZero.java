@@ -7,7 +7,6 @@ package frc.robot.commands;
 import frc.robot.Constants.kDriveTrain;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Pigeon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

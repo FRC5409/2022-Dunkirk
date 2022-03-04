@@ -296,7 +296,7 @@ public final class Constants {
         public static final double ROBOT_HEIGHT        = 4;
         public static final double FIXED_ANGLE         = 45;
         public static final Range  TARGET_RANGE        = new Range(-10, 20);
-        public static final double ALIGNMENT_THRESHOLD = 0.08;
+        public static final double ALIGNMENT_THRESHOLD = 1.18;
         public static final double TURRET_MAX_SPEED    = 0.42;
 
         // Range Configurations
@@ -400,6 +400,8 @@ public final class Constants {
         public static final double FEEDER_VELOCITY = -4500*1.5;
 
         public static final int OFFSET_INCREMENT = 50;
+
+        public static final double SHOOTER_MAX_SWEEEP = 2;
     }
     
     public static final class Vision {

@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Pigeon;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** A simple drive straight command that can be used by the DriveTrain */
