@@ -111,11 +111,13 @@ public class DriveTrain extends SubsystemBase {
         gyro_pigeon = new WPI_PigeonIMU(kID.Pigeon);
         gyro_pigeon.reset();
         
-        SmartDashboard.putBoolean("Manual Override Enabled", false);
+        if(Constants.kConfig.DEBUG){
+            SmartDashboard.putBoolean("Manual Override Enabled", false);
 
-        SmartDashboard.putNumber("manual roll", 0);
-        SmartDashboard.putNumber("manual pitch", 0);
-        SmartDashboard.putNumber("manual yaw", 0);
+            SmartDashboard.putNumber("manual roll", 0);
+            SmartDashboard.putNumber("manual pitch", 0);
+            SmartDashboard.putNumber("manual yaw", 0);
+        }
 
         m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
 
