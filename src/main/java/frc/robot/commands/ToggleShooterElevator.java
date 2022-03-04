@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Button;
@@ -35,7 +36,7 @@ public class ToggleShooterElevator extends CommandBase {
     @Override
     public void execute() {
         climberActive.set(!climberActive.get());
-        System.out.println(" Climber active: " + climberActive.get());
+        SmartDashboard.putBoolean("Climber active", climberActive.get());
     }
 
     @Override

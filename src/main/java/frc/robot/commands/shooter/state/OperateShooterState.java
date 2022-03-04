@@ -86,12 +86,14 @@ public class OperateShooterState extends StateCommandBase {
             indexer.indexerOn(1);
         }
 
-        SmartDashboard.putNumber("Velocity Prediction", velocity);
-        SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
-        
-        SmartDashboard.putNumber("Distance Prediction (ft)", distance);
-        SmartDashboard.putNumber("Aligninment Offset", target.x);
-        SmartDashboard.putNumber("Velocity Offset", offset.get());
+        if(Constants.kConfig.DEBUG){
+            SmartDashboard.putNumber("Velocity Prediction", velocity);
+            SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
+            
+            SmartDashboard.putNumber("Distance Prediction (ft)", distance);
+            SmartDashboard.putNumber("Aligninment Offset", target.x);
+            SmartDashboard.putNumber("Velocity Offset", offset.get());
+        }
 
     }
 
