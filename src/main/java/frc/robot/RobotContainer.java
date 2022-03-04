@@ -8,7 +8,6 @@ package frc.robot;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 import frc.robot.commands.shooter.HoodDown;
 import frc.robot.commands.shooter.HoodUp;
@@ -16,7 +15,6 @@ import frc.robot.commands.shooter.HoodUp;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import frc.robot.Constants.kAuto;
 //Constants
 import frc.robot.base.Joystick;
 import frc.robot.base.ValueProperty;
@@ -24,15 +22,7 @@ import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
-import java.util.List;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -49,7 +39,6 @@ import frc.robot.commands.*;
 import frc.robot.commands.autonomous.trajectoryAuto.OneBallAuto;
 import frc.robot.commands.autonomous.trajectoryAuto.ThreeBallsAuto;
 import frc.robot.commands.autonomous.trajectoryAuto.TwoBallsAuto;
-import frc.robot.commands.autonomous.trajectoryAuto.ZeroBallAuto;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.training.*;
 import frc.robot.subsystems.*;
@@ -142,7 +131,7 @@ public class RobotContainer {
 
     autoCommandSelector = new SendableChooser<Command>();
     
-    autoCommandSelector.setDefaultOption("Default", new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
+    autoCommandSelector.setDefaultOption("Default", new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
     autoCommandSelector.addOption("One", new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
     autoCommandSelector.addOption("Two", new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
     autoCommandSelector.addOption("Three", new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
