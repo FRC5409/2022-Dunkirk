@@ -39,7 +39,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pneumatics;
@@ -147,6 +147,7 @@ public class RobotContainer {
     autoCommandSelector.addOption("Two", new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
     autoCommandSelector.addOption("Three", new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
 
+    SmartDashboard.putData("Auto Chooser", autoCommandSelector);
 
     Shuffleboard.getTab("Shooter").add("Hood up", new HoodUp(turret));
     Shuffleboard.getTab("Shooter").add("Hood down", new HoodDown(turret));
