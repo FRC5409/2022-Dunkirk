@@ -136,6 +136,7 @@ public final class Constants {
     }
 
     public static final class kDriveTrain{
+        
         // Current Limits
         public static final double CurrentLimit = 65;
         public static final double TriggerThresholdCurrent = 65;
@@ -143,7 +144,6 @@ public final class Constants {
 
         // Encoders
         public static final double encoderToMeterConversionFactor = 1;
-        
 
         public static final double encoderCPR = 2048;
         public static final double wheelCircumferenceInches = 4 * Math.PI;
@@ -216,6 +216,8 @@ public final class Constants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
 
+        public static final double kDistanceRatio = -0.95;
+
         public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = 
             new DifferentialDriveVoltageConstraint(
                 new SimpleMotorFeedforward(ksVolts, 
@@ -227,21 +229,20 @@ public final class Constants {
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)
-            .setEndVelocity(0);
+            .setEndVelocity(0)
+            .setReversed(true);
 
         public static final TrajectoryConfig configNoStop = 
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)    
-            .setEndVelocity(1.9);
+            .setEndVelocity(1.6)
+            .setReversed(true);
+
     }
 
     public final class Falcon500 {
         public static final double unitsPerRotation = 2048;
-    }
-
-    public final class kColour {
-        public static final int proximityThreshold = 100;
     }
 
     public final class kIndexer {
@@ -289,7 +290,6 @@ public final class Constants {
         // Range Configurations
                
         // Height in meters
-        public static final double ALIGNMENT_THRESHOLD = 0.08;
         public static final double TURRET_MAX_SPEED    = 0.42;
 
         // Range Configurations
@@ -326,6 +326,10 @@ public final class Constants {
 
         public static final double PRE_SHOOTER_VELOCITY = 0;
 
+        public static final double LOW_FLYWHEEL_VELOCITY = 600;
+        public static final double GUARD_FLYWHEEL_VELOCITY = 800;
+        public static final double NEAR_FLYWHEEL_VELOCITY = 2000;
+
         public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
             ShooterMode.kFar, new ShooterConfiguration(
                 ShooterMode.kFar,
@@ -349,7 +353,7 @@ public final class Constants {
                 VisionPipeline.NEAR_TARGETING, 
                 HoodPosition.kDown,
                 new ShooterModel(
-                    0d, 0d, 0d, Constants.Shooter.SPEED_RANGE.normalize(1675.78125),
+                    0d, 0d, 0d, Constants.Shooter.SPEED_RANGE.normalize(NEAR_FLYWHEEL_VELOCITY),
                     90.0 - 45.5,
                     45 / 12.0,
                     1d,
@@ -374,9 +378,6 @@ public final class Constants {
         public static final double FEEDER_VELOCITY = -4500*1.5;
 
         public static final int OFFSET_INCREMENT = 50;
-
-        public static final double LOW_FLYWHEEL_VELOCITY = 0;
-        public static final double GUARD_FLYWHEEL_VELOCITY = 0;
     }
     
     public static final class Vision {

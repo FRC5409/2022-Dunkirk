@@ -6,10 +6,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.kID;
+import frc.robot.subsystems.DriveTrain;
 
 public class Pigeon extends SubsystemBase{
     
@@ -37,7 +39,9 @@ public class Pigeon extends SubsystemBase{
     public Pigeon(){
         gyro_pigeon = new WPI_PigeonIMU(kID.Pigeon);
         gyro_pigeon.reset();
-        
+
+        m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
+
         if(Constants.kConfig.DEBUG){
             SmartDashboard.putBoolean("Manual Override Enabled", false);
             SmartDashboard.putNumber("manual roll", 0);
@@ -228,6 +232,7 @@ public class Pigeon extends SubsystemBase{
     }
 
     public void resetOdometry(Pose2d pose) {
+        // System.out.println(pose);
         m_odometry.resetPosition(pose, gyro_pigeon.getRotation2d());
     }
 }

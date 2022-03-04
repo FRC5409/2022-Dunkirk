@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import frc.robot.Constants;
 import frc.robot.Constants.kDriveTrain;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Pigeon;
@@ -53,8 +54,7 @@ public class DefaultDrive extends CommandBase {
           default:
             aadilDriveExecute();
       }
-      
-      drive.displayDriveMode();
+      if(Constants.kConfig.DEBUG) drive.displayDriveMode();
   }
 
   /**
