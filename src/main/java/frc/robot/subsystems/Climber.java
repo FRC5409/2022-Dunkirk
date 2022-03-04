@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.NetworkButton;
 import frc.robot.Constants;
 import frc.robot.Constants.kID;
+import frc.robot.base.ValueProperty;
 import frc.robot.commands.ElevateTo;
 import frc.robot.commands.FindElevatorZero;
 import frc.robot.utils.MotorUtils;
@@ -61,12 +62,12 @@ public class Climber extends SubsystemBase {
   public ArrayList<Double> measuredDistances = new ArrayList<>();
   private final DoubleSolenoid dsl_lock;
 
-  private boolean active = false;
+  private ValueProperty<Boolean> climberActive;
 
   /**
    * Constructor for the climber.
    */
-  public Climber() {
+  public Climber(ValueProperty<Boolean> climberActive) {
     mot_main = new CANSparkMax(Constants.kClimber.CAN_MASTER_MOT, MotorType.kBrushless);
     mot_main.setInverted(false);
     mot_main.setIdleMode(IdleMode.kBrake);
@@ -93,6 +94,8 @@ public class Climber extends SubsystemBase {
     tof_front = null;
 
     dsl_lock = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, 14, 15);
+
+    this.climberActive = climberActive;
 
     // Gives absolute motor positions of 0 - 360 degrees, all positive values.
     // mot_main.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
@@ -317,9 +320,11 @@ public class Climber extends SubsystemBase {
 
     double avg = sum / measuredDistances.size();
 
-    SmartDashboard.putNumberArray("Distances", arr);
-    SmartDashboard.putNumber("Avergae Distance", avg);
-    SmartDashboard.putBoolean("AVG CALLED", true);
+    if(Constants.kConfig.DEBUG){
+      SmartDashboard.putNumberArray("Distances", arr);
+      SmartDashboard.putNumber("Avergae Distance", avg);
+      SmartDashboard.putBoolean("AVG CALLED", true);
+    }
     return avg;
   }
 
@@ -341,11 +346,7 @@ public class Climber extends SubsystemBase {
   }
 
   public boolean getActive() {
-    return active;
-  }
-
-  public void setActive(boolean val) {
-    active = val;
+    return climberActive.get();
   }
 
   public void raiseFrames() {

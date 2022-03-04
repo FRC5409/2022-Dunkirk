@@ -6,10 +6,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants;
 import frc.robot.Constants.kID;
+import frc.robot.subsystems.DriveTrain;
 
 public class Pigeon extends SubsystemBase{
     
@@ -32,16 +34,20 @@ public class Pigeon extends SubsystemBase{
     public double y_acceleration;
     public double z_acceleration;
 
+    DriveTrain driveTrain = new DriveTrain();
 
     public Pigeon(){
         gyro_pigeon = new WPI_PigeonIMU(kID.Pigeon);
         gyro_pigeon.reset();
-        
-        SmartDashboard.putBoolean("Manual Override Enabled", false);
 
-        SmartDashboard.putNumber("manual roll", 0);
-        SmartDashboard.putNumber("manual pitch", 0);
-        SmartDashboard.putNumber("manual yaw", 0);
+        m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
+
+        if(Constants.kConfig.DEBUG){
+            SmartDashboard.putBoolean("Manual Override Enabled", false);
+            SmartDashboard.putNumber("manual roll", 0);
+            SmartDashboard.putNumber("manual pitch", 0);
+            SmartDashboard.putNumber("manual yaw", 0);
+        }
 
         m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
 
@@ -84,6 +90,9 @@ public class Pigeon extends SubsystemBase{
      * This method is called once per scheduler run and is used to update smart dashboard data.
      */
     public void periodic() {
+        m_odometry.update(
+            gyro_pigeon.getRotation2d(), driveTrain.getEncoderPositionLeft(), driveTrain.getEncoderPositionRight()); 
+        // TODO: causes drivetrain to move weirdly, also cause doiuble solenoid to return error
     }
 
     @Override
@@ -213,7 +222,17 @@ public class Pigeon extends SubsystemBase{
         return m_odometry;
     }
 
+    /**
+     * Returns the heading of the robot.
+     *
+     * @return the robot's heading in degrees, from -180 to 180
+     */
+    public double getHeading() {
+        return gyro_pigeon.getRotation2d().getDegrees();
+    }
+
     public void resetOdometry(Pose2d pose) {
+        // System.out.println(pose);
         m_odometry.resetPosition(pose, gyro_pigeon.getRotation2d());
     }
 }

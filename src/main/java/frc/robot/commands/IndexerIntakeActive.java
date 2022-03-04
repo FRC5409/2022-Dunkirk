@@ -9,6 +9,9 @@ import frc.robot.subsystems.Indexer;
 
 import com.revrobotics.CANSparkMax.ControlType;
 
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -23,15 +26,37 @@ public class IndexerIntakeActive extends CommandBase {
 
   String state = "";
 
+  Timer rumbleTimer = new Timer();
+  double timeout = 0.5;
+
+  boolean isRumbling = false;
+
+  XboxController joyMain;
+  XboxController joySecondary;
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param indexer The subsystem used by this command.
    */
+  public IndexerIntakeActive(Indexer indexer, Intake intake, XboxController _joyMain, XboxController _joySecondary) {
+    sys_indexer = indexer;
+    sys_intake = intake;
+
+    joyMain = _joyMain;
+    joySecondary = _joySecondary;
+    
+
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(indexer, intake);
+  }
+
   public IndexerIntakeActive(Indexer indexer, Intake intake) {
     sys_indexer = indexer;
     sys_intake = intake;
 
+    joyMain = new XboxController(0);
+    joySecondary = new XboxController(1);
     
 
     // Use addRequirements() here to declare subsystem dependencies.
@@ -43,7 +68,7 @@ public class IndexerIntakeActive extends CommandBase {
   public void initialize() {
 
     sys_intake.intakeOn(0.3);
-    sys_intake.intakeIn(1);
+    //sys_intake.intakeIn(1);
     sys_indexer.indexerOn(1);
     sys_intake.solenoidsDown();
 
@@ -53,6 +78,34 @@ public class IndexerIntakeActive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    /*
+    // controller rumble
+    if(!TOF_Ball1 && sys_indexer.ballDetectionBall1()){
+      rumbleTimer.reset();
+      isRumbling = true;
+    }
+
+    if(isRumbling){
+      joyMain.setRumble(RumbleType.kLeftRumble, 1);
+      joyMain.setRumble(RumbleType.kRightRumble, 1);
+
+      joySecondary.setRumble(RumbleType.kLeftRumble, 1);
+      joySecondary.setRumble(RumbleType.kRightRumble, 1);
+    }
+    else{
+      joyMain.setRumble(RumbleType.kLeftRumble, 0);
+      joyMain.setRumble(RumbleType.kRightRumble, 0);
+
+      joySecondary.setRumble(RumbleType.kLeftRumble, 0);
+      joySecondary.setRumble(RumbleType.kRightRumble, 0);
+
+    }
+
+    if(rumbleTimer.get() > timeout){
+      isRumbling = false;
+    }
+    */
+
     TOF_Ent = sys_indexer.ballDetectionEnter();
     TOF_Ball1 = sys_indexer.ballDetectionBall1();
     TOF_Ext = sys_indexer.ballDetectionExit();

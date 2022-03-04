@@ -5,22 +5,18 @@
 package frc.robot;
 
 // Subsystems
-import frc.robot.training.Setpoint;
-import frc.robot.training.SetpointType;
-import frc.robot.training.TrainerContext;
-import frc.robot.training.TrainerDashboard;
-import frc.robot.training.protocol.NetworkClient;
-import frc.robot.training.protocol.NetworkSocket;
-import frc.robot.training.protocol.SendableContext;
-import frc.robot.training.protocol.generic.ArraySendable;
-import frc.robot.training.protocol.generic.BundleSendable;
-import frc.robot.training.protocol.generic.StringSendable;
-import frc.robot.training.protocol.generic.ValueSendable;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
+
 import frc.robot.commands.shooter.HoodDown;
 import frc.robot.commands.shooter.HoodUp;
 
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
+import frc.robot.Constants.kAuto;
 //Constants
 import frc.robot.base.Joystick;
 import frc.robot.base.Property;
@@ -32,19 +28,47 @@ import frc.robot.base.shooter.ShooterModel;
 import frc.robot.base.shooter.SweepDirection;
 
 import java.io.IOException;
+import java.util.List;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pneumatics;
 
+
 import frc.robot.commands.*;
+import frc.robot.commands.autonomous.trajectoryAuto.OneBallAuto;
+import frc.robot.commands.autonomous.trajectoryAuto.ThreeBallsAuto;
+import frc.robot.commands.autonomous.trajectoryAuto.TwoBallsAuto;
+import frc.robot.commands.autonomous.trajectoryAuto.ZeroBallAuto;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.training.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.shooter.*;
+import frc.robot.training.Setpoint;
+import frc.robot.training.SetpointType;
+import frc.robot.training.TrainerContext;
+import frc.robot.training.TrainerDashboard;
+import frc.robot.training.protocol.NetworkClient;
+import frc.robot.training.protocol.NetworkSocket;
+import frc.robot.training.protocol.SendableContext;
+import frc.robot.training.protocol.generic.ArraySendable;
+import frc.robot.training.protocol.generic.BundleSendable;
+import frc.robot.training.protocol.generic.StringSendable;
+import frc.robot.training.protocol.generic.ValueSendable;
 
 /**
  * This class is where the bulk of the robot should be declared. Since

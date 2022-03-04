@@ -1,31 +1,31 @@
 package frc.robot.commands.shooter;
 
-import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.StateCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
-import frc.robot.base.shooter.ShooterMode;
-import frc.robot.base.shooter.ShooterModel;
 import frc.robot.base.shooter.SweepDirection;
+
 import frc.robot.commands.shooter.state.AlignShooterState;
 import frc.robot.commands.shooter.state.OperateShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
 import frc.robot.commands.shooter.state.SweepShooterState;
+
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
+import frc.robot.Constants;
+
 /**
- * This command runs the turret flywheel at a speed
- * porportional to the distance of the turret from the
- * shooting target and operates the indexer once the rpm
- * reaches it's setpoint.
+ * This is a StateCommandGroup commmand that handles all the states for the shooter. 
+ * The states are the Search state, Sweep state, Align state, and the OperateShooter state. 
+ * The default state is the search state. 
  * 
  * @author Keith Davies
  */
 public final class OperateShooter extends StateCommandGroup {
-    private final Property<ShooterConfiguration> configuration;
+    private final Property<Integer> offset;
     private final ShooterFlywheel flywheel;
     private final ShooterTurret turret;
     private final Limelight limelight;
@@ -37,23 +37,24 @@ public final class OperateShooter extends StateCommandGroup {
         ShooterFlywheel flywheel,
         Indexer indexer,
         Property<SweepDirection> direction,
-        Property<ShooterConfiguration> configuration
+        Property<ShooterConfiguration> configuration,
+        Property<Integer> offset
     ) {
 
         addCommands(
             new SearchShooterState(limelight),
             new SweepShooterState(limelight, turret, direction),
             new AlignShooterState(limelight, turret),
-            new OperateShooterState(limelight, turret, flywheel, indexer, configuration)
+            new OperateShooterState(limelight, turret, flywheel, indexer, configuration, offset)
         ); 
 
         setDefaultState("frc.robot.shooter:search");
 
-        this.configuration = configuration;
         this.limelight = limelight;
         this.flywheel = flywheel;
         this.indexer = indexer;
         this.turret = turret;
+        this.offset = offset;
     }
 
     @Override
@@ -64,7 +65,7 @@ public final class OperateShooter extends StateCommandGroup {
         turret.enable();
 
         flywheel.setVelocity(
-            configuration.get().getModel().calculate(Constants.Shooter.PRE_SHOOTER_DISTANCE)
+            Constants.Shooter.PRE_SHOOTER_VELOCITY + offset.get()
         );
 
         super.initialize();
