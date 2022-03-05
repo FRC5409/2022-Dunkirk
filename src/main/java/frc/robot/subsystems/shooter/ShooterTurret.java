@@ -56,7 +56,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
             enc_main.setPosition(0);
 
         ctr_main = mot_main.getPIDController();
-            ctr_main.setOutputRange(-0.5, 0.5);
+            ctr_main.setOutputRange(Constants.Shooter.TURRET_OUTPUT_RANGE.min(), Constants.Shooter.TURRET_OUTPUT_RANGE.max());
         MotorUtils.setGains(ctr_main, Constants.Shooter.TURRET_GAINS);
 
         lim_zero = new DigitalInput(Constants.kID.TurretLimitSwitch1);
@@ -71,9 +71,9 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         fields.put("rotation", Shuffleboard.getTab("Turret")
             .add("Turret Rotation", 0).getEntry());
 
+        calibrated = false;
         enabled = false;
         target = 0;
-        calibrated = false;
     }
 
     /**
