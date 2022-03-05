@@ -1,5 +1,6 @@
 package frc.robot.commands.shooter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Indexer;
@@ -45,12 +46,12 @@ public final class RunShooter extends CommandBase {
         indexer.enable();
 
         flywheel.setVelocity(target);
+        flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
     }
 
     @Override
     public void execute() {     
-        if (flywheel.isTargetReached()) {
-            flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
+        if (flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
             indexer.indexerOn(indexerTarget);
         }
     }

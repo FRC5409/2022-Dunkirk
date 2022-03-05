@@ -8,10 +8,7 @@ package frc.robot;
 // Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-import frc.robot.commands.shooter.HoodDown;
-import frc.robot.commands.shooter.HoodUp;
-
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -171,8 +168,6 @@ public class RobotContainer {
     DriveTrain.setDefaultCommand(defaultDrive);
     // Indexer.setDefaultCommand(indexerActive);
     Climber.setDefaultCommand(new DefaultElevator(Climber, joystick_secondary.getController()));
-
-    CommandScheduler.getInstance().schedule(new FindElevatorZero(Climber));
   }
 
 
@@ -199,9 +194,10 @@ public class RobotContainer {
     
     // TODO: temp
     joystick_main.getButton(ButtonType.kX).whileHeld(new IndexerIntakeActive(Indexer, Intake));
-    joystick_main.getButton(ButtonType.kX).whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.25));
+    joystick_main.getButton(ButtonType.kX).whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.2));
 
     Trigger climberToggleTrigger = new Trigger(climberActive::get);
+    Trigger shooterModeTrigger = new Trigger(() -> shooterConfiguration.get().getMode() == ShooterMode.kNear);
 
     joystick_secondary.getButton(ButtonType.kStart)
       .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber))
@@ -214,12 +210,19 @@ public class RobotContainer {
     joystick_secondary.getButton(ButtonType.kY).and(climberToggleTrigger).whenActive(() -> {
       Climber.zeroEncoder();
     });
-
     joystick_secondary.getButton(ButtonType.kLeftBumper).and(climberToggleTrigger).whenActive(new FindElevatorZero(Climber));
 
-    joystick_secondary.getButton(ButtonType.kRightBumper).and(climberToggleTrigger.negate()).whileActiveContinuous(
-      new OperateShooter(limelight, turret, Flywheel, Indexer, shooterSweepDirection, shooterConfiguration, shooterOffset)
-    ).whenInactive(new RotateTurret(turret, 0));
+    joystick_secondary.getButton(ButtonType.kRightBumper)
+      .and(climberToggleTrigger.negate())
+      .and(shooterModeTrigger.negate())
+      .whileActiveContinuous(new OperateShooter(limelight, turret, Flywheel, Indexer, shooterSweepDirection, shooterConfiguration, shooterOffset))
+      .whenInactive(new RotateTurret(turret, 0));
+      
+    joystick_secondary.getButton(ButtonType.kRightBumper)
+      .and(climberToggleTrigger.negate())
+      .and(shooterModeTrigger)
+      .whileActiveContinuous(new RunShooter(Flywheel, Indexer, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85))
+      .whenInactive(new RotateTurret(turret, 0));
 
     joystick_secondary.getButton(ButtonType.kUpPov)
         .and(joystick_secondary.getButton(ButtonType.kA).negate()).and(climberToggleTrigger.negate())
@@ -261,5 +264,15 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
    
     return autoCommandSelector.getSelected(); 
+  }
+
+  /**
+   * Method for scheduling commands at the beginning of teleop.
+   */
+  public Command getTeleopCommand(){
+    return new ParallelCommandGroup(
+      new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
+      new FindElevatorZero(Climber)
+    );
   }
 }

@@ -172,8 +172,12 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
      * Method for getting the feeder wheel rpm. 
      * @return The feeder RPM. 
      */
-    private double getFeederRpm() {
+    public double getFeederRpm() {
         return enc_feeder.getVelocity();
+    }
+
+    public double getFeederTarget() {
+        return feederTarget;
     }
 
 }
