@@ -46,7 +46,7 @@ public final class OperateDriveShooter extends StateCommandGroup {
             new SearchShooterState(limelight),
             new SweepShooterState(limelight, turret, direction),
             new AlignShooterState(limelight, turret),
-            new OperateDriveShooterState(limelight, turret, flywheel, drivetrain, indexer, configuration, offset)
+            new OperateDriveShooterState(limelight, turret, flywheel, drivetrain, indexer, configuration)
         ); 
 
         setDefaultState("frc.robot.shooter:search");

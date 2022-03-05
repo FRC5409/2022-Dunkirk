@@ -32,7 +32,6 @@ import frc.robot.Constants;
  */
 public class OperateDriveShooterState extends StateCommandBase {
     private final Property<ShooterConfiguration> configuration;
-    private final Property<Integer> offset;
     private final ShooterFlywheel flywheel;
     private final ShooterTurret turret;
     private final DriveTrain drivetrain;
@@ -40,6 +39,9 @@ public class OperateDriveShooterState extends StateCommandBase {
     private final Indexer indexer;
     
     private ShooterModel model;
+
+    private double dt;
+    private double dtexec;
     
     public OperateDriveShooterState(
         Limelight limelight,
@@ -47,8 +49,7 @@ public class OperateDriveShooterState extends StateCommandBase {
         ShooterFlywheel flywheel,
         DriveTrain drivetrain,
         Indexer indexer,
-        Property<ShooterConfiguration> configuration,
-        Property<Integer> offset
+        Property<ShooterConfiguration> configuration
     ) {
         this.configuration = configuration;
         this.drivetrain = drivetrain;
@@ -56,10 +57,8 @@ public class OperateDriveShooterState extends StateCommandBase {
         this.flywheel = flywheel;
         this.indexer = indexer;
         this.turret = turret;
-        this.offset = offset;
-
-        SmartDashboard.setDefaultNumber("Alignment Offset Slope", 0);
-        SmartDashboard.putNumber("Alignment Offset Slope", SmartDashboard.getNumber("Alignment Offset Slope", 0));
+        dt = 3;
+        dtexec = 0;
 
         // we purposely do not require the drivetrain as to not
         // interrupt any currently executing drive commands
@@ -73,24 +72,56 @@ public class OperateDriveShooterState extends StateCommandBase {
 
         //flywheel.spinFeeder(4500);
         model = configuration.get().getModel();
+        dt = 3;
+
+        Vector2 target = limelight.getTarget();
+        double robotVelocity = drivetrain.getEncoderVelocity();
+        double angleOfTurret = Math.toRadians(turret.getRotation());
+
+        double distance = model.distance(target.y) + -1*robotVelocity* Math.cos(angleOfTurret)*dt;
+        double velocity = model.calculate(distance);
+
+        //speed lateral to the hub, or perpendicular to the direct distance from the hub.
+        double lateralDist = robotVelocity * Math.sin(angleOfTurret)*dt;
+
+        double turretNewPos = Math.tanh(lateralDist/distance);
+
+        turret.setRotationTarget(turret.getRotation() + turretNewPos);
+
+        // Set flywheel to estimated velocity
+        flywheel.setVelocity(velocity);
+        flywheel.spinFeeder(5000);
+        dtexec = System.currentTimeMillis();
     }
 
     @Override
     public void execute() {
-        Vector2 target = limelight.getTarget();
+        model = configuration.get().getModel();
+        dt = 3;
 
-        double distance = model.distance(target.y);
+        Vector2 target = limelight.getTarget();
+        double robotVelocity = drivetrain.getEncoderVelocity();
+        double angleOfTurret = Math.toRadians(turret.getRotation());
+
+        double distance = model.distance(target.y) + -1*robotVelocity* Math.cos(angleOfTurret)*dt;
         double velocity = model.calculate(distance);
 
-        double alignmentOffset = drivetrain.getEncoderVelocity() * SmartDashboard.getNumber("Alignment Offset Slope", 0);
-        SmartDashboard.putNumber("Drive Rotation Offset", alignmentOffset);
+        //speed lateral to the hub, or perpendicular to the direct distance from the hub.
+        double lateralDist = robotVelocity * Math.sin(angleOfTurret)*dt;
 
-        // Set flywheel to estimated veloctity
-        flywheel.setVelocity(velocity + offset.get());
+        double turretNewPos = Math.tanh(lateralDist/distance);
+
+        turret.setRotationTarget(turret.getRotation() + turretNewPos);
+
+        // Set flywheel to estimated velocity
+        flywheel.setVelocity(velocity);
+        flywheel.spinFeeder(5000);
+        dtexec = System.currentTimeMillis();
+
 
         // Continue aligning shooter
-        if (Math.abs(target.x) > (Constants.Vision.ALIGNMENT_THRESHOLD + alignmentOffset))
-            turret.setRotationTarget(turret.getRotation() + (target.x + alignmentOffset) * Constants.Vision.ROTATION_P);
+        if (Math.abs(target.x) > (Constants.Vision.ALIGNMENT_THRESHOLD))
+            turret.setRotationTarget(turret.getRotation() + (target.x) * Constants.Vision.ROTATION_P);
 
         if (turret.isTargetReached() && flywheel.isTargetReached()) {
             flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
@@ -98,15 +129,6 @@ public class OperateDriveShooterState extends StateCommandBase {
         }
 
         drivetrain.displayEncoder();
-
-        if(Constants.kConfig.DEBUG){
-            SmartDashboard.putNumber("Velocity Prediction", velocity);
-            SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
-            
-            SmartDashboard.putNumber("Distance Prediction (ft)", distance);
-            SmartDashboard.putNumber("Aligninment Offset", target.x);
-            SmartDashboard.putNumber("Velocity Offset", offset.get());
-        }
 
     }
 
