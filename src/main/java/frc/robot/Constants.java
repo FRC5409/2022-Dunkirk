@@ -280,7 +280,7 @@ public final class Constants {
         public static final int HOOD_REVERSE_CHANNEL = 12;
 
         public static final int FLYWHEEL_TOLERANCE = 25;
-        public static final int FEEDER_TOLERANCE = 40;
+        public static final int FEEDER_TOLERANCE = 150;
 
         public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.000188,0,0);
         public static final Gains FLYWHEEL_GAINS = new Gains(0.475, 0, 0, 0.049,0,0);
@@ -319,9 +319,9 @@ public final class Constants {
 
         public static final double PRE_SHOOTER_VELOCITY = 0;
 
-        public static final double LOW_FLYWHEEL_VELOCITY = 600;
+        public static final double LOW_FLYWHEEL_VELOCITY = 400;
         public static final double GUARD_FLYWHEEL_VELOCITY = 800;
-        public static final double NEAR_FLYWHEEL_VELOCITY = 2000;
+        public static final double NEAR_FLYWHEEL_VELOCITY = 1702;
 
         public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
             ShooterMode.kFar, new ShooterConfiguration(
@@ -346,7 +346,7 @@ public final class Constants {
                 VisionPipeline.NEAR_TARGETING, 
                 HoodPosition.kDown,
                 new ShooterModel(
-                    0d, 0d, 0d, 0.32021875,
+                    0d, 0d, 0d, 0.31421875,
                     90.0 - 45.5,
                     45 / 12.0,
                     1d,
@@ -368,7 +368,7 @@ public final class Constants {
             )
         );
 
-        public static final double FEEDER_VELOCITY = -4500*1.5;
+        public static final double FEEDER_VELOCITY = -5000;
 
         public static final int OFFSET_INCREMENT = 50;
     }

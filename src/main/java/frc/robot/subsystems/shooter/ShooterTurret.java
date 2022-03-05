@@ -50,7 +50,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
     public ShooterTurret() {
         mot_main = new CANSparkMax(Constants.kID.TurretNeo, MotorType.kBrushless);
             mot_main.restoreFactoryDefaults();
-            mot_main.setIdleMode(IdleMode.kCoast);
+            mot_main.setIdleMode(IdleMode.kBrake);
 
         enc_main = mot_main.getEncoder();
             enc_main.setPosition(0);

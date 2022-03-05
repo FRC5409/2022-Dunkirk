@@ -39,6 +39,8 @@ public class OperateShooterState extends StateCommandBase {
     private final Indexer indexer;
     
     private ShooterModel model;
+
+    private boolean active;
     
     public OperateShooterState(
         Limelight limelight,
@@ -63,14 +65,19 @@ public class OperateShooterState extends StateCommandBase {
         if (!Toggleable.isEnabled(limelight, turret, flywheel, indexer))
             throw new RuntimeException("Cannot operate shooter when requirements are not enabled.");
 
-        //flywheel.spinFeeder(4500);
+        flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
         model = configuration.get().getModel();
+
+        active = false;
     }
 
     @Override
     public void execute() {
         Vector2 target = limelight.getTarget();
 
+        if (model == null)
+            return;
+            
         double distance = model.distance(target.y);
         double velocity = model.calculate(distance);
 
@@ -81,9 +88,13 @@ public class OperateShooterState extends StateCommandBase {
         if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
             turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
 
-        if (turret.isTargetReached() && flywheel.isTargetReached()) {
-            flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
+        System.out.println("Feeder reached target: " + flywheel.feederReachedTarget());
+        System.out.println("Feeder RPM: " + flywheel.getFeederRpm());
+        System.out.println("Target: " + flywheel.getFeederTarget());
+        if (!active && turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
+            System.out.println("Targets Reached");
             indexer.indexerOn(1);
+            active = true;
         }
 
         if(Constants.kConfig.DEBUG){
@@ -100,6 +111,7 @@ public class OperateShooterState extends StateCommandBase {
     @Override
     public void end(boolean interrupted) {
         flywheel.setVelocity(0);
+        flywheel.stopFeeder();
         indexer.stopIndexer();
     }
 
