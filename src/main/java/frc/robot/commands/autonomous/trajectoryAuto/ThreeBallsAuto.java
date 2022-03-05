@@ -114,16 +114,16 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        m_drive.resetOdometry(t1.getInitialPose());
+        // m_drive.resetOdometry(t1.getInitialPose());
 
         addCommands(
             // shoot --> trajectory --> shoot
             new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kNear),
             new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(2),
-            new ResetOdometry(t1.getInitialPose(), m_drive),
+            new ResetOdometry(t3.getInitialPose(), m_drive),
             new ParallelRaceGroup(
-                r3, 
-                new IndexerIntakeActive(m_indexer, m_intake)
+                r3
+                // new IndexerIntakeActive(m_indexer, m_intake)
             ),
             new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar),
             new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)

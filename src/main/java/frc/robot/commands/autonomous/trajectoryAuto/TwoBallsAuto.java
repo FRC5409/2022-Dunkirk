@@ -18,6 +18,7 @@ import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.IndexerIntakeActive;
+import frc.robot.commands.ResetOdometry;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.OperateShooter;
 import frc.robot.subsystems.DriveTrain;
@@ -77,9 +78,10 @@ public class TwoBallsAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        m_drive.resetOdometry(t1.getInitialPose());
+        // m_drive.resetOdometry(t1.getInitialPose());
 
         addCommands(
+            new ResetOdometry(t1.getInitialPose(), m_drive),
             new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
             new ParallelRaceGroup(
                 new IndexerIntakeActive(m_indexer, m_intake),
