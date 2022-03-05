@@ -105,7 +105,7 @@ public class OperateShooterState extends StateCommandBase {
 
     @Override
     public boolean isFinished() {
-        return !(limelight.hasTarget() && limelight.getTargetType() == TargetType.kHub);
+        return false; //!(limelight.hasTarget() && limelight.getTargetType() == TargetType.kHub);
     }
 
     @Override
