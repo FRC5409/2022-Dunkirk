@@ -128,10 +128,10 @@ public class RobotContainer {
 
     autoCommandSelector = new SendableChooser<Command>();
     
-    autoCommandSelector.setDefaultOption("Default", new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
+    autoCommandSelector.setDefaultOption("Default", new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
     autoCommandSelector.addOption("One", new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
     autoCommandSelector.addOption("Two", new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
-    autoCommandSelector.addOption("Three", new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
+    // autoCommandSelector.addOption("Three", new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
 
     SmartDashboard.putData("Auto Chooser", autoCommandSelector);
 
