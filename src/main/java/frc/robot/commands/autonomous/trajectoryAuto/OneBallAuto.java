@@ -76,7 +76,7 @@ public class OneBallAuto extends SequentialCommandGroup{
 
         addCommands(
             r1,
-            new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
+            new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar),
             new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
         );
     }
