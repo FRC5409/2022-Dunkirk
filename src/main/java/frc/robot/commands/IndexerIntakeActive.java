@@ -7,6 +7,8 @@ package frc.robot.commands;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Indexer;
 
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -14,6 +16,8 @@ public class IndexerIntakeActive extends CommandBase {
   @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
   private Indexer sys_indexer;
   private Intake sys_intake;
+
+  private XboxController joystick; 
 
   boolean TOF_Ent = false;
   boolean TOF_Ball1 = false;
@@ -45,7 +49,7 @@ public class IndexerIntakeActive extends CommandBase {
     // sys_indexer.indexerOn(1);
     sys_intake.solenoidsDown();
 
-    state = "running";
+    //state = "running";
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -76,8 +80,10 @@ public class IndexerIntakeActive extends CommandBase {
       sys_indexer.indexerOn(0.75);
     } else if(TOF_Ball1 && !TOF_Ext){
       sys_indexer.indexerOn(0);
+      joystick.setRumble(RumbleType.kLeftRumble, 0.25);
     } else if(TOF_Ext){
       sys_indexer.indexerOn(0);
+      joystick.setRumble(RumbleType.kRightRumble, 0.25);
     }
     
     /*
