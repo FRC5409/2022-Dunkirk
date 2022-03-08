@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.kAuto;
@@ -16,6 +17,7 @@ import frc.robot.base.Property;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
+import frc.robot.commands.SlowGear;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.OperateShooter;
 
@@ -73,11 +75,16 @@ public class OneBallAuto extends SequentialCommandGroup{
         m_drive); 
 
         m_drive.resetOdometry(t1.getInitialPose());
+        m_drive.setBrakeMode(true);
 
         addCommands(
-            r1,
-            new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
+            new SlowGear(m_drive),
+            new ParallelCommandGroup(
+                r1,
+                new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
+            ),
             new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
+        
         );
     }
 }

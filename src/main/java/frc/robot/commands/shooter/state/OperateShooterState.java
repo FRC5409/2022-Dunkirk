@@ -88,11 +88,11 @@ public class OperateShooterState extends StateCommandBase {
         if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
             turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
 
-        System.out.println("Feeder reached target: " + flywheel.feederReachedTarget());
-        System.out.println("Feeder RPM: " + flywheel.getFeederRpm());
-        System.out.println("Target: " + flywheel.getFeederTarget());
+        // System.out.println("Feeder reached target: " + flywheel.feederReachedTarget());
+        // System.out.println("Feeder RPM: " + flywheel.getFeederRpm());
+        // System.out.println("Target: " + flywheel.getFeederTarget());
         if (!active && turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
-            System.out.println("Targets Reached");
+            // System.out.println("Targets Reached");
             indexer.indexerOn(1);
             active = true;
         }
