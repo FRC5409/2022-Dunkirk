@@ -112,16 +112,21 @@ public class OperateDriveShooterState extends StateCommandBase {
         //speed lateral to the hub, or perpendicular to the direct distance from the hub.
         double lateralDist = robotVelocity * Math.sin(angleOfTurret)*dt;
 
-        double turretNewPos = Math.tanh(lateralDist/distance);
+        double turretNewPos = -1*Math.toDegrees(Math.tanh(lateralDist/distance));
 
 
+        System.out.println("Robot Velocity: " + robotVelocity + " ft/s");
+        System.out.println("Angle of Turret: " + angleOfTurret);
+        System.out.println("Distance: " + distance);
+        System.out.println("Lateral distance prediction: " + lateralDist);
+        System.out.println("Turret new pos: " + turretNewPos);
         // Set flywheel to estimated velocity
         flywheel.setVelocity(velocityForFlywheel);
 
 
         // Continue aligning shooter
         if (Math.abs(target.x) > (Constants.Vision.ALIGNMENT_THRESHOLD + Math.abs(turretNewPos)))
-            turret.setRotationTarget(turret.getRotation() + (target.x-turretNewPos)*Constants.Vision.ROTATION_P);
+            turret.setRotationTarget(turret.getRotation() + (target.x+turretNewPos)*Constants.Vision.ROTATION_P);
 
         if (turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
             indexer.indexerOn(1);
