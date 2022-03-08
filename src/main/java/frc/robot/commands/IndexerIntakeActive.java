@@ -40,7 +40,7 @@ public class IndexerIntakeActive extends CommandBase {
   @Override
   public void initialize() {
 
-    sys_intake.intakeOn(0.3);
+    sys_intake.intakeOn(0.75);
     sys_intake.intakeIn(1);
     // sys_indexer.indexerOn(1);
     sys_intake.solenoidsDown();
