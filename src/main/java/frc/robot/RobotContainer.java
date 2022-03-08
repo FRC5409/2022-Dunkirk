@@ -215,7 +215,7 @@ public class RobotContainer {
     joystick_secondary.getButton(ButtonType.kRightBumper)
       .and(climberToggleTrigger.negate())
       .and(shooterModeTrigger.negate())
-      .whileActiveContinuous(new OperateShooter(limelight, turret, Flywheel, Indexer, shooterSweepDirection, shooterConfiguration, shooterOffset))
+      .whileActiveContinuous(new OperateDriveShooter(limelight, turret, Flywheel, Indexer, DriveTrain, shooterSweepDirection, shooterConfiguration))
       .whenInactive(new RotateTurret(turret, 0));
       
     joystick_secondary.getButton(ButtonType.kRightBumper)

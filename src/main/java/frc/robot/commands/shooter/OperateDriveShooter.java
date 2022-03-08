@@ -25,7 +25,6 @@ import frc.robot.Constants;
  * @author Keith Davies
  */
 public final class OperateDriveShooter extends StateCommandGroup {
-    private final Property<Integer> offset;
     private final ShooterFlywheel flywheel;
     private final ShooterTurret turret;
     private final Limelight limelight;
@@ -38,8 +37,7 @@ public final class OperateDriveShooter extends StateCommandGroup {
         Indexer indexer,
         DriveTrain drivetrain, 
         Property<SweepDirection> direction,
-        Property<ShooterConfiguration> configuration,
-        Property<Integer> offset
+        Property<ShooterConfiguration> configuration
     ) {
 
         addCommands(
@@ -55,7 +53,6 @@ public final class OperateDriveShooter extends StateCommandGroup {
         this.flywheel = flywheel;
         this.indexer = indexer;
         this.turret = turret;
-        this.offset = offset;
     }
 
     @Override
@@ -66,7 +63,7 @@ public final class OperateDriveShooter extends StateCommandGroup {
         turret.enable();
 
         flywheel.setVelocity(
-            Constants.Shooter.PRE_SHOOTER_VELOCITY + offset.get()
+            Constants.Shooter.PRE_SHOOTER_VELOCITY
         );
 
         super.initialize();
