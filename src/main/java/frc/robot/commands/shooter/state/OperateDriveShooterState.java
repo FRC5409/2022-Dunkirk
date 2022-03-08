@@ -78,7 +78,7 @@ public class OperateDriveShooterState extends StateCommandBase {
         //angle between turret and velocity vector, assuming it is correctly aligned with the target.
         double angleOfTurret = Math.toRadians(turret.getRotation());
 
-        double distance = model.distance(target.y) + -1*robotVelocity*Math.cos(angleOfTurret)*0.05;
+        double distance = model.distance(target.y) - robotVelocity*Math.cos(angleOfTurret)*0.05;
         double velocityForFlywheel = model.calculate(distance);
 
         //speed lateral to the hub, or perpendicular to the direct distance from the hub.
@@ -104,9 +104,9 @@ public class OperateDriveShooterState extends StateCommandBase {
         double robotVelocity = Units.metersToFeet(drivetrain.getEncoderVelocity());
 
         //angle to the turret if it was aligned correctly
-        double angleOfTurret = Math.toRadians(turret.getRotation()) + Math.toRadians(target.x);
+        double angleOfTurret = Math.toRadians(turret.getRotation() + target.x);
 
-        double distance = model.distance(target.y) + -1*robotVelocity* Math.cos(angleOfTurret)*dt;
+        double distance = model.distance(target.y) - robotVelocity* Math.cos(angleOfTurret)*dt;
         double velocityForFlywheel = model.calculate(distance);
 
         //speed lateral to the hub, or perpendicular to the direct distance from the hub.
@@ -127,7 +127,6 @@ public class OperateDriveShooterState extends StateCommandBase {
             indexer.indexerOn(1);
         }
 
-        drivetrain.displayEncoder();
 
     }
 
