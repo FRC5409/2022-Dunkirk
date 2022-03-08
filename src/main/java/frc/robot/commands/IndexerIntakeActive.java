@@ -34,7 +34,7 @@ public class IndexerIntakeActive extends CommandBase {
     sys_indexer = indexer;
     sys_intake = intake;
 
-    
+    joystick = new XboxController(0);
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(indexer, intake);
