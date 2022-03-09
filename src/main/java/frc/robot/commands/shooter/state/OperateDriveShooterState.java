@@ -3,6 +3,7 @@ package frc.robot.commands.shooter.state;
 import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.base.Property;
@@ -43,6 +44,8 @@ public class OperateDriveShooterState extends StateCommandBase {
     private ShooterModel model;
 
     private double dt;
+
+    private Timer timer;
     
     public OperateDriveShooterState(
         Limelight limelight,
@@ -59,6 +62,8 @@ public class OperateDriveShooterState extends StateCommandBase {
         this.indexer = indexer;
         this.turret = turret;
 
+        timer = new Timer();
+        timer.start();
         // we purposely do not require the drivetrain as to not
         // interrupt any currently executing drive commands
         addRequirements(limelight, turret, flywheel, indexer);
@@ -90,13 +95,13 @@ public class OperateDriveShooterState extends StateCommandBase {
 
         // Set flywheel to estimated velocity
         flywheel.setVelocity(velocityForFlywheel);
-        flywheel.spinFeeder(5000);
-        dt = System.currentTimeMillis() / 1000;
+        flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
+        dt = timer.get();
     }
 
     @Override
     public void execute() {
-        dt = System.currentTimeMillis() / 1000 - dt;
+        dt =  timer.get() - dt;
 
         Vector2 target = limelight.getTarget();
 
@@ -105,31 +110,38 @@ public class OperateDriveShooterState extends StateCommandBase {
 
         //angle to the turret if it was aligned correctly
         double angleOfTurret = Math.toRadians(turret.getRotation() + target.x);
-
         double distance = model.distance(target.y) - robotVelocity* Math.cos(angleOfTurret)*dt;
         double velocityForFlywheel = model.calculate(distance);
 
         //speed lateral to the hub, or perpendicular to the direct distance from the hub.
-        double lateralDist = robotVelocity * Math.sin(angleOfTurret)*dt;
+        double lateralDist = -1*robotVelocity * Math.sin(angleOfTurret)*dt;
 
         double turretNewPos = -1*Math.toDegrees(Math.tanh(lateralDist/distance));
 
 
+        System.out.println("DT: " + dt);
         System.out.println("Robot Velocity: " + robotVelocity + " ft/s");
         System.out.println("Angle of Turret: " + angleOfTurret);
         System.out.println("Distance: " + distance);
         System.out.println("Lateral distance prediction: " + lateralDist);
         System.out.println("Turret new pos: " + turretNewPos);
+        System.out.println("velocity for flywheel: " + velocityForFlywheel);
+
         // Set flywheel to estimated velocity
         flywheel.setVelocity(velocityForFlywheel);
 
 
+        System.out.println("target.x: " + target.x);
+        System.out.println("flywheel target: " + flywheel.isTargetReached());
+        System.out.println("feeder target: " + flywheel.feederReachedTarget());
         // Continue aligning shooter
-        if (Math.abs(target.x) > (Constants.Vision.ALIGNMENT_THRESHOLD + Math.abs(turretNewPos)))
+        if (Math.abs(target.x) > (Constants.Vision.ALIGNMENT_THRESHOLD + Math.abs(turretNewPos))){
             turret.setRotationTarget(turret.getRotation() + (target.x+turretNewPos)*Constants.Vision.ROTATION_P);
-
-        if (turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
-            indexer.indexerOn(1);
+            System.out.println("Aligning");
+        }
+        if (flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
+            System.out.println("INdexer turning on");
+            indexer.indexerOn(0.5);
         }
 
 

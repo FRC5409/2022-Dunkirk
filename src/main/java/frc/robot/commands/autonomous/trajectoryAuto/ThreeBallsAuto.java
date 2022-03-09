@@ -97,11 +97,11 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_drive); 
 
         Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-                                                                   List.of(
-                                                                       new Translation2d(3/kAuto.kDistanceRatio, -0.5/kAuto.kDistanceRatio)
-                                                                   ),
-                                                                   new Pose2d(3/kAuto.kDistanceRatio, 2.5/kAuto.kDistanceRatio, new Rotation2d(0)), 
-                                                                   kAuto.configStop);
+                    List.of(
+                        new Translation2d(3/kAuto.kDistanceRatio, -0.5/kAuto.kDistanceRatio)
+                    ),
+                    new Pose2d(3/kAuto.kDistanceRatio, 2.5/kAuto.kDistanceRatio, new Rotation2d(0)), 
+                    kAuto.configStop);
 
         RamseteCommand r3 = new RamseteCommand(t3, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
