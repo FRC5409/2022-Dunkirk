@@ -93,7 +93,7 @@ public class OperateShooterState extends StateCommandBase {
         // System.out.println("Target: " + flywheel.getFeederTarget());
         if (!active && turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
             // System.out.println("Targets Reached");
-            indexer.indexerOn(1);
+            indexer.indexerOn(0.5);
             active = true;
         }
 
