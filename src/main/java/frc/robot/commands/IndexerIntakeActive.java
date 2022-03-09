@@ -67,7 +67,7 @@ public class IndexerIntakeActive extends CommandBase {
   @Override
   public void initialize() {
 
-    sys_intake.intakeOn(0.5); //Tested value is 0.3 //Cam bump this up once extra wheels added to first indexer roller
+    sys_intake.intakeOn(0.4); //Tested value is 0.3 //Cam bump this up once extra wheels added to first indexer roller
     //sys_intake.intakeIn(1);
     sys_indexer.indexerOn(1);
     sys_intake.solenoidsDown();
