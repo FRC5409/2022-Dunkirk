@@ -41,8 +41,6 @@ public class ZeroBallAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        m_drive.resetOdometry(t1.getInitialPose());
-
         addCommands(
             new ResetOdometry(t1.getInitialPose(), m_drive),
             r1

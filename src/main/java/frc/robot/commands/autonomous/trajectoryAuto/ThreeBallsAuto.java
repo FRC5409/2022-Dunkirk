@@ -1,5 +1,7 @@
 package frc.robot.commands.autonomous.trajectoryAuto;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -10,6 +12,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -20,6 +26,8 @@ import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.IndexerIntakeActive;
 import frc.robot.commands.ResetOdometry;
+import frc.robot.commands.RunIndexerBack;
+import frc.robot.commands.SlowGear;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.OperateShooter;
 import frc.robot.subsystems.DriveTrain;
@@ -63,11 +71,15 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_shooterSweepDirection = shooterSweepDirection;
         m_shooterOffset = shooterOffset;
 
-        Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-                                                                   List.of(
-                                                                   ),
-                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(-Math.PI/2)), 
-                                                                   kAuto.configNoStop);
+        String t1JSON = "paths/Path1.wpilib.json";
+        Trajectory t1 = new Trajectory();
+
+        try {
+            Path t1Path = Filesystem.getDeployDirectory().toPath().resolve(t1JSON);
+            t1 = TrajectoryUtil.fromPathweaverJson(t1Path);
+        } catch (IOException ex) {
+            DriverStation.reportError("Unable to open trajectory: " + t1JSON, ex.getStackTrace());
+        }
 
         RamseteCommand r1 = new RamseteCommand(t1, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
@@ -80,10 +92,15 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(-Math.PI/2)),
-                                                                   List.of(),
-                                                                   new Pose2d(3/kAuto.kDistanceRatio, 0, new Rotation2d(-Math.PI/2)), 
-                                                                   kAuto.configStop);
+        String t2JSON = "paths/Path2.wpilib.json";
+        Trajectory t2 = new Trajectory();
+
+        try {
+            Path t2Path = Filesystem.getDeployDirectory().toPath().resolve(t2JSON);
+            t2 = TrajectoryUtil.fromPathweaverJson(t2Path);
+        } catch (IOException ex) {
+            DriverStation.reportError("Unable to open trajectory: " + t2JSON, ex.getStackTrace());
+        }
 
         RamseteCommand r2 = new RamseteCommand(t2, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
@@ -96,53 +113,67 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-                                                                   List.of(
-                                                                       new Translation2d(3/kAuto.kDistanceRatio, -0.5/kAuto.kDistanceRatio)
-                                                                   ),
-                                                                   new Pose2d(3/kAuto.kDistanceRatio, 2.5/kAuto.kDistanceRatio, new Rotation2d(0)), 
-                                                                   kAuto.configStop);
-
-        RamseteCommand r3 = new RamseteCommand(t3, m_drive::getPose,
-        new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
-        new SimpleMotorFeedforward(kAuto.ksVolts, 
-                                   kAuto.kvVoltSecondsPerMeter,
-                                   kAuto.kaVoltSecondsSquaredPerMeter),
-        kAuto.kDriveKinematics, m_drive::getWheelSpeeds,
-        new PIDController(kAuto.kPDriveVel, 0, 0), 
-        new PIDController(kAuto.kPDriveVel, 0, 0),
-        m_drive::tankDriveVolts, 
-        m_drive); 
-
-        // m_drive.resetOdometry(t1.getInitialPose());
-
         addCommands(
-            // shoot --> trajectory --> shoot
-            new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kNear),
-            new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(2),
-            new ResetOdometry(t3.getInitialPose(), m_drive),
-            new ParallelRaceGroup(
-                r3
-                // new IndexerIntakeActive(m_indexer, m_intake)
-            ),
-            new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar),
-            new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
-        
-            // trajectory --> shoot --> trajectory --> shoot
+            // testing code (just for trajectory)
+            new ResetOdometry(t1.getInitialPose(), m_drive),
+            new SlowGear(m_drive),
+            r1, 
+            new ResetOdometry(t2.getInitialPose(), m_drive),
+            r2
+
+            // testing code (without intake)
             // new ResetOdometry(t1.getInitialPose(), m_drive),
-            // new ParallelRaceGroup(
-            //     r1, 
-            //     new IndexerIntakeActive(m_indexer, m_intake)
+            // new SlowGear(m_drive),
+            // new ParallelCommandGroup(
+            //     new SequentialCommandGroup(
+            //         // new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
+            //         r1,
+            //         new RunIndexerBack(m_intake, m_indexer).withTimeout(0.3)
+            //     ),
+            //     new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
             // ),
-            // new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar),
             // new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3),
-            // new ResetOdometry(m_drive.getPose(), m_drive),
-            // new ParallelRaceGroup(
-            //     r2,
-            //     new IndexerIntakeActive(m_indexer, m_intake)
+            // new ResetOdometry(t2.getInitialPose(), m_drive),
+            // r2,
+            // new RunIndexerBack(m_intake, m_indexer).withTimeout(0.3),
+            // // TODO: configure shooter again or no?
+            // new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
+
+            // actual code
+            // new ResetOdometry(t1.getInitialPose(), m_drive),
+            // new SlowGear(m_drive),
+            // new ParallelCommandGroup(
+            //     new SequentialCommandGroup(
+            //         // new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
+            //         new ParallelRaceGroup(
+            //             new IndexerIntakeActive(m_indexer, m_intake),
+            //             r1
+            //         ),
+            //         new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
+            //         new RunIndexerBack(m_intake, m_indexer).withTimeout(0.3)
+            //     ),
+            //     new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
             // ),
-            // new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar),
-            // new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(2)
+            // new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3),
+            // new ResetOdometry(t2.getInitialPose(), m_drive),
+            // new ParallelRaceGroup(
+            //     new IndexerIntakeActive(m_indexer, m_intake),
+            //     r2
+            // ),
+            // new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
+            // new RunIndexerBack(m_intake, m_indexer).withTimeout(0.3),
+            // // TODO: configure shooter again or no?
+            // new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
         );
+
+        // @Override
+        // public void initialize(){
+        //     try {
+        //         Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+        //         trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+        //     } catch (IOException ex) {
+        //         DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+        //     }
+        // }
     }
 }

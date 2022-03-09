@@ -81,7 +81,6 @@ public class TwoBallsAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        // m_drive.resetOdometry(t1.getInitialPose());
         m_drive.setBrakeMode(true);
 
         addCommands(
