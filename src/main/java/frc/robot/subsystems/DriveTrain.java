@@ -251,6 +251,8 @@ public class DriveTrain extends SubsystemBase {
         }
 
         displayTemperatures();
+        displayHeading();
+        displayEncoder();
 
         if (timer.hasElapsed(refreshSeconds)) {
             if (mot_leftFrontDrive.hasResetOccurred()) {
@@ -259,6 +261,8 @@ public class DriveTrain extends SubsystemBase {
 
             timer.reset();
         }
+
+        updateAll();
 
         m_odometry.update(
             gyro_pigeon.getRotation2d(), getEncoderPositionLeft(), getEncoderPositionRight());
@@ -269,7 +273,6 @@ public class DriveTrain extends SubsystemBase {
     public void simulationPeriodic() {
         // displayEncoder();
         // displayDriveMode();
-        // updateAll();
         // displayAngle();
     }
 
@@ -629,7 +632,8 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public double TurnRate(){
-        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual turn_rate", 0) : turn_rate;
+        return turn_rate;
+        // return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual turn_rate", 0) : turn_rate;
     }
 
     public double X_Acelleration(){
@@ -755,6 +759,7 @@ public class DriveTrain extends SubsystemBase {
     public void displayHeading(){
         SmartDashboard.putNumber("Angle",  Heading());
         SmartDashboard.putNumber("Rate", TurnRate());
+        SmartDashboard.putNumber("Rotation2d", gyro_pigeon.getRotation2d().getRadians());
     }
 
     /**

@@ -7,6 +7,7 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -17,6 +18,7 @@ import frc.robot.base.Property;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
+import frc.robot.commands.ResetOdometry;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.OperateShooter;
@@ -60,7 +62,7 @@ public class OneBallAuto extends SequentialCommandGroup{
 
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(),
-                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)), 
+                                                                   new Pose2d(-1/kAuto.kDistanceRatio, 1/kAuto.kDistanceRatio, new Rotation2d(0)), // Math.PI/2
                                                                    kAuto.configStop);
 
         RamseteCommand r1 = new RamseteCommand(t1, m_drive::getPose,
@@ -78,6 +80,7 @@ public class OneBallAuto extends SequentialCommandGroup{
         m_drive.setBrakeMode(true);
 
         addCommands(
+            new ResetOdometry(t1.getInitialPose(), m_drive),
             new SlowGear(m_drive),
             new ParallelCommandGroup(
                 r1,
