@@ -10,52 +10,53 @@ import org.jetbrains.annotations.Nullable;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
- * <h2> StateCommandGroup </h2>
+ * <h2> ProxyStateCommandGroup </h2>
  * A command-based state machine representing a series of tasks to be performed by the robot
  * in an independant execution order.
  * 
- * <p> {@link edu.wpi.first.wpilibj2.command.Command StateCommand}s are an extension of
- * {@link edu.wpi.first.wpilibj2.command.Command Command}s that represent a task to be
- * performed by the robot, as opposed to a complete action performed by the robot. This provides
- * States with the flexibility of Commands, and the portability and seperation
- * of individual States.
+ * <p>When the {@link ProxyStateCommandGroup} executes, it schedules states without obtaining
+ * their requirements, as opposed to the typical behaviour of a {@link StateCommandGroup}.</p>
+ * 
+ * <p>Suppose a state group with states [A, B, C, D]. If state 'A' requires a given subsystem,
+ * the state will only obtain ownership of the subsytem upon its individual execution, as opposed
+ * to the execution of the group.</p>
  * 
  * @author Keith Davies
- * @see StateCommand
+ * @see StateCommand, StateCommandGroup
  */
-public abstract class StateCommandGroup extends CommandBase {
+public abstract class ProxyStateCommandGroup extends CommandBase {
     protected Map<String, StateCommand> m_states;
     protected StateCommand m_default;
     protected StateCommand m_active;
 
     /**
-     * Construct an empty {@link StateCommandGroup}.
+     * Construct an empty {@link ProxyStateCommandGroup}.
      */
-    public StateCommandGroup() {
+    public ProxyStateCommandGroup() {
         m_active = null;
         m_default = null;
         m_states = new HashMap<>();
     }
     
     /**
-     * Construct a {@link StateCommandGroup} with several states.
+     * Construct a {@link ProxyStateCommandGroup} with several states.
      * 
      * @param commands The states included in the group.
      */
-    public StateCommandGroup(StateCommand... commands) {
+    public ProxyStateCommandGroup(StateCommand... commands) {
         this();
         addCommands(commands);
     }
 
     
     /**
-     * Construct a {@link StateCommandGroup} with several states,
+     * Construct a {@link ProxyStateCommandGroup} with several states,
      * as well as a default state.
      * 
      * @param commands         The states included in the group.
      * @param defaultStateName The default state name.
      */
-    public StateCommandGroup(String defaultStateName, StateCommand... commands) {
+    public ProxyStateCommandGroup(String defaultStateName, StateCommand... commands) {
         this();
         addCommands(commands);
         m_default = getCommand(defaultStateName);
@@ -72,42 +73,36 @@ public abstract class StateCommandGroup extends CommandBase {
             }
             
             m_active = m_default;
-            System.out.println ("Starting with state " + m_active.getStateName());
+            System.out.println("Starting with state " + m_active.getStateName());
         }
 
-        m_active.initialize();
+        m_active.schedule();
     }
 
     @Override
     public void execute() {
         if (m_active == null)
             return;
-
-        // A state can only switch when finished
-        if (m_active.isFinished()) {
-            m_active.end(false);
-
+        
+        if (!m_active.isScheduled()) {
             String next = m_active.getNextState();
             m_active.reset();
 
             if (next != null) {
                 m_active = getCommand(next);
                 System.out.println("Moving to state " + next);
-
-                m_active.initialize();
+                m_active.schedule();
             } else 
                 m_active = null;
-        } else
-            m_active.execute();
+        }
     }
 
     @Override
     public void end(boolean interrupted) {
-        if (m_active == null)
-            return;
-
-        m_active.end(interrupted);
-        m_active = null;
+        if (interrupted && m_active != null) {
+            m_active.cancel();
+            m_active = null;
+        }
     }
 
     /**
@@ -125,7 +120,6 @@ public abstract class StateCommandGroup extends CommandBase {
                             +  "' and '" + m_states.get(name).getName() + "'");
             }
 
-            m_requirements.addAll(cmd.getRequirements());
             m_states.put(name, cmd);
         }
     }
@@ -161,15 +155,14 @@ public abstract class StateCommandGroup extends CommandBase {
     public boolean setActiveState(String name) {
         if (m_active == null)
             return false;
-
+            
         StateCommand command = getCommand(name);
 
         // Interrupt the active command
-        m_active.end(true);
+        m_active.cancel();
 
         // Start new (or previously running) command
-        command.initialize();
-
+        command.schedule();
         m_active = command;
 
         return true;
