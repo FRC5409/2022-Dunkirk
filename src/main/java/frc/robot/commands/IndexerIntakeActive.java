@@ -84,6 +84,9 @@ public class IndexerIntakeActive extends CommandBase {
     } else if(TOF_Ext){
       sys_indexer.indexerOn(0);
       joystick.setRumble(RumbleType.kRightRumble, 0.25);
+    } else {
+      joystick.setRumble(RumbleType.kRightRumble, 0);
+      joystick.setRumble(RumbleType.kLeftRumble, 0);
     }
     
     /*
