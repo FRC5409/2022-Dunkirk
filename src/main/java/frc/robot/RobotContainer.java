@@ -210,19 +210,23 @@ public class RobotContainer {
     joystick_secondary.getButton(ButtonType.kY).and(climberToggleTrigger).whenActive(() -> {
       Climber.zeroEncoder();
     });
-    joystick_secondary.getButton(ButtonType.kLeftBumper).and(climberToggleTrigger).whenActive(new FindElevatorZero(Climber));
+    //joystick_secondary.getButton(ButtonType.kLeftBumper).and(climberToggleTrigger).whenActive(new FindElevatorZero(Climber));
 
-    joystick_secondary.getButton(ButtonType.kRightBumper)
+    joystick_secondary.getButton(ButtonType.kLeftBumper)
       .and(climberToggleTrigger.negate())
       .and(shooterModeTrigger.negate())
-      .whileActiveContinuous(new OperateShooter(limelight, turret, Flywheel, Indexer, shooterSweepDirection, shooterConfiguration, shooterOffset))
+      .whileActiveContinuous(new OperateShooterStaged(
+        limelight, turret, Flywheel, Indexer,
+        joystick_secondary.getButton(ButtonType.kRightBumper),
+        shooterSweepDirection, shooterConfiguration, shooterOffset
+      ))
       .whenInactive(new RotateTurret(turret, 0));
       
-    joystick_secondary.getButton(ButtonType.kRightBumper)
-      .and(climberToggleTrigger.negate())
-      .and(shooterModeTrigger)
-      .whileActiveContinuous(new RunShooter(Flywheel, Indexer, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85))
-      .whenInactive(new RotateTurret(turret, 0));
+    // joystick_secondary.getButton(ButtonType.kRightBumper)
+    //   .and(climberToggleTrigger.negate())
+    //   .and(shooterModeTrigger)
+    //   .whileActiveContinuous(new RunShooter(Flywheel, Indexer, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85))
+    //   .whenInactive(new RotateTurret(turret, 0));
 
     joystick_secondary.getButton(ButtonType.kUpPov)
         .and(joystick_secondary.getButton(ButtonType.kA).negate()).and(climberToggleTrigger.negate())
