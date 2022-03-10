@@ -117,9 +117,9 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
             // testing code (just for trajectory)
             new ResetOdometry(t1.getInitialPose(), m_drive),
             new SlowGear(m_drive),
-            r1, 
-            new ResetOdometry(t2.getInitialPose(), m_drive),
-            r2
+            r1
+            // new ResetOdometry(t2.getInitialPose(), m_drive),
+            // r2
 
             // testing code (without intake)
             // new ResetOdometry(t1.getInitialPose(), m_drive),

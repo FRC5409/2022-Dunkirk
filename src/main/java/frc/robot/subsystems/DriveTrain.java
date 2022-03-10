@@ -152,6 +152,8 @@ public class DriveTrain extends SubsystemBase {
         mot_leftFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
         mot_leftFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
+        // mot_leftFrontDrive.setSensorPhase(true);
+
         // Left Rear Drive
         mot_leftRearDrive.configFactoryDefault();
         mot_leftRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
@@ -178,6 +180,8 @@ public class DriveTrain extends SubsystemBase {
         mot_leftRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
         mot_leftRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
+        // mot_leftRearDrive.setSensorPhase(true);
+
         // Right Front Drive
         mot_rightFrontDrive.configFactoryDefault();
         mot_rightFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
@@ -200,6 +204,8 @@ public class DriveTrain extends SubsystemBase {
         mot_rightFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
         mot_rightFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
         mot_rightFrontDrive.setInverted(kDriveTrain.CounterClockwise);
+
+        // mot_rightFrontDrive.setSensorPhase(true);
 
         // Right Rear Drive
         mot_rightRearDrive.configFactoryDefault();
@@ -225,6 +231,8 @@ public class DriveTrain extends SubsystemBase {
         mot_rightRearDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
         mot_rightRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
         mot_rightRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
+
+        // mot_rightRearDrive.setSensorPhase(true);
 
         driveMode = kDriveTrain.InitialDriveMode;
 

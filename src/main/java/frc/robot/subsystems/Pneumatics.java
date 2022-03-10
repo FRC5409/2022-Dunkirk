@@ -33,8 +33,7 @@ public class Pneumatics extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    if(Constants.kConfig.DEBUG)
-      SmartDashboard.putNumber("PSI", compressor1.getPressure());
+    SmartDashboard.putNumber("PSI", compressor1.getPressure());
 
     // Check if pressure is too low or too high
     if (compressor1.getPressure() <= Constants.kPneumatics.MIN_PSI) {
