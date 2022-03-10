@@ -6,16 +6,18 @@ package frc.robot;
 
 import java.util.Map;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.math.util.Units;
-import frc.robot.base.shooter.HoodPosition;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+
 import frc.robot.base.shooter.ShooterConfiguration;
-import frc.robot.base.shooter.ShooterMode;
-import frc.robot.base.shooter.ShooterModel;
 import frc.robot.base.shooter.VisionPipeline;
+import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.HoodPosition;
+import frc.robot.base.shooter.ShooterMode;
+
 import frc.robot.utils.*;
 
 /**
@@ -27,8 +29,15 @@ import frc.robot.utils.*;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static class General {
+        public enum Configuration {
+            kCompetition, kTraining
+        }
 
-    public static class kConfig{
+        public static final Configuration ROBOT_CONFIGURATION = Configuration.kCompetition;
+    }
+
+    public static class kConfig {
         public final static boolean DEBUG = false;
     }
 
