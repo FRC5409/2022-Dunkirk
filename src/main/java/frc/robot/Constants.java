@@ -6,16 +6,18 @@ package frc.robot;
 
 import java.util.Map;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.math.util.Units;
-import frc.robot.base.shooter.HoodPosition;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+
 import frc.robot.base.shooter.ShooterConfiguration;
-import frc.robot.base.shooter.ShooterMode;
-import frc.robot.base.shooter.ShooterModel;
 import frc.robot.base.shooter.VisionPipeline;
+import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.HoodPosition;
+import frc.robot.base.shooter.ShooterMode;
+
 import frc.robot.utils.*;
 
 /**
@@ -27,8 +29,15 @@ import frc.robot.utils.*;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static class General {
+        public enum Configuration {
+            kCompetition, kTraining
+        }
 
-    public static class kConfig{
+        public static final Configuration ROBOT_CONFIGURATION = Configuration.kCompetition;
+    }
+
+    public static class kConfig {
         public final static boolean DEBUG = false;
     }
 
@@ -216,31 +225,28 @@ public final class Constants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
 
-    }
+        public static final double kDistanceRatio = -0.95;
 
-    public static final class ShooterFlywheel {
-        //in RPM
-        public static final int SHOOTER_TOLERANCE = 25;
-        public static final int FEEDER_TOLERANCE = 45;
-        public static final int rpmTolerance = 1;
+        public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = 
+            new DifferentialDriveVoltageConstraint(
+                new SimpleMotorFeedforward(ksVolts, 
+                                           kvVoltSecondsPerMeter, 
+                                           kaVoltSecondsSquaredPerMeter),
+                kDriveKinematics, 10);
 
-        public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.000188,0,0);
-        public static final Gains SHOOTER_GAINS = new Gains(0.475, 0, 0, 0.049,0,0);
-    }
+        public static final TrajectoryConfig configStop = 
+            new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
+            .setKinematics(kDriveKinematics)
+            .addConstraint(autoVoltageConstraint)
+            .setEndVelocity(0)
+            .setReversed(true);
 
-
-    public final static class Turret {
-        //Ratio including gearbox 
-        //126 : 1
-        public static final double GEAR_RATIO          = 126;
-
-        // Height in meters
-        public static final double ROBOT_HEIGHT        = 4;
-        public static final double FIXED_ANGLE         = 45;
-
-        //TODO fill in pneumatics constants.
-        public static final int HOOD_FORWARD_CHANNEL = 13;
-        public static final int HOOD_REVERSE_CHANNEL = 12;
+        public static final TrajectoryConfig configNoStop = 
+            new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
+            .setKinematics(kDriveKinematics)
+            .addConstraint(autoVoltageConstraint)    
+            .setEndVelocity(1.6)
+            .setReversed(true);
 
     }
 
@@ -283,7 +289,7 @@ public final class Constants {
         public static final int HOOD_REVERSE_CHANNEL = 12;
 
         public static final int FLYWHEEL_TOLERANCE = 25;
-        public static final int FEEDER_TOLERANCE = 40;
+        public static final int FEEDER_TOLERANCE = 150;
 
         public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.000188,0,0);
         public static final Gains FLYWHEEL_GAINS = new Gains(0.475, 0, 0, 0.049,0,0);
@@ -300,31 +306,13 @@ public final class Constants {
         public static final double TURRET_MAX_SPEED    = 0.42;
 
         // Range Configurations
-        public static final Range ROTATION_RANGE = new Range(
-            -250, 250    
-            //-61, 75
-            //-28.571428571428573, 57.14285714285714
-        );
+        public static final Range ROTATION_RANGE = new Range(-250, 250);
+        public static final Range SPEED_RANGE = new Range(0, 5500);
+        public static final Range DISTANCE_RANGE = new Range(0, 25);
+        public static final Range TURRET_OUTPUT_RANGE = new Range(-1, 1);
 
-        public static final Range SPEED_RANGE = new Range(
-            0, 5500
-        );
-
-        public static final Range DISTANCE_RANGE = new Range(
-            0, 25
-        );
-
-        
-    // Curve fitting Constants
-        public static final Equation DISTANCE_SPEED_CURVE = d -> {
-            return d*0;
-        };
-
-        public static final double CALIBRATE_SPEED = 0.07;
-
-
-    // Smooth Sweep Constants (experimental)
-        public static final double SHOOTER_SWEEP_PERIOD = 3.6;
+        // Smooth Sweep Constants
+        public static final double   SHOOTER_SWEEP_PERIOD = 1.6;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
             @Override
@@ -348,9 +336,9 @@ public final class Constants {
 
         public static final double PRE_SHOOTER_VELOCITY = 0;
 
-        public static final double LOW_FLYWHEEL_VELOCITY = 600;
+        public static final double LOW_FLYWHEEL_VELOCITY = 400;
         public static final double GUARD_FLYWHEEL_VELOCITY = 800;
-        public static final double NEAR_FLYWHEEL_VELOCITY = 2000;
+        public static final double NEAR_FLYWHEEL_VELOCITY = 1702;
 
         public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
             ShooterMode.kFar, new ShooterConfiguration(
@@ -358,10 +346,10 @@ public final class Constants {
                 VisionPipeline.FAR_TARGETING,
                 HoodPosition.kUp,
                 new ShooterModel(
-                    2.125781774520874,
-                    0.06557995826005936,
-                    0.9416347146034241,
-                    -0.06884603947401047,
+                    2.552187442779541,
+                    0.5686905980110168,
+                    -0.6887820363044739,
+                    0.3927091360092163,
                     90.0 - 61.5,
                     41.5 / 12.0,
                     2d,
@@ -375,7 +363,7 @@ public final class Constants {
                 VisionPipeline.NEAR_TARGETING, 
                 HoodPosition.kDown,
                 new ShooterModel(
-                    0d, 0d, 0d, Constants.Shooter.SPEED_RANGE.normalize(NEAR_FLYWHEEL_VELOCITY),
+                    0d, 0d, 0d, 0.31421875,
                     90.0 - 45.5,
                     45 / 12.0,
                     1d,
@@ -397,7 +385,7 @@ public final class Constants {
             )
         );
 
-        public static final double FEEDER_VELOCITY = -4500*1.5;
+        public static final double FEEDER_VELOCITY = -5000;
 
         public static final int OFFSET_INCREMENT = 50;
 
@@ -405,15 +393,9 @@ public final class Constants {
     }
     
     public static final class Vision {
-        public static final double TARGET_HEIGHT = 104d/12.0d;
-        
-        public static final double LIMELIGHT_HEIGHT = 39.5d/12.0d;
+        public static final double ACQUISITION_DELAY = 0.15;
 
-        public static final double LIMELIGHT_PITCH = 90 - 78.2;//13.4;//13.15
-
-        public static final double ACQUISITION_DELAY = 0.35;
-
-        public static final double ALIGNMENT_THRESHOLD = 1.13333;
+        public static final double ALIGNMENT_THRESHOLD = 0.83333;
 
         protected static double DISTANCE_OFFSET = - 2.0;
 

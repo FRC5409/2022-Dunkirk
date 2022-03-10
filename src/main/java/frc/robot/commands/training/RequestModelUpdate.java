@@ -79,7 +79,6 @@ public class RequestModelUpdate extends CommandBase {
                 System.out.println("Received payload : " + payload);
             } else {
                 System.out.println("Received status : " + response.getStatus());
-                System.out.println("Received payload : " + response.getSendableResult());
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to retrieve result of request", e);

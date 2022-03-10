@@ -44,6 +44,7 @@ public class ConfigureShooter extends CommandBase {
     public void initialize() {
         turret.enable();
         limelight.enable();
+        System.out.println("configure runs");
 
         
         ShooterConfiguration configuration = Constants.Shooter.CONFIGURATIONS.get(target);
