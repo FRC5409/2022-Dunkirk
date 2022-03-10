@@ -176,13 +176,14 @@ public class RobotCompetition implements RobotConfiguration {
             .whenActive(Climber::zeroEncoder);
 
         joystickSecondary.getButton(ButtonType.kLeftBumper)
-            .and(climberToggleTrigger)
-            .whenActive(new FindElevatorZero(Climber));
-
-        joystickSecondary.getButton(ButtonType.kRightBumper)
             .and(climberToggleTrigger.negate())
             .and(shooterModeTrigger.negate())
-            .whileActiveContinuous(new OperateShooter(limelight, turret, Flywheel, Indexer, shooterSweepDirection, shooterConfiguration, shooterOffset))
+            .whileActiveContinuous(
+                new OperateShooterStaged(
+                    limelight, turret, Flywheel,
+                    Indexer, joystickSecondary.getButton(ButtonType.kRightBumper),
+                    shooterSweepDirection, shooterConfiguration, shooterOffset
+            ))
             .whenInactive(new RotateTurret(turret, 0));
         
         joystickSecondary.getButton(ButtonType.kRightBumper)
@@ -224,6 +225,8 @@ public class RobotCompetition implements RobotConfiguration {
                 new SequentialCommandGroup(  
                 new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kGuard),
                 new RunShooter(Flywheel, Indexer, Constants.Shooter.GUARD_FLYWHEEL_VELOCITY, 0.5)));
+
+        
     }
 
     /**
