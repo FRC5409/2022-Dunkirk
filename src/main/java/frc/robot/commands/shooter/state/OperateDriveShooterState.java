@@ -4,8 +4,6 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import frc.robot.base.Property;
 import frc.robot.base.StateCommandBase;
 import frc.robot.base.shooter.ShooterConfiguration;
@@ -13,7 +11,6 @@ import frc.robot.base.shooter.ShooterModel;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
@@ -44,6 +41,7 @@ public class OperateDriveShooterState extends StateCommandBase {
     private ShooterModel model;
 
     private double dt;
+    private double prevTime;
 
     private Timer timer;
     
@@ -73,35 +71,39 @@ public class OperateDriveShooterState extends StateCommandBase {
     public void initialize() {
         if (!Toggleable.isEnabled(limelight, turret, flywheel, indexer))
             throw new RuntimeException("Cannot operate shooter when requirements are not enabled.");
-
+        if(model == null) return;
         model = configuration.get().getModel();
-
+        dt = 0.05;
         Vector2 target = limelight.getTarget();
-        
-        double robotVelocity = Units.metersToFeet(drivetrain.getEncoderVelocity());
 
-        //angle between turret and velocity vector, assuming it is correctly aligned with the target.
-        double angleOfTurret = Math.toRadians(turret.getRotation());
+        //assumings keiths model calc is done with feet. 
+        double robotVelocity = -1*Units.metersToFeet(drivetrain.getEncoderVelocity());
 
-        double distance = model.distance(target.y) - robotVelocity*Math.cos(angleOfTurret)*0.05;
+        //angle to the turret if it was aligned correctly
+        double angleOfTurret = Math.toRadians(Math.abs(turret.getRotation() + target.x));
+        double distance = model.distance(target.y) - robotVelocity* Math.cos(angleOfTurret)*dt;
         double velocityForFlywheel = model.calculate(distance);
 
         //speed lateral to the hub, or perpendicular to the direct distance from the hub.
-        double lateralDist = robotVelocity * Math.sin(angleOfTurret)*0.05;
+        double lateralDist = robotVelocity * Math.sin(angleOfTurret)*dt;
 
-        double turretNewPos = Math.tanh(lateralDist/distance);
+        double turretNewPos = -1*Math.toDegrees(Math.atan(lateralDist/distance));
 
-        turret.setRotationTarget(turret.getRotation() + (target.x-turretNewPos)*Constants.Vision.ROTATION_P);
+
+        turret.setRotationTarget(turret.getRotation() + (target.x+turretNewPos)*Constants.Vision.ROTATION_P);
 
         // Set flywheel to estimated velocity
         flywheel.setVelocity(velocityForFlywheel);
         flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
-        dt = timer.get();
+        prevTime = timer.get();
     }
 
     @Override
     public void execute() {
-        dt =  timer.get() - dt;
+        if(model == null) return;
+        
+        dt = timer.get() - prevTime;
+        prevTime = timer.get();
 
         Vector2 target = limelight.getTarget();
 
@@ -109,14 +111,13 @@ public class OperateDriveShooterState extends StateCommandBase {
         double robotVelocity = Units.metersToFeet(drivetrain.getEncoderVelocity());
 
         //angle to the turret if it was aligned correctly
-        double angleOfTurret = Math.toRadians(turret.getRotation() + target.x);
+        double angleOfTurret = Math.toRadians(Math.abs(turret.getRotation() + target.x));
         double distance = model.distance(target.y) - robotVelocity* Math.cos(angleOfTurret)*dt;
         double velocityForFlywheel = model.calculate(distance);
 
         //speed lateral to the hub, or perpendicular to the direct distance from the hub.
-        double lateralDist = -1*robotVelocity * Math.sin(angleOfTurret)*dt;
-
-        double turretNewPos = -1*Math.toDegrees(Math.tanh(lateralDist/distance));
+        double lateralDist = robotVelocity * Math.sin(angleOfTurret)*dt;
+        double turretNewPos = -1*Math.toDegrees(Math.atan(lateralDist/distance));
 
 
         System.out.println("DT: " + dt);
@@ -132,14 +133,14 @@ public class OperateDriveShooterState extends StateCommandBase {
 
 
         System.out.println("target.x: " + target.x);
-        System.out.println("flywheel target: " + flywheel.isTargetReached());
         System.out.println("feeder target: " + flywheel.feederReachedTarget());
         // Continue aligning shooter
         if (Math.abs(target.x) > (Constants.Vision.ALIGNMENT_THRESHOLD + Math.abs(turretNewPos))){
             turret.setRotationTarget(turret.getRotation() + (target.x+turretNewPos)*Constants.Vision.ROTATION_P);
             System.out.println("Aligning");
         }
-        if (flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
+
+        if (flywheel.feederReachedTarget()) {
             System.out.println("INdexer turning on");
             indexer.indexerOn(0.5);
         }
