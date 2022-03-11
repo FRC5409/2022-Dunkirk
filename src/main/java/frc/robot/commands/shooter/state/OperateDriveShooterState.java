@@ -102,7 +102,7 @@ public class OperateDriveShooterState extends StateCommandBase {
     public void execute() {
         if(model == null) return;
         
-        dt = timer.get() - prevTime;
+        dt = 2*(timer.get() - prevTime);
         prevTime = timer.get();
 
         Vector2 target = limelight.getTarget();
@@ -111,13 +111,13 @@ public class OperateDriveShooterState extends StateCommandBase {
         double robotVelocity = Units.metersToFeet(drivetrain.getEncoderVelocity());
 
         //angle to the turret if it was aligned correctly
-        double angleOfTurret = Math.toRadians(Math.abs(turret.getRotation() + target.x));
-        double distance = model.distance(target.y) - robotVelocity* Math.cos(angleOfTurret)*dt;
+        double angleOfTurret = turret.getRotation() + target.x;
+        double distance = model.distance(target.y) - robotVelocity* Math.cos(Math.toRadians(Math.abs(angleOfTurret)))*dt;
         double velocityForFlywheel = model.calculate(distance);
 
         //speed lateral to the hub, or perpendicular to the direct distance from the hub.
-        double lateralDist = robotVelocity * Math.sin(angleOfTurret)*dt;
-        double turretNewPos = -1*Math.toDegrees(Math.atan(lateralDist/distance));
+        double lateralDist = robotVelocity * Math.sin(-1*Math.toRadians(angleOfTurret))*dt;
+        double turretNewPos = Math.toDegrees(Math.atan(lateralDist/distance));
 
 
         System.out.println("DT: " + dt);

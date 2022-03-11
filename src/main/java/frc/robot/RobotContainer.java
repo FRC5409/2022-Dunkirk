@@ -63,7 +63,7 @@ public class RobotContainer {
   private final ShooterFlywheel      Flywheel;
   private final ShooterTurret        turret;
   private final Limelight            limelight;
-  private final Climber Climber;
+  private final Climber              Climber;
 
   private final DefaultDrive         defaultDrive;
   private final ReverseIntakeIndexer reverse;
