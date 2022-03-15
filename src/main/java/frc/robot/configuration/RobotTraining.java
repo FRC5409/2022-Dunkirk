@@ -44,8 +44,8 @@ import frc.robot.commands.training.RequestModelUpdate;
 import frc.robot.commands.training.ResetTargetSetpoint;
 import frc.robot.commands.training.SubmitSetpointData;
 import frc.robot.commands.training.TrainerConfigureShooter;
-import frc.robot.commands.training.TrainerLookShooter;
-import frc.robot.commands.training.TrainerRunShooter;
+import frc.robot.commands.training.TrainerFocusShooter;
+import frc.robot.commands.training.TrainerOperateShooter;
 import frc.robot.commands.training.UndoTargetSetpoint;
 import frc.robot.commands.training.UpdateTargetSetpoint;
 import frc.robot.subsystems.*;
@@ -189,7 +189,7 @@ public class RobotTraining implements RobotConfiguration {
             .whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.2));
 
         joystickPrimary.getButton(ButtonType.kA)
-            .whileHeld(new TrainerRunShooter(limelight, turret, Flywheel, Indexer, trainerDashboard, trainerContext, shooterSweepDirection))
+            .whileHeld(new TrainerOperateShooter(limelight, turret, Flywheel, Indexer, trainerDashboard, trainerContext, shooterSweepDirection))
             .whenReleased(new RotateTurret(turret, 0));
 
         joystickSecondary.getButton(ButtonType.kRightBumper)
@@ -226,7 +226,7 @@ public class RobotTraining implements RobotConfiguration {
             .whenPressed(new UpdateTargetSetpoint(trainerDashboard, trainerContext));
 
         joystickSecondary.getButton(ButtonType.kA)
-            .whileHeld(new TrainerLookShooter(limelight, turret, trainerDashboard, trainerContext, shooterSweepDirection))
+            .whileHeld(new TrainerFocusShooter(limelight, turret, trainerDashboard, trainerContext, shooterSweepDirection))
             .whenReleased(new RotateTurret(turret, 0));
 
         joystickSecondary.getButton(ButtonType.kBack)

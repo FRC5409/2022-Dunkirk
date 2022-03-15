@@ -156,8 +156,8 @@ public class RobotCompetition implements RobotConfiguration {
         joystickPrimary.getButton(ButtonType.kX)
             .whileHeld(new IndexerIntakeActive(Indexer, Intake));
 
-        joystickPrimary.getButton(ButtonType.kX)
-            .whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.2));
+        // joystickPrimary.getButton(ButtonType.kX)
+            // .whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.2));
 
         joystickSecondary.getButton(ButtonType.kStart)
             .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber))
@@ -179,10 +179,13 @@ public class RobotCompetition implements RobotConfiguration {
             .and(climberToggleTrigger.negate())
             .and(shooterModeTrigger.negate())
             .whileActiveContinuous(
-                new OperateShooterStaged(
-                    limelight, turret, Flywheel,
-                    Indexer, joystickSecondary.getButton(ButtonType.kRightBumper),
-                    shooterSweepDirection, shooterConfiguration, shooterOffset
+                new SequentialCommandGroup(
+                    new RunIndexerBack(Intake, Indexer).withTimeout(0.2),
+                    new OperateShooterDelayed(
+                        limelight, turret, Flywheel, Indexer, 
+                        new Trigger(joystickSecondary.getController()::getRightBumper),
+                        shooterSweepDirection, shooterConfiguration, shooterOffset
+                    )
             ))
             .whenInactive(new RotateTurret(turret, 0));
         
