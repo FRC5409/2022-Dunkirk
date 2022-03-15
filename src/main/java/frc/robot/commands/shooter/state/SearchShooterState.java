@@ -24,19 +24,21 @@ import frc.robot.utils.Toggleable;
  */
 public class SearchShooterState extends TimedStateCommand {
     private final Limelight limelight;
+    private final boolean doAlignment;
 
     private boolean done;
-
-    public SearchShooterState(Limelight limelight) {
+    
+    
+    public SearchShooterState(Limelight limelight, boolean doAlignment) {
         this.limelight = limelight;
+        this.doAlignment = doAlignment;
+
+        addRequirements(limelight);
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        
-        if (!Toggleable.isEnabled(limelight))
-            throw new RuntimeException("Cannot search shooter when requirements are not enabled.");
 
         limelight.enable();
         limelight.setLedMode(LedMode.kModeOn);
@@ -46,13 +48,23 @@ public class SearchShooterState extends TimedStateCommand {
 
     @Override
     public void execute() {
-        if (limelight.hasTarget() && limelight.getTargetType() == TargetType.kHub) {
-            next("frc.robot.shooter:align");
+        if (limelight.getTargetType() == TargetType.kHub) {
+            if (doAlignment)
+                next("frc.robot.shooter:align");
+            else
+                next("frc.robot.shooter:operate");
+                
             done = true;
         } else if (getElapsedTime() > Constants.Vision.ACQUISITION_DELAY) {
             next("frc.robot.shooter:sweep");
             done = true;
         }
+    }
+    
+    @Override
+    public void end(boolean interrupted) {
+        if (interrupted || getNextState() == null)
+            limelight.disable();
     }
     
     @Override

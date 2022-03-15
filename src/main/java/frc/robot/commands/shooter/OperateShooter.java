@@ -42,7 +42,7 @@ public final class OperateShooter extends StateCommandGroup {
     ) {
 
         addCommands(
-            new SearchShooterState(limelight),
+            new SearchShooterState(limelight, false),
             new SweepShooterState(limelight, turret, direction),
             new AlignShooterState(limelight, turret),
             new OperateShooterState(limelight, turret, flywheel, indexer, configuration, offset)

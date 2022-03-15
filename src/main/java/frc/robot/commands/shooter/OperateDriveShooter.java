@@ -43,7 +43,7 @@ public final class OperateDriveShooter extends StateCommandGroup {
     ) {
 
         addCommands(
-            new SearchShooterState(limelight),
+            new SearchShooterState(limelight, false),
             new SweepShooterState(limelight, turret, direction),
             new AlignShooterState(limelight, turret),
             new OperateDriveShooterState(limelight, turret, flywheel, drivetrain, indexer, configuration, offset)

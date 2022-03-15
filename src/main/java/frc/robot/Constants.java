@@ -380,6 +380,8 @@ public final class Constants {
         public static final double FEEDER_VELOCITY = -5000;
 
         public static final int OFFSET_INCREMENT = 50;
+
+        public static final double INDEXER_VELOCITY = 0.5;
     }
     
     public static final class Vision {

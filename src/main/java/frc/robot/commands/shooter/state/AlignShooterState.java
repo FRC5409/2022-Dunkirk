@@ -6,16 +6,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.base.TimedStateCommand;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.utils.Toggleable;
 import frc.robot.utils.Vector2;
 
 // TODO update doc
 public class AlignShooterState extends TimedStateCommand {
-    private final ShooterTurret turret;
-    private final Limelight limelight;
+    protected final ShooterTurret turret;
+    protected final Limelight limelight;
     
-    private boolean done;
+    protected boolean done;
 
     public AlignShooterState(Limelight limelight, ShooterTurret turret) {
         this.limelight = limelight;
@@ -26,10 +27,13 @@ public class AlignShooterState extends TimedStateCommand {
 
     @Override
     public void initialize() {
-        if (!Toggleable.isEnabled(limelight, turret))
-            throw new RuntimeException("Cannot operate shooter when requirements are not enabled.");
-
         super.initialize();
+
+        if (!Toggleable.isEnabled(limelight))
+            throw new RuntimeException("Cannot align shooter when requirements are not enabled.");
+
+        if (!turret.isEnabled())
+            turret.enable();
 
         done = false;
     }
@@ -41,18 +45,27 @@ public class AlignShooterState extends TimedStateCommand {
         if (Math.abs(target.x) < Constants.Vision.ALIGNMENT_THRESHOLD) {
             next("frc.robot.shooter:operate");
             done = true;
-        } else if (getElapsedTime() > Constants.Shooter.ALIGNMENT_MAX_TIME)
+        } else if (getElapsedTime() > Constants.Shooter.ALIGNMENT_MAX_TIME) {
             done = true;
-        else
-            turret.setRotationTarget(turret.getRotation() + target.x);
-        
-    
-        if(Constants.kConfig.DEBUG) SmartDashboard.putNumber("Alignment Offset", target.x);
+        } else {
+            turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
+        }
+
+        if(Constants.kConfig.DEBUG)
+            SmartDashboard.putNumber("Alignment Offset", target.x);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        if (interrupted || getNextState() == null) {
+            limelight.disable();
+            turret.disable();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return done;
+        return (limelight.getTargetType() != TargetType.kHub) || done;
     }
 
     @Override

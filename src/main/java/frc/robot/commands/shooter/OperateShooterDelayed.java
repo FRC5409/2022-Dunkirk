@@ -4,7 +4,7 @@ import frc.robot.base.Property;
 import frc.robot.base.ProxyStateCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
-import frc.robot.commands.shooter.state.AlignShooterStagedState;
+import frc.robot.commands.shooter.state.DelayedAlignShooterState;
 import frc.robot.commands.shooter.state.OperateShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
 import frc.robot.commands.shooter.state.SweepShooterState;
@@ -14,7 +14,6 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 
 /**
  * This is a StateCommandGroup commmand that handles all the states for the shooter. 
@@ -23,14 +22,8 @@ import frc.robot.Constants;
  * 
  * @author Keith Davies
  */
-public final class OperateShooterStaged extends ProxyStateCommandGroup {
-    private final Property<Integer> offset;
-    private final ShooterFlywheel flywheel;
-    private final ShooterTurret turret;
-    private final Limelight limelight;
-    private final Indexer indexer;
-
-    public OperateShooterStaged(
+public final class OperateShooterDelayed extends ProxyStateCommandGroup {
+    public OperateShooterDelayed(
         Limelight limelight,
         ShooterTurret turret,
         ShooterFlywheel flywheel,
@@ -42,43 +35,12 @@ public final class OperateShooterStaged extends ProxyStateCommandGroup {
     ) {
 
         addCommands(
-            new SearchShooterState(limelight),
+            new SearchShooterState(limelight, true),
             new SweepShooterState(limelight, turret, direction),
-            new AlignShooterStagedState(trigger, limelight, turret),
+            new DelayedAlignShooterState(trigger, limelight, turret),
             new OperateShooterState(limelight, turret, flywheel, indexer, configuration, offset)
         ); 
 
         setDefaultState("frc.robot.shooter:search");
-
-        this.limelight = limelight;
-        this.flywheel = flywheel;
-        this.indexer = indexer;
-        this.turret = turret;
-        this.offset = offset;
-    }
-
-    @Override
-    public void initialize() {
-        limelight.enable();
-        flywheel.enable();
-        indexer.enable();
-        turret.enable();
-
-        flywheel.setVelocity(
-            Constants.Shooter.PRE_SHOOTER_VELOCITY + offset.get()
-        );
-
-        super.initialize();
-    }
-
-
-    @Override
-    public void end(boolean interrupted) {
-        super.end(interrupted);
-
-        limelight.disable();
-        flywheel.disable();
-        indexer.disable();
-        turret.disable();
     }
 }

@@ -6,8 +6,10 @@ import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.shooter.state.AlignShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
 import frc.robot.commands.shooter.state.SweepShooterState;
-import frc.robot.commands.training.state.TrainerLookShooterState;
+import frc.robot.commands.training.state.TrainerOperateShooterState;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.training.TrainerContext;
 import frc.robot.training.TrainerDashboard;
@@ -20,34 +22,42 @@ import frc.robot.training.TrainerDashboard;
  * 
  * @author Keith Davies
  */
-public final class TrainerLookShooter extends StateCommandGroup {
-    private final ShooterTurret turret;
-    private final Limelight     limelight;
+public final class TrainerOperateShooter extends StateCommandGroup {
+    private final ShooterFlywheel flywheel;
+    private final ShooterTurret   turret;
+    private final Limelight       limelight;
+    private final Indexer         indexer;
 
-    public TrainerLookShooter(
+    public TrainerOperateShooter(
         Limelight limelight,
         ShooterTurret turret,
+        ShooterFlywheel flywheel,
+        Indexer indexer,
         TrainerDashboard dashboard,
         TrainerContext context,
         Property<SweepDirection> direction
     ) {
         addCommands(
-            new SearchShooterState(limelight),
+            new SearchShooterState(limelight, false),
             new SweepShooterState(limelight, turret, direction),
             new AlignShooterState(limelight, turret),
-            new TrainerLookShooterState(limelight, turret, dashboard, context)
+            new TrainerOperateShooterState(limelight, turret, flywheel, indexer, dashboard, context)
         );
 
         setDefaultState("frc.robot.shooter:search");
         
+        this.flywheel = flywheel;
         this.turret = turret;
         this.limelight = limelight;
+        this.indexer = indexer;
     }
 
     @Override
     public void initialize() {
-        turret.enable();
         limelight.enable();
+        flywheel.enable();
+        indexer.enable();
+        turret.enable();
 
         super.initialize();
     }
@@ -57,12 +67,9 @@ public final class TrainerLookShooter extends StateCommandGroup {
     public void end(boolean interrupted) {
         super.end(interrupted);
 
-        turret.disable();
         limelight.disable();
-    }
-
-    @Override
-    public boolean isFinished() {
-        return false;
+        flywheel.disable();
+        indexer.disable();
+        turret.disable();
     }
 }

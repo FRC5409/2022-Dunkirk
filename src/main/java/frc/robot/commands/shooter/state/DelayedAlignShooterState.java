@@ -7,32 +7,36 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.base.TimedStateCommand;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.utils.Toggleable;
 import frc.robot.utils.Vector2;
 
 // TODO update doc
-public class AlignShooterStagedState extends TimedStateCommand {
+public class DelayedAlignShooterState extends TimedStateCommand {
     private final ShooterTurret turret;
     private final Limelight limelight;
     private final Trigger trigger;
     
     private boolean done;
 
-    public AlignShooterStagedState(Trigger trigger, Limelight limelight, ShooterTurret turret) {
+    public DelayedAlignShooterState(Trigger trigger, Limelight limelight, ShooterTurret turret) {
         this.limelight = limelight;
         this.trigger = trigger;
         this.turret = turret;
-
+        
         addRequirements(limelight, turret);
     }
 
     @Override
     public void initialize() {
-        if (!Toggleable.isEnabled(limelight, turret))
-            throw new RuntimeException("Cannot operate shooter when requirements are not enabled.");
-
         super.initialize();
+
+        if (!Toggleable.isEnabled(limelight))
+            throw new RuntimeException("Cannot align shooter when requirements are not enabled.");
+
+        if (!turret.isEnabled())
+            turret.enable();
 
         done = false;
     }
@@ -42,7 +46,7 @@ public class AlignShooterStagedState extends TimedStateCommand {
         Vector2 target = limelight.getTarget();
 
         if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
-            turret.setRotationTarget(turret.getRotation() + target.x);
+            turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
 
         if (trigger.get()) {
             next("frc.robot.shooter:operate");
@@ -55,7 +59,7 @@ public class AlignShooterStagedState extends TimedStateCommand {
 
     @Override
     public boolean isFinished() {
-        return done;
+        return (limelight.getTargetType() != TargetType.kHub) || done;
     }
 
     @Override
