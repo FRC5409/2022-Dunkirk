@@ -21,6 +21,11 @@ public class RunIndexerBack extends CommandBase{
 		addRequirements(sys_Intake, sys_indexer);
 	}
 
+	@Override
+	public void initialize() {
+		sys_indexer.enable();
+	}
+
     @Override
     public void execute(){
 		if(sys_indexer.ballDetectionExit()){
@@ -30,8 +35,8 @@ public class RunIndexerBack extends CommandBase{
 
     @Override 
     public void end(boolean inter){
-		
-        sys_indexer.indexerOn(0);
+		sys_indexer.indexerOn(0);
+		sys_indexer.disable();
     }
 	// Returns true when the command should end.
 	@Override
