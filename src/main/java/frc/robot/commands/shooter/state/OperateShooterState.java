@@ -73,7 +73,7 @@ public class OperateShooterState extends StateCommandBase {
 
         flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
 
-        target = limelight.getTarget();
+        target = limelight.getTargetPosition();
         model = configuration.get().getModel();
 
         active = false;
@@ -85,7 +85,7 @@ public class OperateShooterState extends StateCommandBase {
             return;
 
         if (limelight.getTargetType() == TargetType.kHub)
-            target = limelight.getTarget();
+            target = limelight.getTargetPosition();
             
         double distance = model.distance(target.y);
         double velocity = model.calculate(distance);

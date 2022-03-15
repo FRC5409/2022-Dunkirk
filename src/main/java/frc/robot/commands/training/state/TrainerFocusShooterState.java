@@ -47,7 +47,7 @@ public class TrainerFocusShooterState extends StateCommandBase {
 
     @Override
     public void execute() {
-        Vector2 target = limelight.getTarget();
+        Vector2 target = limelight.getTargetPosition();
 
         ShooterModel model = context.getModel();
 

@@ -77,7 +77,7 @@ public class OperateDriveShooterState extends StateCommandBase {
 
     @Override
     public void execute() {
-        Vector2 target = limelight.getTarget();
+        Vector2 target = limelight.getTargetPosition();
 
         double distance = model.distance(target.y);
         double velocity = model.calculate(distance);

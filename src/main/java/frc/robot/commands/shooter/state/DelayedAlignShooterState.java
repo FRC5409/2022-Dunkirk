@@ -43,7 +43,7 @@ public class DelayedAlignShooterState extends TimedStateCommand {
 
     @Override
     public void execute() {
-        Vector2 target = limelight.getTarget();
+        Vector2 target = limelight.getTargetPosition();
 
         if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
             turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);

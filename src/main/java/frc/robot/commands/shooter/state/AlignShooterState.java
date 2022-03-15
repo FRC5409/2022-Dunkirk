@@ -40,7 +40,7 @@ public class AlignShooterState extends TimedStateCommand {
 
     @Override
     public void execute() {
-        Vector2 target = limelight.getTarget();
+        Vector2 target = limelight.getTargetPosition();
 
         if (Math.abs(target.x) < Constants.Vision.ALIGNMENT_THRESHOLD) {
             next("frc.robot.shooter:operate");
