@@ -8,7 +8,7 @@ package frc.robot.utils;
  */
 public class Vector4 {
     /**
-     * Construct Blank Vector4.
+     * Construct Blank {@link Vector4}.
      */
     public Vector4() {
         x = 0;
@@ -18,7 +18,7 @@ public class Vector4 {
     }
 
     /**
-     * Construct Vector4 with coordinates.
+     * Construct {@link Vector4} with coordinates.
      * 
      * @param x X Coordinate
      * @param y Y Coordinate
@@ -30,6 +30,18 @@ public class Vector4 {
         this.y = y;
         this.z = z;
         this.w = w;
+    }
+
+    /**
+     * Construct {@link Vector4} from another {@link Vector4}.
+     * 
+     * @param other A {@link Vector4}.
+     */
+    public Vector4(Vector4 other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        this.w = other.w;
     }
 
     /**

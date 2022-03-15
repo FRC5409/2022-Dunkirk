@@ -8,7 +8,7 @@ package frc.robot.utils;
  */
 public class Vector3 {
     /**
-     * Construct Blank Vector3.
+     * Construct Blank {@link Vector3}.
      */
     public Vector3() {
         x = 0;
@@ -17,7 +17,7 @@ public class Vector3 {
     }
 
     /**
-     * Construct Vector3 with coordinates.
+     * Construct {@link Vector3} with coordinates.
      * 
      * @param x X Coordinate
      * @param y Y Coordinate
@@ -27,6 +27,17 @@ public class Vector3 {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    /**
+     * Construct {@link Vector3} from another {@link Vector3}.
+     * 
+     * @param other A {@link Vector3}.
+     */
+    public Vector3(Vector3 other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
     }
 
     /**
