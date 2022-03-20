@@ -26,10 +26,10 @@ public class Indexer extends SubsystemBase implements Toggleable {
         kEnter, kExit, kBall1
     }
 
-    public static final int INDEXER_STATE_FLAG_NONE   = 0x0;
-    public static final int INDEXER_STATE_FLAG_ENTER  = 0x1;
-    public static final int INDEXER_STATE_FLAG_EXIT   = 0x2;
-    public static final int INDEXER_STATE_FLAG_BALL1  = 0x4;
+    public static final int INDEXER_STATE_NONE   = 0x0;
+    public static final int INDEXER_STATE_ENTER  = 0x1;
+    public static final int INDEXER_STATE_EXIT   = 0x2;
+    public static final int INDEXER_STATE_BALL1  = 0x4;
 
     
     // indexer testing motors
@@ -95,14 +95,14 @@ public class Indexer extends SubsystemBase implements Toggleable {
     public void periodic() {
         // update state
         state = (
-            (tof_enter.getRange() < Constants.Indexer.RANGE_ENTER  ? INDEXER_STATE_FLAG_ENTER : 0) |
-            (tof_exit.getRange() < Constants.Indexer.RANGE_EXIT    ? INDEXER_STATE_FLAG_EXIT  : 0) |
-            (tof_ball1.getRange() < Constants.Indexer.RANGE_BALL_1 ? INDEXER_STATE_FLAG_BALL1 : 0)
+            (tof_enter.getRange() < Constants.Indexer.RANGE_ENTER  ? INDEXER_STATE_ENTER : 0) |
+            (tof_exit.getRange() < Constants.Indexer.RANGE_EXIT    ? INDEXER_STATE_EXIT  : 0) |
+            (tof_ball1.getRange() < Constants.Indexer.RANGE_BALL_1 ? INDEXER_STATE_BALL1 : 0)
         );
 
-        if ((state & INDEXER_STATE_FLAG_ENTER) != 0)
+        if ((state & INDEXER_STATE_ENTER) != 0)
             count = 1;
-        else if ((state & INDEXER_STATE_FLAG_BALL1) != 0)
+        else if ((state & INDEXER_STATE_BALL1) != 0)
             count = 2;
         else
             count = 0;
@@ -144,9 +144,9 @@ public class Indexer extends SubsystemBase implements Toggleable {
 
     public boolean getSensorState(SensorType type) {
         switch (type) {
-            case kEnter: return (state & INDEXER_STATE_FLAG_ENTER) != 0;
-            case kExit:  return (state & INDEXER_STATE_FLAG_EXIT)  != 0;
-            case kBall1: return (state & INDEXER_STATE_FLAG_BALL1) != 0;
+            case kEnter: return (state & INDEXER_STATE_ENTER) != 0;
+            case kExit:  return (state & INDEXER_STATE_EXIT)  != 0;
+            case kBall1: return (state & INDEXER_STATE_BALL1) != 0;
         }
         return false;
     }
