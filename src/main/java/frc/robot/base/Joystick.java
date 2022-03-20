@@ -1,10 +1,12 @@
 package frc.robot.base;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-public class Joystick {
+public class Joystick implements Subsystem {
     public static enum ButtonType {
         kLeftBumper,
         kRightBumper,
@@ -79,6 +81,24 @@ public class Joystick {
                 return (i == 225) || (i == 270) || (i == 315);
             }
         );
+    }
+
+    public void setRumble(double value) {
+        m_controller.setRumble(RumbleType.kLeftRumble, value);
+        m_controller.setRumble(RumbleType.kRightRumble, value);
+    }
+
+    public void setRumble(RumbleType type, double value) {
+        m_controller.setRumble(type, value);
+    }
+
+    public void stopRumble(RumbleType type) {
+        m_controller.setRumble(type, 0);
+    }
+
+    public void stopRumble() {
+        m_controller.setRumble(RumbleType.kLeftRumble, 0);
+        m_controller.setRumble(RumbleType.kRightRumble, 0);
     }
 
     public XboxController getController() {
