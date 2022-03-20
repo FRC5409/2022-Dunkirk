@@ -61,7 +61,8 @@ public class RobotCompetition implements RobotConfiguration {
     private final ValueProperty<ShooterConfiguration> shooterConfiguration;
     private final ValueProperty<SweepDirection> shooterSweepDirection;
     private final ValueProperty<Integer> shooterOffset;
-    public final ValueProperty<Boolean> climberActive;
+    private final ValueProperty<Boolean> climberActive;
+    private final ValueProperty<Boolean> shooterArmed;
 
     private final SendableChooser<Command> autoCommandSelector;
 
@@ -84,6 +85,7 @@ public class RobotCompetition implements RobotConfiguration {
         // Init controller
         shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
         shooterConfiguration  = new ValueProperty<>(Constants.Shooter.CONFIGURATIONS.get(ShooterMode.kFar));
+        shooterArmed          = new ValueProperty<>(false);
         shooterOffset         = new ValueProperty<>(0);
         climberActive         = robot.climberActive;
         
@@ -104,9 +106,17 @@ public class RobotCompetition implements RobotConfiguration {
     }
 
     private void configureDashboard() {
-        autoCommandSelector.setDefaultOption("Default", new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
-        autoCommandSelector.addOption("One", new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
-        autoCommandSelector.addOption("Two", new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
+        autoCommandSelector.setDefaultOption("Default", 
+            new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+                shooterConfiguration, shooterSweepDirection, shooterOffset));
+        
+        autoCommandSelector.addOption("One",
+            new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, 
+                shooterConfiguration, shooterSweepDirection, shooterOffset));
+        
+        autoCommandSelector.addOption("Two",
+            new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+                shooterConfiguration, shooterSweepDirection, shooterOffset));
 
         SmartDashboard.putData("Auto Chooser", autoCommandSelector);
 
@@ -142,27 +152,22 @@ public class RobotCompetition implements RobotConfiguration {
         Trigger climberToggleTrigger = new Trigger(climberActive::get);
         Trigger shooterModeTrigger = new Trigger(() -> shooterConfiguration.get().getMode() == ShooterMode.kNear);
 
-        // Bind start to go to the next drive mode
         joystickPrimary.getButton(ButtonType.kStart)
             .whenPressed(DriveTrain::cycleDriveMode);
 
-        // Bind right bumper to
         joystickPrimary.getButton(ButtonType.kRightBumper)
             .whenPressed(new FastGear(DriveTrain));
 
         joystickPrimary.getButton(ButtonType.kRightBumper)
             .whenReleased(new SlowGear(DriveTrain));
 
-        // but_main_A.whenPressed();
         joystickPrimary.getButton(ButtonType.kB)
             .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
         
-        // TODO: temp
         joystickPrimary.getButton(ButtonType.kX)
-            .whileHeld(new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary));
-
-        // joystickPrimary.getButton(ButtonType.kX)
-            // .whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.2));
+            .whileActiveOnce(new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary))
+            .whenActive(new ConfigureProperty<>(shooterArmed, false))
+            .whenInactive(new PrimeShooter(Indexer, shooterArmed));
 
         joystickSecondary.getButton(ButtonType.kStart)
             .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber))
@@ -183,21 +188,19 @@ public class RobotCompetition implements RobotConfiguration {
         joystickSecondary.getButton(ButtonType.kLeftBumper)
             .and(climberToggleTrigger.negate())
             .and(shooterModeTrigger.negate())
-            .whileActiveContinuous(
-                new SequentialCommandGroup(
-                    new RunIndexerBack(Intake, Indexer).withTimeout(0.2),
-                    new OperateShooterDelayed(
-                        limelight, turret, Flywheel, Indexer, 
-                        new Trigger(joystickSecondary.getController()::getRightBumper),
-                        shooterSweepDirection, shooterConfiguration, shooterOffset
-                    )
-            ))
+            .whileActiveOnce(
+                new OperateShooterDelayed(
+                    limelight, turret, Flywheel, Indexer, 
+                    shooterSweepDirection, shooterConfiguration, shooterOffset, shooterArmed,
+                    new Trigger(joystickSecondary.getController()::getRightBumper)
+                )
+            )
             .whenInactive(new RotateTurret(turret, 0));
         
         joystickSecondary.getButton(ButtonType.kRightBumper)
             .and(climberToggleTrigger.negate())
             .and(shooterModeTrigger)
-            .whileActiveContinuous(new RunShooter(Flywheel, Indexer, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85))
+            .whileActiveOnce(new RunShooter(Flywheel, Indexer, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85))
             .whenInactive(new RotateTurret(turret, 0));
 
         joystickSecondary.getButton(ButtonType.kUpPov)
@@ -222,14 +225,14 @@ public class RobotCompetition implements RobotConfiguration {
 
         joystickSecondary.getButton(ButtonType.kA)
             .and(climberToggleTrigger.negate())
-            .whileActiveContinuous(
+            .whileActiveOnce(
                 new SequentialCommandGroup(  
                 new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kLow),
                 new RunShooter(Flywheel, Indexer, Constants.Shooter.LOW_FLYWHEEL_VELOCITY, 0.5)));
 
         joystickSecondary.getButton(ButtonType.kB)
             .and(climberToggleTrigger.negate())
-            .whileActiveContinuous(
+            .whileActiveOnce(
                 new SequentialCommandGroup(  
                 new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kGuard),
                 new RunShooter(Flywheel, Indexer, Constants.Shooter.GUARD_FLYWHEEL_VELOCITY, 0.5)));

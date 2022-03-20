@@ -5,6 +5,8 @@ import frc.robot.base.ProxyStateCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.shooter.state.DelayedAlignShooterState;
+import frc.robot.commands.shooter.state.OperateArmShooterState;
+import frc.robot.commands.shooter.state.OperateRunShooterState;
 import frc.robot.commands.shooter.state.OperateShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
 import frc.robot.commands.shooter.state.SweepShooterState;
@@ -28,17 +30,19 @@ public final class OperateShooterDelayed extends ProxyStateCommandGroup {
         ShooterTurret turret,
         ShooterFlywheel flywheel,
         Indexer indexer,
-        Trigger trigger,
         Property<SweepDirection> direction,
         Property<ShooterConfiguration> configuration,
-        Property<Integer> offset
+        Property<Integer> offset,
+        Property<Boolean> armed,
+        Trigger trigger
     ) {
 
         addCommands(
             new SearchShooterState(limelight, true),
             new SweepShooterState(limelight, turret, direction),
             new DelayedAlignShooterState(trigger, limelight, turret),
-            new OperateShooterState(limelight, turret, flywheel, indexer, configuration, offset)
+            new OperateArmShooterState(limelight, turret, flywheel, configuration, offset, armed),
+            new OperateRunShooterState(limelight, turret, flywheel, indexer, configuration, offset)
         ); 
 
         setDefaultState("frc.robot.shooter:search");
