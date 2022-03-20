@@ -103,7 +103,7 @@ public class RobotTraining implements RobotConfiguration {
 
         // Init commands
         defaultDrive        = new DefaultDrive((DriveTrain), joystickPrimary.getController());
-        indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake);
+        indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary);
         reverse             = new ReverseIntakeIndexer(Intake, Indexer);
         intakeActive        = new IntakeActive(Intake, Indexer);
         test                = new IndexerIntakeTest(Indexer, Intake);
@@ -191,7 +191,7 @@ public class RobotTraining implements RobotConfiguration {
             .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
 
         joystickPrimary.getButton(ButtonType.kX)
-            .whileHeld(new IndexerIntakeActive(Indexer, Intake))
+            .whileHeld(new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary))
             .whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.2));
 
         joystickPrimary.getButton(ButtonType.kA)

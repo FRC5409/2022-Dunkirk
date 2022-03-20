@@ -90,7 +90,7 @@ public class RobotCompetition implements RobotConfiguration {
         // Initialize sub systems
 
         // Init commands
-        indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake);
+        indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary);
         intakeActive        = new IntakeActive(Intake, Indexer);
         defaultDrive        = new DefaultDrive(DriveTrain, joystickPrimary.getController());
         reverse             = new ReverseIntakeIndexer(Intake, Indexer);
@@ -159,7 +159,7 @@ public class RobotCompetition implements RobotConfiguration {
         
         // TODO: temp
         joystickPrimary.getButton(ButtonType.kX)
-            .whileHeld(new IndexerIntakeActive(Indexer, Intake));
+            .whileHeld(new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary));
 
         // joystickPrimary.getButton(ButtonType.kX)
             // .whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.2));
