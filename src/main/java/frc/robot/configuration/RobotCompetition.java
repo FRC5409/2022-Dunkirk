@@ -28,6 +28,11 @@ import frc.robot.subsystems.Intake;
 
 
 import frc.robot.commands.autonomous.trajectoryAuto.TwoBallsAuto;
+import frc.robot.commands.indexer.IndexerIntakeActive;
+import frc.robot.commands.indexer.IndexerIntakeTest;
+import frc.robot.commands.indexer.IntakeActive;
+import frc.robot.commands.indexer.ReverseIntakeIndexer;
+import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.commands.autonomous.trajectoryAuto.OneBallAuto;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.commands.shooter.*;
