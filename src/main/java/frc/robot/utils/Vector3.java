@@ -8,6 +8,21 @@ package frc.robot.utils;
  */
 public class Vector3 {
     /**
+     * X Coordinate
+     */
+    public double x;
+    
+    /**
+     * Y Coordinate
+     */
+    public double y;
+    
+    /**
+     * Z Coordinate
+     */
+    public double z;
+
+    /**
      * Construct Blank {@link Vector3}.
      */
     public Vector3() {
@@ -51,29 +66,38 @@ public class Vector3 {
     }
 
     /**
-     * Compute normal of this vector.
+     * Compute the unit vector.
      * 
-     * @return Normal of this vector
+     * @return The unit vector.
      */ 
-    public Vector3 norm() {
-        final double mag = magnitude();
-        return new Vector3(x / mag, y / mag, z / mag);
+    public Vector3 unit() {
+        final double m = magnitude();
+        return new Vector3(x / m, y / m, z / m);
     }
 
+    /**
+     * Compute the cross product.
+     * 
+     * @return The cross product.
+     */ 
+    public Vector3 cross(Vector3 other) {
+        return new Vector3(
+            other.z * y - other.y * z,
+            other.x * z - other.z * x,
+            other.y * x - other.x * y
+        );
+    }
 
-    /**
-     * X Coordinate
-     */
-    public double x;
-    
-    /**
-     * Y Coordinate
-     */
-    public double y;
-    
-    /**
-     * Z Coordinate
-     */
-    public double z;
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Vector3)) return false;
+        Vector3 other = (Vector3) o;
+        return x == other.x && y == other.y && z == other.z;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
 }
 

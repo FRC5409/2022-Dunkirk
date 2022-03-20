@@ -8,6 +8,16 @@ package frc.robot.utils;
  */
 public class Vector2 {
     /**
+     * X Coordinate
+     */
+    public double x;
+    
+    /**
+     * Y Coordinate
+     */
+    public double y;
+
+    /**
      * Construct Blank {@link Vector2}.
      */
     public Vector2() {
@@ -65,18 +75,20 @@ public class Vector2 {
      * 
      * @return Magnitude of this vector
      */
-    public Vector2 normalize() {
-        final double mag = magnitude();
-        return new Vector2(x/mag, y/mag);
+    public Vector2 unit() {
+        final double m = magnitude();
+        return new Vector2(x / m, y / m);
     }
 
-    /**
-     * X Coordinate
-     */
-    public double x;
-    
-    /**
-     * Y Coordinate
-     */
-    public double y;
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Vector2)) return false;
+        Vector2 other = (Vector2) o;
+        return x == other.x && y == other.y;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
 }
