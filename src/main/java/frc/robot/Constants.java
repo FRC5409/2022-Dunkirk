@@ -254,23 +254,23 @@ public final class Constants {
         public static final double unitsPerRotation = 2048;
     }
 
-    public final class kIndexer {
-        public static final int kIndexerMotor = 16; 
-        public static final int currentLimit = 20; 
+    public final class Indexer {
+        public static final int INDEXER_MOTOR_ID = 8;
+
+        public static final int CURRENT_LIMIT = 20; 
 
         public static final int kIndexShooterMotor = 30;
 
-        public static final int TOF_Ent = 25; 
-        public static final int TOF_Ball1 = 26; 
-        public static final int TOF_Ext = 27; 
+        public static final int TOF_ENTER_CHANNEL = 25; 
+        public static final int TOF_BALL_1_CHANNEL = 26; 
+        public static final int TOF_EXIT_CHANNEL = 27; 
 
-        public static final int sampleTime = 24; 
+        public static final int SAMPLE_TIME = 24; 
 
-        public static final int rangeEnter = 180;
-        public static final int rangeBall1 = 105;
-        public static final int rangeExit = 90; 
+        public static final int RANGE_ENTER = 180;
+        public static final int RANGE_BALL_1 = 105;
+        public static final int RANGE_EXIT = 90; 
      
-        public static final int indexerMotorBottom = 8; 
     }
 
     public static final class Limelight {
