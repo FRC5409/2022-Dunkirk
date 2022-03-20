@@ -104,7 +104,7 @@ public class OperateShooterState extends StateCommandBase {
                 System.out.println("Target Reached");
             }
 
-            indexer.spinIndexer(Constants.Shooter.INDEXER_VELOCITY);
+            indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
             active = true;
         }
 

@@ -6,51 +6,42 @@ import frc.robot.subsystems.Intake;
 
 
 public class IntakeActive extends CommandBase{
-    private final Intake sys_Intake;
-	private final Indexer sys_indexer;
+    private final Intake intake;
+	private final Indexer indexer;
 
 	/**
 	 * Creates a new IntakeIndexActive
 	 * 
 	 * Command to run the indexer
 	 */
-	public IntakeActive(Intake subsystem, Indexer indexer) {
-		sys_Intake = subsystem;
-		sys_indexer = indexer;
+	public IntakeActive(Intake intake, Indexer indexer) {
+		this.intake = intake;
+		this.indexer = indexer;
 		
-		addRequirements(sys_Intake, sys_indexer);
+		addRequirements(intake, indexer);
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
+		indexer.enable();
+		indexer.setSpeed(0.25);
 
-        sys_Intake.solenoidsDown();
-
-		sys_Intake.intakeOn(0.75);
-		sys_indexer.enable();
-
-	}
-
-	// Called every time the scheduler runs while the command is scheduled.
-	@Override
-	public void execute() {
-		sys_indexer.spinIndexer(0.25);
-
-        sys_Intake.intakeOn(0.75);
-		sys_Intake.intakeIn(0.75);
+        intake.solenoidsDown();
+		intake.intakeOn(0.75);
+		intake.intakeIn(0.75);
 
 	}
+
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
-		sys_Intake.intakeOn(0);
-		sys_Intake.intakeIn(0);
+		indexer.disable();
 
-        sys_Intake.solenoidsUp();
-		sys_indexer.disable();
-
+		intake.intakeOn(0);
+		intake.intakeIn(0);
+        intake.solenoidsUp();
 	}
 
 	// Returns true when the command should end.

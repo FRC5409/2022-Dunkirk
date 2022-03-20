@@ -6,33 +6,31 @@ import frc.robot.subsystems.Intake;
 
 public class IndexerIntakeTest extends CommandBase {
     @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
-    private Indexer sys_indexer;
-    private Intake sys_intake;
+    private final Indexer indexer;
+    private final Intake intake;
 
     public IndexerIntakeTest(Indexer indexer, Intake intake) {
-        sys_indexer = indexer;
-        sys_intake = intake;
+        this.indexer = indexer;
+        this.intake = intake;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(indexer, intake);
     }
 
     public void initialize(){
-        sys_intake.intakeOn(0.5);
-        sys_intake.intakeIn(1);
-        sys_indexer.indexerOn(1);
-        sys_intake.solenoidsDown();
-    }
+        indexer.enable();
+        indexer.setSpeed(1);
 
-    @Override
-    public void execute() {
-        
+        intake.intakeOn(0.5);
+        intake.intakeIn(1);
+        intake.solenoidsDown();
     }
 
     @Override
     public void end(boolean interuppted) {
-        sys_indexer.indexerOn(0);
-        sys_intake.intakeOn(0);
-        sys_intake.intakeIn(0);
-        sys_intake.solenoidsUp();
+        indexer.disable();
+
+        intake.intakeOn(0);
+        intake.intakeIn(0);
+        intake.solenoidsUp();
     }
 }

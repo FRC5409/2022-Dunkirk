@@ -94,7 +94,7 @@ public class OperateDriveShooterState extends StateCommandBase {
 
         if (turret.isTargetReached() && flywheel.isTargetReached()) {
             flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
-            indexer.indexerOn(1);
+            indexer.setSpeed(1);
         }
 
         drivetrain.displayEncoder();
@@ -113,7 +113,7 @@ public class OperateDriveShooterState extends StateCommandBase {
     @Override
     public void end(boolean interrupted) {
         flywheel.setVelocity(0);
-        indexer.stopIndexer();
+        indexer.setSpeed(0);
     }
 
     @Override

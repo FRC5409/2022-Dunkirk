@@ -67,8 +67,8 @@ public class TrainerOperateShooterState extends StateCommandBase {
             turret.setRotationTarget(turret.getRotation() + target.x* Constants.Vision.ROTATION_P);
 
         if (turret.isTargetReached() && flywheel.isTargetReached()) {
-            indexer.indexerOn(1);
-            flywheel.spinFeeder(-4500*1.5);
+            indexer.setSpeed(1);
+            flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
         }
 
         SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());

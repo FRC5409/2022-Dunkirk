@@ -381,7 +381,7 @@ public final class Constants {
 
         public static final int OFFSET_INCREMENT = 50;
 
-        public static final double INDEXER_VELOCITY = 0.5;
+        public static final double INDEXER_SPEED = 0.5;
     }
     
     public static final class Vision {
