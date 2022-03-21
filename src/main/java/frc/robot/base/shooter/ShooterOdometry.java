@@ -16,6 +16,7 @@ public class ShooterOdometry {
     private double  kLastSpeed;
     private Vector2 kLastTarget;
     private Vector2 kLastVelocity;
+    private double  kLastDistance;
 
     public ShooterOdometry(ShooterOdometryModel model) {
         double kPitch = -Math.toRadians(model.kPitch);
@@ -27,9 +28,7 @@ public class ShooterOdometry {
             -Math.sin(kPitch), 0d, Math.cos(kPitch)
         );
         
-        kLastVelocity = new Vector2();
-        kLastTarget = new Vector2();
-        kLastSpeed = 0;
+        reset();
         
         this.model = model;
     }
@@ -47,12 +46,16 @@ public class ShooterOdometry {
                 Math.sin(target.x * kViewConversionFactor),
                 0d
             )
-        );
+        ).unit();
 
         kLastVelocity = new Vector2(
             observerVector.x + Math.cos(rotation),
             observerVector.y + Math.sin(rotation)
         ).unit().scale(speed);
+
+        kLastDistance = model.kHeight / Math.tan(Math.asin(observerVector.z));
+        if (!Double.isFinite(kLastDistance))
+            kLastDistance = 0;
 
         kLastTarget = new Vector2(target);
         kLastSpeed = speed;
@@ -61,10 +64,16 @@ public class ShooterOdometry {
     public void reset() {
         kLastVelocity = new Vector2();
         kLastTarget = new Vector2();
+
+        kLastDistance = 0;
         kLastSpeed = 0;
     }
 
     public Vector2 getVelocity() {
         return kLastVelocity;
+    }
+
+    public double getDistance() {
+        return kLastDistance;
     }
 }
