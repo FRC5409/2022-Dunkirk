@@ -117,4 +117,16 @@ public final class Range implements Sendable {
         builder.addDoubleProperty("min", () -> _min, null);
         builder.addDoubleProperty("max", () -> _max, null);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Range)) return false;
+        Range other = (Range) o;
+        return _min == other._min && _max == other._max;
+    }
+
+    @Override
+    public String toString() {
+        return "[ " + _min + ", " + _max + " ]";
+    }
 }
