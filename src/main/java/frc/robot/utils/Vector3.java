@@ -88,6 +88,17 @@ public class Vector3 {
         );
     }
 
+    /**
+     * Scale vector by factor.
+     * 
+     * @param magnitude The scale factor.
+     * 
+     * @return A scaled vector
+     */
+    public Vector3 scale(double factor) {
+        return new Vector3(x * factor, y * factor, z * factor);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Vector3)) return false;

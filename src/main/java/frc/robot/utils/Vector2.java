@@ -80,6 +80,17 @@ public class Vector2 {
         return new Vector2(x / m, y / m);
     }
 
+    /**
+     * Scale vector by factor.
+     * 
+     * @param magnitude The scale factor.
+     * 
+     * @return A scaled vector
+     */
+    public Vector2 scale(double factor) {
+        return new Vector2(x * factor, y * factor);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Vector2)) return false;
