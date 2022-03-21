@@ -7,18 +7,16 @@ import frc.robot.utils.Vector3;
 /**
  * Experimental shooter position relative odometry.
  */
-public class ShooterOdometry {
+public class SimpleShooterOdometry {
     private final ShooterOdometryModel model;
     
     private final Matrix3 kViewProjection;
     private final double  kViewConversionFactor;
-    
-    private double  kLastSpeed;
-    private Vector2 kLastTarget;
-    private Vector2 kLastVelocity;
-    private double  kLastDistance;
 
-    public ShooterOdometry(ShooterOdometryModel model) {
+    private double kLastDistance;
+    private Vector2 kLastTarget;
+
+    public SimpleShooterOdometry(ShooterOdometryModel model) {
         double kPitch = -Math.toRadians(model.kPitch);
         
         kViewConversionFactor = Math.toRadians(model.kFieldOfView.x / 2d);
@@ -36,10 +34,8 @@ public class ShooterOdometry {
     /**
      * 
      * @param target   The observed vision target
-     * @param speed    The observed speed
-     * @param rotation The observed view rotation
      */
-    public void update(Vector2 target, double speed, double rotation) {
+    public void update(Vector2 target) {
         final Vector3 observerVector = kViewProjection.apply(
             new Vector3(
                 Math.cos(target.x * kViewConversionFactor),
@@ -48,32 +44,23 @@ public class ShooterOdometry {
             )
         ).unit();
 
-        kLastVelocity = new Vector2(
-            observerVector.x + Math.cos(rotation),
-            observerVector.y + Math.sin(rotation)
-        ).unit().scale(speed);
-
         kLastDistance = model.kHeight / Math.tan(Math.asin(observerVector.z));
         if (!Double.isFinite(kLastDistance))
             kLastDistance = 0;
 
         kLastTarget = new Vector2(target);
-        kLastSpeed = speed;
     }
 
     public void reset() {
-        kLastVelocity = new Vector2();
-        kLastTarget = new Vector2();
-
         kLastDistance = 0;
-        kLastSpeed = 0;
-    }
-
-    public Vector2 getVelocity() {
-        return kLastVelocity;
+        kLastTarget = new Vector2();
     }
 
     public double getDistance() {
         return kLastDistance;
+    }
+
+    public Vector2 getTarget() {
+        return new Vector2(kLastTarget);
     }
 }

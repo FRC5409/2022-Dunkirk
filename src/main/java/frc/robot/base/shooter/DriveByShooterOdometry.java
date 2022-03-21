@@ -7,7 +7,7 @@ import frc.robot.utils.Vector2;
  * Experimental drive by shooter odometry
  */
 public class DriveByShooterOdometry {
-    private final ShooterOdometry odometry;
+    private final ActiveShooterOdometry odometry;
     private final Equation kFlywheelOffsetMapping;
     private final Equation kTurretOffsetMapping;
 
@@ -15,13 +15,15 @@ public class DriveByShooterOdometry {
     private double kLastFlywheelOffset;
 
     public DriveByShooterOdometry(
-        ShooterOdometry odometry,
+        ShooterOdometryModel model,
         Equation kFlywheelOffsetMapping,
         Equation kTurretOffsetMapping
     ) {
-        this.odometry = odometry;
+        this.odometry = new ActiveShooterOdometry(model);
         this.kFlywheelOffsetMapping = kFlywheelOffsetMapping;
         this.kTurretOffsetMapping = kTurretOffsetMapping;
+
+        reset();
     }
 
     /**
@@ -50,11 +52,27 @@ public class DriveByShooterOdometry {
         return odometry.getVelocity();
     }
 
+    public double getDistance() {
+        return odometry.getDistance();
+    }
+
+    public Vector2 getTarget() {
+        return odometry.getTarget();
+    }
+
+    public double getRotation() {
+        return odometry.getRotation();
+    }
+
     public double getFlywheelOffset() {
         return kLastFlywheelOffset;
     }
     
     public double getTurretOffset() {
         return kLastTurretOffset;
+    }
+
+    public ShooterOdometryModel getModel() {
+        return odometry.getModel();
     }
 }
