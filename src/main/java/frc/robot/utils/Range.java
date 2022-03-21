@@ -14,6 +14,20 @@ public final class Range {
     public static <T extends Comparable<T>> boolean contains(T min, T value, T max) {
         return min.compareTo(value) >= 0 && max.compareTo(value) <= 0;
     }
+
+    /**
+     * Clamps a value between {@code min} and
+     * {@code max}.
+     * 
+     * @param min   The minimum range
+     * @param value The value
+     * @param max   The maximum range
+     * 
+     * @return      The clamped value.
+     */
+    public static double clamp(double min, double value, double max) {
+        return (value > max) ? max : ((value < min) ? min : value);
+    }
     
     /**
      * Constructs a range.
@@ -29,20 +43,6 @@ public final class Range {
             _min = v1;
             _max = v2;
         }
-    }
-
-    /**
-     * Clamps a value between {@code min} and
-     * {@code max}.
-     * 
-     * @param min   The minimum range
-     * @param value The value
-     * @param max   The maximum range
-     * 
-     * @return      The clamped value.
-     */
-    public static double clamp(double min, double value, double max) {
-        return (value > max) ? max : ((value < min) ? min : value);
     }
 
     /**
