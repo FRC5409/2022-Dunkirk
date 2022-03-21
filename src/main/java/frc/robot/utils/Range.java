@@ -1,5 +1,8 @@
 package frc.robot.utils;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+
 /**
  * Holds a numerical range and provides
  * covenience functions for clamping
@@ -7,7 +10,7 @@ package frc.robot.utils;
  * 
  * @author Keith Davies
  */
-public final class Range {
+public final class Range implements Sendable {
     private final double _min;
     private final double _max;
 
@@ -107,5 +110,11 @@ public final class Range {
 
     public double mid() {
         return (_max  + _min) * 0.5;
+    }
+    
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("min", () -> _min, null);
+        builder.addDoubleProperty("max", () -> _max, null);
     }
 }

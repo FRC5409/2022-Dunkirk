@@ -1,12 +1,15 @@
 package frc.robot.utils;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+
 /**
  * Simple 2D Cartesian plane
  * point / vector / coordinate.
  * 
  * @author Keith Davies
  */
-public class Vector2 {
+public class Vector2 implements Sendable {
     /**
      * X Coordinate
      */
@@ -90,6 +93,12 @@ public class Vector2 {
      */
     public Vector2 scale(double factor) {
         return new Vector2(x * factor, y * factor);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("x", () -> x, _x -> x = _x);
+        builder.addDoubleProperty("y", () -> y, _y -> y = _y);
     }
 
     @Override

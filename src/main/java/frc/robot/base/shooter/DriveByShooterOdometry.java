@@ -1,12 +1,14 @@
 package frc.robot.base.shooter;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.utils.Equation;
 import frc.robot.utils.Vector2;
 
 /**
  * Experimental drive by shooter odometry
  */
-public class DriveByShooterOdometry {
+public class DriveByShooterOdometry implements Sendable {
     private final ActiveShooterOdometry odometry;
     private final Equation kFlywheelOffsetMapping;
     private final Equation kTurretOffsetMapping;
@@ -52,6 +54,10 @@ public class DriveByShooterOdometry {
         return odometry.getVelocity();
     }
 
+    public double getSpeed() {
+        return odometry.getSpeed();
+    }
+
     public double getDistance() {
         return odometry.getDistance();
     }
@@ -74,5 +80,16 @@ public class DriveByShooterOdometry {
 
     public ShooterOdometryModel getModel() {
         return odometry.getModel();
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addStringProperty("Velocity", () -> getVelocity().toString(), null);
+        builder.addStringProperty("Target", () -> getTarget().toString(), null);
+        builder.addDoubleProperty("Distance", this::getDistance, null);
+        builder.addDoubleProperty("Speed", this::getSpeed, null);
+        builder.addDoubleProperty("Rotation", this::getRotation, null);
+        builder.addDoubleProperty("Turret Offset", this::getTurretOffset, null);
+        builder.addDoubleProperty("Flywheel Offset", this::getFlywheelOffset, null);
     }
 }

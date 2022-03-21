@@ -1,12 +1,15 @@
 package frc.robot.utils;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+
 /**
  * Simple 3D Cartesian plane
  * point / vector / coordinate.
  * 
  * @author Keith Davies
  */
-public class Vector3 {
+public class Vector3 implements Sendable {
     /**
      * X Coordinate
      */
@@ -98,6 +101,13 @@ public class Vector3 {
      */
     public Vector3 scale(double factor) {
         return new Vector3(x * factor, y * factor, z * factor);
+    }
+    
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("x", () -> x, _x -> x = _x);
+        builder.addDoubleProperty("y", () -> y, _y -> y = _y);
+        builder.addDoubleProperty("z", () -> z, _z -> z = _z);
     }
 
     @Override

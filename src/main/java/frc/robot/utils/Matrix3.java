@@ -3,8 +3,11 @@ package frc.robot.utils;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+
 // TODO docs
-public class Matrix3 {
+public class Matrix3 implements Sendable {
     public static final int SIZE = 9;
 
     private double m[];
@@ -71,6 +74,11 @@ public class Matrix3 {
                  m[3] * (m[1] * m[8] - m[7] * m[2]) +
                  m[6] * (m[1] * m[5] - m[4] * m[2]) ); 
     };
+    
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleArrayProperty("components", () -> m, null);
+    }
 
     @Override
     public String toString() {

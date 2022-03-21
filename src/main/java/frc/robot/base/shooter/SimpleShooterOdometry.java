@@ -1,5 +1,7 @@
 package frc.robot.base.shooter;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.utils.Matrix3;
 import frc.robot.utils.Vector2;
 import frc.robot.utils.Vector3;
@@ -7,7 +9,7 @@ import frc.robot.utils.Vector3;
 /**
  * Experimental shooter position relative odometry.
  */
-public class SimpleShooterOdometry {
+public class SimpleShooterOdometry implements Sendable {
     private final ShooterOdometryModel model;
     
     private final Matrix3 kViewProjection;
@@ -62,5 +64,11 @@ public class SimpleShooterOdometry {
 
     public Vector2 getTarget() {
         return new Vector2(kLastTarget);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addStringProperty("Target", () -> getTarget().toString(), null);
+        builder.addDoubleProperty("Distance", this::getDistance, null);
     }
 }
