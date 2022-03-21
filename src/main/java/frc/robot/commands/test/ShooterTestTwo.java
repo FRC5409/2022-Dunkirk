@@ -14,6 +14,8 @@ public class ShooterTestTwo extends CommandBase{
         this.flywheel = flywheel;
         this.turret = turret;
         this.indexer = indexer;
+        
+        addRequirements(flywheel, turret, indexer);
     }
 
     @Override
