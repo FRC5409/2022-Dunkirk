@@ -6,59 +6,79 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import frc.robot.base.shooter.ShooterMode;
+import frc.robot.base.shooter.ShooterOdometryModel;
 import frc.robot.base.shooter.ShooterExecutionModel;
 
 public class TrainerContext {
-    private Map<ShooterMode, ShooterExecutionModel> _models;
-    private ShooterMode _mode;
-    private Setpoint _target;
-    private double _distance;
+    private Map<ShooterMode, ShooterExecutionModel> executionModels;
+    private Map<ShooterMode, ShooterOdometryModel> odometryModels;
+    private ShooterMode mode;
+    private Setpoint target;
+    private double distance;
 
     public TrainerContext(Setpoint initialTarget) {
-        _models = new HashMap<>();
-        _target = initialTarget;
-        _distance = 0.0;
+        executionModels = new HashMap<>();
+        target = initialTarget;
+        distance = 0.0;
     }
 
-    public void setModel(ShooterExecutionModel model) {
-        setModel(_mode, model);
+    public void setExecutionModel(ShooterExecutionModel model) {
+        setExecutionModel(mode, model);
     }
 
-    public void setModel(ShooterMode mode, ShooterExecutionModel model) {
-        _models.put(mode, model);
+    public void setExecutionModel(ShooterMode mode, ShooterExecutionModel model) {
+        executionModels.put(mode, model);
+    }
+
+    public void setOdometryModel(ShooterOdometryModel model) {
+        setOdometryModel(mode, model);
+    }
+
+    public void setOdometryModel(ShooterMode mode, ShooterOdometryModel model) {
+        odometryModels.put(mode, model);
     }
     
     public void setSetpoint(Setpoint target) {
-        _target = target;
+        this.target = target;
     }
     
     public void setDistance(double distance) {
-        _distance = distance;
+        this.distance = distance;
     }
 
     public void setMode(ShooterMode mode) {
-        _mode = mode;
+        this.mode = mode;
     }
 
     @Nullable
-    public ShooterExecutionModel getModel() {
-        return _models.get(_mode);
+    public ShooterExecutionModel getExecutionModel() {
+        return executionModels.get(mode);
     }
     
     @Nullable
-    public ShooterExecutionModel getModel(ShooterMode mode) {
-        return _models.get(mode);
+    public ShooterExecutionModel getExecutionModel(ShooterMode mode) {
+        return executionModels.get(mode);
+    }
+    
+    @Nullable
+    public ShooterOdometryModel getOdometryModel() {
+        return odometryModels.get(mode);
+    }
+    
+    @Nullable
+    public ShooterOdometryModel getOdometryModel(ShooterMode mode) {
+        return odometryModels.get(mode);
     }
 
     public Setpoint getSetpoint() {
-        return _target;
+        return target;
     }
 
     public double getDistance() {
-        return _distance;
+        return distance;
     }
 
     public ShooterMode getMode() {
-        return _mode;
+        return mode;
     }
 }

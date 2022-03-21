@@ -4,28 +4,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.base.shooter.ShooterExecutionModel;
 
 public class TrainerDashboard {
-    private final TrainerContext _context;
+    private final TrainerContext context;
 
     public TrainerDashboard(TrainerContext context) {
-        _context = context;
+        this.context = context;
     }
 
     public void update() {
-        Setpoint target = _context.getSetpoint();
-        SmartDashboard.putNumber("Setpoint Target", target.getTarget());
-        SmartDashboard.putString("Setpoint Type", target.getType().name());
-        SmartDashboard.putNumber("Setpoint Range Max", target.getRange().max());
-        SmartDashboard.putNumber("Setpoint Range Min", target.getRange().min());
+        ShooterExecutionModel executionModel = context.getExecutionModel();
+        Setpoint target = context.getSetpoint();
 
-        ShooterExecutionModel model = _context.getModel();
-        
-        SmartDashboard.putString("Training Mode", _context.getMode().name());
-        SmartDashboard.putNumber("Training Model kA", model.kA);
-        SmartDashboard.putNumber("Training Model kB", model.kB);
-        SmartDashboard.putNumber("Training Model kC", model.kC);
-        SmartDashboard.putNumber("Training Model kD", model.kD);
-        
-        SmartDashboard.putNumber("Estimated Distance", _context.getDistance());
-        SmartDashboard.putNumber("Estimated Target", model.calculate(_context.getDistance()));
+        SmartDashboard.putString("Trainer - Mode", context.getMode().name());
+        SmartDashboard.putData("Trainer - Execution Model", executionModel);
+        SmartDashboard.putData("Trainer - Odometry Model", context.getOdometryModel());
+
+        SmartDashboard.putNumber("Trainer - Setpoint Target", target.getTarget());
+        SmartDashboard.putString("Trainer - Setpoint Type", target.getType().name());
+        SmartDashboard.putNumber("Trainer - Setpoint Range Max", target.getRange().max());
+        SmartDashboard.putNumber("Trainer - Setpoint Range Min", target.getRange().min());
+        SmartDashboard.putNumber("Trainer - Estimated Distance", context.getDistance());
+        SmartDashboard.putNumber("Trainer - Estimated Target", executionModel.calculate(context.getDistance()));
     }
 }

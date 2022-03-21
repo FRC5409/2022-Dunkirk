@@ -6,12 +6,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterExecutionModel;
+import frc.robot.base.shooter.SimpleShooterOdometry;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.training.TrainerDashboard;
 import frc.robot.training.Setpoint;
 import frc.robot.training.TrainerContext;
+import frc.robot.utils.Toggleable;
 import frc.robot.utils.Vector2;
 
 // TODO update doc
@@ -31,6 +33,9 @@ public class TrainerFocusShooterState extends StateCommandBase {
     private final TrainerDashboard dashboard;
     private final TrainerContext context;
 
+    private SimpleShooterOdometry odometry;
+    private ShooterExecutionModel model;
+
     public TrainerFocusShooterState(
         Limelight limelight,
         ShooterTurret turret,
@@ -46,31 +51,45 @@ public class TrainerFocusShooterState extends StateCommandBase {
     }
 
     @Override
+    public void initialize() {        
+        if (!Toggleable.isEnabled(limelight, turret))
+            throw new RuntimeException("Cannot operate shooter when requirements are not enabled.");
+
+        // Initialize odometry
+        odometry = new SimpleShooterOdometry(context.getOdometryModel());
+        model = context.getExecutionModel();
+    }
+
+    @Override
     public void execute() {
-        Vector2 target = limelight.getTargetPosition();
+        // Update odometry target
+        if (limelight.getTargetType() == TargetType.kHub)
+            odometry.update(limelight.getTargetPosition());
 
-        ShooterExecutionModel model = context.getModel();
-
-        double distance = model.distance(target.y);
-        double speed = model.calculate(distance);
-
-        context.setDistance(distance);
-        context.setSetpoint(
-            new Setpoint(speed, Constants.Shooter.SPEED_RANGE)
-        );
+        Vector2 target = odometry.getTarget();
 
         // Continue aligning shooter
         if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
             turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
+
+        context.setDistance(odometry.getDistance());
+        
+        context.setSetpoint(
+            new Setpoint(
+                model.calculate(odometry.getDistance()),
+                Constants.Shooter.SPEED_RANGE
+            )
+        );
             
-        if(Constants.kConfig.DEBUG) SmartDashboard.putNumber("Aligninment Offset", target.x);
+        SmartDashboard.putNumber("Alignment Offset", target.x);
+        SmartDashboard.putData("Shooter Odometry", odometry);
         
         dashboard.update();
     }
 
     @Override
     public boolean isFinished() {
-        return !(limelight.hasTarget() && limelight.getTargetType() == TargetType.kHub);
+        return limelight.getTargetType() != TargetType.kHub;
     }
 
     @Override

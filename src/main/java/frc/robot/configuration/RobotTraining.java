@@ -1,12 +1,14 @@
 package frc.robot.configuration;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Constants;
 //Constants
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.ShooterMode;
+import frc.robot.base.shooter.ShooterOdometryModel;
 import frc.robot.base.shooter.ShooterExecutionModel;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.RobotConfiguration;
@@ -37,6 +39,7 @@ import frc.robot.training.protocol.generic.ArraySendable;
 import frc.robot.training.protocol.generic.BundleSendable;
 import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
+import frc.robot.utils.Vector2;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.test.ShooterTestOne;
 import frc.robot.commands.training.BranchTargetSetpoint;
@@ -115,32 +118,6 @@ public class RobotTraining implements RobotConfiguration {
 
         Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
         Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
-        
-        trainerContext = new TrainerContext(
-            new Setpoint(Constants.Training.DISTANCE_RANGE.mid(), Constants.Training.DISTANCE_RANGE)
-        );
-
-        trainerContext.setModel(
-            ShooterMode.kNear, 
-            new ShooterExecutionModel(
-                0d, 0d, 0d, 0d,
-                1d,
-                Constants.Shooter.DISTANCE_RANGE,
-                Constants.Shooter.SPEED_RANGE
-            )
-        );
-// 80 in
-        trainerContext.setModel(
-            ShooterMode.kFar, 
-            new ShooterExecutionModel(
-                0d, 0d, 0d, 0d,
-                1d,
-                Constants.Shooter.DISTANCE_RANGE,
-                Constants.Shooter.SPEED_RANGE
-            )
-        );
-
-        trainerContext.setMode(ShooterMode.kFar);
 
         try {
             configureTraining();
@@ -250,6 +227,52 @@ public class RobotTraining implements RobotConfiguration {
     }  
     
     private void configureTraining() throws IOException {
+        trainerContext = new TrainerContext(
+            new Setpoint(Constants.Training.DISTANCE_RANGE.mid(), Constants.Training.DISTANCE_RANGE)
+        );
+
+        trainerContext.setExecutionModel(
+            ShooterMode.kNear, 
+            new ShooterExecutionModel(
+                0d, 0d, 0d, 0d,
+                1d,
+                Constants.Shooter.DISTANCE_RANGE,
+                Constants.Shooter.SPEED_RANGE
+            )
+        );
+
+        trainerContext.setExecutionModel(
+            ShooterMode.kFar, 
+            new ShooterExecutionModel(
+                0d, 0d, 0d, 0d,
+                1d,
+                Constants.Shooter.DISTANCE_RANGE,
+                Constants.Shooter.SPEED_RANGE
+            )
+        );
+
+        trainerContext.setOdometryModel(
+            ShooterMode.kFar,
+            new ShooterOdometryModel(
+                90.0 - 61.5,
+                41.5 / 12.0,
+                0,
+                new Vector2(59.6, 49.7)
+            )
+        );
+
+        trainerContext.setOdometryModel(
+            ShooterMode.kNear,
+            new ShooterOdometryModel(
+                90.0 - 45.5,
+                45 / 12.0,
+                0,
+                new Vector2(59.6, 49.7)
+            )
+        );
+
+        trainerContext.setMode(ShooterMode.kFar);
+
         SendableContext context = new SendableContext();
             context.registerSendable(StringSendable.class);
             context.registerSendable(ValueSendable.class);
@@ -270,10 +293,22 @@ public class RobotTraining implements RobotConfiguration {
     }
 
     /**
+     * Method for scheduling commands at the beginning of teleop.
+     */
+    @Override
+    public Command getTeleopCommand() {
+        return new ParallelCommandGroup(
+            new TrainerConfigureShooter(turret, limelight, trainerContext, trainerDashboard, shooterConfiguration, ShooterMode.kFar),
+            new FindElevatorZero(Climber)
+        );
+    }
+
+    /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
+    @Override
     public Command getAutonomousCommand() {
         return null; 
     }

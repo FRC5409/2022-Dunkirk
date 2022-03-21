@@ -18,28 +18,28 @@ import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
 
 public class RequestModelUpdate extends CommandBase {
-    private final TrainerContext _context;
-    private final NetworkClient _client;
-    private final TrainerDashboard _dashboard;
+    private final TrainerDashboard dashboard;
+    private final TrainerContext context;
+    private final NetworkClient client;
 
-    private Future<NetworkResponse> _request;
+    private Future<NetworkResponse> request;
 
     public RequestModelUpdate(TrainerDashboard dashboard, NetworkClient client, TrainerContext context) {
-        _context = context;
-        _client = client;
-        _request = null;
-        _dashboard = dashboard;
+        this.context = context;
+        this.client = client;
+        this.request = null;
+        this.dashboard = dashboard;
     }
 
     @Override
     public void initialize() {
         BundleSendable payload = new BundleSendable();
             payload.putSendable("trainer.topic", new StringSendable("trainer:getModel"));
-            payload.putSendable("trainer.configuration", new StringSendable(_context.getMode().name()));
+            payload.putSendable("trainer.configuration", new StringSendable(context.getMode().name()));
 
         System.out.println("Sent request " + payload);
 
-        _request = _client.submitRequestAsync(
+        request = client.submitRequestAsync(
             new NetworkRequest(payload)
         );
     }
@@ -47,39 +47,31 @@ public class RequestModelUpdate extends CommandBase {
     @Override
     public void end(boolean interrupted) {    
         try {
-            NetworkResponse response = _request.get();
-            if (response.getStatus() == NetworkStatus.STATUS_OK) {
+            NetworkResponse response = request.get();
+            
+            System.out.println("Received status : " + response.getStatus());
+            System.out.println("Received payload : " + response.getSendableResult());
+
+            if (response.getStatus() == NetworkStatus.STATUS_OK && response.getSendableResult() != null) {
                 BundleSendable payload = (BundleSendable) response.getSendableResult();
 
                 ArraySendable parameters = (ArraySendable) payload.getSendable("trainer.model.parameters");
 
-                ValueSendable modelParameterA = (ValueSendable) parameters.get(3);
-                ValueSendable modelParameterB = (ValueSendable) parameters.get(2);
-                ValueSendable modelParameterC = (ValueSendable) parameters.get(1);
-                ValueSendable modelParameterD = (ValueSendable) parameters.get(0);
-
-                ShooterExecutionModel lastModel = _context.getModel();
-
-                _context.setModel(
+                ShooterExecutionModel lastModel = context.getExecutionModel();
+                context.setExecutionModel(
                     new ShooterExecutionModel(
-                        modelParameterA.getValue(double.class),
-                        modelParameterB.getValue(double.class),
-                        modelParameterC.getValue(double.class),
-                        modelParameterD.getValue(double.class),
-                        lastModel.kPitch,
-                        lastModel.kHeight,
+                        parameters.get(3, ValueSendable.class).getValue(double.class),
+                        parameters.get(2, ValueSendable.class).getValue(double.class),
+                        parameters.get(1, ValueSendable.class).getValue(double.class),
+                        parameters.get(0, ValueSendable.class).getValue(double.class),
                         lastModel.kOffset,
                         Constants.Shooter.DISTANCE_RANGE,
                         Constants.Shooter.SPEED_RANGE
                     )
                 );
-
-                _dashboard.update();
-
-                System.out.println("Received payload : " + payload);
-            } else {
-                System.out.println("Received status : " + response.getStatus());
             }
+
+            dashboard.update();
         } catch (Exception e) {
             throw new RuntimeException("Failed to retrieve result of request", e);
         }
@@ -87,6 +79,6 @@ public class RequestModelUpdate extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return _request.isDone() || _request.isCancelled();
+        return request.isDone() || request.isCancelled();
     }
 }

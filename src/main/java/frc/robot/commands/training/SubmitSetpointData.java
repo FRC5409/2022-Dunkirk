@@ -17,73 +17,64 @@ import frc.robot.training.TrainerDashboard;
 import frc.robot.training.TrainerContext;
 
 public class SubmitSetpointData extends CommandBase {
-    private final TrainerContext _context;
-    private final NetworkClient _client;
-    private final TrainerDashboard _dashboard;
+    private final TrainerDashboard dashboard;
+    private final TrainerContext context;
+    private final NetworkClient client;
 
-    private Future<NetworkResponse> _request;
+    private Future<NetworkResponse> request;
 
     public SubmitSetpointData(TrainerDashboard dashboard, NetworkClient client, TrainerContext context) {
-        _context = context;
-        _client = client;
-        _dashboard = dashboard;
-        _request = null;
+        this.context = context;
+        this.client = client;
+        this.dashboard = dashboard;
+
+        request = null;
     }
 
     @Override
     public void initialize() {
         BundleSendable payload = new BundleSendable();
             payload.putSendable("trainer.topic", new StringSendable("trainer:submitData"));
-            payload.putSendable("trainer.configuration", new StringSendable(_context.getMode().name()));
-            payload.putDouble("trainer.data.speed", _context.getSetpoint().getTarget() / Constants.Shooter.SPEED_RANGE.max());
-            payload.putDouble("trainer.data.distance", _context.getDistance() / Constants.Shooter.DISTANCE_RANGE.max());
+            payload.putSendable("trainer.configuration", new StringSendable(context.getMode().name()));
 
-        _request = _client.submitRequestAsync(
-            new NetworkRequest(payload)
-        );
+            payload.putDouble("trainer.data.speed",
+                Constants.Shooter.SPEED_RANGE.normalize(context.getSetpoint().getTarget()));
 
+            payload.putDouble("trainer.data.distance",
+                Constants.Shooter.DISTANCE_RANGE.normalize(context.getDistance()));
+
+        request = client.submitRequestAsync(new NetworkRequest(payload));
         System.out.println("Sent request " + payload);
     }
 
     @Override
     public void end(boolean interrupted) {    
         try {
-            NetworkResponse response = _request.get();
+            NetworkResponse response = request.get();
 
             System.out.println("Received status : " + response.getStatus());
-            if (response.getSendableResult() != null)
-                System.out.println("Received payload : " + response.getSendableResult());
+            System.out.println("Received payload : " + response.getSendableResult());
 
-            if (response.getStatus() == NetworkStatus.STATUS_OK) {
+            if (response.getStatus() == NetworkStatus.STATUS_OK && response.getSendableResult() != null) {
                 BundleSendable payload = (BundleSendable) response.getSendableResult();
 
                 ArraySendable parameters = (ArraySendable) payload.getSendable("trainer.model.parameters");
 
-                ValueSendable modelParameterA = (ValueSendable) parameters.get(3);
-                ValueSendable modelParameterB = (ValueSendable) parameters.get(2);
-                ValueSendable modelParameterC = (ValueSendable) parameters.get(1);
-                ValueSendable modelParameterD = (ValueSendable) parameters.get(0);
-
-                ShooterExecutionModel lastModel = _context.getModel();
-
-                _context.setModel(
+                ShooterExecutionModel lastModel = context.getExecutionModel();
+                context.setExecutionModel(
                     new ShooterExecutionModel(
-                        modelParameterA.getValue(double.class),
-                        modelParameterB.getValue(double.class),
-                        modelParameterC.getValue(double.class),
-                        modelParameterD.getValue(double.class),
-                        lastModel.kPitch,
-                        lastModel.kHeight,
+                        parameters.get(3, ValueSendable.class).getValue(double.class),
+                        parameters.get(2, ValueSendable.class).getValue(double.class),
+                        parameters.get(1, ValueSendable.class).getValue(double.class),
+                        parameters.get(0, ValueSendable.class).getValue(double.class),
                         lastModel.kOffset,
                         Constants.Shooter.DISTANCE_RANGE,
                         Constants.Shooter.SPEED_RANGE
                     )
                 );
-
-                _dashboard.update();
-            } else {
-                System.out.println("Received status : " + response.getStatus());
             }
+
+            dashboard.update();
         } catch (Exception e) {
             throw new RuntimeException("Failed to retrieve result of request", e);
         }
@@ -91,6 +82,6 @@ public class SubmitSetpointData extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return _request.isDone() || _request.isCancelled();
+        return request.isDone() || request.isCancelled();
     }
 }
