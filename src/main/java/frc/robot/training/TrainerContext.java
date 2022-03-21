@@ -6,10 +6,10 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import frc.robot.base.shooter.ShooterMode;
-import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.ShooterExecutionModel;
 
 public class TrainerContext {
-    private Map<ShooterMode, ShooterModel> _models;
+    private Map<ShooterMode, ShooterExecutionModel> _models;
     private ShooterMode _mode;
     private Setpoint _target;
     private double _distance;
@@ -20,11 +20,11 @@ public class TrainerContext {
         _distance = 0.0;
     }
 
-    public void setModel(ShooterModel model) {
+    public void setModel(ShooterExecutionModel model) {
         setModel(_mode, model);
     }
 
-    public void setModel(ShooterMode mode, ShooterModel model) {
+    public void setModel(ShooterMode mode, ShooterExecutionModel model) {
         _models.put(mode, model);
     }
     
@@ -41,12 +41,12 @@ public class TrainerContext {
     }
 
     @Nullable
-    public ShooterModel getModel() {
+    public ShooterExecutionModel getModel() {
         return _models.get(_mode);
     }
     
     @Nullable
-    public ShooterModel getModel(ShooterMode mode) {
+    public ShooterExecutionModel getModel(ShooterMode mode) {
         return _models.get(mode);
     }
 

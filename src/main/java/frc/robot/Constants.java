@@ -14,10 +14,10 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.VisionPipeline;
-import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.ShooterExecutionModel;
 import frc.robot.base.shooter.HoodPosition;
 import frc.robot.base.shooter.ShooterMode;
-
+import frc.robot.base.shooter.ShooterOdometryModel;
 import frc.robot.utils.*;
 
 /**
@@ -326,7 +326,7 @@ public final class Constants {
 
         public static final double ALIGNMENT_MAX_TIME = 2;
 
-        public static final double PRE_SHOOTER_VELOCITY = 0;
+        public static final double PRE_SHOOTER_VELOCITY = 1200;
 
         public static final double LOW_FLYWHEEL_VELOCITY = 400;
         public static final double GUARD_FLYWHEEL_VELOCITY = 800;
@@ -335,15 +335,19 @@ public final class Constants {
         public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
             ShooterMode.kFar, new ShooterConfiguration(
                 ShooterMode.kFar,
-                VisionPipeline.FAR_TARGETING,
                 HoodPosition.kUp,
-                new ShooterModel(
+                VisionPipeline.FAR_TARGETING,
+                new ShooterOdometryModel(
+                    90.0 - 61.5,
+                    41.5 / 12.0,
+                    0,
+                    new Vector2(59.6, 49.7)
+                ),
+                new ShooterExecutionModel(
                     2.552187442779541,
                     0.5686905980110168,
                     -0.6887820363044739,
                     0.3927091360092163,
-                    90.0 - 61.5,
-                    41.5 / 12.0,
                     2d,
                     Constants.Shooter.DISTANCE_RANGE,
                     Constants.Shooter.SPEED_RANGE
@@ -352,28 +356,38 @@ public final class Constants {
             
             ShooterMode.kNear, new ShooterConfiguration(
                 ShooterMode.kNear,
-                VisionPipeline.NEAR_TARGETING, 
                 HoodPosition.kDown,
-                new ShooterModel(
-                    0d, 0d, 0d, 0.31421875,
+                VisionPipeline.NEAR_TARGETING,
+                new ShooterOdometryModel(
                     90.0 - 45.5,
                     45 / 12.0,
-                    1d,
-                    Constants.Shooter.DISTANCE_RANGE,
-                    Constants.Shooter.SPEED_RANGE
+                    0,
+                    new Vector2(59.6, 49.7)
                 )
             ),
             
             ShooterMode.kLow, new ShooterConfiguration(
                 ShooterMode.kLow,
-                VisionPipeline.DEFAULT, 
-                HoodPosition.kUp
+                HoodPosition.kUp,
+                VisionPipeline.DEFAULT,
+                new ShooterOdometryModel(
+                    90.0 - 61.5,
+                    41.5 / 12.0,
+                    0,
+                    new Vector2(59.6, 49.7)
+                )
             ),
             
             ShooterMode.kGuard, new ShooterConfiguration(
                 ShooterMode.kGuard,
-                VisionPipeline.DEFAULT, 
-                HoodPosition.kUp
+                HoodPosition.kUp,
+                VisionPipeline.DEFAULT,
+                new ShooterOdometryModel(
+                    90.0 - 61.5,
+                    41.5 / 12.0,
+                    0,
+                    new Vector2(59.6, 49.7)
+                ) 
             )
         );
 

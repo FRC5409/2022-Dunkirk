@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.base.command.StateCommandBase;
-import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.ShooterExecutionModel;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;
@@ -49,7 +49,7 @@ public class TrainerFocusShooterState extends StateCommandBase {
     public void execute() {
         Vector2 target = limelight.getTargetPosition();
 
-        ShooterModel model = context.getModel();
+        ShooterExecutionModel model = context.getModel();
 
         double distance = model.distance(target.y);
         double speed = model.calculate(distance);

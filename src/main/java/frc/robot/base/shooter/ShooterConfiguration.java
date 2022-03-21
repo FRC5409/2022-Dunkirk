@@ -3,45 +3,57 @@ package frc.robot.base.shooter;
 import org.jetbrains.annotations.Nullable;
 
 public class ShooterConfiguration {
-    private final ShooterMode mode;
-    private final HoodPosition hood;
-    private final ShooterModel model;
-    private final VisionPipeline pipeline;
+    private final ShooterExecutionModel executionModel;
+    private final ShooterOdometryModel odometryModel;
+    private final VisionPipeline visionPipeline;
+    private final HoodPosition hoodConfiguration;
+    private final ShooterMode shooterMode;
 
     public ShooterConfiguration(
-        ShooterMode mode,
-        VisionPipeline pipeline,
-        HoodPosition hood
+        ShooterMode shooterMode,
+        HoodPosition hoodConfiguration,
+        VisionPipeline visionPipeline,
+        ShooterOdometryModel odometryModel
     ) {
-        this(mode, pipeline, hood, null);
+        this.hoodConfiguration = hoodConfiguration;
+        this.visionPipeline = visionPipeline;
+        this.executionModel = null;
+        this.odometryModel = odometryModel;
+        this.shooterMode = shooterMode;
     }
 
     public ShooterConfiguration(
-        ShooterMode mode,
-        VisionPipeline pipeline,
-        HoodPosition hood,
-        @Nullable ShooterModel model
+        ShooterMode shooterMode,
+        HoodPosition hoodConfiguration,
+        VisionPipeline visionPipeline,
+        ShooterOdometryModel odometryModel,
+        ShooterExecutionModel executionModel
     ) {
-        this.mode = mode;
-        this.hood = hood;
-        this.model = model;
-        this.pipeline = pipeline;
+        this.hoodConfiguration = hoodConfiguration;
+        this.visionPipeline = visionPipeline;
+        this.executionModel = executionModel;
+        this.odometryModel = odometryModel;
+        this.shooterMode = shooterMode;
     }
 
     public ShooterMode getMode() {
-        return mode;
+        return shooterMode;
     }
 
     public VisionPipeline getPipeline() {
-        return pipeline;
+        return visionPipeline;
     }
 
     public HoodPosition getHoodPosition() {
-        return hood;
+        return hoodConfiguration;
     }
 
     @Nullable
-    public ShooterModel getModel() {
-        return model;
+    public ShooterExecutionModel getExecutionModel() {
+        return executionModel;
+    }
+
+    public ShooterOdometryModel getOdometryModel() {
+        return odometryModel;
     }
 }

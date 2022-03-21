@@ -1,7 +1,7 @@
 package frc.robot.training;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.ShooterExecutionModel;
 
 public class TrainerDashboard {
     private final TrainerContext _context;
@@ -17,7 +17,7 @@ public class TrainerDashboard {
         SmartDashboard.putNumber("Setpoint Range Max", target.getRange().max());
         SmartDashboard.putNumber("Setpoint Range Min", target.getRange().min());
 
-        ShooterModel model = _context.getModel();
+        ShooterExecutionModel model = _context.getModel();
         
         SmartDashboard.putString("Training Mode", _context.getMode().name());
         SmartDashboard.putNumber("Training Model kA", model.kA);

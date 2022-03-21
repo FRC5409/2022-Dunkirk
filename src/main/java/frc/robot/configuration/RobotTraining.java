@@ -7,7 +7,7 @@ import frc.robot.Constants;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.ShooterMode;
-import frc.robot.base.shooter.ShooterModel;
+import frc.robot.base.shooter.ShooterExecutionModel;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.RobotConfiguration;
 import frc.robot.base.ValueProperty;
@@ -76,7 +76,7 @@ public class RobotTraining implements RobotConfiguration {
     private final DefaultDrive                   defaultDrive;
     private final IntakeActive                   intakeActive;
     
-    private final TrainerDashboard               trainerDashboard;
+    private       TrainerDashboard               trainerDashboard;
     private       NetworkClient                  trainerClient;
     private       TrainerContext                 trainerContext;
     
@@ -122,10 +122,8 @@ public class RobotTraining implements RobotConfiguration {
 
         trainerContext.setModel(
             ShooterMode.kNear, 
-            new ShooterModel(
+            new ShooterExecutionModel(
                 0d, 0d, 0d, 0d,
-                90.0 - 45.5,
-                41.5 / 12.0,
                 1d,
                 Constants.Shooter.DISTANCE_RANGE,
                 Constants.Shooter.SPEED_RANGE
@@ -134,10 +132,8 @@ public class RobotTraining implements RobotConfiguration {
 // 80 in
         trainerContext.setModel(
             ShooterMode.kFar, 
-            new ShooterModel(
+            new ShooterExecutionModel(
                 0d, 0d, 0d, 0d,
-                90.0 - 61.5,
-                45 / 12.0,
                 1d,
                 Constants.Shooter.DISTANCE_RANGE,
                 Constants.Shooter.SPEED_RANGE
@@ -145,8 +141,6 @@ public class RobotTraining implements RobotConfiguration {
         );
 
         trainerContext.setMode(ShooterMode.kFar);
-
-        trainerDashboard = new TrainerDashboard(trainerContext);
 
         try {
             configureTraining();
@@ -264,6 +258,7 @@ public class RobotTraining implements RobotConfiguration {
 
         NetworkSocket socket = NetworkSocket.create(Constants.Training.TRAINER_HOSTNAME);
         trainerClient = new NetworkClient(socket, context);
+        trainerDashboard = new TrainerDashboard(trainerContext);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
