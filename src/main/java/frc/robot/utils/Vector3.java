@@ -72,6 +72,7 @@ public class Vector3 {
      */ 
     public Vector3 unit() {
         final double m = magnitude();
+        if (m == 0) return new Vector3();
         return new Vector3(x / m, y / m, z / m);
     }
 

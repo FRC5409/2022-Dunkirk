@@ -77,6 +77,7 @@ public class Vector2 {
      */
     public Vector2 unit() {
         final double m = magnitude();
+        if (m == 0) return new Vector2();
         return new Vector2(x / m, y / m);
     }
 
