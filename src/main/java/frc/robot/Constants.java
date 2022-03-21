@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.Map;
 
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
@@ -318,6 +319,14 @@ public final class Constants {
             public double calculate(double x) {
                  return SHOOTER_SWEEP_PERIOD * Math.acos(2d * (x-ROTATION_RANGE.min()) / ROTATION_RANGE.magnitude() - 1d) / (Math.PI*2d);
             }
+        };
+
+        public static final Equation FLYWHEEL_OFFSET_MAPPING = x -> {
+            return x * SmartDashboard.getNumber("Flywheel Offset Factor", 0);
+        };
+
+        public static final Equation TURRET_OFFSET_MAPPING = x -> {
+            return x * SmartDashboard.getNumber("Turret Offset Factor", 0);
         };
     
         public static final Gains TURRET_GAINS = new Gains(
