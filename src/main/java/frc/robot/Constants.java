@@ -32,7 +32,7 @@ import frc.robot.utils.*;
 public final class Constants {
     public static class General {
         public enum Configuration {
-            kCompetition, kTraining
+            kCompetition, kTraining, kTest
         }
 
         public static final Configuration ROBOT_CONFIGURATION = Configuration.kCompetition;
