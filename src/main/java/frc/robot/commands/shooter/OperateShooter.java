@@ -1,6 +1,7 @@
 package frc.robot.commands.shooter;
 
 import frc.robot.base.Property;
+import frc.robot.base.ValueProperty;
 import frc.robot.base.command.StateCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
@@ -30,7 +31,7 @@ public final class OperateShooter extends StateCommandGroup {
     private final ShooterTurret turret;
     private final Limelight limelight;
     private final Indexer indexer;
-
+    
     public OperateShooter(
         Limelight limelight,
         ShooterTurret turret,
@@ -40,7 +41,6 @@ public final class OperateShooter extends StateCommandGroup {
         Property<ShooterConfiguration> configuration,
         Property<Integer> offset
     ) {
-
         addCommands(
             new SearchShooterState(limelight, false),
             new SweepShooterState(limelight, turret, direction),
@@ -64,6 +64,7 @@ public final class OperateShooter extends StateCommandGroup {
         indexer.enable();
         turret.enable();
 
+        // prespin flywheel
         flywheel.setVelocity(
             Constants.Shooter.PRE_SHOOTER_VELOCITY + offset.get()
         );

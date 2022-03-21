@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterConfiguration;
-import frc.robot.base.shooter.ShooterModel;
-
+import frc.robot.base.shooter.ShooterExecutionModel;
+import frc.robot.base.shooter.SimpleShooterOdometry;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
@@ -31,6 +31,7 @@ import frc.robot.Constants;
  * the indexer triggers, feeding powercells into the turret.</p>
  */
 public class OperateRunShooterState extends StateCommandBase {
+    private final Property<SimpleShooterOdometry> sharedOdometry;
     private final Property<ShooterConfiguration> configuration;
     private final Property<Integer> offset;
     private final ShooterFlywheel flywheel;
@@ -38,18 +39,19 @@ public class OperateRunShooterState extends StateCommandBase {
     private final Limelight limelight;
     private final Indexer indexer;
     
-    private ShooterModel model;
-    private boolean active;
-    private Vector2 target;
-    
+    private ShooterExecutionModel model;
+    private SimpleShooterOdometry odometry;
+
     public OperateRunShooterState(
         Limelight limelight,
         ShooterTurret turret,
         ShooterFlywheel flywheel,
         Indexer indexer,
         Property<ShooterConfiguration> configuration,
+        Property<SimpleShooterOdometry> sharedOdometry,
         Property<Integer> offset
     ) {
+        this.sharedOdometry = sharedOdometry;
         this.configuration = configuration;
         this.limelight = limelight;
         this.flywheel = flywheel;
@@ -64,17 +66,19 @@ public class OperateRunShooterState extends StateCommandBase {
     public void initialize() {
         if (!Toggleable.isEnabled(limelight, turret, flywheel))
             throw new RuntimeException("Cannot run shooter when requirements are not enabled.");
+        else if (sharedOdometry.get() == null)
+            throw new RuntimeException("Cannot run shooter when odometry is not initialized");
 
         if (!indexer.isEnabled())
             flywheel.enable();
 
-        target = limelight.getTargetPosition();
-        model = configuration.get().getModel();
+        // Obtain shooter configuration
+        model = configuration.get().getExecutionModel();
+        odometry = sharedOdometry.get();
 
+        // Run feeder and indexer
         flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
         indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
-
-        active = false;
     }
 
     @Override
@@ -82,26 +86,25 @@ public class OperateRunShooterState extends StateCommandBase {
         if (model == null)
             return;
 
+        // Update odometry target
         if (limelight.getTargetType() == TargetType.kHub)
-            target = limelight.getTargetPosition();
-            
-        double distance = model.distance(target.y);
-        double velocity = model.calculate(distance);
+            odometry.update(limelight.getTargetPosition());
 
+        Vector2 target = odometry.getTarget();
+            
         // Set flywheel to estimated veloctity
+        double velocity = model.calculate(odometry.getDistance());
         flywheel.setVelocity(velocity + offset.get());
 
         // Continue aligning shooter
         if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
             turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
 
-        active = true;
-
         if (Constants.kConfig.DEBUG) {
             SmartDashboard.putNumber("Velocity Prediction", velocity);
             SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
             
-            SmartDashboard.putNumber("Distance Prediction (ft)", distance);
+            SmartDashboard.putNumber("Distance Prediction (ft)", odometry.getDistance());
             SmartDashboard.putNumber("Aligninment Offset", target.x);
             SmartDashboard.putNumber("Velocity Offset", offset.get());
         }

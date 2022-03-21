@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterConfiguration;
-import frc.robot.base.shooter.ShooterModel;
-
+import frc.robot.base.shooter.ShooterExecutionModel;
+import frc.robot.base.shooter.SimpleShooterOdometry;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
@@ -38,9 +38,9 @@ public class OperateShooterState extends StateCommandBase {
     private final Limelight limelight;
     private final Indexer indexer;
     
-    private ShooterModel model;
+    private SimpleShooterOdometry odometry;
+    private ShooterExecutionModel model;
     private boolean active;
-    private Vector2 target;
     
     public OperateShooterState(
         Limelight limelight,
@@ -71,10 +71,15 @@ public class OperateShooterState extends StateCommandBase {
         if (!indexer.isEnabled())
             indexer.enable();
 
-        flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
+        // Obtain shooter configuration
+        ShooterConfiguration config = configuration.get();
 
-        target = limelight.getTargetPosition();
-        model = configuration.get().getModel();
+        // Initialize odometry
+        model = config.getExecutionModel();
+        odometry = new SimpleShooterOdometry(config.getOdometryModel());
+
+        // pre spin feeder
+        flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
 
         active = false;
     }
@@ -84,21 +89,21 @@ public class OperateShooterState extends StateCommandBase {
         if (model == null)
             return;
 
+        // Update odometry target
         if (limelight.getTargetType() == TargetType.kHub)
-            target = limelight.getTargetPosition();
-            
-        double distance = model.distance(target.y);
-        double velocity = model.calculate(distance);
+            odometry.update(limelight.getTargetPosition());
 
-
-
+        Vector2 target = odometry.getTarget();
+        
         // Set flywheel to estimated veloctity
+        double velocity = model.calculate(odometry.getDistance());
         flywheel.setVelocity(velocity + offset.get());
 
         // Continue aligning shooter
         if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
             turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
 
+        // Query targets
         if (!active && turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
             if (Constants.kConfig.DEBUG) {
                 System.out.println("Target Reached");
@@ -112,7 +117,7 @@ public class OperateShooterState extends StateCommandBase {
             SmartDashboard.putNumber("Velocity Prediction", velocity);
             SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
             
-            SmartDashboard.putNumber("Distance Prediction (ft)", distance);
+            SmartDashboard.putNumber("Distance Prediction (ft)", odometry.getDistance());
             SmartDashboard.putNumber("Aligninment Offset", target.x);
             SmartDashboard.putNumber("Velocity Offset", offset.get());
         }

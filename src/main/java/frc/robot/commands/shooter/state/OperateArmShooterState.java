@@ -6,9 +6,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterConfiguration;
-import frc.robot.base.shooter.ShooterModel;
-
-import frc.robot.subsystems.Indexer;
+import frc.robot.base.shooter.ShooterExecutionModel;
+import frc.robot.base.shooter.SimpleShooterOdometry;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
@@ -22,6 +21,7 @@ import frc.robot.Constants;
 // TODO update doc
 
 public class OperateArmShooterState extends StateCommandBase {
+    private final Property<SimpleShooterOdometry> sharedOdometry;
     private final Property<ShooterConfiguration> configuration;
     private final Property<Integer> offset;
     private final Property<Boolean> armed;
@@ -29,18 +29,21 @@ public class OperateArmShooterState extends StateCommandBase {
     private final ShooterTurret turret;
     private final Limelight limelight;
     
-    private ShooterModel model;
+    private ShooterExecutionModel model;
+    private SimpleShooterOdometry odometry;
+
     private boolean done;
-    private Vector2 target;
     
     public OperateArmShooterState(
         Limelight limelight,
         ShooterTurret turret,
         ShooterFlywheel flywheel,
         Property<ShooterConfiguration> configuration,
+        Property<SimpleShooterOdometry> sharedOdometry,
         Property<Integer> offset,
         Property<Boolean> armed
     ) {
+        this.sharedOdometry = sharedOdometry;
         this.configuration = configuration;
         this.limelight = limelight;
         this.flywheel = flywheel;
@@ -58,9 +61,16 @@ public class OperateArmShooterState extends StateCommandBase {
 
         if (!flywheel.isEnabled())
             flywheel.enable();
+        
+        // Obtain shooter configuration
+        ShooterConfiguration config = configuration.get();
 
-        target = limelight.getTargetPosition();
-        model = configuration.get().getModel();
+        // Initialize odometry
+        if (sharedOdometry.get() == null)
+            sharedOdometry.set(new SimpleShooterOdometry(config.getOdometryModel()));
+        
+        model = config.getExecutionModel();
+        odometry = sharedOdometry.get();
 
         done = false;
     }
@@ -70,13 +80,14 @@ public class OperateArmShooterState extends StateCommandBase {
         if (model == null)
             return;
 
+        // Update odometry target
         if (limelight.getTargetType() == TargetType.kHub)
-            target = limelight.getTargetPosition();
-            
-        double distance = model.distance(target.y);
-        double velocity = model.calculate(distance);
+            odometry.update(limelight.getTargetPosition());
 
+        Vector2 target = odometry.getTarget();
+            
         // Set flywheel to estimated veloctity
+        double velocity = model.calculate(odometry.getDistance());
         flywheel.setVelocity(velocity + offset.get());
 
         // Continue aligning shooter
@@ -92,7 +103,7 @@ public class OperateArmShooterState extends StateCommandBase {
             SmartDashboard.putNumber("Velocity Prediction", velocity);
             SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
             
-            SmartDashboard.putNumber("Distance Prediction (ft)", distance);
+            SmartDashboard.putNumber("Distance Prediction (ft)", odometry.getDistance());
             SmartDashboard.putNumber("Aligninment Offset", target.x);
             SmartDashboard.putNumber("Velocity Offset", offset.get());
         }
