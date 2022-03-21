@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
-import frc.robot.base.TimedStateCommand;
+import frc.robot.base.command.TimedStateCommand;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;

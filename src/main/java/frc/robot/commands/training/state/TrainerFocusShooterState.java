@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.base.StateCommandBase;
+import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterModel;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;

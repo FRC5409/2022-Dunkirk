@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.base.Property;
-import frc.robot.base.StateCommandBase;
+import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterModel;
 

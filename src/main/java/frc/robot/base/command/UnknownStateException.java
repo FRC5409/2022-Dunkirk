@@ -1,4 +1,4 @@
-package frc.robot.base;
+package frc.robot.base.command;
 
 public class UnknownStateException extends RuntimeException {
     public UnknownStateException() {

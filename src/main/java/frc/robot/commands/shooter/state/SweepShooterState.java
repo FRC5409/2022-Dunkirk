@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import frc.robot.Constants;
 import frc.robot.base.Property;
-import frc.robot.base.TimedStateCommand;
+import frc.robot.base.command.TimedStateCommand;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;

@@ -1,4 +1,4 @@
-package frc.robot.base;
+package frc.robot.base.command;
 
 import java.util.Collections;
 import java.util.HashMap;

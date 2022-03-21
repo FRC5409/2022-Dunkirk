@@ -5,8 +5,8 @@ import java.util.Set;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.base.DebounceScheduleCommand;
 import frc.robot.base.Joystick;
+import frc.robot.base.command.DebounceScheduleCommand;
 
 public class JoystickRumble extends CommandBase {
     private final Set<Joystick> joysticks;

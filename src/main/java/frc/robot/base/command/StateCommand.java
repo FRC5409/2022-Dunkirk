@@ -1,4 +1,4 @@
-package frc.robot.base;
+package frc.robot.base.command;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

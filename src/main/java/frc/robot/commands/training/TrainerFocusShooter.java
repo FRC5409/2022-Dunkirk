@@ -1,7 +1,7 @@
 package frc.robot.commands.training;
 
 import frc.robot.base.Property;
-import frc.robot.base.StateCommandGroup;
+import frc.robot.base.command.StateCommandGroup;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.shooter.state.AlignShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;

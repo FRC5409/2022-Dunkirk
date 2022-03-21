@@ -1,7 +1,7 @@
 package frc.robot.commands.shooter;
 
 import frc.robot.base.Property;
-import frc.robot.base.ProxyStateCommandGroup;
+import frc.robot.base.command.ProxyStateCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.shooter.state.DelayedAlignShooterState;
