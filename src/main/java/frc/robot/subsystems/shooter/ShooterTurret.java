@@ -26,6 +26,8 @@ import frc.robot.utils.Toggleable;
  * @author Akil Pathiranage, Keith Davies
  */
 public class ShooterTurret extends SubsystemBase implements Toggleable {
+    private static final IdleMode DEFAULT_IDLE_MODE = IdleMode.kBrake;
+
     private static final double ROTATIONS_PER_DEGREE = (Constants.Shooter.GEAR_RATIO / 360); // Rotations per degree
     private static final double DEGREES_PER_ROTATION = 1 / ROTATIONS_PER_DEGREE; // Degrees per rotation
 
@@ -97,7 +99,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
                 fields.get("hood").setString("Up");
                 break;
             case kReverse:
-            SmartDashboard.putBoolean("hoodIsUp", false);
+                SmartDashboard.putBoolean("hoodIsUp", false);
                 fields.get("hood").setString("Down");
                 break;
             default:
@@ -128,8 +130,10 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
      * Method for disabling the turret subsystem.
      */
     public void disable() {
-        enabled = false;
+        mot_main.setIdleMode(DEFAULT_IDLE_MODE);
         mot_main.disable();
+
+        enabled = false;
     }
 
     /**
@@ -155,6 +159,12 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
             CANSparkMax.ControlType.kPosition);
         
         target = value;
+    }
+
+    public void setIdleMode(IdleMode mode) {
+        if (!enabled) return;
+
+        mot_main.setIdleMode(mode);
     }
 
     /**1
