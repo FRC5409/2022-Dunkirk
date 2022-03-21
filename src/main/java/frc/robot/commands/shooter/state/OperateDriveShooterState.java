@@ -42,7 +42,7 @@ public class OperateDriveShooterState extends StateCommandBase {
 
     private double dt;
     private double prevTime;
-
+    private boolean spunFeeder;
     private Timer timer;
     
     public OperateDriveShooterState(
@@ -60,6 +60,7 @@ public class OperateDriveShooterState extends StateCommandBase {
         this.indexer = indexer;
         this.turret = turret;
 
+        spunFeeder = false;
         timer = new Timer();
         timer.start();
         // we purposely do not require the drivetrain as to not
@@ -69,38 +70,17 @@ public class OperateDriveShooterState extends StateCommandBase {
 
     @Override
     public void initialize() {
-        if (!Toggleable.isEnabled(limelight, turret, flywheel, indexer))
-            throw new RuntimeException("Cannot operate shooter when requirements are not enabled.");
-        if(model == null) return;
         model = configuration.get().getModel();
-        dt = 0.05;
-        Vector2 target = limelight.getTarget();
-
-        //assumings keiths model calc is done with feet. 
-        double robotVelocity = -1*Units.metersToFeet(drivetrain.getEncoderVelocity());
-
-        //angle to the turret if it was aligned correctly
-        double angleOfTurret = Math.toRadians(Math.abs(turret.getRotation() + target.x));
-        double distance = model.distance(target.y) - robotVelocity* Math.cos(angleOfTurret)*dt;
-        double velocityForFlywheel = model.calculate(distance);
-
-        //speed lateral to the hub, or perpendicular to the direct distance from the hub.
-        double lateralDist = robotVelocity * Math.sin(angleOfTurret)*dt;
-
-        double turretNewPos = -1*Math.toDegrees(Math.atan(lateralDist/distance));
-
-
-        turret.setRotationTarget(turret.getRotation() + (target.x+turretNewPos)*Constants.Vision.ROTATION_P);
-
-        // Set flywheel to estimated velocity
-        flywheel.setVelocity(velocityForFlywheel);
-        flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
         prevTime = timer.get();
     }
 
     @Override
     public void execute() {
         if(model == null) return;
+        if(!spunFeeder){
+            spunFeeder = true;
+            flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
+        }
         
         dt = 2*(timer.get() - prevTime);
         prevTime = timer.get();
@@ -110,15 +90,22 @@ public class OperateDriveShooterState extends StateCommandBase {
         //assumings keiths model calc is done with feet. 
         double robotVelocity = Units.metersToFeet(drivetrain.getEncoderVelocity());
 
-        //angle to the turret if it was aligned correctly
+        //angle of the turret if it was aligned correctly
         double angleOfTurret = turret.getRotation() + target.x;
         double distance = model.distance(target.y) - robotVelocity* Math.cos(Math.toRadians(Math.abs(angleOfTurret)))*dt;
-        double velocityForFlywheel = model.calculate(distance);
 
         //speed lateral to the hub, or perpendicular to the direct distance from the hub.
-        double lateralDist = robotVelocity * Math.sin(-1*Math.toRadians(angleOfTurret))*dt;
+        double lateralDist = robotVelocity * Math.sin(Math.toRadians(angleOfTurret))*dt;
+        double velocityForFlywheel = model.calculate(Math.hypot(distance, lateralDist));
         double turretNewPos = Math.toDegrees(Math.atan(lateralDist/distance));
 
+        flywheel.setVelocity(velocityForFlywheel);
+        turret.setRotationTarget(turret.getRotation() + (target.x+turretNewPos)*Constants.Vision.ROTATION_P);
+
+        if (flywheel.feederReachedTarget()) {
+            System.out.println("Indexer turning on");
+            indexer.indexerOn(0.5);
+        }
 
         System.out.println("DT: " + dt);
         System.out.println("Robot Velocity: " + robotVelocity + " ft/s");
@@ -127,25 +114,8 @@ public class OperateDriveShooterState extends StateCommandBase {
         System.out.println("Lateral distance prediction: " + lateralDist);
         System.out.println("Turret new pos: " + turretNewPos);
         System.out.println("velocity for flywheel: " + velocityForFlywheel);
-
-        // Set flywheel to estimated velocity
-        flywheel.setVelocity(velocityForFlywheel);
-
-
         System.out.println("target.x: " + target.x);
         System.out.println("feeder target: " + flywheel.feederReachedTarget());
-        // Continue aligning shooter
-        if (Math.abs(target.x) > (Constants.Vision.ALIGNMENT_THRESHOLD + Math.abs(turretNewPos))){
-            turret.setRotationTarget(turret.getRotation() + (target.x+turretNewPos)*Constants.Vision.ROTATION_P);
-            System.out.println("Aligning");
-        }
-
-        if (flywheel.feederReachedTarget()) {
-            System.out.println("INdexer turning on");
-            indexer.indexerOn(0.5);
-        }
-
-
     }
 
     @Override
