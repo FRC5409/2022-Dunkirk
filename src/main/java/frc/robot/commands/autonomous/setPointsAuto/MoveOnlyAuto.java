@@ -25,7 +25,7 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
-public class FourBallSetpoint extends SequentialCommandGroup{
+public class MoveOnlyAuto extends SequentialCommandGroup{
 
     DriveTrain m_drive;
     Intake m_intake;
@@ -37,7 +37,7 @@ public class FourBallSetpoint extends SequentialCommandGroup{
     Property<SweepDirection> m_shooterSweepDirection;
     Property<Integer> m_shooterOffset;
 
-    public FourBallSetpoint(
+    public MoveOnlyAuto(
         DriveTrain drive,
         Intake intake,
         Indexer indexer,
@@ -72,41 +72,21 @@ public class FourBallSetpoint extends SequentialCommandGroup{
         addCommands(
             new SlowGear(m_drive),
 
-            // Get ball and shoot twice
-            new ParallelCommandGroup(
-                new SequentialCommandGroup(
-                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
-                    new ParallelRaceGroup(
-                        new IndexerIntakeActive(m_indexer, m_intake),
-                        new MoveToDistance(m_drive, 10f)
-                    ),
-                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1),
-                    new RunIndexerBack(m_intake, m_indexer).withTimeout(0.3)
-                ),
-                new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
-            ),
-            new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3),
-        
-            // turn to next ball
+            // Move to ball 2
+            new MoveToDistance(m_drive, 10f),
+
+            // turn to human player
             new MoveToAngle(m_drive, 90),
 
-            // Move to next ball and intake
-            new ParallelCommandGroup(
-                new SequentialCommandGroup(
-                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
-                    new ParallelRaceGroup(
-                        new IndexerIntakeActive(m_indexer, m_intake),
-                        new MoveToDistance(m_drive, 10f)
-                    ),
-                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1), // Tune this to wait for player
-                    new RunIndexerBack(m_intake, m_indexer).withTimeout(0.3)
-                ),
-                new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
-            ),
+            // move to human player
+            new MoveToDistance(m_drive, 10f),
+
+            // wait while intaking
+            new IndexerIntakeActive(indexer, intake).withTimeout(2),
 
             // Move to the hub and shoot
-            new MoveToDistance(m_drive, -10),
-            new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
+            new MoveToDistance(m_drive, -10)
+            //new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
         
         );
     }
