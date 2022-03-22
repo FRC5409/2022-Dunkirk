@@ -33,6 +33,8 @@ import frc.robot.subsystems.Pneumatics;
 
 
 import frc.robot.commands.*;
+import frc.robot.commands.autonomous.setPoint.MoveToAngle;
+import frc.robot.commands.autonomous.setPoint.setPointsAuto.MoveOnlyAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
@@ -129,6 +131,8 @@ public class RobotContainer {
     autoCommandSelector = new SendableChooser<Command>();
     
     autoCommandSelector.setDefaultOption("Default", new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
+    autoCommandSelector.setDefaultOption("DEBUG", new MoveToAngle(DriveTrain, 90f));
+    //autoCommandSelector.setDefaultOption("DEBUG", new MoveOnlyAuto(DriveTrain,Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
     autoCommandSelector.addOption("One", new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
     autoCommandSelector.addOption("Two", new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
     autoCommandSelector.addOption("Three", new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel, shooterConfiguration, shooterSweepDirection, shooterOffset));
