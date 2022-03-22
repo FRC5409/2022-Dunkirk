@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import frc.robot.commands.IndexerIntakeActive;
-import frc.robot.commands.autonomous.setPoint.setPointCommands.MoveToAngle;
-import frc.robot.commands.autonomous.setPoint.setPointCommands.MoveToDistance;
+import frc.robot.commands.autonomous.setPoint.MoveToAngle;
+import frc.robot.commands.autonomous.setPoint.MoveToDistance;
 import frc.robot.commands.shooter.OperateShooter;
 import frc.robot.commands.shooter.RotateTurret;
 // subsystems

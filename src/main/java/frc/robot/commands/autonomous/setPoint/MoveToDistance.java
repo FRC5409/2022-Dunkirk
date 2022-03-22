@@ -1,4 +1,4 @@
-package frc.robot.commands.autonomous.setPoint.setPointCommands;
+package frc.robot.commands.autonomous.setPoint;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 

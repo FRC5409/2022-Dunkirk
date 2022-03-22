@@ -1,4 +1,4 @@
-package frc.robot.commands.autonomous.setPointsAuto;
+package frc.robot.commands.autonomous.setPoint.setPointsAuto;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;

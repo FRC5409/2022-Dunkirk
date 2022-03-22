@@ -33,9 +33,9 @@ import frc.robot.subsystems.Pneumatics;
 
 
 import frc.robot.commands.*;
-import frc.robot.commands.autonomous.trajectoryAuto.OneBallAuto;
-import frc.robot.commands.autonomous.trajectoryAuto.ThreeBallsAuto;
-import frc.robot.commands.autonomous.trajectoryAuto.TwoBallsAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.training.*;
 import frc.robot.subsystems.*;

@@ -9,12 +9,12 @@ import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
 
 import frc.robot.commands.IndexerIntakeActive;
-import frc.robot.commands.ResetOdometry;
 import frc.robot.commands.RunIndexerBack;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.TurnToAngleGyro;
-import frc.robot.commands.autonomous.setPoint.setPointCommands.MoveToAngle;
-import frc.robot.commands.autonomous.setPoint.setPointCommands.MoveToDistance;
+import frc.robot.commands.autonomous.setPoint.MoveToAngle;
+import frc.robot.commands.autonomous.setPoint.MoveToDistance;
+import frc.robot.commands.autonomous.trajectory.ResetOdometry;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.OperateShooter;
 

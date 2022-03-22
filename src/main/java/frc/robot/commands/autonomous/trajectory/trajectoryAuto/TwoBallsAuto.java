@@ -1,4 +1,4 @@
-package frc.robot.commands.autonomous.trajectoryAuto;
+package frc.robot.commands.autonomous.trajectory.trajectoryAuto;
 
 import java.util.List;
 
@@ -19,9 +19,9 @@ import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.IndexerIntakeActive;
-import frc.robot.commands.ResetOdometry;
 import frc.robot.commands.RunIndexerBack;
 import frc.robot.commands.SlowGear;
+import frc.robot.commands.autonomous.trajectory.ResetOdometry;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.OperateShooter;
 import frc.robot.subsystems.DriveTrain;
