@@ -1,4 +1,4 @@
-package frc.robot.base.shooter;
+package frc.robot.base.shooter.odometry;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
