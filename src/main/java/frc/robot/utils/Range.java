@@ -1,5 +1,8 @@
 package frc.robot.utils;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+
 /**
  * Holds a numerical range and provides
  * covenience functions for clamping
@@ -7,12 +10,26 @@ package frc.robot.utils;
  * 
  * @author Keith Davies
  */
-public final class Range {
+public final class Range implements Sendable {
     private final double _min;
     private final double _max;
 
     public static <T extends Comparable<T>> boolean contains(T min, T value, T max) {
         return min.compareTo(value) >= 0 && max.compareTo(value) <= 0;
+    }
+
+    /**
+     * Clamps a value between {@code min} and
+     * {@code max}.
+     * 
+     * @param min   The minimum range
+     * @param value The value
+     * @param max   The maximum range
+     * 
+     * @return      The clamped value.
+     */
+    public static double clamp(double min, double value, double max) {
+        return (value > max) ? max : ((value < min) ? min : value);
     }
     
     /**
@@ -29,20 +46,6 @@ public final class Range {
             _min = v1;
             _max = v2;
         }
-    }
-
-    /**
-     * Clamps a value between {@code min} and
-     * {@code max}.
-     * 
-     * @param min   The minimum range
-     * @param value The value
-     * @param max   The maximum range
-     * 
-     * @return      The clamped value.
-     */
-    public static double clamp(double min, double value, double max) {
-        return (value > max) ? max : ((value < min) ? min : value);
     }
 
     /**
@@ -107,5 +110,23 @@ public final class Range {
 
     public double mid() {
         return (_max  + _min) * 0.5;
+    }
+    
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("min", () -> _min, null);
+        builder.addDoubleProperty("max", () -> _max, null);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Range)) return false;
+        Range other = (Range) o;
+        return _min == other._min && _max == other._max;
+    }
+
+    @Override
+    public String toString() {
+        return "[ " + _min + ", " + _max + " ]";
     }
 }

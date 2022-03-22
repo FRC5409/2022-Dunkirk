@@ -44,14 +44,12 @@ public class ConfigureShooter extends CommandBase {
     public void initialize() {
         turret.enable();
         limelight.enable();
-        System.out.println("configure runs");
 
-        
-        ShooterConfiguration configuration = Constants.Shooter.CONFIGURATIONS.get(target);
-        this.configuration.set(configuration);
+        ShooterConfiguration config = Constants.Shooter.CONFIGURATIONS.get(target);
+        configuration.set(config);
 
-        limelight.setPipelineIndex(configuration.getPipeline().id());
-        switch (configuration.getHoodPosition()) {
+        limelight.setPipelineIndex(config.getPipeline().id());
+        switch (config.getHoodPosition()) {
             case kDown: {
                 turret.hoodDownPosition();
                 break;

@@ -52,14 +52,13 @@ public final class RunShooter extends CommandBase {
     @Override
     public void execute() {     
         if (flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
-            indexer.indexerOn(indexerTarget);
+            indexer.setSpeed(indexerTarget);
         }
     }
 
 
     @Override
     public void end(boolean interrupted) {
-        super.end(interrupted);
         flywheel.disable();
         indexer.disable();
     }

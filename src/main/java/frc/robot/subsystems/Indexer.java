@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
-import frc.robot.Constants.kIndexer;
 import frc.robot.utils.MotorUtils;
 import frc.robot.utils.Toggleable;
 
@@ -19,254 +18,158 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Indexer extends SubsystemBase implements Toggleable{
+/**
+ * @author Elizabeth Caporiccio, Keith Davies
+ */
+public class Indexer extends SubsystemBase implements Toggleable {
+    public static enum SensorType {
+        kEnter, kExit, kBall1
+    }
 
-  // indexer testing motors
-  protected final CANSparkMax indexerBelt_neo;
-  private final SparkMaxPIDController pid_indexerBelt;
-  private final RelativeEncoder enc_indexerBelt;
+    public static final int INDEXER_STATE_NONE   = 0x0;
+    public static final int INDEXER_STATE_ENTER  = 0x1;
+    public static final int INDEXER_STATE_EXIT   = 0x2;
+    public static final int INDEXER_STATE_BALL1  = 0x4;
 
-  // time of flights
-  protected TimeOfFlight TOF_Ext;
-  protected TimeOfFlight TOF_Ent;
-  protected TimeOfFlight TOF_Ball1;
-
-  public boolean isBallAtEnt   = false;
-  public boolean isBallAtExt   = false;
-  public boolean isBallAtBall1 = false;
-
-  protected boolean isRangeValid_Ball1;
-  protected boolean isRangeValid_Ext;
-  protected boolean isRangeValid_Ent;
-  protected double getRange_Ball1;
-  protected double getRange_Ext;
-  protected double getRange_Ent;
-
-
-  protected final static int COMMAND_REGISTER_BIT = 0x80;
-
-
-  double speedBelt = 0;
-  double speedShoot = 0;
-
-  private boolean enabled;
-  
-  int countBalls = 0; 
-  boolean shooterReady = false; 
-
-  public Indexer() {
-
-    enabled = false;
-
-    TOF_Ent = new TimeOfFlight(kIndexer.TOF_Ent);
-    TOF_Ball1 = new TimeOfFlight(kIndexer.TOF_Ball1);
-    TOF_Ext = new TimeOfFlight(kIndexer.TOF_Ext);
-
-    TOF_Ent.setRangingMode(TimeOfFlight.RangingMode.Short, kIndexer.sampleTime);
-    TOF_Ball1.setRangingMode(TimeOfFlight.RangingMode.Short, kIndexer.sampleTime);
-    TOF_Ext.setRangingMode(TimeOfFlight.RangingMode.Short, kIndexer.sampleTime);
-
-    // MOTORS
-    // --------------------------------------------------------------------------------------------
-
-
-    // test motor for belt on indexer prototype
-    indexerBelt_neo = new CANSparkMax(kIndexer.indexerMotorBottom, MotorType.kBrushless);
-    indexerBelt_neo.setSmartCurrentLimit(kIndexer.currentLimit);
-    indexerBelt_neo.setIdleMode(IdleMode.kBrake);
-    indexerBelt_neo.setInverted(true);
-    MotorUtils.lowerLeaderStatusPeriod(indexerBelt_neo);
     
-    indexerBelt_neo.burnFlash();
+    // indexer testing motors
+    private final SparkMaxPIDController pid_indexerBelt;
+    private final RelativeEncoder       enc_indexerBelt;
+    private final CANSparkMax           mot_indexerBelt;
 
-    pid_indexerBelt = indexerBelt_neo.getPIDController();
-    enc_indexerBelt = indexerBelt_neo.getEncoder();
-  }
-
-
-  // INDEXER METHODS
-  // ------------------------------------------------------------------------------------
-
-  public void moveIndexerBelt(double speed) {
-    indexerBelt_neo.set(speed);
-  }
-
-  /**
-   * set the speed of the indexer belt
-   */
-
-  public void indexBeltOn() {
-    indexerBelt_neo.set(speedBelt);
-  }
-  
-
-  /**
-   * @param speed speed of belt motor
-   *              sets speed of the belt motor
-   */
-  public void setSpeedBelt(double speed) {
-    speedBelt = speed;
-  }
+    // time of flights
+    private final TimeOfFlight          tof_exit;
+    private final TimeOfFlight          tof_enter;
+    private final TimeOfFlight          tof_ball1;
 
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    if(Constants.kConfig.DEBUG){
-      SmartDashboard.putNumber("TOF Enter", TOF_Ent.getRange());
-      SmartDashboard.putNumber("TOF Exit", TOF_Ext.getRange());
-      SmartDashboard.putNumber("TOF Ball1", TOF_Ball1.getRange());
+    private boolean                     enabled;
+    private int                         count;
+    private int                         state;
+
+    public Indexer() {
+        tof_enter = new TimeOfFlight(Constants.Indexer.TOF_ENTER_CHANNEL);
+            tof_enter.setRangingMode(TimeOfFlight.RangingMode.Short, Constants.Indexer.SAMPLE_TIME);
+        
+        tof_exit = new TimeOfFlight(Constants.Indexer.TOF_EXIT_CHANNEL);
+            tof_exit.setRangingMode(TimeOfFlight.RangingMode.Short, Constants.Indexer.SAMPLE_TIME);
+
+        tof_ball1 = new TimeOfFlight(Constants.Indexer.TOF_BALL_1_CHANNEL);
+            tof_ball1.setRangingMode(TimeOfFlight.RangingMode.Short, Constants.Indexer.SAMPLE_TIME);
+
+
+        // MOTORS
+        // --------------------------------------------------------------------------------------------
+        
+        mot_indexerBelt = new CANSparkMax(Constants.Indexer.INDEXER_MOTOR_ID, MotorType.kBrushless);
+            mot_indexerBelt.setSmartCurrentLimit(Constants.Indexer.CURRENT_LIMIT);
+            mot_indexerBelt.setIdleMode(IdleMode.kBrake);
+            mot_indexerBelt.setInverted(true);
+            
+        MotorUtils.lowerLeaderStatusPeriod(mot_indexerBelt);
+        mot_indexerBelt.burnFlash();
+
+        pid_indexerBelt = mot_indexerBelt.getPIDController();
+        enc_indexerBelt = mot_indexerBelt.getEncoder();
+
+        enabled = false;
+        count = 0;
     }
 
-    isBallAtBall1 = ballDetectionBall1();
-    isBallAtEnt = ballDetectionEnter();
-    isBallAtExt = ballDetectionExit(); 
-
-    if(ballDetectionEnter() == true){
-      countBalls = 1; 
-    } else if(ballDetectionBall1() == true && !ballDetectionEnter()){
-      countBalls = 2; 
-    } else if (!ballDetectionExit() && !ballDetectionEnter() && !ballDetectionBall1()){
-      countBalls = 0; 
+    @Override
+    public void enable() {
+        enabled = true;
     }
 
-    if(ballDetectionExit() == true){
-      shooterReady = true; 
-    } else {
-      shooterReady = false; 
+
+    @Override
+    public void disable() {
+        if (!enabled) return;
+
+        mot_indexerBelt.stopMotor();
+        enabled = false;
     }
-    if(Constants.kConfig.DEBUG){
-      SmartDashboard.putNumber("Number of Balls in Indexer", countBalls); 
-      SmartDashboard.putBoolean("Ready to Shoot", shooterReady);
+
+    @Override
+    public void periodic() {
+        // update state
+        state = (
+            (tof_enter.getRange() < Constants.Indexer.RANGE_ENTER  ? INDEXER_STATE_ENTER : 0) |
+            (tof_exit.getRange() < Constants.Indexer.RANGE_EXIT    ? INDEXER_STATE_EXIT  : 0) |
+            (tof_ball1.getRange() < Constants.Indexer.RANGE_BALL_1 ? INDEXER_STATE_BALL1 : 0)
+        );
+
+        if ((state & INDEXER_STATE_ENTER) != 0)
+            count = 1;
+        else if ((state & INDEXER_STATE_BALL1) != 0)
+            count = 2;
+        else
+            count = 0;
+
+        if(Constants.kConfig.DEBUG) {
+            SmartDashboard.putNumber("TOF Enter", tof_enter.getRange());
+            SmartDashboard.putNumber("TOF Exit", tof_exit.getRange());
+            SmartDashboard.putNumber("TOF Ball1", tof_ball1.getRange());
+            SmartDashboard.putNumber("Number of Balls in Indexer", count);
+        }
     }
-  }
 
+    public void setSpeed(double speed) {
+        mot_indexerBelt.set(speed);
+    }
 
-  /**
-   * is the pre-shooter enabled
-   * 
-   * @return preshooterEnabled
-   */
+    public void setControlMode(double setpoint, ControlType mode) {
+        pid_indexerBelt.setReference(setpoint, mode);
+    }
 
-  public boolean isEnabled() {
-    return enabled;
-  }
+    /**
+     * Stops the indexer.
+     */
+    public void stop() {
+        mot_indexerBelt.stopMotor();
+    }
 
+    public int getCargoCount() {
+        return count;
+    }
 
-  @Override
-  public void enable() {
-    enabled = true;
+    public double getPosition() {
+        return enc_indexerBelt.getPosition();
+    }
+
+    public double getSensorRange(SensorType type) {
+        return getSensor(type).getRange();
+    }
+
+    public boolean getSensorState(SensorType type) {
+        switch (type) {
+            case kEnter: return (state & INDEXER_STATE_ENTER) != 0;
+            case kExit:  return (state & INDEXER_STATE_EXIT)  != 0;
+            case kBall1: return (state & INDEXER_STATE_BALL1) != 0;
+        }
+        return false;
+    }
+
+    public int getSensorState() {
+        return state;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public boolean isSensorValid(SensorType type) {
+        return getSensor(type).isRangeValid();
+    }
+
     
-  }
-
-
-  @Override
-  public void disable() {
-    enabled = false;
-    indexerBelt_neo.stopMotor();
-    
-  }
-
-  /**
-   * Method for psinning the lower part of the indexer.
-   * 
-   * @param target Setpoint speed for the lower indexer, in range [-1.0, 1.0].
-   */
-  public void spinIndexer(double target) {
-    if(!enabled) return;
-    speedBelt = target;
-    indexerBelt_neo.set(speedBelt);
-  }
-
-  public void setControlMode(double setpoint, ControlType mode){
-    pid_indexerBelt.setReference(setpoint, mode);
-  }
-
-  public void zeroEncoder(){
-    enc_indexerBelt.setPosition(0);
-  }
-
-  public double encoderPosition(){
-      return enc_indexerBelt.getPosition();
-  }
-
-
-  // TIME OF FLIGHT METHODS
-  // ----------------------------------------------------------------------------
-
-  public double getRange_Ext() {
-    return TOF_Ext.getRange();
-  }
-
-  public double getRange_Ent() {
-    return TOF_Ent.getRange();
-  }
-
-  public double getRange_Ball1(){
-    return TOF_Ball1.getRange();
-  }
- 
-  public double getSpeedBelt() {
-    return speedBelt;
-  }
-
-  public void indexerOn(double speed) {
-    indexerBelt_neo.set(speed);
-  }
-
-  public void reverseIndexer(double speed) {
-    indexerBelt_neo.set(-speed);
-  }
-
-  public boolean ballDetectionEnter() {
-    double range = TOF_Ent.getRange();
-    if (range < kIndexer.rangeEnter) { // need to find the range to compare with
-      return true;
+    private TimeOfFlight getSensor(SensorType type) {
+        switch (type) {
+            case kEnter: return tof_enter;
+            case kExit:  return tof_exit;
+            case kBall1: return tof_ball1;
+        }
+        return null;
     }
-    return false;
-  }
 
-  public boolean ballDetectionBall1() {
-    double range = TOF_Ball1.getRange();
-    if (range < kIndexer.rangeBall1) {
-      return true;
-    }
-    return false;
-  }
-
-  public boolean ballDetectionExit() {
-    double range = TOF_Ext.getRange();
-
-    if (range < kIndexer.rangeExit){ // need to find number to compare with
-      return true;
-    }
-    return false;
-  }
-
-  public boolean isRangeValid_Ball1() {
-    return TOF_Ball1.isRangeValid();
-  }
-  /**
-   * checks whether the range is valid or not
-   * 
-   * @return TOF_Ent.isRangeValid()
-   */
-  public boolean isRangeValid_Ent() {
-    return TOF_Ent.isRangeValid();
-  }
-
-  public void setRangingMode(TimeOfFlight.RangingMode rangeModeIn, double sampleTime) {
-    if (sampleTime > 24) {
-      sampleTime = 24;
-      TOF_Ent.setRangingMode(rangeModeIn, sampleTime);
-    }
-  }
-
-  /**
-   * Stops the indexer by calling stopMotor()
-   */
-  public void stopIndexer() {
-    indexerBelt_neo.stopMotor();
-  }
-  
 }
