@@ -47,7 +47,7 @@ public class MoveToDistance extends CommandBase {
 
     @Override
     public void end(boolean interrupted){
-        drive.setControlMode(TalonFXControlMode.PercentOutput, 0);
+        drive.setDefaultControlMode();
         SmartDashboard.putString("mode", "PercentOutput");
     }
 

@@ -604,6 +604,26 @@ public class DriveTrain extends SubsystemBase {
         mot_rightRearDrive.set(mode, value_r);
     }
 
+    public void setDefaultControlMode(double value){
+        mot_leftFrontDrive.set(TalonFXControlMode.PercentOutput, value);
+        mot_leftFrontDrive.setInverted(false);
+
+        mot_leftRearDrive.set(TalonFXControlMode.Follower, value);
+        mot_leftRearDrive.follow(mot_leftFrontDrive);
+        mot_leftRearDrive.setInverted(InvertType.FollowMaster);
+
+        mot_rightFrontDrive.set(TalonFXControlMode.PercentOutput, value);
+        mot_rightFrontDrive.setInverted(true);
+
+        mot_rightRearDrive.set(TalonFXControlMode.Follower, value);
+        mot_rightRearDrive.follow(mot_rightFrontDrive);
+        mot_rightRearDrive.setInverted(InvertType.FollowMaster);
+    }
+
+    public void setDefaultControlMode(){
+        setDefaultControlMode(0);
+    }
+
     // ---------------------------- Solenoids ---------------------------- //
 
     /**
