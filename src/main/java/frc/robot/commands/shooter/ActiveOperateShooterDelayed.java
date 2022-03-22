@@ -6,9 +6,8 @@ import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.ProxyStateCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
-import frc.robot.base.shooter.DriveByShooterOdometry;
 import frc.robot.base.shooter.SweepDirection;
-
+import frc.robot.base.shooter.odometry.DriveByShooterOdometry;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;

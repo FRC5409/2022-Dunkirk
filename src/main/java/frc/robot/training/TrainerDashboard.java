@@ -1,7 +1,7 @@
 package frc.robot.training;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.base.shooter.ShooterExecutionModel;
+import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 
 public class TrainerDashboard {
     private final TrainerContext context;

@@ -12,7 +12,7 @@ import frc.robot.training.protocol.generic.BundleSendable;
 import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
 import frc.robot.Constants;
-import frc.robot.base.shooter.ShooterExecutionModel;
+import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.training.TrainerDashboard;
 import frc.robot.training.TrainerContext;
 

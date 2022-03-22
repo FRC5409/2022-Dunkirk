@@ -15,10 +15,10 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.VisionPipeline;
-import frc.robot.base.shooter.ShooterExecutionModel;
+import frc.robot.base.shooter.odometry.ShooterExecutionModel;
+import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 import frc.robot.base.shooter.HoodPosition;
 import frc.robot.base.shooter.ShooterMode;
-import frc.robot.base.shooter.ShooterOdometryModel;
 import frc.robot.utils.*;
 
 /**

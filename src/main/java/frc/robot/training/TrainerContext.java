@@ -6,8 +6,8 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import frc.robot.base.shooter.ShooterMode;
-import frc.robot.base.shooter.ShooterOdometryModel;
-import frc.robot.base.shooter.ShooterExecutionModel;
+import frc.robot.base.shooter.odometry.ShooterExecutionModel;
+import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 
 public class TrainerContext {
     private Map<ShooterMode, ShooterExecutionModel> executionModels;

@@ -3,7 +3,7 @@ package frc.robot.commands.training;
 import java.util.concurrent.Future;
 
 import frc.robot.Constants;
-import frc.robot.base.shooter.ShooterExecutionModel;
+import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.training.TrainerDashboard;
 import frc.robot.training.TrainerContext;
 

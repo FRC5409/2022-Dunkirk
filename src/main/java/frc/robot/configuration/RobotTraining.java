@@ -7,9 +7,9 @@ import frc.robot.Constants;
 //Constants
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
+import frc.robot.base.shooter.odometry.ShooterExecutionModel;
+import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 import frc.robot.base.shooter.ShooterMode;
-import frc.robot.base.shooter.ShooterOdometryModel;
-import frc.robot.base.shooter.ShooterExecutionModel;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.RobotConfiguration;
 import frc.robot.base.ValueProperty;

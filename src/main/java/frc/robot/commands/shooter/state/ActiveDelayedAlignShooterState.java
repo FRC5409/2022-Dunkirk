@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.command.TimedStateCommand;
-import frc.robot.base.shooter.DriveByShooterOdometry;
+import frc.robot.base.shooter.odometry.DriveByShooterOdometry;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;

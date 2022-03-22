@@ -2,6 +2,9 @@ package frc.robot.base.shooter;
 
 import org.jetbrains.annotations.Nullable;
 
+import frc.robot.base.shooter.odometry.ShooterExecutionModel;
+import frc.robot.base.shooter.odometry.ShooterOdometryModel;
+
 public class ShooterConfiguration {
     private final ShooterExecutionModel executionModel;
     private final ShooterOdometryModel odometryModel;
