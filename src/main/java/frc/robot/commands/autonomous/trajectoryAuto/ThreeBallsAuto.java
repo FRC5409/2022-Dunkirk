@@ -71,7 +71,12 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_shooterSweepDirection = shooterSweepDirection;
         m_shooterOffset = shooterOffset;
 
-        String t1JSON = "paths/Path1.wpilib.json";
+        // String t1JSON = "paths/Path1.flipped.wpilib.json"; 
+        // String t1JSON = "paths/Path1.flipped1.wpilib.json"; 
+        // String t1JSON = "paths/Path1.flipped2.wpilib.json"; 
+
+        String t1JSON = "paths/straight.wpilib.json"; 
+        // String t1JSON = "paths/turn.flipped.wpilib.json"; 
         Trajectory t1 = new Trajectory();
 
         try {

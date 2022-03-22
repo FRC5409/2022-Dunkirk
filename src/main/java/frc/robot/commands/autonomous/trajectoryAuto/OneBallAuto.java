@@ -61,8 +61,8 @@ public class OneBallAuto extends SequentialCommandGroup{
         m_shooterOffset = shooterOffset;
 
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-                                                                   List.of(new Translation2d(-1/kAuto.kDistanceRatio, 1/kAuto.kDistanceRatio)), // new Translation2d(1/kAuto.kDistanceRatio, 1/kAuto.kDistanceRatio)
-                                                                   new Pose2d(-2/kAuto.kDistanceRatio, 0/kAuto.kDistanceRatio, new Rotation2d(0)),
+                                                                   List.of(),
+                                                                   new Pose2d(2, 0, new Rotation2d(0)), // -1.5/kAuto.kDistanceRatio
                                                                    kAuto.configStop);
 
         RamseteCommand r1 = new RamseteCommand(t1, m_drive::getPose,
