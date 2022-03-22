@@ -10,7 +10,6 @@ import frc.robot.subsystems.Pigeon;
 
 public class MoveToAngle extends PIDCommand{
     public DriveTrain drive;
-    public Pigeon pigeon;
 
     public MoveToAngle(DriveTrain _drive, double targetAngle) {
         super(
@@ -47,6 +46,6 @@ public class MoveToAngle extends PIDCommand{
     @Override
     public boolean isFinished() {
       // End when the controller is at the reference.
-      return Math.abs(Math.abs(pigeon.Heading() - getController().getSetpoint()) / getController().getSetpoint()) <= 0.05;
+      return Math.abs(Math.abs(drive.Heading() - getController().getSetpoint()) / getController().getSetpoint()) <= 0.05;
     }
 }
