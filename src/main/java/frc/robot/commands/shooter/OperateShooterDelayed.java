@@ -55,7 +55,6 @@ public final class OperateShooterDelayed extends ProxyStateCommandGroup {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
-        
         // Clean-up odometry
         sharedOdometry.set(null);
     }

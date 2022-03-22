@@ -87,7 +87,6 @@ public class Indexer extends SubsystemBase implements Toggleable {
         if (!enabled) return;
 
         mot_indexerBelt.stopMotor();
-
         enabled = false;
     }
 
