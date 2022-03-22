@@ -18,9 +18,10 @@ public class ActiveShooterOdometry extends OdometryBase {
     public ActiveShooterOdometry(ShooterOdometryModel model) {
         super(model);
         
+        kLastDirection = new Vector2();
+        kLastVelocity = new Vector2();
         kLastDistance = 0;
         kLastRotation = 0;
-        kLastVelocity = new Vector2();
         kLastTarget = new Vector2();
         kLastSpeed = 0;
     }
@@ -36,13 +37,16 @@ public class ActiveShooterOdometry extends OdometryBase {
 
         rotation = Math.toRadians(rotation);
 
+        double cx = Math.cos(-rotation);
+        double cy = Math.sin(-rotation);
+
         kLastDirection = new Vector2(
-            observerVector.x + Math.cos(rotation),
-            observerVector.y + Math.sin(rotation)
+            observerVector.x * cx - observerVector.y * cy,
+            observerVector.x * cy + observerVector.y * cx
         ).unit();
 
         kLastDistance = safe(model.kHeight / Math.tan(Math.asin(observerVector.z)));
-        kLastRotation = safe(Math.acos(kLastDirection.x));
+        kLastRotation = safe(Math.acos(kLastDirection.x)) * Math.signum(kLastDirection.y);
         kLastVelocity = kLastDirection.scale(speed);
         kLastTarget = new Vector2(target);
         kLastSpeed = speed;
@@ -50,10 +54,10 @@ public class ActiveShooterOdometry extends OdometryBase {
 
     @Override
     public void reset() {
-        kLastDistance = 0;
-        kLastRotation = 0;
         kLastDirection = new Vector2();
         kLastVelocity = new Vector2();
+        kLastDistance = 0;
+        kLastRotation = 0;
         kLastTarget = new Vector2();
         kLastSpeed = 0;
     }
@@ -93,7 +97,7 @@ public class ActiveShooterOdometry extends OdometryBase {
         builder.addStringProperty("Target", () -> getTarget().toString(), null);
         builder.addDoubleProperty("Distance", this::getDistance, null);
         builder.addDoubleProperty("Speed", this::getSpeed, null);
-        builder.addDoubleProperty("Rotation", this::getRotation, null);
+        builder.addDoubleProperty("Rotation", () -> Math.toDegrees(this.getRotation()), null);
     }
 
     protected double safe(double x) {

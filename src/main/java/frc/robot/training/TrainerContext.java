@@ -18,6 +18,7 @@ public class TrainerContext {
 
     public TrainerContext(Setpoint initialTarget) {
         executionModels = new HashMap<>();
+        odometryModels = new HashMap<>();
         target = initialTarget;
         distance = 0.0;
     }
