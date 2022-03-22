@@ -12,15 +12,14 @@ public class MoveToAngle extends PIDCommand{
     public DriveTrain drive;
     public Pigeon pigeon;
 
-    public MoveToAngle(double targetAngle, DriveTrain _drive, Pigeon _pigeon) {
+    public MoveToAngle(DriveTrain _drive, double targetAngle) {
         super(
             new PIDController(kDriveTrain.kAngleGains.kP, kDriveTrain.kAngleGains.kI, kDriveTrain.kAngleGains.kD), 
-            _pigeon::Heading, 
+            _drive::Heading, 
             targetAngle, 
             (output) -> _drive.tankDrive(limitSpeed(output), -limitSpeed(output))
               );
 
-        pigeon = _pigeon;
         drive = _drive;
 
         addRequirements(drive);
