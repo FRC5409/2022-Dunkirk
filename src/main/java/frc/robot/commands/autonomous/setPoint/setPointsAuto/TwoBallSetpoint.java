@@ -1,4 +1,4 @@
-package frc.robot.commands.autonomous.setPointsAuto;
+package frc.robot.commands.autonomous.setPoint.setPointsAuto;
 
 
 import frc.robot.Constants;
@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import frc.robot.commands.IndexerIntakeActive;
-import frc.robot.commands.MoveToDistance;
+import frc.robot.commands.autonomous.setPoint.setPointCommands.MoveToDistance;
 import frc.robot.commands.shooter.OperateShooter;
 import frc.robot.commands.shooter.RotateTurret;
 // subsystems
@@ -27,7 +27,7 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
-public class OneBallSetpoint extends SequentialCommandGroup {
+public class TwoBallSetpoint extends SequentialCommandGroup {
 
     private final DriveTrain driveTrain;
     private final Intake intake;
@@ -37,7 +37,7 @@ public class OneBallSetpoint extends SequentialCommandGroup {
     private final Limelight limelight;
     
 
-    public OneBallSetpoint(
+    public TwoBallSetpoint(
         DriveTrain driveTrain,
         Intake intake,
         Indexer indexer,
@@ -57,8 +57,14 @@ public class OneBallSetpoint extends SequentialCommandGroup {
         this.limelight  = limelight;
 
         addCommands(
-            new OperateShooter(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration, shooterOffset),
-            new RotateTurret(turret, 0)
+            new ParallelRaceGroup(
+                new MoveToDistance(driveTrain, -10f),
+                new IndexerIntakeActive(indexer, intake),
+
+                new OperateShooter(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration, shooterOffset),
+                new RotateTurret(turret, 0)
+            )
+
         );
 
 

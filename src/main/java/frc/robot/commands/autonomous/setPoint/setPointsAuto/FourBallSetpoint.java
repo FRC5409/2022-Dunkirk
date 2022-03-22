@@ -1,4 +1,4 @@
-package frc.robot.commands.autonomous.setPointsAuto;
+package frc.robot.commands.autonomous.setPoint.setPointsAuto;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -9,12 +9,12 @@ import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
 
 import frc.robot.commands.IndexerIntakeActive;
-import frc.robot.commands.MoveToAngle;
-import frc.robot.commands.MoveToDistance;
 import frc.robot.commands.ResetOdometry;
 import frc.robot.commands.RunIndexerBack;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.TurnToAngleGyro;
+import frc.robot.commands.autonomous.setPoint.setPointCommands.MoveToAngle;
+import frc.robot.commands.autonomous.setPoint.setPointCommands.MoveToDistance;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.OperateShooter;
 
