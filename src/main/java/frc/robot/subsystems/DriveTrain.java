@@ -4,7 +4,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 
@@ -57,7 +57,7 @@ public class DriveTrain extends SubsystemBase {
 
     private String drive_state;
 
-    public final WPI_PigeonIMU gyro_pigeon;
+    public final WPI_Pigeon2 gyro_pigeon;
 
     public DifferentialDriveOdometry m_odometry;
 
@@ -108,8 +108,9 @@ public class DriveTrain extends SubsystemBase {
 
         zeroEncoders();
 
-        gyro_pigeon = new WPI_PigeonIMU(kID.Pigeon);
+        gyro_pigeon = new WPI_Pigeon2(kID.Pigeon);
         gyro_pigeon.reset();
+        configPigeon();
         
         if(Constants.kConfig.DEBUG){
             SmartDashboard.putBoolean("Manual Override Enabled", false);
@@ -126,6 +127,12 @@ public class DriveTrain extends SubsystemBase {
         // tof_front.setRangingMode(RangingMode.Medium, 1000);
         // 6630
         timer.start();
+    }
+
+    private void configPigeon(){
+        gyro_pigeon.configMountPose(kDriveTrain.gyroMountYaw,
+                                    kDriveTrain.gyroMountPitch, 
+                                    kDriveTrain.gyroMountRoll  );
     }
 
     private void configMotors() {

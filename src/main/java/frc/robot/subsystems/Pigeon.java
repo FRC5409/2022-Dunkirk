@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,12 +10,13 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.kDriveTrain;
 import frc.robot.Constants.kID;
 import frc.robot.subsystems.DriveTrain;
 
 public class Pigeon extends SubsystemBase{
     
-    public final WPI_PigeonIMU gyro_pigeon;
+    public final WPI_Pigeon2 gyro_pigeon;
     private DifferentialDriveOdometry m_odometry;
 
     // The robot's RPY
@@ -37,8 +38,9 @@ public class Pigeon extends SubsystemBase{
     DriveTrain driveTrain = new DriveTrain();
 
     public Pigeon(){
-        gyro_pigeon = new WPI_PigeonIMU(kID.Pigeon);
+        gyro_pigeon = new WPI_Pigeon2(kID.Pigeon);
         gyro_pigeon.reset();
+        configPigeon();
 
         m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
 
@@ -51,6 +53,12 @@ public class Pigeon extends SubsystemBase{
 
         m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
 
+    }
+
+    private void configPigeon(){
+        gyro_pigeon.configMountPose(kDriveTrain.gyroMountYaw,
+                                    kDriveTrain.gyroMountPitch, 
+                                    kDriveTrain.gyroMountRoll  );
     }
 
     // getters

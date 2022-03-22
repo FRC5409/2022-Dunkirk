@@ -174,6 +174,11 @@ public final class Constants {
         public static final double maxStraightSpeed = 1;
         public static final double maxTurnSpeed = 1;
 
+        // pigeon mount position TODO: TUNE THESE VALUES
+        public static final double gyroMountYaw   = 0;
+        public static final double gyroMountPitch = 0;
+        public static final double gyroMountRoll  = 0;
+
         //
         public static final double forwardRampRate = 0.3;
         public static final double backwardRampRate = 0.2;
