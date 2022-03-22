@@ -95,6 +95,20 @@ public class Vector2 implements Sendable {
         return new Vector2(x * factor, y * factor);
     }
 
+    /**
+     * Interpolate towards a vector by factor.
+     * 
+     * @param other The target vector.
+     * @param factor The interpolation factor.
+     * 
+     * @return An interpolated vector
+     */
+    public Vector2 lerp(Vector2 other, double factor) {
+        double i = Range.clamp(0, factor, 1);
+        double k = 1-i;
+        return new Vector2(x*k + other.x*i, y*k + other.y*i);
+    }
+
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.addDoubleProperty("x", () -> x, _x -> x = _x);
@@ -110,6 +124,6 @@ public class Vector2 implements Sendable {
 
     @Override
     public String toString() {
-        return "(" + x + ", " + y + ")";
+        return String.format("(%.3f, %.3f)", x, y);
     }
 }

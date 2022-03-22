@@ -102,6 +102,20 @@ public class Vector3 implements Sendable {
     public Vector3 scale(double factor) {
         return new Vector3(x * factor, y * factor, z * factor);
     }
+
+    /**
+     * Interpolate towards a vector by factor.
+     * 
+     * @param other The target vector.
+     * @param factor The interpolation factor.
+     * 
+     * @return An interpolated vector
+     */
+    public Vector3 lerp(Vector3 other, double factor) {
+        double i = Range.clamp(0, factor, 1);
+        double k = 1-i;
+        return new Vector3(x*k + other.x*i, y*k + other.y*i, z*k + other.z*i);
+    }
     
     @Override
     public void initSendable(SendableBuilder builder) {
@@ -119,7 +133,7 @@ public class Vector3 implements Sendable {
 
     @Override
     public String toString() {
-        return "(" + x + ", " + y + ", " + z + ")";
+        return String.format("(%.3f, %.3f, %.3f)", x, y, z);
     }
 }
 
