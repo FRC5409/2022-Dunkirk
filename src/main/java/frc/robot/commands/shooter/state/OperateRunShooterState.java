@@ -42,6 +42,8 @@ public class OperateRunShooterState extends StateCommandBase {
     private ShooterExecutionModel model;
     private SimpleShooterOdometry odometry;
 
+    private boolean active;
+
     public OperateRunShooterState(
         Limelight limelight,
         ShooterTurret turret,
@@ -70,7 +72,7 @@ public class OperateRunShooterState extends StateCommandBase {
             throw new RuntimeException("Cannot run shooter when odometry is not initialized");
 
         if (!indexer.isEnabled())
-            flywheel.enable();
+            indexer.enable();
 
         // Obtain shooter configuration
         model = configuration.get().getExecutionModel();
@@ -78,7 +80,8 @@ public class OperateRunShooterState extends StateCommandBase {
 
         // Run feeder and indexer
         flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
-        indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
+
+        active = false;
     }
 
     @Override
@@ -100,6 +103,11 @@ public class OperateRunShooterState extends StateCommandBase {
         if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
             turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
 
+        if (!active && flywheel.feederReachedTarget()) {
+            indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
+            active = true;
+        }
+
         if (Constants.kConfig.DEBUG) {
             SmartDashboard.putNumber("Velocity Prediction", velocity);
             SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
@@ -112,12 +120,12 @@ public class OperateRunShooterState extends StateCommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        if (interrupted || getNextState() == null) {
-            limelight.disable();
-            flywheel.disable();
-            indexer.disable();
-            turret.disable();
-        }
+        //if (interrupted || getNextState() == null) {
+        limelight.disable();
+        flywheel.disable();
+        indexer.disable();
+        turret.disable();
+        //}
     }
 
     @Override

@@ -94,7 +94,7 @@ public class OperateArmShooterState extends StateCommandBase {
         if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
             turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
 
-        if (turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget() && armed.get()) {
+        if (turret.isTargetReached() && flywheel.isTargetReached() && armed.get()) {
             next("frc.robot.shooter:operate:run");
             done = true;
         }

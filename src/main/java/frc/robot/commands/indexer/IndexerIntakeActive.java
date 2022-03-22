@@ -21,10 +21,10 @@ public class IndexerIntakeActive extends CommandBase {
         this.indexer = indexer;
         this.intake = intake;
 
-        rumbleCommand = new JoystickRumble(1)
+        rumbleCommand = new JoystickRumble(0.5)
             .addJoysticks(joystickMain, joystickSecondary)
             .withDebounce(1)
-            .withTimeout(3);
+            .withTimeout(0.5);
 
         addRequirements(indexer, intake);
     }
@@ -44,7 +44,7 @@ public class IndexerIntakeActive extends CommandBase {
         indexer.enable();
 
         // Tested value is 0.3 //Cam bump this up once extra wheels added to first indexer roller
-        intake.intakeOn(0.5);
+        intake.intakeOn(0.4);
         intake.solenoidsDown();
         indexer.setSpeed(1);
 
@@ -56,13 +56,14 @@ public class IndexerIntakeActive extends CommandBase {
     public void execute() {
         boolean tofEnter = indexer.getSensorState(SensorType.kEnter);
         boolean tofExit = indexer.getSensorState(SensorType.kExit);
+        boolean tofBall1 = indexer.getSensorState(SensorType.kBall1);
 
         if (rumbleCommand != null) {
             if (this.tofEnter != tofEnter && tofEnter)
                 rumbleCommand.schedule();
         }
         
-        if (tofEnter && tofExit)
+        if (tofBall1 && tofExit)
             indexer.setSpeed(0);
         else
             indexer.setSpeed(0.75);
@@ -73,6 +74,7 @@ public class IndexerIntakeActive extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        System.out.println("Endedddddd");
         indexer.disable();
         
         intake.intakeOn(0);

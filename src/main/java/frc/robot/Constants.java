@@ -295,10 +295,10 @@ public final class Constants {
         public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.000188,0,0);
         public static final Gains FLYWHEEL_GAINS = new Gains(0.475, 0, 0, 0.049,0,0);
 
-        public static final double GEAR_RATIO          = 126;
+        public static final double GEAR_RATIO = 280;
             
         // Range Configurations
-        public static final Range ROTATION_RANGE = new Range(-250, 250);
+        public static final Range ROTATION_RANGE = new Range(-115, 115);
         public static final Range SPEED_RANGE = new Range(0, 5500);
         public static final Range DISTANCE_RANGE = new Range(0, 25);
         public static final Range TURRET_OUTPUT_RANGE = new Range(-1, 1);
@@ -406,7 +406,7 @@ public final class Constants {
 
         public static final double INDEXER_SPEED = 0.5;
 
-        public static final double ARMING_TIME = 0.3;
+        public static final double ARMING_TIME = 0.2;
     }
     
     public static final class Vision {

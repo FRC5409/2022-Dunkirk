@@ -99,7 +99,7 @@ public abstract class ProxyStateCommandGroup extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        if (interrupted && m_active != null) {
+        if (m_active != null) {
             m_active.cancel();
             m_active = null;
         }
