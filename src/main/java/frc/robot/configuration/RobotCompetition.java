@@ -162,9 +162,15 @@ public class RobotCompetition implements RobotConfiguration {
             .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
         
         joystickPrimary.getButton(ButtonType.kX)
-            .whileActiveOnce(new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary))
-            .whenActive(new ConfigureProperty<>(shooterArmed, false))
-            .whenInactive(new PrimeShooter(Indexer, shooterArmed));
+            .whileActiveOnce(
+                new SequentialCommandGroup(
+                    new ConfigureProperty<>(shooterArmed, false),    
+                    new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary)
+                )
+            );
+        
+        joystickPrimary.getButton(ButtonType.kX)
+            .whenReleased(new PrimeShooter(Indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME));
 
         joystickSecondary.getButton(ButtonType.kStart)
             .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber))
