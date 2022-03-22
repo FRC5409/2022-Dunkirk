@@ -14,8 +14,8 @@ public class RunIndexerBack extends CommandBase{
 	 * 
 	 * Command to run the indexer
 	 */
-	public RunIndexerBack(Intake subsystem, Indexer indexer) {
-		sys_Intake = subsystem;
+	public RunIndexerBack(Intake intake, Indexer indexer) {
+		sys_Intake = intake;
 		sys_indexer = indexer;
 		
 		addRequirements(sys_Intake, sys_indexer);

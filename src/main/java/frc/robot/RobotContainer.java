@@ -23,6 +23,7 @@ import frc.robot.base.shooter.SweepDirection;
 // Misc
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -212,10 +213,16 @@ public class RobotContainer {
     });
     joystick_secondary.getButton(ButtonType.kLeftBumper).and(climberToggleTrigger).whenActive(new FindElevatorZero(Climber));
 
+    joystick_secondary.getButton(ButtonType.kLeftBumper)
+      .and(climberToggleTrigger.negate())
+      .and(shooterModeTrigger.negate())
+      .whileActiveContinuous(new OperateAlignment(limelight, turret, shooterSweepDirection, shooterConfiguration, shooterOffset))
+      .whenInactive(new RotateTurret(turret, 0));;
+
     joystick_secondary.getButton(ButtonType.kRightBumper)
       .and(climberToggleTrigger.negate())
       .and(shooterModeTrigger.negate())
-      .whileActiveContinuous(new OperateShooter(limelight, turret, Flywheel, Indexer, shooterSweepDirection, shooterConfiguration, shooterOffset))
+      .whileActiveContinuous((new Shoot(Flywheel, Indexer, limelight, shooterConfiguration)).beforeStarting(new RunIndexerBack(Intake, Indexer)).withTimeout(0.1))
       .whenInactive(new RotateTurret(turret, 0));
       
     joystick_secondary.getButton(ButtonType.kRightBumper)
