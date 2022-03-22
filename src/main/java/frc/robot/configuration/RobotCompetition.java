@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 
@@ -42,7 +41,6 @@ import frc.robot.commands.*;
 public class RobotCompetition implements RobotConfiguration {
     private final ShooterFlywheel      Flywheel;
     private final ShooterTurret        turret;
-    private final Pneumatics           Pneumatics;
     private final DriveTrain           DriveTrain;
     private final Limelight            limelight;
     private final Indexer              Indexer;
@@ -72,7 +70,6 @@ public class RobotCompetition implements RobotConfiguration {
     public RobotCompetition(RobotContainer robot) {
         joystickSecondary = robot.joystickSecondary;
         joystickPrimary   = robot.joystickPrimary;
-        Pneumatics        = robot.Pneumatics;
         DriveTrain        = robot.DriveTrain;
         limelight         = robot.limelight;
         Flywheel          = robot.Flywheel;

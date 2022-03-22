@@ -23,7 +23,6 @@ import java.io.IOException;
 import edu.wpi.first.wpilibj.GenericHID;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 
@@ -63,7 +62,6 @@ import frc.robot.commands.indexer.RunIndexerBack;
 public class RobotTraining implements RobotConfiguration {
     private final ShooterFlywheel                Flywheel;
     private final ShooterTurret                  turret;
-    private final Pneumatics                     Pneumatics;
     private final DriveTrain                     DriveTrain;
     private final Limelight                      limelight;
     private final Indexer                        Indexer;
@@ -96,7 +94,6 @@ public class RobotTraining implements RobotConfiguration {
 
         // Initialize sub systems
         DriveTrain  = robot.DriveTrain;
-        Pneumatics  = robot.Pneumatics;
         limelight   = robot.limelight;
         Flywheel    = robot.Flywheel;
         Climber     = robot.Climber;     

@@ -7,7 +7,6 @@ package frc.robot;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
@@ -30,7 +29,6 @@ public final class RobotContainer {
     public final ShooterFlywheel Flywheel;
     public final ShooterTurret   turret;
     public final DriveTrain      DriveTrain;
-    public final Pneumatics      Pneumatics;
     public final Limelight       limelight;
     public final Indexer         Indexer;
     public final Intake          Intake;
@@ -45,7 +43,6 @@ public final class RobotContainer {
         climberActive = new ValueProperty<Boolean>(false);
 
         DriveTrain  = new DriveTrain();
-        Pneumatics  = new Pneumatics();
         limelight   = new Limelight();
         Flywheel    = new ShooterFlywheel();
         Climber     = new Climber(climberActive);
