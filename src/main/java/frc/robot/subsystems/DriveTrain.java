@@ -261,6 +261,8 @@ public class DriveTrain extends SubsystemBase {
      * dashboard data.
      */
     public void periodic() {
+
+        SmartDashboard.putNumber("getRotation2D", gyro_pigeon.getRotation2d().getDegrees());
         if(Constants.kConfig.DEBUG){
             displayEncoder();
         }

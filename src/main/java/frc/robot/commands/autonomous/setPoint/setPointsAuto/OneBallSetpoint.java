@@ -2,9 +2,11 @@ package frc.robot.commands.autonomous.setPoint.setPointsAuto;
 
 import frc.robot.base.Property;
 import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
 // commands
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.OperateShooter;
 import frc.robot.commands.shooter.RotateTurret;
 // subsystems
@@ -44,6 +46,7 @@ public class OneBallSetpoint extends SequentialCommandGroup {
         this.limelight  = limelight;
 
         addCommands(
+            new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
             new OperateShooter(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration, shooterOffset),
             new RotateTurret(turret, 0)
         );

@@ -81,7 +81,8 @@ public class IndexerIntakeActive extends CommandBase {
         intake.intakeIn(0);
         intake.solenoidsUp();
 
-        rumbleCommand.cancel();
+        if (rumbleCommand != null)
+            rumbleCommand.cancel();
     }
 
     // Returns true when the command should end.

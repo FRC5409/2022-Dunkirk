@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.Constants.kAuto;
 import frc.robot.base.Property;
 import frc.robot.base.shooter.ShooterConfiguration;
@@ -95,7 +96,7 @@ public class TwoBallsAuto extends SequentialCommandGroup{
                         r1
                     ),
                     new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1),
-                    new RunIndexerBack(m_intake, m_indexer).withTimeout(0.3)
+                    new RunIndexerBack(m_intake, m_indexer).withTimeout(Constants.Shooter.ARMING_TIME)
                 ),
                 new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
             ),
