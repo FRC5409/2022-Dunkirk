@@ -34,7 +34,7 @@ public final class TrackTurret extends CommandBase {
 
     @Override
     public void execute() {
-        Vector2 target = limelight.getTarget();
+        Vector2 target = limelight.getTargetPosition();
         turret.setRotationTarget(turret.getRotation()+target.x);
     }
 

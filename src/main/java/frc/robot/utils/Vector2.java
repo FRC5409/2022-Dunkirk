@@ -1,14 +1,27 @@
 package frc.robot.utils;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+
 /**
  * Simple 2D Cartesian plane
  * point / vector / coordinate.
  * 
  * @author Keith Davies
  */
-public class Vector2 {
+public class Vector2 implements Sendable {
     /**
-     * Construct Blank Vector2.
+     * X Coordinate
+     */
+    public double x;
+    
+    /**
+     * Y Coordinate
+     */
+    public double y;
+
+    /**
+     * Construct Blank {@link Vector2}.
      */
     public Vector2() {
         x = 0;
@@ -16,7 +29,7 @@ public class Vector2 {
     }
 
     /**
-     * Construct Vector2 with coordinates.
+     * Construct {@link Vector2} with coordinates.
      * 
      * @param x X Coordinate
      * @param y Y Coordinate
@@ -24,6 +37,17 @@ public class Vector2 {
     public Vector2(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+
+    /**
+     * Construct {@link Vector2} from another {@link Vector2}.
+     * 
+     * @param other A {@link Vector2}.
+     */
+    public Vector2(Vector2 other) {
+        this.x = other.x;
+        this.y = other.y;
     }
 
     /**
@@ -54,18 +78,52 @@ public class Vector2 {
      * 
      * @return Magnitude of this vector
      */
-    public Vector2 normalize() {
-        final double mag = magnitude();
-        return new Vector2(x/mag, y/mag);
+    public Vector2 unit() {
+        final double m = magnitude();
+        if (m == 0) return new Vector2();
+        return new Vector2(x / m, y / m);
     }
 
     /**
-     * X Coordinate
+     * Scale vector by factor.
+     * 
+     * @param magnitude The scale factor.
+     * 
+     * @return A scaled vector
      */
-    public double x;
-    
+    public Vector2 scale(double factor) {
+        return new Vector2(x * factor, y * factor);
+    }
+
     /**
-     * Y Coordinate
+     * Interpolate towards a vector by factor.
+     * 
+     * @param other The target vector.
+     * @param factor The interpolation factor.
+     * 
+     * @return An interpolated vector
      */
-    public double y;
+    public Vector2 lerp(Vector2 other, double factor) {
+        double i = Range.clamp(0, factor, 1);
+        double k = 1-i;
+        return new Vector2(x*k + other.x*i, y*k + other.y*i);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("x", () -> x, _x -> x = _x);
+        builder.addDoubleProperty("y", () -> y, _y -> y = _y);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Vector2)) return false;
+        Vector2 other = (Vector2) o;
+        return x == other.x && y == other.y;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("(%.3f, %.3f)", x, y);
+    }
 }

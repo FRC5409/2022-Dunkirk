@@ -8,17 +8,17 @@ import frc.robot.Constants;
 import frc.robot.utils.Range;
 import frc.robot.utils.Toggleable;
 import frc.robot.utils.Vector2;
-import frc.robot.utils.Vector3;
 
 /**
  * Facilitates the control and access
  * of limelight hardware.
  * 
  * 
- * http://10.54.9.99:5801/ 
+ * http://10.54.9.11:5801/
+ * 
  * @author Keith Davies, Akil Pathiranage
  */
-public class Limelight extends SubsystemBase implements Toggleable  {
+public class Limelight extends SubsystemBase implements Toggleable {
     /**
      * The Led mode of the limelight.
      */
@@ -52,49 +52,45 @@ public class Limelight extends SubsystemBase implements Toggleable  {
         kHub, kNone
     }
 
-    private NetworkTable      limelight_data;
+    private final NetworkTable data;
 
-    private NetworkTableEntry data_entry_tx,
-                              data_entry_ty,
-                              data_entry_ta,
-                              data_entry_led_mode, 
-                              data_entry_cam_mode,
-                              data_entry_pipeline,
-                              data_entry_has_targets;
+    private final NetworkTableEntry targetPositionX, targetPositionY, pipelineIndex,
+        targetStatus, targetArea, cameraMode, ledMode;
 
-    private Vector3           track_data;
-    private TargetType        target_data;
+    private TargetType type;
+    private Vector2 position;
+    private double area;
 
-    private boolean           enabled;
+    private boolean enabled;
 
     /**
      * Constructs the Limelight subsystem.
      */
     public Limelight() {
-        limelight_data         = NetworkTableInstance.getDefault().getTable(Constants.Limelight.NETWORK_TABLE_NAME);
+        data = NetworkTableInstance.getDefault().getTable(Constants.Limelight.NETWORK_TABLE_NAME);
 
-        data_entry_tx          = limelight_data.getEntry("tx");
-        data_entry_ty          = limelight_data.getEntry("ty");
-        data_entry_ta          = limelight_data.getEntry("ta");
-
-        data_entry_cam_mode    = limelight_data.getEntry("camMode");
-        data_entry_led_mode    = limelight_data.getEntry("ledMode");
-        data_entry_pipeline    = limelight_data.getEntry("pipeline");
+        targetPositionX = data.getEntry("tx");
+        targetPositionY = data.getEntry("ty");
+        pipelineIndex   = data.getEntry("pipeline");
+        targetStatus    = data.getEntry("tv");
+        targetArea      = data.getEntry("ta");
+        cameraMode      = data.getEntry("camMode");
+        ledMode         = data.getEntry("ledMode");
         
-        data_entry_led_mode.setDouble(LedMode.kModeOn.value);
+        position = new Vector2();
+        area = 0.0;
+        type = TargetType.kNone;
 
-        data_entry_has_targets = limelight_data.getEntry("tv");
-
-        track_data             = new Vector3(0, 0, 0);
-        target_data            = TargetType.kNone;
-
-        enabled                = false;
+        enabled = false;
     }
 
     /**
      * Enables the Limelight.
      */
     public void enable() {
+        if (Constants.kConfig.DEBUG)
+            System.out.println("Enabled limelight");
+
         enabled = true;
     }
 
@@ -102,9 +98,14 @@ public class Limelight extends SubsystemBase implements Toggleable  {
      * Disables the Limelight.
      */
     public void disable() {
-        enabled = false;
-        target_data = TargetType.kNone;
+        if (Constants.kConfig.DEBUG)
+            System.out.println("Disabled limelight");
+        
         setLedMode(LedMode.kModeOff);
+
+        type = TargetType.kNone;
+
+        enabled = false;
     }
 
     /**
@@ -125,7 +126,7 @@ public class Limelight extends SubsystemBase implements Toggleable  {
      * @see CameraMode
      */
     public void setCameraMode(CameraMode mode) {
-        data_entry_cam_mode.setDouble(mode.value);
+        cameraMode.setDouble(mode.value);
     }
 
     /**
@@ -136,7 +137,7 @@ public class Limelight extends SubsystemBase implements Toggleable  {
      * @see LedMode
      */
     public void setLedMode(LedMode mode) {
-        data_entry_led_mode.setDouble(mode.value);
+        ledMode.setDouble(mode.value);
     }
 
     /**
@@ -145,7 +146,7 @@ public class Limelight extends SubsystemBase implements Toggleable  {
      * @param index The pipeline index. [0-9]
      */
     public void setPipelineIndex(int index) {
-        data_entry_pipeline.setDouble(Range.clamp(0, index, 9));
+        pipelineIndex.setDouble(Range.clamp(0, index, 9));
     }
 
     /**
@@ -154,8 +155,8 @@ public class Limelight extends SubsystemBase implements Toggleable  {
      * 
      * @return The limelight target.
      */
-    public Vector2 getTarget() {
-        return new Vector2(track_data.x, track_data.y);
+    public Vector2 getTargetPosition() {
+        return new Vector2(position);
     }
 
     /**
@@ -164,7 +165,7 @@ public class Limelight extends SubsystemBase implements Toggleable  {
      * @return The active target.
      */
     public TargetType getTargetType() {
-        return target_data;
+        return type;
     }
 
     /**
@@ -173,7 +174,7 @@ public class Limelight extends SubsystemBase implements Toggleable  {
      * @return The active target area.
      */
     public double getTargetArea() {
-        return track_data.z;
+        return area;
     }
 
     /**
@@ -182,27 +183,20 @@ public class Limelight extends SubsystemBase implements Toggleable  {
      * @return Whether or not the limelight is tracking a target.
      */
     public boolean hasTarget() {
-        return target_data != TargetType.kNone;
+        return type != TargetType.kNone;
     }
 
-    private void updateTarget() {
-        track_data.x = data_entry_tx.getDouble(track_data.x);
-        track_data.y = data_entry_ty.getDouble(track_data.y);
-        track_data.z = data_entry_ta.getDouble(track_data.z);
-    }
-
-    private boolean isTracking() {
-        return data_entry_has_targets.getDouble(0) == 1;
-    }
-        
     @Override
     public void periodic() {
         if (enabled) {
-            if (isTracking()) {
-                updateTarget();
-                target_data = TargetType.kHub;
+            if (targetStatus.getDouble(0) == 1) {
+                position.x = targetPositionX.getDouble(position.x);
+                position.y = targetPositionY.getDouble(position.y);
+
+                area = targetArea.getDouble(area);
+                type = TargetType.kHub;
             } else {
-                target_data = TargetType.kNone;
+                type = TargetType.kNone;
             }
         }
     }

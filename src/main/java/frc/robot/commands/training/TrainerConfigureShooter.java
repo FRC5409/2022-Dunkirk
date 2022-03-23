@@ -11,22 +11,23 @@ import frc.robot.training.TrainerContext;
 import frc.robot.training.TrainerDashboard;
 
 public class TrainerConfigureShooter extends CommandBase {
+    private final Property<ShooterConfiguration> configuration;
+
     private final Limelight limelight;
     private final ShooterMode target;
     private final ShooterTurret turret;
     private final TrainerContext context;
     private final TrainerDashboard dashboard;
-    private final Property<ShooterConfiguration> property;
 
     public TrainerConfigureShooter(
         ShooterTurret turret,
         Limelight limelight,
         TrainerContext context,
         TrainerDashboard dashboard,
-        Property<ShooterConfiguration> property,
+        Property<ShooterConfiguration> configuration,
         ShooterMode target
     ) {
-        this.property  = property;
+        this.configuration  = configuration;
         this.target    = target;
         this.turret    = turret;
         this.limelight = limelight;
@@ -39,23 +40,22 @@ public class TrainerConfigureShooter extends CommandBase {
         turret.enable();
         limelight.enable();
 
-        context.setMode(target);
-        
-        ShooterConfiguration configuration = Constants.Shooter.CONFIGURATIONS.get(target);
+        ShooterConfiguration config = Constants.Shooter.CONFIGURATIONS.get(target);
+        configuration.set(config);
 
-        property.set(configuration);
-        limelight.setPipelineIndex(configuration.getPipeline().id());
-
-        switch (target) {
-            case kNear: {
+        limelight.setPipelineIndex(config.getPipeline().id());
+        switch (config.getHoodPosition()) {
+            case kDown: {
                 turret.hoodDownPosition();
                 break;
             }
-            case kFar: {
+            case kUp: {
                 turret.hoodUpPosition();
                 break;
             }
         }
+
+        context.setMode(target);
 
         dashboard.update();
     }
