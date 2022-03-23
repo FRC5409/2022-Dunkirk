@@ -46,10 +46,10 @@ public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
         sharedOdometry = new ValueProperty<>();
 
         addCommands(
-            new SearchShooterState(limelight, true),
+            new SearchShooterState(limelight, false),
             new SweepShooterState(limelight, turret, direction),
             new DelayedAlignShooterState(trigger, limelight, turret),
-            new ActiveOperateArmShooterState(flywheel, turret, drivetrain, limelight, configuration, sharedOdometry, offset, armed),
+            new ActiveOperateArmShooterState(flywheel, turret, drivetrain, limelight, trigger, configuration, sharedOdometry, offset, armed),
             new ActiveOperateRunShooterState(flywheel, turret, drivetrain, limelight, indexer, configuration, sharedOdometry, offset)
         ); 
 

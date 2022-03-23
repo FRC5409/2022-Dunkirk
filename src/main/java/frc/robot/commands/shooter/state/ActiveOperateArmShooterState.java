@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterConfiguration;
@@ -36,6 +36,7 @@ public class ActiveOperateArmShooterState extends StateCommandBase {
     private final ShooterTurret turret;
     private final DriveTrain drivetrain;
     private final Limelight limelight;
+    private final Trigger trigger;
     
     private ShooterExecutionModel model;
     private DriveByShooterOdometry odometry;
@@ -47,6 +48,7 @@ public class ActiveOperateArmShooterState extends StateCommandBase {
         ShooterTurret turret,
         DriveTrain drivetrain,
         Limelight limelight,
+        Trigger trigger,
         Property<ShooterConfiguration> configuration,
         Property<DriveByShooterOdometry> sharedOdometry,
         Property<Integer> offset,
@@ -57,6 +59,7 @@ public class ActiveOperateArmShooterState extends StateCommandBase {
         this.drivetrain = drivetrain;
         this.limelight = limelight;
         this.flywheel = flywheel;
+        this.trigger = trigger;
         this.turret = turret;
         this.offset = offset;
         this.armed = armed;
@@ -107,7 +110,7 @@ public class ActiveOperateArmShooterState extends StateCommandBase {
             )
         );
 
-        if (turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget() && armed.get()) {
+        if (turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget() && armed.get() && trigger.get()) {
             next("frc.robot.shooter:operate:run");
             done = true;
         }
