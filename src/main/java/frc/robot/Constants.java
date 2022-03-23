@@ -190,8 +190,8 @@ public final class Constants {
         public static final double gyroMountRoll  = 0;
 
         //
-        public static final double forwardRampRate = 0.3;
-        public static final double backwardRampRate = 0.2;
+        public static final double forwardRampRate = 0.4;
+        public static final double backwardRampRate = 0.3;
         public static final double forwardTurnRampRate = 0.1;
         public static final double backwardTurnRampRate = 0.1;
 
@@ -414,12 +414,12 @@ public final class Constants {
     }
     
     public static final class Vision {
-        public static final double ACQUISITION_DELAY = 0.15;
+        public static final double ACQUISITION_DELAY = 0;
 
         public static final double ALIGNMENT_THRESHOLD = 0.83333;
 
         protected static double DISTANCE_OFFSET = - 2.0;
 
-        public static final double ROTATION_P = 0.50;
+        public static final double ROTATION_P = 0.74;
     }
 }
