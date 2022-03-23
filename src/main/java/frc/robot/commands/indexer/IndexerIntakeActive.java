@@ -16,6 +16,7 @@ public class IndexerIntakeActive extends CommandBase {
     private final Command rumbleCommand;
 
     private boolean tofEnter;
+    private boolean active;
 
     public IndexerIntakeActive(Indexer indexer, Intake intake, Joystick joystickMain, Joystick joystickSecondary) {
         this.indexer = indexer;
@@ -23,7 +24,7 @@ public class IndexerIntakeActive extends CommandBase {
 
         rumbleCommand = new JoystickRumble(0.5)
             .addJoysticks(joystickMain, joystickSecondary)
-            .withDebounce(0.25)
+            .withDebounce(0.1)
             .withTimeout(0.5);
 
         addRequirements(indexer, intake);
@@ -42,13 +43,15 @@ public class IndexerIntakeActive extends CommandBase {
     @Override
     public void initialize() {
         indexer.enable();
+        indexer.setSpeed(1);
 
         // Tested value is 0.3 //Cam bump this up once extra wheels added to first indexer roller
         intake.intakeOn(0.4);
         intake.solenoidsDown();
-        indexer.setSpeed(1);
+        
 
         tofEnter = false;
+        active = true;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -63,10 +66,17 @@ public class IndexerIntakeActive extends CommandBase {
                 rumbleCommand.schedule();
         }
         
-        if (tofBall1 && tofExit)
-            indexer.setSpeed(0);
-        else
-            indexer.setSpeed(0.75);
+        if (tofBall1 && tofExit) {
+            if (active) {
+                indexer.setSpeed(0);
+                active = false;
+            }
+        } else {
+            if (!active) {
+                indexer.setSpeed(0.75);
+                active = true;
+            }
+        }
 
         this.tofEnter = tofEnter;
     }
@@ -74,7 +84,6 @@ public class IndexerIntakeActive extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        System.out.println("Endedddddd");
         indexer.disable();
         
         intake.intakeOn(0);
