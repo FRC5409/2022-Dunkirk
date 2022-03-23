@@ -4,7 +4,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 
@@ -57,7 +57,7 @@ public class DriveTrain extends SubsystemBase {
 
     private String drive_state;
 
-    public final WPI_PigeonIMU gyro_pigeon;
+    public final WPI_Pigeon2 gyro_pigeon;
 
     public DifferentialDriveOdometry m_odometry;
 
@@ -108,8 +108,9 @@ public class DriveTrain extends SubsystemBase {
 
         zeroEncoders();
 
-        gyro_pigeon = new WPI_PigeonIMU(kID.Pigeon);
+        gyro_pigeon = new WPI_Pigeon2(kID.Pigeon);
         gyro_pigeon.reset();
+        configPigeon();
         
         if(Constants.kConfig.DEBUG){
             SmartDashboard.putBoolean("Manual Override Enabled", false);
@@ -126,6 +127,12 @@ public class DriveTrain extends SubsystemBase {
         // tof_front.setRangingMode(RangingMode.Medium, 1000);
         // 6630
         timer.start();
+    }
+
+    private void configPigeon(){
+        gyro_pigeon.configMountPose(kDriveTrain.gyroMountYaw,
+                                    kDriveTrain.gyroMountPitch, 
+                                    kDriveTrain.gyroMountRoll  );
     }
 
     private void configMotors() {
@@ -151,6 +158,8 @@ public class DriveTrain extends SubsystemBase {
         mot_leftFrontDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
         mot_leftFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
         mot_leftFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
+
+        // mot_leftFrontDrive.setSensorPhase(true);
 
         // Left Rear Drive
         mot_leftRearDrive.configFactoryDefault();
@@ -178,6 +187,8 @@ public class DriveTrain extends SubsystemBase {
         mot_leftRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
         mot_leftRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
+        // mot_leftRearDrive.setSensorPhase(true);
+
         // Right Front Drive
         mot_rightFrontDrive.configFactoryDefault();
         mot_rightFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
@@ -200,6 +211,8 @@ public class DriveTrain extends SubsystemBase {
         mot_rightFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
         mot_rightFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
         mot_rightFrontDrive.setInverted(kDriveTrain.CounterClockwise);
+
+        // mot_rightFrontDrive.setSensorPhase(true);
 
         // Right Rear Drive
         mot_rightRearDrive.configFactoryDefault();
@@ -226,6 +239,8 @@ public class DriveTrain extends SubsystemBase {
         mot_rightRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
         mot_rightRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
 
+        // mot_rightRearDrive.setSensorPhase(true);
+
         driveMode = kDriveTrain.InitialDriveMode;
 
         applyAntiTip = kDriveTrain.startWithAntiTip;
@@ -246,11 +261,15 @@ public class DriveTrain extends SubsystemBase {
      * dashboard data.
      */
     public void periodic() {
+
+        SmartDashboard.putNumber("getRotation2D", gyro_pigeon.getRotation2d().getDegrees());
         if(Constants.kConfig.DEBUG){
             displayEncoder();
         }
 
         displayTemperatures();
+        displayHeading();
+        displayEncoder();
 
         if (timer.hasElapsed(refreshSeconds)) {
             if (mot_leftFrontDrive.hasResetOccurred()) {
@@ -259,6 +278,8 @@ public class DriveTrain extends SubsystemBase {
 
             timer.reset();
         }
+
+        updateAll();
 
         m_odometry.update(
             gyro_pigeon.getRotation2d(), getEncoderPositionLeft(), getEncoderPositionRight());
@@ -269,7 +290,6 @@ public class DriveTrain extends SubsystemBase {
     public void simulationPeriodic() {
         // displayEncoder();
         // displayDriveMode();
-        // updateAll();
         // displayAngle();
     }
 
@@ -586,6 +606,26 @@ public class DriveTrain extends SubsystemBase {
         mot_rightRearDrive.set(mode, value_r);
     }
 
+    public void setDefaultControlMode(double value){
+        mot_leftFrontDrive.set(TalonFXControlMode.PercentOutput, value);
+        mot_leftFrontDrive.setInverted(false);
+
+        mot_leftRearDrive.set(TalonFXControlMode.Follower, value);
+        mot_leftRearDrive.follow(mot_leftFrontDrive);
+        mot_leftRearDrive.setInverted(InvertType.FollowMaster);
+
+        mot_rightFrontDrive.set(TalonFXControlMode.PercentOutput, value);
+        mot_rightFrontDrive.setInverted(true);
+
+        mot_rightRearDrive.set(TalonFXControlMode.Follower, value);
+        mot_rightRearDrive.follow(mot_rightFrontDrive);
+        mot_rightRearDrive.setInverted(InvertType.FollowMaster);
+    }
+
+    public void setDefaultControlMode(){
+        setDefaultControlMode(0);
+    }
+
     // ---------------------------- Solenoids ---------------------------- //
 
     /**
@@ -629,7 +669,8 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public double TurnRate(){
-        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual turn_rate", 0) : turn_rate;
+        return turn_rate;
+        // return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual turn_rate", 0) : turn_rate;
     }
 
     public double X_Acelleration(){
@@ -755,6 +796,7 @@ public class DriveTrain extends SubsystemBase {
     public void displayHeading(){
         SmartDashboard.putNumber("Angle",  Heading());
         SmartDashboard.putNumber("Rate", TurnRate());
+        SmartDashboard.putNumber("Rotation2d", gyro_pigeon.getRotation2d().getRadians());
     }
 
     /**

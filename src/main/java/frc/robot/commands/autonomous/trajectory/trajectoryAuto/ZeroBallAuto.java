@@ -1,4 +1,4 @@
-package frc.robot.commands.autonomous.trajectoryAuto;
+package frc.robot.commands.autonomous.trajectory.trajectoryAuto;
 
 import java.util.List;
 
@@ -13,6 +13,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.kAuto;
+import frc.robot.commands.autonomous.trajectory.ResetOdometry;
 import frc.robot.subsystems.DriveTrain;
 
 public class ZeroBallAuto extends SequentialCommandGroup{
@@ -40,9 +41,8 @@ public class ZeroBallAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        m_drive.resetOdometry(t1.getInitialPose());
-
         addCommands(
+            new ResetOdometry(t1.getInitialPose(), m_drive),
             r1
         );
     }

@@ -22,27 +22,25 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 
 
-import frc.robot.commands.autonomous.trajectoryAuto.TwoBallsAuto;
 import frc.robot.commands.indexer.IndexerIntakeActive;
 import frc.robot.commands.indexer.IndexerIntakeTest;
 import frc.robot.commands.indexer.IntakeActive;
 import frc.robot.commands.indexer.ReverseIntakeIndexer;
 import frc.robot.commands.indexer.RunIndexerBack;
-import frc.robot.commands.autonomous.trajectoryAuto.OneBallAuto;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.commands.shooter.*;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
 
 public class RobotTest implements RobotConfiguration {
     private final ShooterFlywheel      Flywheel;
     private final ShooterTurret        turret;
-    private final Pneumatics           Pneumatics;
     private final DriveTrain           DriveTrain;
     private final Limelight            limelight;
     private final Indexer              Indexer;
@@ -72,7 +70,6 @@ public class RobotTest implements RobotConfiguration {
     public RobotTest(RobotContainer robot) {
         joystickSecondary = robot.joystickSecondary;
         joystickPrimary   = robot.joystickPrimary;
-        Pneumatics        = robot.Pneumatics;
         DriveTrain        = robot.DriveTrain;
         limelight         = robot.limelight;
         Flywheel          = robot.Flywheel;

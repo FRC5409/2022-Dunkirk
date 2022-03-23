@@ -87,8 +87,8 @@ public final class Constants {
     }
 
     public static class kPneumatics {
-        public static final double MIN_PSI = 90;
-        public static final double MAX_PSI = 110;
+        public static final double MIN_PSI = 100;
+        public static final double MAX_PSI = 120;
 
         public final int Pigeon = 23;
     }
@@ -184,6 +184,11 @@ public final class Constants {
         public static final double maxStraightSpeed = 1;
         public static final double maxTurnSpeed = 1;
 
+        // pigeon mount position TODO: TUNE THESE VALUES
+        public static final double gyroMountYaw   = 0;
+        public static final double gyroMountPitch = 0;
+        public static final double gyroMountRoll  = 0;
+
         //
         public static final double forwardRampRate = 0.3;
         public static final double backwardRampRate = 0.2;
@@ -248,7 +253,6 @@ public final class Constants {
             .addConstraint(autoVoltageConstraint)    
             .setEndVelocity(1.6)
             .setReversed(true);
-
     }
 
     public final class Falcon500 {
