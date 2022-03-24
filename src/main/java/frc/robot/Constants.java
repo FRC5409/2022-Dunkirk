@@ -240,19 +240,19 @@ public final class Constants {
                                            kaVoltSecondsSquaredPerMeter),
                 kDriveKinematics, 10);
 
-        public static final TrajectoryConfig configStop = 
+        public static final TrajectoryConfig configForwards = 
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)
             .setEndVelocity(0)
             .setReversed(true);
 
-        public static final TrajectoryConfig configNoStop = 
+        public static final TrajectoryConfig configBackwards = 
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)    
-            .setEndVelocity(1.6)
-            .setReversed(true);
+            .setEndVelocity(0)
+            .setReversed(false);
     }
 
     public final class Falcon500 {

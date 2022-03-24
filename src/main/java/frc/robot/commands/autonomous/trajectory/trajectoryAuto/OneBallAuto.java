@@ -7,7 +7,6 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -63,7 +62,7 @@ public class OneBallAuto extends SequentialCommandGroup{
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(),
                                                                    new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)), 
-                                                                   kAuto.configStop);
+                                                                   kAuto.configForwards);
 
         RamseteCommand r1 = new RamseteCommand(t1, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),

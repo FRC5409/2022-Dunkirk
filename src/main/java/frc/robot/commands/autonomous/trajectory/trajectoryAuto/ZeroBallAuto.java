@@ -28,7 +28,7 @@ public class ZeroBallAuto extends SequentialCommandGroup{
                                                                    List.of(
                                                                    ),
                                                                    new Pose2d(2/kAuto.kDistanceRatio, 0, new Rotation2d(0)), 
-                                                                   kAuto.configStop);
+                                                                   kAuto.configForwards);
 
         RamseteCommand r1 = new RamseteCommand(t1, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),

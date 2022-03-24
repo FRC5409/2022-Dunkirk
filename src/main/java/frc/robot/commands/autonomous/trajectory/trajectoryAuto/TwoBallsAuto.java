@@ -21,7 +21,6 @@ import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.autonomous.trajectory.ResetOdometry;
-import frc.robot.commands.SlowGear;
 import frc.robot.commands.indexer.IndexerIntakeActive;
 import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.commands.shooter.ConfigureShooter;
@@ -70,7 +69,7 @@ public class TwoBallsAuto extends SequentialCommandGroup{
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(),
                                                                    new Pose2d(1.75/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
-                                                                   kAuto.configStop);
+                                                                   kAuto.configForwards);
 
         RamseteCommand r1 = new RamseteCommand(t1, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
@@ -86,8 +85,8 @@ public class TwoBallsAuto extends SequentialCommandGroup{
         m_drive.setBrakeMode(true);
 
         addCommands(
-            new ResetOdometry(t1.getInitialPose(), m_drive),
             new SlowGear(m_drive),
+            new ResetOdometry(t1.getInitialPose(), m_drive),
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),

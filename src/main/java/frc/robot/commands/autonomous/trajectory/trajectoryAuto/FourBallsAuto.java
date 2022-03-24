@@ -32,7 +32,7 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
-public class ThreeBallsAuto extends SequentialCommandGroup{
+public class FourBallsAuto extends SequentialCommandGroup{
 
     DriveTrain m_drive;
     Intake m_intake;
@@ -44,7 +44,7 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
     Property<SweepDirection> m_shooterSweepDirection;
     Property<Integer> m_shooterOffset;
 
-    public ThreeBallsAuto(
+    public FourBallsAuto(
         DriveTrain drive, 
         Intake intake, 
         Indexer indexer, 
@@ -118,47 +118,38 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
 
         addCommands(
 
-            // trajectory testing code
+            // V1: run intake while getting to the human station
             new SlowGear(m_drive),
             new ResetOdometry(t1.getInitialPose(), m_drive),
-            r1, 
-            new ResetOdometry(t2.getInitialPose(), m_drive),
-            r2, 
-            new ResetOdometry(t3.getInitialPose(), m_drive),
-            r3
-
-            // V1: run intake while getting to the human station
-            // new SlowGear(m_drive),
-            // new ResetOdometry(t1.getInitialPose(), m_drive),
-            // new ParallelCommandGroup(
-            //     new SequentialCommandGroup(
-            //         new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
-            //         new ParallelRaceGroup(
-            //             new IndexerIntakeActive(m_indexer, m_intake),
-            //             r1
-            //         ),
-            //         new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
-            //         new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME)
-            //     ),
-            //     new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
-            // ),
-            // new ParallelCommandGroup(
-            //     new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3),
-            //     new ResetOdometry(t2.getInitialPose(), m_drive)
-            // ),
-            // new ParallelRaceGroup(
-            //     new IndexerIntakeActive(m_indexer, m_intake),
-            //     r2
-            // ),
-            // new ParallelCommandGroup(
-            //     new SequentialCommandGroup(
-            //         new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1),
-            //         new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME)
-            //     ),
-            //     new ResetOdometry(t3.getInitialPose(), m_drive)
-            // ),
-            // r3, 
-            // new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
+                    new ParallelRaceGroup(
+                        new IndexerIntakeActive(m_indexer, m_intake),
+                        r1
+                    ),
+                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
+                    new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME)
+                ),
+                new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
+            ),
+            new ParallelCommandGroup(
+                new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3),
+                new ResetOdometry(t2.getInitialPose(), m_drive)
+            ),
+            new ParallelRaceGroup(
+                new IndexerIntakeActive(m_indexer, m_intake),
+                r2
+            ),
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(3),
+                    new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME)
+                ),
+                new ResetOdometry(t3.getInitialPose(), m_drive)
+            ),
+            r3, 
+            new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
 
             // V2: run intake after got to the human station
             // new SlowGear(m_drive),

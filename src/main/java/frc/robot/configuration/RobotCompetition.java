@@ -33,7 +33,9 @@ import frc.robot.subsystems.shooter.*;
 import frc.robot.commands.shooter.*;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.FourBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
 
 public class RobotCompetition implements RobotConfiguration {
@@ -111,6 +113,14 @@ public class RobotCompetition implements RobotConfiguration {
         
         autoCommandSelector.addOption("Two",
             new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+                shooterConfiguration, shooterSweepDirection, shooterOffset));
+
+        autoCommandSelector.addOption("Three",
+            new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+                shooterConfiguration, shooterSweepDirection, shooterOffset));
+
+        autoCommandSelector.addOption("Four",
+            new FourBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterConfiguration, shooterSweepDirection, shooterOffset));
 
         SmartDashboard.putData("Auto Chooser", autoCommandSelector);
