@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.base.command;
 
 import java.util.Set;
 
