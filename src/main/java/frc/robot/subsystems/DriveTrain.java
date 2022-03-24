@@ -280,6 +280,7 @@ public class DriveTrain extends SubsystemBase {
         }
 
         updateAll();
+        displayAngle();
 
         m_odometry.update(
             gyro_pigeon.getRotation2d(), getEncoderPositionLeft(), getEncoderPositionRight());
