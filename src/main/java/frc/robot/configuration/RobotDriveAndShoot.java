@@ -38,7 +38,7 @@ import frc.robot.commands.shooter.*;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 
-public class RobotTest implements RobotConfiguration {
+public class RobotDriveAndShoot implements RobotConfiguration {
     private final ShooterFlywheel      Flywheel;
     private final ShooterTurret        turret;
     private final DriveTrain           DriveTrain;
@@ -67,7 +67,7 @@ public class RobotTest implements RobotConfiguration {
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
-    public RobotTest(RobotContainer robot) {
+    public RobotDriveAndShoot(RobotContainer robot) {
         joystickSecondary = robot.joystickSecondary;
         joystickPrimary   = robot.joystickPrimary;
         DriveTrain        = robot.DriveTrain;
@@ -128,10 +128,6 @@ public class RobotTest implements RobotConfiguration {
 
         Shuffleboard.getTab("Shooter")
             .add("Shooter Offset - Decrement", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() - Constants.Shooter.OFFSET_INCREMENT)));
-    
-        SmartDashboard.putNumber("Rotation Smoothing", SmartDashboard.getNumber("Rotation Smoothing", 0));
-        SmartDashboard.putNumber("Flywheel Offset Factor", SmartDashboard.getNumber("Flywheel Offset Factor", 0));
-        SmartDashboard.putNumber("Turret Offset Factor", SmartDashboard.getNumber("Turret Offset Factor", 0));
     }
 
 
@@ -166,9 +162,15 @@ public class RobotTest implements RobotConfiguration {
             .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
         
         joystickPrimary.getButton(ButtonType.kX)
-            .whileActiveOnce(new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary))
-            .whenActive(new ConfigureProperty<>(shooterArmed, false))
-            .whenInactive(new PrimeShooter(Indexer, shooterArmed));
+            .whileActiveOnce(
+                new SequentialCommandGroup(
+                    new ConfigureProperty<>(shooterArmed, false),    
+                    new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary)
+                )
+            );
+        
+        joystickPrimary.getButton(ButtonType.kX)
+            .whenReleased(new PrimeShooter(Indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME));
 
         joystickSecondary.getButton(ButtonType.kStart)
             .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber))
@@ -190,8 +192,8 @@ public class RobotTest implements RobotConfiguration {
             .and(climberToggleTrigger.negate())
             .and(shooterModeTrigger.negate())
             .whileActiveOnce(
-                new ActiveOperateShooterDelayed(
-                    limelight, turret, Flywheel, DriveTrain, Indexer,
+                new OperateShooterDelayed(
+                    limelight, turret, Flywheel, Indexer, 
                     shooterSweepDirection, shooterConfiguration, shooterOffset, shooterArmed,
                     new Trigger(joystickSecondary.getController()::getRightBumper)
                 )

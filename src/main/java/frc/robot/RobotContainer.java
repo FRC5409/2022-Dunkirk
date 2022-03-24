@@ -20,6 +20,7 @@ import frc.robot.base.Joystick;
 import frc.robot.base.RobotConfiguration;
 import frc.robot.base.ValueProperty;
 import frc.robot.configuration.RobotCompetition;
+import frc.robot.configuration.RobotDriveAndShoot;
 import frc.robot.configuration.RobotTest;
 import frc.robot.configuration.RobotTraining;
 import frc.robot.subsystems.Climber;
@@ -78,9 +79,10 @@ public final class RobotContainer {
     @Nullable
     private static RobotConfiguration getConfiguration(RobotContainer robot) {
         switch (Constants.General.ROBOT_CONFIGURATION) {
-            case kCompetition: return new RobotCompetition(robot);
-            case kTraining:    return new RobotTraining(robot);
-            case kTest:        return new RobotTest(robot);
+            case kCompetition:  return new RobotCompetition(robot);
+            case kTraining:     return new RobotTraining(robot);
+            case kTest:         return new RobotTest(robot);
+            case kMoveAndShoot: return new RobotDriveAndShoot(robot);
         }
 
         return null;
