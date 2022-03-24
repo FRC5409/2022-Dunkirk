@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterTarget;
 import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
 import frc.robot.subsystems.Indexer;
@@ -34,6 +35,7 @@ public class OperateShooterState extends StateCommandBase {
     private final Property<ShooterConfiguration> configuration;
     private final Property<Integer> offset;
     private final ShooterFlywheel flywheel;
+    private final ShooterTarget target;
     private final ShooterTurret turret;
     private final Limelight limelight;
     private final Indexer indexer;
@@ -47,6 +49,7 @@ public class OperateShooterState extends StateCommandBase {
         ShooterTurret turret,
         ShooterFlywheel flywheel,
         Indexer indexer,
+        ShooterTarget target,
         Property<ShooterConfiguration> configuration,
         Property<Integer> offset
     ) {
@@ -54,6 +57,7 @@ public class OperateShooterState extends StateCommandBase {
         this.limelight = limelight;
         this.flywheel = flywheel;
         this.indexer = indexer;
+        this.target = target;
         this.turret = turret;
         this.offset = offset;
 
@@ -91,47 +95,50 @@ public class OperateShooterState extends StateCommandBase {
 
         // Update odometry target
         if (limelight.getTargetType() == TargetType.kHub)
+            target.update(limelight.getTargetPosition());
+        
+        if (target.hasTarget()) {
             odometry.update(limelight.getTargetPosition());
 
-        Vector2 target = odometry.getTarget();
-        
-        // Set flywheel to estimated veloctity
-        double velocity = model.calculate(odometry.getDistance());
-        flywheel.setVelocity(velocity + offset.get());
+            Vector2 targetPosition = odometry.getTarget();
+            
+            // Set flywheel to estimated veloctity
+            double velocity = model.calculate(odometry.getDistance());
+            flywheel.setVelocity(velocity + offset.get());
 
-        // Continue aligning shooter
-        if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
-            turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
+            // Continue aligning shooter
+            if (Math.abs(targetPosition.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
+                turret.setRotationTarget(turret.getRotation() + targetPosition.x * Constants.Vision.ROTATION_P);
 
-        // Query targets
-        if (!active && turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
-            if (Constants.kConfig.DEBUG) {
-                System.out.println("Target Reached");
+            // Query targets
+            if (!active && turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
+                if (Constants.kConfig.DEBUG) {
+                    System.out.println("Target Reached");
+                }
+
+                indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
+                active = true;
             }
 
-            indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
-            active = true;
+            if (Constants.kConfig.DEBUG) {
+                SmartDashboard.putNumber("Velocity Prediction", velocity);
+                SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
+                
+                SmartDashboard.putNumber("Distance Prediction (ft)", odometry.getDistance());
+                SmartDashboard.putNumber("Aligninment Offset", targetPosition.x);
+                SmartDashboard.putNumber("Velocity Offset", offset.get());
+            }
         }
-
-        if (Constants.kConfig.DEBUG) {
-            SmartDashboard.putNumber("Velocity Prediction", velocity);
-            SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
-            
-            SmartDashboard.putNumber("Distance Prediction (ft)", odometry.getDistance());
-            SmartDashboard.putNumber("Aligninment Offset", target.x);
-            SmartDashboard.putNumber("Velocity Offset", offset.get());
-        }
-
     }
 
     @Override
     public void end(boolean interrupted) {
-        //if (interrupted || getNextState() == null) {
+        if (interrupted || getNextState() == null) {
             limelight.disable();
             flywheel.disable();
             indexer.disable();
             turret.disable();
-        //}
+        }
     }
 
     @Override

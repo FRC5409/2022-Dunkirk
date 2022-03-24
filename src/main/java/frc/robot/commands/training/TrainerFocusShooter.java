@@ -2,6 +2,7 @@ package frc.robot.commands.training;
 
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandGroup;
+import frc.robot.base.shooter.ShooterTarget;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.shooter.state.AlignShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
@@ -23,6 +24,7 @@ import frc.robot.training.TrainerDashboard;
 public final class TrainerFocusShooter extends StateCommandGroup {
     private final ShooterTurret turret;
     private final Limelight     limelight;
+    private final ShooterTarget target;
 
     public TrainerFocusShooter(
         Limelight limelight,
@@ -31,10 +33,12 @@ public final class TrainerFocusShooter extends StateCommandGroup {
         TrainerContext context,
         Property<SweepDirection> direction
     ) {
+        target = new ShooterTarget();
+
         addCommands(
             new SearchShooterState(limelight, false),
-            new SweepShooterState(limelight, turret, direction),
-            new AlignShooterState(limelight, turret),
+            new SweepShooterState(limelight, turret, target, direction),
+            new AlignShooterState(limelight, turret, target),
             new TrainerFocusShooterState(limelight, turret, dashboard, context)
         );
 
@@ -48,6 +52,8 @@ public final class TrainerFocusShooter extends StateCommandGroup {
     public void initialize() {
         turret.enable();
         limelight.enable();
+        
+        target.reset();
 
         super.initialize();
     }

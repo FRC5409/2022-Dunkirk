@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.base.command.TimedStateCommand;
+import frc.robot.base.shooter.ShooterTarget;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;
@@ -14,13 +15,15 @@ import frc.robot.utils.Vector2;
 // TODO update doc
 public class AlignShooterState extends TimedStateCommand {
     protected final ShooterTurret turret;
+    protected final ShooterTarget target;
     protected final Limelight limelight;
     
     protected boolean done;
 
-    public AlignShooterState(Limelight limelight, ShooterTurret turret) {
+    public AlignShooterState(Limelight limelight, ShooterTurret turret, ShooterTarget target) {
         this.limelight = limelight;
         this.turret = turret;
+        this.target = target;
 
         addRequirements(limelight, turret);
     }
@@ -40,19 +43,27 @@ public class AlignShooterState extends TimedStateCommand {
 
     @Override
     public void execute() {
-        Vector2 target = limelight.getTargetPosition();
-
-        if (Math.abs(target.x) < Constants.Vision.ALIGNMENT_THRESHOLD) {
-            next("frc.robot.shooter:operate");
-            done = true;
-        } else if (getElapsedTime() > Constants.Shooter.ALIGNMENT_MAX_TIME) {
-            done = true;
-        } else {
-            turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
+        if (limelight.getTargetType() == TargetType.kHub) {
+            target.update(limelight.getTargetPosition());
         }
 
-        if(Constants.kConfig.DEBUG)
-            SmartDashboard.putNumber("Alignment Offset", target.x);
+        if (target.hasTarget()) {
+            Vector2 target = this.target.getTarget();
+            if (Math.abs(target.x) < Constants.Vision.ALIGNMENT_THRESHOLD) {
+                next("frc.robot.shooter:operate");
+                done = true;
+            } else if (getElapsedTime() > Constants.Shooter.ALIGNMENT_MAX_TIME) {
+                done = true;
+            } else {
+                turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
+            }
+
+            if(Constants.kConfig.DEBUG)
+                SmartDashboard.putNumber("Alignment Offset", target.x);
+        } else {
+            next("frc.robot.shooter:sweep");
+            done = true;
+        }
     }
 
     @Override
