@@ -104,7 +104,7 @@ public class RobotCompetition implements RobotConfiguration {
 
     private void configureDashboard() {
         autoCommandSelector.setDefaultOption("Default", 
-            new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+            new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterConfiguration, shooterSweepDirection, shooterOffset));
         
         autoCommandSelector.addOption("One",
