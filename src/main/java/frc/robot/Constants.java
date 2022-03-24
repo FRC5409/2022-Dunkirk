@@ -308,7 +308,7 @@ public final class Constants {
         public static final Range TURRET_OUTPUT_RANGE = new Range(-1, 1);
 
         // Smooth Sweep Constants
-        public static final double   SHOOTER_SWEEP_PERIOD = 1.6;
+        public static final double   SHOOTER_SWEEP_PERIOD = 1.6*1.65789;
         public static final double   SHOOTER_MAX_SWEEEP = 2;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
@@ -411,6 +411,8 @@ public final class Constants {
         public static final double INDEXER_SPEED = 0.5;
 
         public static final double ARMING_TIME = 0.2;
+
+        public static final double TARGET_LOST_TIME = 0.5;
     }
     
     public static final class Vision {
