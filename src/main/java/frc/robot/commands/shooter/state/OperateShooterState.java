@@ -4,10 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.base.Property;
-import frc.robot.base.StateCommandBase;
+import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterConfiguration;
-import frc.robot.base.shooter.ShooterModel;
-
+import frc.robot.base.shooter.odometry.ShooterExecutionModel;
+import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
@@ -38,8 +38,8 @@ public class OperateShooterState extends StateCommandBase {
     private final Limelight limelight;
     private final Indexer indexer;
     
-    private ShooterModel model;
-
+    private SimpleShooterOdometry odometry;
+    private ShooterExecutionModel model;
     private boolean active;
     
     public OperateShooterState(
@@ -62,46 +62,62 @@ public class OperateShooterState extends StateCommandBase {
 
     @Override
     public void initialize() {
-        if (!Toggleable.isEnabled(limelight, turret, flywheel, indexer))
+        if (!Toggleable.isEnabled(limelight, turret))
             throw new RuntimeException("Cannot operate shooter when requirements are not enabled.");
 
+        if (!flywheel.isEnabled())
+            flywheel.enable();
+
+        if (!indexer.isEnabled())
+            indexer.enable();
+
+        // Obtain shooter configuration
+        ShooterConfiguration config = configuration.get();
+
+        // Initialize odometry
+        model = config.getExecutionModel();
+        odometry = new SimpleShooterOdometry(config.getOdometryModel());
+
+        // pre spin feeder
         flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
-        model = configuration.get().getModel();
 
         active = false;
     }
 
     @Override
     public void execute() {
-        Vector2 target = limelight.getTarget();
-
         if (model == null)
             return;
-            
-        double distance = model.distance(target.y);
-        double velocity = model.calculate(distance);
 
+        // Update odometry target
+        if (limelight.getTargetType() == TargetType.kHub)
+            odometry.update(limelight.getTargetPosition());
+
+        Vector2 target = odometry.getTarget();
+        
         // Set flywheel to estimated veloctity
+        double velocity = model.calculate(odometry.getDistance());
         flywheel.setVelocity(velocity + offset.get());
 
         // Continue aligning shooter
         if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
             turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
 
-        // System.out.println("Feeder reached target: " + flywheel.feederReachedTarget());
-        // System.out.println("Feeder RPM: " + flywheel.getFeederRpm());
-        // System.out.println("Target: " + flywheel.getFeederTarget());
+        // Query targets
         if (!active && turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
-            // System.out.println("Targets Reached");
-            indexer.indexerOn(1);
+            if (Constants.kConfig.DEBUG) {
+                System.out.println("Target Reached");
+            }
+
+            indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
             active = true;
         }
 
-        if(Constants.kConfig.DEBUG){
+        if (Constants.kConfig.DEBUG) {
             SmartDashboard.putNumber("Velocity Prediction", velocity);
             SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
             
-            SmartDashboard.putNumber("Distance Prediction (ft)", distance);
+            SmartDashboard.putNumber("Distance Prediction (ft)", odometry.getDistance());
             SmartDashboard.putNumber("Aligninment Offset", target.x);
             SmartDashboard.putNumber("Velocity Offset", offset.get());
         }
@@ -110,9 +126,12 @@ public class OperateShooterState extends StateCommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        flywheel.setVelocity(0);
-        flywheel.stopFeeder();
-        indexer.stopIndexer();
+        if (interrupted || getNextState() == null) {
+            limelight.disable();
+            flywheel.disable();
+            indexer.disable();
+            turret.disable();
+        }
     }
 
     @Override

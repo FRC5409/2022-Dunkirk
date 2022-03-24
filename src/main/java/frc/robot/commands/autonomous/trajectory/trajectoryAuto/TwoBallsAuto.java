@@ -13,15 +13,17 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.Constants.kAuto;
 import frc.robot.base.Property;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
-import frc.robot.commands.IndexerIntakeActive;
-import frc.robot.commands.RunIndexerBack;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.autonomous.trajectory.ResetOdometry;
+import frc.robot.commands.SlowGear;
+import frc.robot.commands.indexer.IndexerIntakeActive;
+import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.OperateShooter;
 import frc.robot.subsystems.DriveTrain;
@@ -94,7 +96,7 @@ public class TwoBallsAuto extends SequentialCommandGroup{
                         r1
                     ),
                     new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1),
-                    new RunIndexerBack(m_intake, m_indexer).withTimeout(0.3)
+                    new RunIndexerBack(m_intake, m_indexer).withTimeout(Constants.Shooter.ARMING_TIME)
                 ),
                 new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
             ),

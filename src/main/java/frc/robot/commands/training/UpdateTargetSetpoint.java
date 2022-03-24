@@ -8,28 +8,28 @@ import frc.robot.training.TrainerContext;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class UpdateTargetSetpoint extends CommandBase {
-    private final TrainerContext _context;
-    private final TrainerDashboard _dasboard;
+    private final TrainerDashboard dashboard;
+    private final TrainerContext context;
 
     public UpdateTargetSetpoint(TrainerDashboard dashboard, TrainerContext context) {
-        _context = context;
-        _dasboard = dashboard;
+        this.dashboard = dashboard;
+        this.context = context;
     }
 
     @Override
     public void initialize() {
-        _context.setSetpoint(
+        context.setSetpoint(
             new Setpoint(
-                _context.getModel().calculate(_context.getDistance()),
+                context.getExecutionModel().calculate(context.getDistance()),
                 Constants.Shooter.SPEED_RANGE
             )
         );
         
-        _dasboard.update();
+        dashboard.update();
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }
