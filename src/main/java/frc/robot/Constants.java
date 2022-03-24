@@ -221,7 +221,7 @@ public final class Constants {
         public static final double kPDriveVel = 5.7255;
         
         // all units in meters and seconds
-        public static final double kMaxSpeed = 1.6; 
+        public static final double kMaxSpeed = 2; 
         // work fine in 2.5, gives error when generating trajectory when exceed that value
         public static final double kMaxAcceleration = 3; // any
 

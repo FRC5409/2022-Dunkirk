@@ -84,7 +84,7 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
 
         Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    List.of(),
-                                                                   new Pose2d(4.5/kAuto.kDistanceRatio, -1.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI/6)),
+                                                                   new Pose2d(5.25/kAuto.kDistanceRatio, -1.25/kAuto.kDistanceRatio, new Rotation2d(Math.PI/6)),
                                                                    kAuto.configForwards);
 
         RamseteCommand r2 = new RamseteCommand(t2, m_drive::getPose,
@@ -98,9 +98,9 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(4.5/kAuto.kDistanceRatio, -1.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI/6)),
+        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(5.25/kAuto.kDistanceRatio, -1.25/kAuto.kDistanceRatio, new Rotation2d(Math.PI/6)),
                                                                    List.of(),
-                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)), // TODO: positive or negative 1.5? -- test
+                                                                   new Pose2d(3/kAuto.kDistanceRatio, 0, new Rotation2d(0)), // TODO: positive or negative 1.5? -- test
                                                                    kAuto.configBackwards);
 
         RamseteCommand r3 = new RamseteCommand(t3, m_drive::getPose,
@@ -119,46 +119,46 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         addCommands(
 
             // trajectory testing code
-            new SlowGear(m_drive),
-            new ResetOdometry(t1.getInitialPose(), m_drive),
-            r1, 
-            new ResetOdometry(t2.getInitialPose(), m_drive),
-            r2, 
-            new ResetOdometry(t3.getInitialPose(), m_drive),
-            r3
-
-            // V1: run intake while getting to the human station
             // new SlowGear(m_drive),
             // new ResetOdometry(t1.getInitialPose(), m_drive),
-            // new ParallelCommandGroup(
-            //     new SequentialCommandGroup(
-            //         new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
-            //         new ParallelRaceGroup(
-            //             new IndexerIntakeActive(m_indexer, m_intake),
-            //             r1
-            //         ),
-            //         new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
-            //         new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME)
-            //     ),
-            //     new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
-            // ),
-            // new ParallelCommandGroup(
-            //     new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3),
-            //     new ResetOdometry(t2.getInitialPose(), m_drive)
-            // ),
-            // new ParallelRaceGroup(
-            //     new IndexerIntakeActive(m_indexer, m_intake),
-            //     r2
-            // ),
-            // new ParallelCommandGroup(
-            //     new SequentialCommandGroup(
-            //         new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1),
-            //         new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME)
-            //     ),
-            //     new ResetOdometry(t3.getInitialPose(), m_drive)
-            // ),
-            // r3, 
-            // new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
+            // r1, 
+            // new ResetOdometry(t2.getInitialPose(), m_drive),
+            // r2, 
+            // new ResetOdometry(t3.getInitialPose(), m_drive),
+            // r3
+
+            // V1: run intake while getting to the human station
+            new SlowGear(m_drive),
+            new ResetOdometry(t1.getInitialPose(), m_drive),
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
+                    new ParallelRaceGroup(
+                        new IndexerIntakeActive(m_indexer, m_intake),
+                        r1
+                    ),
+                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
+                    new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME)
+                ),
+                new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
+            ),
+            new ParallelCommandGroup(
+                new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3),
+                new ResetOdometry(t2.getInitialPose(), m_drive)
+            ),
+            new ParallelRaceGroup(
+                new IndexerIntakeActive(m_indexer, m_intake),
+                r2
+            ),
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1),
+                    new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME)
+                ),
+                new ResetOdometry(t3.getInitialPose(), m_drive)
+            ),
+            r3, 
+            new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
 
             // V2: run intake after got to the human station
             // new SlowGear(m_drive),
