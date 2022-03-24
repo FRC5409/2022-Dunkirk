@@ -126,12 +126,12 @@ public class OperateShooterState extends StateCommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        if (interrupted || getNextState() == null) {
+        //if (interrupted || getNextState() == null) {
             limelight.disable();
             flywheel.disable();
             indexer.disable();
             turret.disable();
-        }
+        //}
     }
 
     @Override

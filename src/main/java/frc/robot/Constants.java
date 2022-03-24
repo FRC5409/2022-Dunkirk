@@ -221,9 +221,9 @@ public final class Constants {
         public static final double kPDriveVel = 5.7255;
         
         // all units in meters and seconds
-        public static final double kMaxSpeed = 2; 
+        public static final double kMaxSpeed = 2.4; 
         // work fine in 2.5, gives error when generating trajectory when exceed that value
-        public static final double kMaxAcceleration = 3; // any
+        public static final double kMaxAcceleration = 4.5; // any
 
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
         // works for most robots, if needs to be tuned: 
