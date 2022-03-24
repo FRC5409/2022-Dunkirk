@@ -4,6 +4,7 @@ import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.ProxyStateCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterTarget;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
 import frc.robot.commands.shooter.state.DelayedAlignShooterState;
@@ -28,6 +29,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public final class OperateShooterDelayed extends ProxyStateCommandGroup {
     private final Property<SimpleShooterOdometry> sharedOdometry;
 
+    private ShooterTarget target;
+
     public OperateShooterDelayed(
         Limelight limelight,
         ShooterTurret turret,
@@ -41,15 +44,24 @@ public final class OperateShooterDelayed extends ProxyStateCommandGroup {
     ) {
         sharedOdometry = new ValueProperty<>();
 
+        target = new ShooterTarget();
+
         addCommands(
             new SearchShooterState(limelight, true),
-            new SweepShooterState(limelight, turret, direction),
-            new DelayedAlignShooterState(trigger, limelight, turret),
+            new SweepShooterState(limelight, turret, target, direction),
+            new DelayedAlignShooterState(trigger, limelight, turret, target),
             new OperateArmShooterState(limelight, turret, flywheel, configuration, sharedOdometry, offset, armed),
             new OperateRunShooterState(limelight, turret, flywheel, indexer, configuration, sharedOdometry, offset)
         ); 
 
         setDefaultState("frc.robot.shooter:search");
+    }
+
+    @Override
+    public void initialize() {
+        target.reset();
+        
+        super.initialize();
     }
 
     @Override

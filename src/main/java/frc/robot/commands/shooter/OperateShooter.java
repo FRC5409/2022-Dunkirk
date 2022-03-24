@@ -4,6 +4,7 @@ import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.StateCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterTarget;
 import frc.robot.base.shooter.SweepDirection;
 
 import frc.robot.commands.shooter.state.AlignShooterState;
@@ -28,6 +29,7 @@ import frc.robot.Constants;
 public final class OperateShooter extends StateCommandGroup {
     private final Property<Integer> offset;
     private final ShooterFlywheel flywheel;
+    private final ShooterTarget target;
     private final ShooterTurret turret;
     private final Limelight limelight;
     private final Indexer indexer;
@@ -41,11 +43,13 @@ public final class OperateShooter extends StateCommandGroup {
         Property<ShooterConfiguration> configuration,
         Property<Integer> offset
     ) {
+        target = new ShooterTarget();
+
         addCommands(
             new SearchShooterState(limelight, false),
-            new SweepShooterState(limelight, turret, direction),
-            new AlignShooterState(limelight, turret),
-            new OperateShooterState(limelight, turret, flywheel, indexer, configuration, offset)
+            new SweepShooterState(limelight, turret, target, direction),
+            new AlignShooterState(limelight, turret, target),
+            new OperateShooterState(limelight, turret, flywheel, indexer, target, configuration, offset)
         ); 
 
         setDefaultState("frc.robot.shooter:search");
@@ -68,6 +72,8 @@ public final class OperateShooter extends StateCommandGroup {
         flywheel.setVelocity(
             Constants.Shooter.PRE_SHOOTER_VELOCITY + offset.get()
         );
+
+        target.reset();
 
         super.initialize();
     }
