@@ -88,7 +88,7 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
 
         Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    List.of(),
-                                                                   new Pose2d(5/kAuto.kDistanceRatio, -0.75/kAuto.kDistanceRatio, new Rotation2d(Math.PI/6)),
+                                                                   new Pose2d(5/kAuto.kDistanceRatio, -0.9/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
                                                                    kAuto.configForwards);
 
         RamseteCommand r2 = new RamseteCommand(t2, m_drive::getPose,
@@ -102,7 +102,7 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(5/kAuto.kDistanceRatio, -0.75/kAuto.kDistanceRatio, new Rotation2d(Math.PI/6)),
+        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(5/kAuto.kDistanceRatio, -0.9/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
                                                                    List.of(),
                                                                    new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    kAuto.configBackwards);
@@ -135,18 +135,14 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
             new SlowGear(m_drive),
             new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar),
             new ResetOdometry(t1.getInitialPose(), m_drive),
-            // new ParallelCommandGroup(
-            //     new SequentialCommandGroup(
-                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.4),
-                    new ParallelRaceGroup(
-                        new IndexerIntakeActive(m_indexer, m_intake),
-                        r1
-                    ),
-                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
-                    new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME),
-            //     ),
-            //     new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
-            // ),
+            new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.4),
+            new ParallelRaceGroup(
+                new IndexerIntakeActive(m_indexer, m_intake),
+                r1
+            ),
+            new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
+            // new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight),
+            new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME),
             new ParallelCommandGroup(
                 new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(2),
                 new ResetOdometry(t2.getInitialPose(), m_drive)
