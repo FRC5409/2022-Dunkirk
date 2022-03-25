@@ -70,10 +70,21 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_shooterSweepDirection = shooterSweepDirection;
         m_shooterOffset = shooterOffset;
 
+                
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(),
                                                                    new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    kAuto.configForwards);
+
+        Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
+                                                                   List.of(),
+                                                                   new Pose2d(5.45/kAuto.kDistanceRatio, -0.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+                                                                   kAuto.configForwards);
+
+        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(5.45/kAuto.kDistanceRatio, -0.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+                                                                   List.of(),
+                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
+                                                                   kAuto.configBackwards);
 
         RamseteCommand r1 = new RamseteCommand(t1, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
@@ -86,11 +97,6 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
-                                                                   List.of(),
-                                                                   new Pose2d(5.25/kAuto.kDistanceRatio, -0.9/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
-                                                                   kAuto.configForwards);
-
         RamseteCommand r2 = new RamseteCommand(t2, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
         new SimpleMotorFeedforward(kAuto.ksVolts, 
@@ -102,10 +108,6 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(5.25/kAuto.kDistanceRatio, -0.9/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
-                                                                   List.of(),
-                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
-                                                                   kAuto.configBackwards);
 
         RamseteCommand r3 = new RamseteCommand(t3, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
@@ -153,7 +155,7 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
             ),
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
-                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1),
+                    new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1.5),
                     new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME)
                 ),
                 new ResetOdometry(t3.getInitialPose(), m_drive),
