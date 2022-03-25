@@ -416,7 +416,7 @@ public final class Constants {
     }
     
     public static final class Vision {
-        public static final double ACQUISITION_DELAY = 0;
+        public static final double ACQUISITION_DELAY = 0.15;
 
         public static final double ALIGNMENT_THRESHOLD = 0.83333;
 

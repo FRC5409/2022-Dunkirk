@@ -147,7 +147,7 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
                 // Schedule shooter  
                 new ScheduleCommand(
                     new PrintCommand("I was scheduled"),
-                    new DelayedCommand(0.35, 
+                    new DelayedCommand(0.8, 
                         new SequentialCommandGroup(
                             new PrintCommand("Running Shooter"),
                             new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft),
@@ -185,24 +185,31 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
                 
             new ParallelCommandGroup(
                 // Run indexer for additional time
-                new IndexerIntakeActive(indexer, intake).withTimeout(0.5),
-                
-                // Reset Odometry to next position
-                new ResetOdometry(t3.getInitialPose(), drive)
-            ),
+                new IndexerIntakeActive(indexer, intake).withTimeout(2.0),
 
-            // Run indexer and intake, while moving through trajectory #2
-            new ParallelCommandGroup(
-                r3,
-                // Schedule shooter  
-                new ScheduleCommand(
-                    new SequentialCommandGroup(
-                        new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft),
-                        new ConfigureProperty<>(shooterArmed, false),
-                        runShooterCommand2
+                new SequentialCommandGroup(
+                    new ParallelCommandGroup(
+                        new WaitCommand(1.5),
+                        // Reset Odometry to next position
+                        new ResetOdometry(t3.getInitialPose(), drive)
+                    ),
+
+                    // Run indexer and intake, while moving through trajectory #2
+                    new ParallelCommandGroup(
+                        r3,
+                        // Schedule shooter  
+                        new ScheduleCommand(
+                            new SequentialCommandGroup(
+                                new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight),
+                                new ConfigureProperty<>(shooterArmed, false),
+                                runShooterCommand2
+                            )
+                        )
                     )
                 )
             ),
+            // Prime shooter
+            new PrimeShooter(indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME),
 
             // Simulate run shooter trigger
             new ConfigureProperty<>(runShooter, true),

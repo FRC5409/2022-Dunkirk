@@ -161,7 +161,10 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
                 new ResetOdometry(t3.getInitialPose(), m_drive),
                 new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight)
             ),
-            r3, 
+            new ParallelCommandGroup(
+                r3, 
+                new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1)
+            ),
             new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(2)
 
             // V2: run intake after got to the human station
