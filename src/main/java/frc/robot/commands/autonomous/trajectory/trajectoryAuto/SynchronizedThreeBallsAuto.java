@@ -76,6 +76,14 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
         this.shooterSweepDirection = shooterSweepDirection;
         this.shooterOffset = shooterOffset;
 
+        /*
+        Adjustment of robot position at the terminal
+
+        forward x meter: +x*Math.sin(Math.PI*13/36), +x*Math.cos(Math.PI*13/36)
+        backward x meter: -x*Math.sin(Math.PI*13/36), -x*Math.cos(Math.PI*13/36)
+        right x meter: -x*Math.cos(Math.PI*13/36), +x*Math.sin(Math.PI*13/36)
+        left x meter: +x*Math.cos(Math.PI*13/36), -x*Math.sin(Math.PI*13/36)
+        */
         
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(),
@@ -84,10 +92,10 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
 
         Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.75/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    List.of(),
-                                                                   new Pose2d(5.25/kAuto.kDistanceRatio, -0.45/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+                                                                   new Pose2d((5.25)/kAuto.kDistanceRatio, (-0.45)/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
                                                                    kAuto.configForwards);
 
-        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(5.25/kAuto.kDistanceRatio, -0.45/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d((5.25)/kAuto.kDistanceRatio, (-0.45)/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
                                                                    List.of(),
                                                                    new Pose2d(1.7/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    kAuto.configBackwards);
