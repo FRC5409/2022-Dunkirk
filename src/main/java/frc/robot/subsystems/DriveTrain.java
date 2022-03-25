@@ -262,14 +262,14 @@ public class DriveTrain extends SubsystemBase {
      */
     public void periodic() {
 
-        SmartDashboard.putNumber("getRotation2D", gyro_pigeon.getRotation2d().getDegrees());
+        //SmartDashboard.putNumber("getRotation2D", gyro_pigeon.getRotation2d().getDegrees());
         if(Constants.kConfig.DEBUG){
             displayEncoder();
         }
 
         displayTemperatures();
-        displayHeading();
-        displayEncoder();
+        //displayHeading();
+        //displayEncoder();
 
         if (timer.hasElapsed(refreshSeconds)) {
             if (mot_leftFrontDrive.hasResetOccurred()) {
@@ -280,7 +280,7 @@ public class DriveTrain extends SubsystemBase {
         }
 
         updateAll();
-        displayAngle();
+        //displayAngle();
 
         m_odometry.update(
             gyro_pigeon.getRotation2d(), getEncoderPositionLeft(), getEncoderPositionRight());
@@ -636,6 +636,7 @@ public class DriveTrain extends SubsystemBase {
         if(Constants.kConfig.DEBUG){
             SmartDashboard.putString("Solenoid", "Fast");
         }
+        SmartDashboard.putBoolean("isLowGear", false);
         dsl_gear.set(DoubleSolenoid.Value.kForward);
 
     }
@@ -647,6 +648,7 @@ public class DriveTrain extends SubsystemBase {
         if(Constants.kConfig.DEBUG){
             SmartDashboard.putString("Solenoid", "Slow");
         }
+        SmartDashboard.putBoolean("isLowGear", true);
         dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
 
