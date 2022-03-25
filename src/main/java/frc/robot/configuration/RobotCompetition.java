@@ -104,10 +104,6 @@ public class RobotCompetition implements RobotConfiguration {
     }
 
     private void configureDashboard() {
-        autoCommandSelector.setDefaultOption("Default", 
-            new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterConfiguration, shooterSweepDirection, shooterOffset));
-        
         autoCommandSelector.addOption("One",
             new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, 
                 shooterConfiguration, shooterSweepDirection, shooterOffset));
@@ -120,7 +116,7 @@ public class RobotCompetition implements RobotConfiguration {
             new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterConfiguration, shooterSweepDirection, shooterOffset));
 
-        autoCommandSelector.addOption("Three Synchronized",
+        autoCommandSelector.setDefaultOption("Three Synchronized",
             new SynchronizedThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterConfiguration, shooterSweepDirection, shooterOffset, shooterArmed));
 

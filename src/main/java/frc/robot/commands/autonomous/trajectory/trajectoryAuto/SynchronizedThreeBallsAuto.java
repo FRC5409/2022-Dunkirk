@@ -11,24 +11,18 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.ProxyScheduleCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
-import frc.robot.Constants.Shooter;
 import frc.robot.Constants.kAuto;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
-import frc.robot.base.command.CancelCommand;
 import frc.robot.base.command.DelayedCancelCommand;
 import frc.robot.base.command.DelayedCommand;
-import frc.robot.base.command.DelayedScheduleCommand;
 import frc.robot.base.command.ProxySequentialCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
@@ -37,12 +31,9 @@ import frc.robot.commands.ConfigureProperty;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.autonomous.trajectory.ResetOdometry;
 import frc.robot.commands.indexer.IndexerIntakeActive;
-import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.commands.shooter.ConfigureShooter;
-import frc.robot.commands.shooter.OperateShooter;
 import frc.robot.commands.shooter.OperateShooterDelayed;
 import frc.robot.commands.shooter.PrimeShooter;
-import frc.robot.commands.shooter.RotateTurret;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -98,7 +89,7 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
 
         Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(5.45/kAuto.kDistanceRatio, -0.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
                                                                    List.of(),
-                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
+                                                                   new Pose2d(1.7/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    kAuto.configBackwards);
 
         RamseteCommand r1 = createRamseteCommand(t1);
@@ -114,17 +105,6 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
         Command runShooterCommand2 = new OperateShooterDelayed(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration, shooterOffset, shooterArmed, runShooterTrigger);
 
         addCommands(
-            // trajectory testing code
-            /*
-            new SlowGear(drive),
-            new ResetOdometry(t1.getInitialPose(), drive),
-            r1, 
-            new ResetOdometry(t2.getInitialPose(), drive),
-            r2, 
-            new ResetOdometry(t3.getInitialPose(), drive),
-            r3,
-            */
-            
             new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
 
             // V1: run intake while getting to the human station
@@ -136,20 +116,16 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
 
             new ParallelCommandGroup(
                 // Run indexer, while moving trough trajectory #2
-                new ParallelRaceGroup(
-                    new SequentialCommandGroup(
-                        new WaitCommand(0.25),
-                        r1 // Race Condition
-                    ),
-                    new IndexerIntakeActive(indexer, intake)
+                new IndexerIntakeActive(indexer, intake).withTimeout(1.15),
+                new SequentialCommandGroup(
+                    new WaitCommand(0.25),
+                    r1 // Race Condition
                 ),
                 
                 // Schedule shooter  
                 new ScheduleCommand(
-                    new PrintCommand("I was scheduled"),
                     new DelayedCommand(0.8, 
                         new SequentialCommandGroup(
-                            new PrintCommand("Running Shooter"),
                             new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft),
                             new ConfigureProperty<>(shooterArmed, false),
                             runShooterCommand1

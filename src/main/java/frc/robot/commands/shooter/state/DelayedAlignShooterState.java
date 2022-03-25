@@ -68,6 +68,14 @@ public class DelayedAlignShooterState extends TimedStateCommand {
     }
 
     @Override
+    public void end(boolean interrupted) {
+        if (interrupted || getNextState() == null) {
+            limelight.disable();
+            turret.disable();
+        }
+    }
+
+    @Override
     public boolean isFinished() {
         return done;
     }
