@@ -58,12 +58,8 @@ public class SweepShooterState extends TimedStateCommand {
         if (!turret.isEnabled())
             turret.enable();
 
-        if (target.lost()) {
-            if (target.getTarget() == null) {
-                direction = 1;
-            } else {
-                direction = (target.getTarget().x > 0) ? -1 : 1;
-            }
+        if (target.lost() && target.getTarget() != null) {
+            direction = (target.getTarget().x > 0) ? -1 : 1;
         } else
             direction = (sweepDirection.get() == SweepDirection.kLeft) ? 1 : -1;
         offset = Constants.Shooter.SHOOTER_SWEEP_INVERSE.calculate(turret.getRotation());

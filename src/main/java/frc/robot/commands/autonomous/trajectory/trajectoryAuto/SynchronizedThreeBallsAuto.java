@@ -79,15 +79,15 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
         
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(),
-                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
+                                                                   new Pose2d(1.75/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    kAuto.configForwards);
 
-        Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
+        Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.75/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    List.of(),
-                                                                   new Pose2d(5.45/kAuto.kDistanceRatio, -0.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+                                                                   new Pose2d(5.25/kAuto.kDistanceRatio, -0.45/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
                                                                    kAuto.configForwards);
 
-        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(5.45/kAuto.kDistanceRatio, -0.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(5.25/kAuto.kDistanceRatio, -0.45/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
                                                                    List.of(),
                                                                    new Pose2d(1.7/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    kAuto.configBackwards);
@@ -116,15 +116,15 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
 
             new ParallelCommandGroup(
                 // Run indexer, while moving trough trajectory #2
-                new IndexerIntakeActive(indexer, intake).withTimeout(1.15),
+                new IndexerIntakeActive(indexer, intake).withTimeout(2),
                 new SequentialCommandGroup(
-                    new WaitCommand(0.25),
+                    new WaitCommand(0.35),
                     r1 // Race Condition
                 ),
                 
                 // Schedule shooter  
                 new ScheduleCommand(
-                    new DelayedCommand(0.8, 
+                    new DelayedCommand(1.5, 
                         new SequentialCommandGroup(
                             new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft),
                             new ConfigureProperty<>(shooterArmed, false),
