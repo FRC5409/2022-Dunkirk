@@ -11,7 +11,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.ProxyScheduleCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Shooter;
@@ -27,8 +26,6 @@ import frc.robot.commands.indexer.IndexerIntakeActive;
 import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.OperateShooter;
-import frc.robot.commands.shooter.RotateTurret;
-import frc.robot.commands.shooter.state.SweepShooterState;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -69,11 +66,21 @@ public class FourBallsAuto extends SequentialCommandGroup{
         m_shooterConfiguration = shooterConfiguration;
         m_shooterSweepDirection = shooterSweepDirection;
         m_shooterOffset = shooterOffset;
-
+                
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(),
                                                                    new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    kAuto.configForwards);
+
+        Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
+                                                                   List.of(),
+                                                                   new Pose2d(5.45/kAuto.kDistanceRatio, -0.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+                                                                   kAuto.configForwards);
+
+        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(5.45/kAuto.kDistanceRatio, -0.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+                                                                   List.of(),
+                                                                   new Pose2d(1.7/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
+                                                                   kAuto.configBackwards);
 
         RamseteCommand r1 = new RamseteCommand(t1, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
@@ -86,11 +93,6 @@ public class FourBallsAuto extends SequentialCommandGroup{
         m_drive::tankDriveVolts, 
         m_drive); 
 
-        Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
-                                                                   List.of(),
-                                                                   new Pose2d(5/kAuto.kDistanceRatio, -0.75/kAuto.kDistanceRatio, new Rotation2d(Math.PI/6)),
-                                                                   kAuto.configForwards);
-
         RamseteCommand r2 = new RamseteCommand(t2, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
         new SimpleMotorFeedforward(kAuto.ksVolts, 
@@ -101,11 +103,6 @@ public class FourBallsAuto extends SequentialCommandGroup{
         new PIDController(kAuto.kPDriveVel, 0, 0),
         m_drive::tankDriveVolts, 
         m_drive); 
-
-        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(5/kAuto.kDistanceRatio, -0.75/kAuto.kDistanceRatio, new Rotation2d(Math.PI/6)),
-                                                                   List.of(),
-                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
-                                                                   kAuto.configBackwards);
 
         RamseteCommand r3 = new RamseteCommand(t3, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
