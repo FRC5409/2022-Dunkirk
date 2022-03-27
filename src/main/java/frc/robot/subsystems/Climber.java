@@ -211,7 +211,7 @@ public class Climber extends SubsystemBase {
    * Method for locking the arm.
    */
   public void lockArm() {
-    System.out.println("Locking arm");
+    //System.out.println("Locking arm");
     dsl_lock.set(DoubleSolenoid.Value.kForward);
     locked = true;
   }
@@ -220,7 +220,7 @@ public class Climber extends SubsystemBase {
    * Method for unlocking the arm.
    */
   public void unlockArm() {
-    System.out.println("Unlocking arm");
+    //System.out.println("Unlocking arm");
 
     dsl_lock.set(DoubleSolenoid.Value.kReverse);
     locked = false;
@@ -306,8 +306,8 @@ public class Climber extends SubsystemBase {
   }
 
   public double getAvgDistance() {
-    System.out.print("DATA: ");
-    System.out.println(measuredDistances.toString());
+    //System.out.print("DATA: ");
+    //System.out.println(measuredDistances.toString());
     double sum = 0.0;
 
     double[] arr = new double[measuredDistances.size()];

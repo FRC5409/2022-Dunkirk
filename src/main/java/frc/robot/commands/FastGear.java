@@ -28,7 +28,7 @@ public class FastGear extends CommandBase {
   @Override
   public void initialize() {
     
-    SmartDashboard.putBoolean("LowGear", false);
+    // SmartDashboard.putBoolean("LowGear", false);
     sys_drive.fastShift();
   }
 
