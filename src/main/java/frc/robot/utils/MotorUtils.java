@@ -67,4 +67,9 @@ public final class MotorUtils {
 
         return motor;
     }
+
+    public static SparkMaxPIDController setOutputRange(SparkMaxPIDController controller, int slotIdx, Range range) {
+        controller.setOutputRange(range.min(), range.max(), slotIdx);
+        return controller;
+    }
 }
