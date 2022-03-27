@@ -45,10 +45,12 @@ public class ShooterOdometryTest extends CommandBase {
 
         turret.enable();
         turret.setIdleMode(IdleMode.kCoast);
+        
+        ShooterConfiguration config = configuration.get();
 
         // Initialize odometry
-        model = configuration.get().getOdometryModel();
-        odometry = new ActiveShooterOdometry(model);
+        model = config.getOdometryModel();
+        odometry = new ActiveShooterOdometry(model, config.getTargetFilter());
 
         SmartDashboard.putData("Shooter Odometry Model", model);
     }

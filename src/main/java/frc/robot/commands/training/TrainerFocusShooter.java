@@ -1,9 +1,11 @@
 package frc.robot.commands.training;
 
+import frc.robot.Constants;
 import frc.robot.base.Property;
+import frc.robot.base.ValueProperty;
 import frc.robot.base.command.StateCommandGroup;
-import frc.robot.base.shooter.ShooterTarget;
 import frc.robot.base.shooter.SweepDirection;
+import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
 import frc.robot.commands.shooter.state.AlignShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
 import frc.robot.commands.shooter.state.SweepShooterState;
@@ -22,30 +24,34 @@ import frc.robot.training.TrainerDashboard;
  * @author Keith Davies
  */
 public final class TrainerFocusShooter extends StateCommandGroup {
+    private final Property<SimpleShooterOdometry> sharedOdometry;
+    
+    private final TrainerContext context;
+
     private final ShooterTurret turret;
     private final Limelight     limelight;
-    private final ShooterTarget target;
 
     public TrainerFocusShooter(
-        Limelight limelight,
-        ShooterTurret turret,
         TrainerDashboard dashboard,
         TrainerContext context,
+        ShooterTurret turret,
+        Limelight limelight,
         Property<SweepDirection> direction
     ) {
-        target = new ShooterTarget();
+        sharedOdometry = new ValueProperty<>();
 
         addCommands(
             new SearchShooterState(limelight, false),
-            new SweepShooterState(limelight, turret, target, direction),
-            new AlignShooterState(limelight, turret, target),
-            new TrainerFocusShooterState(limelight, turret, dashboard, context)
+            new SweepShooterState(turret, limelight, sharedOdometry, direction),
+            new AlignShooterState(turret, limelight, sharedOdometry),
+            new TrainerFocusShooterState(dashboard, context, turret, limelight, sharedOdometry)
         );
 
         setDefaultState("frc.robot.shooter:search");
         
         this.turret = turret;
         this.limelight = limelight;
+        this.context = context;
     }
 
     @Override
@@ -53,7 +59,13 @@ public final class TrainerFocusShooter extends StateCommandGroup {
         turret.enable();
         limelight.enable();
         
-        target.reset();
+        sharedOdometry.set(
+            new SimpleShooterOdometry(
+                context.getOdometryModel(), 
+                Constants.Training.DEFAULT_TARGET_FILTER.create()     
+            )
+        );
+        
 
         super.initialize();
     }

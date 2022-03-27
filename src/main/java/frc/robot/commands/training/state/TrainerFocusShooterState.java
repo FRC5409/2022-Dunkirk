@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
@@ -28,24 +29,30 @@ import frc.robot.utils.Vector2;
  * the indexer triggers, feeding powercells into the turret.</p>
  */
 public class TrainerFocusShooterState extends StateCommandBase {
-    private final ShooterTurret turret;
-    private final Limelight limelight;
+    private final Property<SimpleShooterOdometry> sharedOdometry;
+
     private final TrainerDashboard dashboard;
     private final TrainerContext context;
 
-    private SimpleShooterOdometry odometry;
+    private final ShooterTurret turret;
+    private final Limelight limelight;
+
     private ShooterExecutionModel model;
+    private SimpleShooterOdometry odometry;
+    private boolean done;
 
     public TrainerFocusShooterState(
-        Limelight limelight,
-        ShooterTurret turret,
         TrainerDashboard dashboard,
-        TrainerContext context
+        TrainerContext context,
+        ShooterTurret turret,
+        Limelight limelight,
+        Property<SimpleShooterOdometry> sharedOdometry
     ) {
-        this.limelight = limelight;
-        this.turret = turret;
+        this.sharedOdometry = sharedOdometry;
         this.dashboard = dashboard;
+        this.limelight = limelight;
         this.context = context;
+        this.turret = turret;
 
         addRequirements(limelight, turret);
     }
@@ -56,8 +63,10 @@ public class TrainerFocusShooterState extends StateCommandBase {
             throw new RuntimeException("Cannot operate shooter when requirements are not enabled.");
 
         // Initialize odometry
-        odometry = new SimpleShooterOdometry(context.getOdometryModel());
+        odometry = sharedOdometry.get();
         model = context.getExecutionModel();
+
+        done = false;
     }
 
     @Override
@@ -66,30 +75,43 @@ public class TrainerFocusShooterState extends StateCommandBase {
         if (limelight.getTargetType() == TargetType.kHub)
             odometry.update(limelight.getTargetPosition());
 
-        Vector2 target = odometry.getTarget();
+        if (odometry.hasTarget() && !odometry.isLost()) {
+            Vector2 target = odometry.getTarget();
 
-        // Continue aligning shooter
-        if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
-            turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
+            // Continue aligning shooter
+            if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
+                turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
 
-        context.setDistance(odometry.getDistance());
-        
-        context.setSetpoint(
-            new Setpoint(
-                model.calculate(odometry.getDistance()),
-                Constants.Shooter.SPEED_RANGE
-            )
-        );
+            context.setDistance(odometry.getDistance());
             
-        SmartDashboard.putNumber("Alignment Offset", target.x);
-        SmartDashboard.putData("Shooter Odometry", odometry);
-        
-        dashboard.update();
+            context.setSetpoint(
+                new Setpoint(
+                    model.calculate(odometry.getDistance()),
+                    Constants.Shooter.SPEED_RANGE
+                )
+            );
+                
+            SmartDashboard.putNumber("Alignment Offset", target.x);
+            SmartDashboard.putData("Shooter Odometry", odometry);
+            
+            dashboard.update();
+        } else {
+            next("frc.robot.shooter:sweep");
+            done = true;
+        }
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        if (interrupted || getNextState() == null) {
+            limelight.disable();
+            turret.disable();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return limelight.getTargetType() != TargetType.kHub;
+        return done;
     }
 
     @Override

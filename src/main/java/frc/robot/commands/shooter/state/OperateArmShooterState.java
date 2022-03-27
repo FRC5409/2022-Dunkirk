@@ -25,19 +25,20 @@ public class OperateArmShooterState extends StateCommandBase {
     private final Property<ShooterConfiguration> configuration;
     private final Property<Integer> offset;
     private final Property<Boolean> armed;
+
     private final ShooterFlywheel flywheel;
     private final ShooterTurret turret;
     private final Limelight limelight;
     
-    private ShooterExecutionModel model;
     private SimpleShooterOdometry odometry;
+    private ShooterExecutionModel model;
 
     private boolean done;
     
     public OperateArmShooterState(
-        Limelight limelight,
-        ShooterTurret turret,
         ShooterFlywheel flywheel,
+        ShooterTurret turret,
+        Limelight limelight,
         Property<ShooterConfiguration> configuration,
         Property<SimpleShooterOdometry> sharedOdometry,
         Property<Integer> offset,
@@ -65,10 +66,6 @@ public class OperateArmShooterState extends StateCommandBase {
         // Obtain shooter configuration
         ShooterConfiguration config = configuration.get();
 
-        // Initialize odometry
-        if (sharedOdometry.get() == null)
-            sharedOdometry.set(new SimpleShooterOdometry(config.getOdometryModel()));
-        
         model = config.getExecutionModel();
         odometry = sharedOdometry.get();
 
@@ -84,15 +81,23 @@ public class OperateArmShooterState extends StateCommandBase {
         if (limelight.getTargetType() == TargetType.kHub)
             odometry.update(limelight.getTargetPosition());
 
-        Vector2 target = odometry.getTarget();
-            
-        // Set flywheel to estimated veloctity
-        double velocity = model.calculate(odometry.getDistance());
-        flywheel.setVelocity(velocity + offset.get());
+        if (odometry.hasTarget()) {
+            Vector2 target = odometry.getTarget();
+                
+            // Set flywheel to estimated veloctity
+            double velocity = model.calculate(odometry.getDistance());
+            flywheel.setVelocity(velocity + offset.get());
 
-        // Continue aligning shooter
-        if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
-            turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
+            // Continue aligning shooter
+            if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
+                turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
+
+                
+            if (Constants.kConfig.DEBUG) {
+                SmartDashboard.putNumber("Velocity Prediction", velocity);
+                SmartDashboard.putNumber("Aligninment Offset", target.x);
+            }
+        }
 
         if (turret.isTargetReached() && flywheel.isTargetReached() && armed.get()) {
             next("frc.robot.shooter:operate:run");
@@ -100,11 +105,9 @@ public class OperateArmShooterState extends StateCommandBase {
         }
 
         if (Constants.kConfig.DEBUG) {
-            SmartDashboard.putNumber("Velocity Prediction", velocity);
             SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
             
             SmartDashboard.putNumber("Distance Prediction (ft)", odometry.getDistance());
-            SmartDashboard.putNumber("Aligninment Offset", target.x);
             SmartDashboard.putNumber("Velocity Offset", offset.get());
         }
 

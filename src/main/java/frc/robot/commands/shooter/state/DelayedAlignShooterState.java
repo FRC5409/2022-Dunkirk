@@ -5,8 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.base.Property;
 import frc.robot.base.command.TimedStateCommand;
-import frc.robot.base.shooter.ShooterTarget;
+import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;
@@ -15,17 +16,24 @@ import frc.robot.utils.Vector2;
 
 // TODO update doc
 public class DelayedAlignShooterState extends TimedStateCommand {
+    protected final Property<SimpleShooterOdometry> sharedOdometry;
+
     private final ShooterTurret turret;
     private final Limelight limelight;
     private final Trigger trigger;
     
-    private ShooterTarget target;
+    private SimpleShooterOdometry odometry;
     private boolean done;
 
-    public DelayedAlignShooterState(Trigger trigger, Limelight limelight, ShooterTurret turret, ShooterTarget target) {
+    public DelayedAlignShooterState(
+        ShooterTurret turret,
+        Limelight limelight,
+        Trigger trigger,
+        Property<SimpleShooterOdometry> sharedOdometry
+    ) {
+        this.sharedOdometry = sharedOdometry;
         this.limelight = limelight;
         this.trigger = trigger;
-        this.target = target;
         this.turret = turret;
         
         addRequirements(limelight, turret);
@@ -41,18 +49,21 @@ public class DelayedAlignShooterState extends TimedStateCommand {
         if (!turret.isEnabled())
             turret.enable();
 
+        odometry = sharedOdometry.get();
+
         done = false;
     }
 
     @Override
     public void execute() {
         if (limelight.getTargetType() == TargetType.kHub)
-            target.update(limelight.getTargetPosition());
+            odometry.update(limelight.getTargetPosition());
 
-        if (target.hasTarget()) {
-            Vector2 targetPosition = target.getTarget();
-            if (Math.abs(targetPosition.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
-                turret.setRotationTarget(turret.getRotation() + targetPosition.x * Constants.Vision.ROTATION_P);
+        if (odometry.hasTarget() && !odometry.isLost()) {
+            Vector2 target = odometry.getTarget();
+
+            if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
+                turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
 
             if (trigger.get()) {
                 next("frc.robot.shooter:operate");
@@ -60,7 +71,7 @@ public class DelayedAlignShooterState extends TimedStateCommand {
             }
         
             if(Constants.kConfig.DEBUG)
-                SmartDashboard.putNumber("Alignment Offset", targetPosition.x);
+                SmartDashboard.putNumber("Alignment Offset", target.x);
         } else {
             next("frc.robot.shooter:sweep");
             done = true;

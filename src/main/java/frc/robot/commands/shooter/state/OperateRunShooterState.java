@@ -45,9 +45,9 @@ public class OperateRunShooterState extends StateCommandBase {
     private boolean active;
 
     public OperateRunShooterState(
-        Limelight limelight,
-        ShooterTurret turret,
         ShooterFlywheel flywheel,
+        ShooterTurret turret,
+        Limelight limelight,
         Indexer indexer,
         Property<ShooterConfiguration> configuration,
         Property<SimpleShooterOdometry> sharedOdometry,
@@ -93,15 +93,23 @@ public class OperateRunShooterState extends StateCommandBase {
         if (limelight.getTargetType() == TargetType.kHub)
             odometry.update(limelight.getTargetPosition());
 
-        Vector2 target = odometry.getTarget();
-            
-        // Set flywheel to estimated veloctity
-        double velocity = model.calculate(odometry.getDistance());
-        flywheel.setVelocity(velocity + offset.get());
+        if (odometry.hasTarget()) {
 
-        // Continue aligning shooter
-        if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
-            turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
+            Vector2 target = odometry.getTarget();
+            
+            // Set flywheel to estimated veloctity
+            double velocity = model.calculate(odometry.getDistance());
+            flywheel.setVelocity(velocity + offset.get());
+    
+            // Continue aligning shooter
+            if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
+                turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
+
+            if (Constants.kConfig.DEBUG) {
+                SmartDashboard.putNumber("Velocity Prediction", velocity);
+                SmartDashboard.putNumber("Aligninment Offset", target.x);
+            }
+        }
 
         if (!active && flywheel.feederReachedTarget()) {
             indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
@@ -109,23 +117,21 @@ public class OperateRunShooterState extends StateCommandBase {
         }
 
         if (Constants.kConfig.DEBUG) {
-            SmartDashboard.putNumber("Velocity Prediction", velocity);
             SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
             
             SmartDashboard.putNumber("Distance Prediction (ft)", odometry.getDistance());
-            SmartDashboard.putNumber("Aligninment Offset", target.x);
             SmartDashboard.putNumber("Velocity Offset", offset.get());
         }
     }
 
     @Override
     public void end(boolean interrupted) {
-        //if (interrupted || getNextState() == null) {
-        limelight.disable();
-        flywheel.disable();
-        indexer.disable();
-        turret.disable();
-        //}
+        if (interrupted || getNextState() == null) {
+            limelight.disable();
+            flywheel.disable();
+            indexer.disable();
+            turret.disable();
+        }
     }
 
     @Override

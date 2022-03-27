@@ -6,7 +6,6 @@ import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.ProxyStateCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
-import frc.robot.base.shooter.ShooterTarget;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.odometry.DriveByShooterOdometry;
 import frc.robot.subsystems.DriveTrain;
@@ -32,8 +31,6 @@ public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
     private final Property<DriveByShooterOdometry> sharedOdometry;
     private final Property<ShooterConfiguration> configuration;
 
-    private final ShooterTarget target;
-
     public ActiveOperateShooterDelayed(
         Limelight limelight,
         ShooterTurret turret,
@@ -47,12 +44,11 @@ public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
         Trigger trigger
     ) {
         sharedOdometry = new ValueProperty<>();
-        target = new ShooterTarget();
 
         addCommands(
             new SearchShooterState(limelight, true),
-            new SweepShooterState(limelight, turret, target, direction),
-            new DelayedAlignShooterState(trigger, limelight, turret, target),
+            new SweepShooterState(turret, limelight, Property.cast(sharedOdometry), direction),
+            new DelayedAlignShooterState(turret, limelight, trigger, Property.cast(sharedOdometry)),
             new ActiveOperateArmShooterState(flywheel, turret, drivetrain, limelight, configuration, sharedOdometry, offset, armed),
             new ActiveOperateRunShooterState(flywheel, turret, drivetrain, limelight, indexer, configuration, sharedOdometry, offset)
         ); 
@@ -64,11 +60,13 @@ public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
     
     @Override
     public void initialize() {
+        ShooterConfiguration config = configuration.get();
 
         // Initialize odometry
         sharedOdometry.set(
             new DriveByShooterOdometry(
-                configuration.get().getOdometryModel(), 
+                config.getOdometryModel(), 
+                config.getTargetFilter(),
                 Constants.Shooter.FLYWHEEL_OFFSET_MAPPING, 
                 Constants.Shooter.TURRET_OFFSET_MAPPING
             )

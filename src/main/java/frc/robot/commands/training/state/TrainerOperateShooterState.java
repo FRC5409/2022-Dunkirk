@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
@@ -29,6 +30,9 @@ import frc.robot.utils.Vector2;
  * the indexer triggers, feeding powercells into the turret.</p>
  */
 public class TrainerOperateShooterState extends StateCommandBase {
+    private final Property<SimpleShooterOdometry> sharedOdometry;
+    private final Property<Boolean> armed;
+
     private final TrainerDashboard dashboard;
     private final TrainerContext context;
 
@@ -40,23 +44,27 @@ public class TrainerOperateShooterState extends StateCommandBase {
     private SimpleShooterOdometry odometry;
     private ShooterExecutionModel model;
     private boolean active;
-
+    
     public TrainerOperateShooterState(
-        Limelight limelight,
-        ShooterTurret turret,
-        ShooterFlywheel flywheel,
-        Indexer indexer,
         TrainerDashboard dashboard,
-        TrainerContext context
+        TrainerContext context,
+        ShooterFlywheel flywheel,
+        ShooterTurret turret,
+        Limelight limelight,
+        Indexer indexer,
+        Property<SimpleShooterOdometry> sharedOdometry,
+        Property<Boolean> armed
     ) {
+        this.sharedOdometry = sharedOdometry;
         this.dashboard = dashboard;
         this.limelight = limelight;
         this.flywheel = flywheel;
         this.indexer = indexer;
         this.context = context;
         this.turret = turret;
+        this.armed = armed;
 
-        addRequirements(limelight, turret, flywheel);
+        addRequirements(limelight, turret, flywheel, indexer);
     }
 
     @Override
@@ -71,7 +79,7 @@ public class TrainerOperateShooterState extends StateCommandBase {
             indexer.enable();
 
         // Initialize odometry
-        odometry = new SimpleShooterOdometry(context.getOdometryModel());
+        odometry = sharedOdometry.get();
         model = context.getExecutionModel();
 
         // Spin feeder
@@ -86,18 +94,23 @@ public class TrainerOperateShooterState extends StateCommandBase {
         if (limelight.getTargetType() == TargetType.kHub)
             odometry.update(limelight.getTargetPosition());
 
-        Vector2 target = odometry.getTarget();
 
-        double velocity = context.getSetpoint().getTarget();
+        if (odometry.hasTarget()) {
+            Vector2 target = odometry.getTarget();
 
-        // Set flywheel to estimated veloctity
-        flywheel.setVelocity(velocity);
+            double velocity = context.getSetpoint().getTarget();
 
-        // Continue aligning shooter
-        if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
-            turret.setRotationTarget(turret.getRotation() + target.x* Constants.Vision.ROTATION_P);
+            // Set flywheel to estimated veloctity
+            flywheel.setVelocity(velocity);
 
-        if (!active && turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
+            // Continue aligning shooter
+            if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
+                turret.setRotationTarget(turret.getRotation() + target.x* Constants.Vision.ROTATION_P);
+                
+            SmartDashboard.putNumber("Aligninment Offset", target.x);
+        }
+
+        if (!active && turret.isTargetReached() && flywheel.isTargetReached() && flywheel.feederReachedTarget() && armed.get()) {
             indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
             active = true;
         }
@@ -105,7 +118,6 @@ public class TrainerOperateShooterState extends StateCommandBase {
         context.setDistance(odometry.getDistance());
 
         SmartDashboard.putNumber("Active Velocity", flywheel.getVelocity());
-        SmartDashboard.putNumber("Aligninment Offset", target.x);
         SmartDashboard.putData("Shooter Odometry", odometry);
 
         dashboard.update();
@@ -113,12 +125,17 @@ public class TrainerOperateShooterState extends StateCommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        flywheel.setVelocity(0);
+        if (interrupted || getNextState() == null) {
+            limelight.disable();
+            flywheel.disable();
+            indexer.disable();
+            turret.disable();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return !(limelight.hasTarget() && limelight.getTargetType() == TargetType.kHub);
+        return false;
     }
 
     @Override

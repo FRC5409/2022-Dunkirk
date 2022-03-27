@@ -1,9 +1,11 @@
 package frc.robot.commands.training;
 
+import frc.robot.Constants;
 import frc.robot.base.Property;
-import frc.robot.base.command.StateCommandGroup;
-import frc.robot.base.shooter.ShooterTarget;
+import frc.robot.base.ValueProperty;
+import frc.robot.base.command.ProxyStateCommandGroup;
 import frc.robot.base.shooter.SweepDirection;
+import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
 import frc.robot.commands.shooter.state.AlignShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
 import frc.robot.commands.shooter.state.SweepShooterState;
@@ -23,47 +25,43 @@ import frc.robot.training.TrainerDashboard;
  * 
  * @author Keith Davies
  */
-public final class TrainerOperateShooter extends StateCommandGroup {
-    private final ShooterFlywheel flywheel;
-    private final ShooterTurret   turret;
-    private final Limelight       limelight;
-    private final Indexer         indexer;
-    private final ShooterTarget target;
+public final class TrainerOperateShooter extends ProxyStateCommandGroup {
+    private final Property<SimpleShooterOdometry> sharedOdometry;
+
+    private final TrainerContext context;
 
     public TrainerOperateShooter(
-        Limelight limelight,
-        ShooterTurret turret,
-        ShooterFlywheel flywheel,
-        Indexer indexer,
         TrainerDashboard dashboard,
         TrainerContext context,
-        Property<SweepDirection> direction
+        ShooterFlywheel flywheel,
+        ShooterTurret turret,
+        Limelight limelight,
+        Indexer indexer,
+        Property<SweepDirection> direction,
+        Property<Boolean> armed
     ) {
-        target = new ShooterTarget();
-
+        sharedOdometry = new ValueProperty<>();
+        
         addCommands(
             new SearchShooterState(limelight, false),
-            new SweepShooterState(limelight, turret, target, direction),
-            new AlignShooterState(limelight, turret, target),
-            new TrainerOperateShooterState(limelight, turret, flywheel, indexer, dashboard, context)
+            new SweepShooterState(turret, limelight, sharedOdometry, direction),
+            new AlignShooterState(turret, limelight, sharedOdometry),
+            new TrainerOperateShooterState(dashboard, context, flywheel, turret, limelight, indexer, sharedOdometry, armed)
         );
 
         setDefaultState("frc.robot.shooter:search");
         
-        this.flywheel = flywheel;
-        this.turret = turret;
-        this.limelight = limelight;
-        this.indexer = indexer;
+        this.context = context;
     }
 
     @Override
     public void initialize() {
-        limelight.enable();
-        flywheel.enable();
-        indexer.enable();
-        turret.enable();
-
-        target.reset();
+        sharedOdometry.set(
+            new SimpleShooterOdometry(
+                context.getOdometryModel(), 
+                Constants.Training.DEFAULT_TARGET_FILTER.create()     
+            )
+        );
 
         super.initialize();
     }
@@ -72,10 +70,5 @@ public final class TrainerOperateShooter extends StateCommandGroup {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
-
-        limelight.disable();
-        flywheel.disable();
-        indexer.disable();
-        turret.disable();
     }
 }

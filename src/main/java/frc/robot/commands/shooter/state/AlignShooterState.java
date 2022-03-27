@@ -4,26 +4,36 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+
+import frc.robot.base.Property;
 import frc.robot.base.command.TimedStateCommand;
-import frc.robot.base.shooter.ShooterTarget;
+import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
+
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;
+
 import frc.robot.utils.Toggleable;
 import frc.robot.utils.Vector2;
 
 // TODO update doc
 public class AlignShooterState extends TimedStateCommand {
+    protected final Property<SimpleShooterOdometry> sharedOdometry;
+
     protected final ShooterTurret turret;
-    protected final ShooterTarget target;
     protected final Limelight limelight;
     
+    protected SimpleShooterOdometry odometry;
     protected boolean done;
 
-    public AlignShooterState(Limelight limelight, ShooterTurret turret, ShooterTarget target) {
+    public AlignShooterState(
+        ShooterTurret turret,
+        Limelight limelight,
+        Property<SimpleShooterOdometry> sharedOdometry
+    ) {
+        this.sharedOdometry = sharedOdometry;
         this.limelight = limelight;
         this.turret = turret;
-        this.target = target;
 
         addRequirements(limelight, turret);
     }
@@ -38,17 +48,19 @@ public class AlignShooterState extends TimedStateCommand {
         if (!turret.isEnabled())
             turret.enable();
 
+        odometry = sharedOdometry.get();
+
         done = false;
     }
 
     @Override
     public void execute() {
-        if (limelight.getTargetType() == TargetType.kHub) {
-            target.update(limelight.getTargetPosition());
-        }
+        if (limelight.getTargetType() == TargetType.kHub)
+            odometry.update(limelight.getTargetPosition());
 
-        if (target.hasTarget()) {
-            Vector2 target = this.target.getTarget();
+        if (odometry.hasTarget() && !odometry.isLost()) {
+            Vector2 target = odometry.getTarget();
+
             if (Math.abs(target.x) < Constants.Vision.ALIGNMENT_THRESHOLD) {
                 next("frc.robot.shooter:operate");
                 done = true;
@@ -76,7 +88,7 @@ public class AlignShooterState extends TimedStateCommand {
 
     @Override
     public boolean isFinished() {
-        return (limelight.getTargetType() != TargetType.kHub) || done;
+        return done;
     }
 
     @Override

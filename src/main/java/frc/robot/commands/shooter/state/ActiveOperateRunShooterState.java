@@ -37,8 +37,8 @@ public class ActiveOperateRunShooterState extends StateCommandBase {
     private final Limelight limelight;
     private final Indexer indexer;
     
-    private ShooterExecutionModel model;
     private DriveByShooterOdometry odometry;
+    private ShooterExecutionModel model;
     
     public ActiveOperateRunShooterState(
         ShooterFlywheel flywheel,

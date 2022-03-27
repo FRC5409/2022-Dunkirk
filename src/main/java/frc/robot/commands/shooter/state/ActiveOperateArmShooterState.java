@@ -37,8 +37,8 @@ public class ActiveOperateArmShooterState extends StateCommandBase {
     private final DriveTrain drivetrain;
     private final Limelight limelight;
     
-    private ShooterExecutionModel model;
     private DriveByShooterOdometry odometry;
+    private ShooterExecutionModel model;
 
     private boolean done;
     
