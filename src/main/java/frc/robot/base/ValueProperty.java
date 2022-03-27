@@ -17,9 +17,9 @@ public class ValueProperty<T> implements Property<T> {
 
     @Override
     public T set(T value) {
-        final T temp = m_value;
+        final T last = m_value;
         m_value = value;
-        return temp;
+        return last;
     }
 
     @Override
