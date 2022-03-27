@@ -33,6 +33,7 @@ import frc.robot.commands.indexer.ReverseIntakeIndexer;
 import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.commands.shooter.*;
+import frc.robot.commands.test.ShooterOdometryTest;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
@@ -132,12 +133,17 @@ public class RobotTest implements RobotConfiguration {
         SmartDashboard.putNumber("Rotation Smoothing", SmartDashboard.getNumber("Rotation Smoothing", 0));
         SmartDashboard.putNumber("Flywheel Offset Factor", SmartDashboard.getNumber("Flywheel Offset Factor", 0));
         SmartDashboard.putNumber("Turret Offset Factor", SmartDashboard.getNumber("Turret Offset Factor", 0));
+        SmartDashboard.putNumber("Target Interpolation Factor", SmartDashboard.getNumber("Target Interpolation Factor", 0));
+        SmartDashboard.putNumber("Shooter Thresh", SmartDashboard.getNumber("Shooter Thresh", 0));
+        SmartDashboard.putNumber("Shooter Proportional", SmartDashboard.getNumber("Shooter Proportional", 0));
+        SmartDashboard.putNumber("Simulated Velocity", SmartDashboard.getNumber("Simulated Velocity", 0));
     }
 
 
     private void configureCommands() {
         DriveTrain.setDefaultCommand(defaultDrive);
         Climber.setDefaultCommand(new DefaultElevator(Climber, joystickSecondary.getController()));
+        limelight.setDefaultCommand(new ShooterOdometryTest(turret, DriveTrain, limelight, shooterConfiguration));
     }
 
 
@@ -247,7 +253,10 @@ public class RobotTest implements RobotConfiguration {
     @Override
     public Command getTeleopCommand() {
         return new ParallelCommandGroup(
-            new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
+            new SequentialCommandGroup(    
+                new RotateTurret(turret, 0),
+                new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar)
+            ),
             new FindElevatorZero(Climber)
         );
     }

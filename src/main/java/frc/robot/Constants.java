@@ -38,7 +38,7 @@ public final class Constants {
             kCompetition, kTraining, kTest
         }
 
-        public static final Configuration ROBOT_CONFIGURATION = Configuration.kCompetition;
+        public static final Configuration ROBOT_CONFIGURATION = Configuration.kTest;
     }
 
     public static class kConfig {
@@ -362,6 +362,7 @@ public final class Constants {
                     41.5 / 12.0,
                     0,
                     TARGET_LOST_TIME,
+                    new Vector3(7/12, 0, 15/12),
                     new Vector2(59.6, 49.7)
                 ),
                 new ShooterExecutionModel(
@@ -385,6 +386,7 @@ public final class Constants {
                     45 / 12.0,
                     0,
                     TARGET_LOST_TIME,
+                    new Vector3(),
                     new Vector2(59.6, 49.7)
                 )
             ),
@@ -399,6 +401,7 @@ public final class Constants {
                     41.5 / 12.0,
                     0,
                     TARGET_LOST_TIME,
+                    new Vector3(),
                     new Vector2(59.6, 49.7)
                 )
             ),
@@ -413,6 +416,7 @@ public final class Constants {
                     41.5 / 12.0,
                     0,
                     TARGET_LOST_TIME,
+                    new Vector3(),
                     new Vector2(59.6, 49.7)
                 ) 
             )
@@ -432,8 +436,6 @@ public final class Constants {
 
         public static final double ALIGNMENT_THRESHOLD = 0.83333;
 
-        protected static double DISTANCE_OFFSET = - 2.0;
-
-        public static final double ROTATION_P = 0.74;
+        public static final double ROTATION_P = 0.95;
     }
 }

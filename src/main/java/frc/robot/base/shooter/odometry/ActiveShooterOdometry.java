@@ -13,6 +13,7 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
     protected Vector2 kLastVelocity;
     protected double  kLastRotation;
     protected Vector2 kLastDirection;
+    private boolean   kActive;
 
     public ActiveShooterOdometry(ShooterOdometryModel model, FilterBase filter) {
         super(model, filter);
@@ -23,6 +24,7 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
         kLastRotation = 0;
         kLastTarget = new Vector2();
         kLastSpeed = 0;
+        kActive = false;
     }
 
     @Override
@@ -37,19 +39,22 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
      * @param rotation The observed view rotation
      */
     public void update(Vector2 target, double speed, double rotation) {
-        Vector3 observerVector = calculateTargetProjection(target);
+        Vector3 observerVector = calculateTargetProjection(filter.update(target));
+        kLastDistance = safe(model.kHeight / Math.tan(Math.asin(observerVector.z)));
+
+        Vector3 tempVector = observerVector.scale(kLastDistance)
+           .sub(model.kViewOffset).unit();
 
         rotation = Math.toRadians(rotation);
 
-        double cx = Math.cos(-rotation);
-        double cy = Math.sin(-rotation);
+        double cx = Math.cos(rotation);
+        double cy = Math.sin(rotation);
 
         kLastDirection = new Vector2(
-            observerVector.x * cx - observerVector.y * cy,
-            observerVector.x * cy + observerVector.y * cx
+            tempVector.x * cy + tempVector.y * cx,
+            tempVector.x * cx - tempVector.y * cy
         ).unit();
 
-        kLastDistance = safe(model.kHeight / Math.tan(Math.asin(observerVector.z)));
         kLastRotation = safe(Math.acos(kLastDirection.x)) * Math.signum(kLastDirection.y);
         kLastVelocity = kLastDirection.scale(speed);
         kLastTarget = new Vector2(target);
@@ -58,11 +63,9 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
 
     @Override
     public void reset() {
-        kLastDirection = new Vector2();
+        super.reset();
         kLastVelocity = new Vector2();
-        kLastDistance = 0;
         kLastRotation = 0;
-        kLastTarget = new Vector2();
         kLastSpeed = 0;
     }
 
@@ -75,7 +78,7 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
     }
 
     public double getRotation() {
-        return kLastRotation;
+        return Math.toDegrees(kLastRotation);
     }
 
     public double getSpeed() {

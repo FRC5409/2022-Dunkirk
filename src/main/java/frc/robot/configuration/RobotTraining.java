@@ -39,6 +39,7 @@ import frc.robot.training.protocol.generic.BundleSendable;
 import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
 import frc.robot.utils.Vector2;
+import frc.robot.utils.Vector3;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.test.ShooterTestOne;
 import frc.robot.commands.training.BranchTargetSetpoint;
@@ -256,6 +257,7 @@ public class RobotTraining implements RobotConfiguration {
                 41.5 / 12.0,
                 0,
                 Constants.Shooter.TARGET_LOST_TIME,
+                new Vector3(),
                 new Vector2(59.6, 49.7)
             )
         );
@@ -267,6 +269,7 @@ public class RobotTraining implements RobotConfiguration {
                 45 / 12.0,
                 0,
                 Constants.Shooter.TARGET_LOST_TIME,
+                new Vector3(),
                 new Vector2(59.6, 49.7)
             )
         );
