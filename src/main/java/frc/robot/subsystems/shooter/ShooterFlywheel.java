@@ -124,7 +124,7 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
         if(!enabled) return;
 
 
-        ctr_feeder.setReference(-1*setpoint, CANSparkMax.ControlType.kDutyCycle);
+        ctr_feeder.setReference(-setpoint, CANSparkMax.ControlType.kDutyCycle);
     }
 
     /**
