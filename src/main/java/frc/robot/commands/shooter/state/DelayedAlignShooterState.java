@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.base.command.TimedStateCommand;
+import frc.robot.base.shooter.ShooterTarget;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;
@@ -18,11 +19,13 @@ public class DelayedAlignShooterState extends TimedStateCommand {
     private final Limelight limelight;
     private final Trigger trigger;
     
+    private ShooterTarget target;
     private boolean done;
 
-    public DelayedAlignShooterState(Trigger trigger, Limelight limelight, ShooterTurret turret) {
+    public DelayedAlignShooterState(Trigger trigger, Limelight limelight, ShooterTurret turret, ShooterTarget target) {
         this.limelight = limelight;
         this.trigger = trigger;
+        this.target = target;
         this.turret = turret;
         
         addRequirements(limelight, turret);
@@ -43,23 +46,38 @@ public class DelayedAlignShooterState extends TimedStateCommand {
 
     @Override
     public void execute() {
-        Vector2 target = limelight.getTargetPosition();
+        if (limelight.getTargetType() == TargetType.kHub)
+            target.update(limelight.getTargetPosition());
 
-        if (Math.abs(target.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
-            turret.setRotationTarget(turret.getRotation() + target.x * Constants.Vision.ROTATION_P);
+        if (target.hasTarget()) {
+            Vector2 targetPosition = target.getTarget();
+            if (Math.abs(targetPosition.x) > Constants.Vision.ALIGNMENT_THRESHOLD)
+                turret.setRotationTarget(turret.getRotation() + targetPosition.x * Constants.Vision.ROTATION_P);
 
-        if (trigger.get()) {
-            next("frc.robot.shooter:operate");
+            if (trigger.get()) {
+                next("frc.robot.shooter:operate");
+                done = true;
+            }
+        
+            if(Constants.kConfig.DEBUG)
+                SmartDashboard.putNumber("Alignment Offset", targetPosition.x);
+        } else {
+            next("frc.robot.shooter:sweep");
             done = true;
         }
-        
-        if(Constants.kConfig.DEBUG)
-            SmartDashboard.putNumber("Alignment Offset", target.x);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        if (interrupted || getNextState() == null) {
+            limelight.disable();
+            turret.disable();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return (limelight.getTargetType() != TargetType.kHub) || done;
+        return done;
     }
 
     @Override

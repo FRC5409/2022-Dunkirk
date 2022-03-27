@@ -25,18 +25,20 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 
-
-import frc.robot.commands.autonomous.trajectoryAuto.TwoBallsAuto;
 import frc.robot.commands.indexer.IndexerIntakeActive;
 import frc.robot.commands.indexer.IndexerIntakeTest;
 import frc.robot.commands.indexer.IntakeActive;
 import frc.robot.commands.indexer.ReverseIntakeIndexer;
-import frc.robot.commands.indexer.RunIndexerBack;
-import frc.robot.commands.autonomous.trajectoryAuto.OneBallAuto;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.commands.shooter.*;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.FourBallsAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.SynchronizedThreeBallsAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.Test;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
 
 public class RobotCompetition implements RobotConfiguration {
     private final ShooterFlywheel      Flywheel;
@@ -103,10 +105,6 @@ public class RobotCompetition implements RobotConfiguration {
     }
 
     private void configureDashboard() {
-        autoCommandSelector.setDefaultOption("Default", 
-            new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterConfiguration, shooterSweepDirection, shooterOffset));
-        
         autoCommandSelector.addOption("One",
             new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, 
                 shooterConfiguration, shooterSweepDirection, shooterOffset));
@@ -114,6 +112,21 @@ public class RobotCompetition implements RobotConfiguration {
         autoCommandSelector.addOption("Two",
             new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterConfiguration, shooterSweepDirection, shooterOffset));
+
+        autoCommandSelector.addOption("Three",
+            new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+                shooterConfiguration, shooterSweepDirection, shooterOffset));
+
+        autoCommandSelector.setDefaultOption("Three Synchronized",
+            new SynchronizedThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+                shooterConfiguration, shooterSweepDirection, shooterOffset, shooterArmed));
+
+        autoCommandSelector.addOption("Four",
+            new FourBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+                shooterConfiguration, shooterSweepDirection, shooterOffset));
+
+        autoCommandSelector.addOption("Test",
+            new Test(DriveTrain));
 
         SmartDashboard.putData("Auto Chooser", autoCommandSelector);
 

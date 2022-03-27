@@ -87,8 +87,8 @@ public final class Constants {
     }
 
     public static class kPneumatics {
-        public static final double MIN_PSI = 90;
-        public static final double MAX_PSI = 110;
+        public static final double MIN_PSI = 100;
+        public static final double MAX_PSI = 120;
 
         public final int Pigeon = 23;
     }
@@ -184,9 +184,14 @@ public final class Constants {
         public static final double maxStraightSpeed = 1;
         public static final double maxTurnSpeed = 1;
 
+        // pigeon mount position TODO: TUNE THESE VALUES
+        public static final double gyroMountYaw   = 0;
+        public static final double gyroMountPitch = 0;
+        public static final double gyroMountRoll  = 0;
+
         //
-        public static final double forwardRampRate = 0.3;
-        public static final double backwardRampRate = 0.2;
+        public static final double forwardRampRate = 0.4;
+        public static final double backwardRampRate = 0.3;
         public static final double forwardTurnRampRate = 0.1;
         public static final double backwardTurnRampRate = 0.1;
 
@@ -216,9 +221,9 @@ public final class Constants {
         public static final double kPDriveVel = 5.7255;
         
         // all units in meters and seconds
-        public static final double kMaxSpeed = 1.6; 
+        public static final double kMaxSpeed = 2.4; 
         // work fine in 2.5, gives error when generating trajectory when exceed that value
-        public static final double kMaxAcceleration = 3; // any
+        public static final double kMaxAcceleration = 4.5; // any
 
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
         // works for most robots, if needs to be tuned: 
@@ -235,20 +240,19 @@ public final class Constants {
                                            kaVoltSecondsSquaredPerMeter),
                 kDriveKinematics, 10);
 
-        public static final TrajectoryConfig configStop = 
+        public static final TrajectoryConfig configForwards = 
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)
             .setEndVelocity(0)
             .setReversed(true);
 
-        public static final TrajectoryConfig configNoStop = 
+        public static final TrajectoryConfig configBackwards = 
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)    
-            .setEndVelocity(1.6)
-            .setReversed(true);
-
+            .setEndVelocity(0)
+            .setReversed(false);
     }
 
     public final class Falcon500 {
@@ -304,7 +308,7 @@ public final class Constants {
         public static final Range TURRET_OUTPUT_RANGE = new Range(-1, 1);
 
         // Smooth Sweep Constants
-        public static final double   SHOOTER_SWEEP_PERIOD = 1.6;
+        public static final double   SHOOTER_SWEEP_PERIOD = 1.6*1.65789;
         public static final double   SHOOTER_MAX_SWEEEP = 2;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
@@ -407,6 +411,8 @@ public final class Constants {
         public static final double INDEXER_SPEED = 0.5;
 
         public static final double ARMING_TIME = 0.2;
+
+        public static final double TARGET_LOST_TIME = 0.5;
     }
     
     public static final class Vision {
@@ -416,6 +422,6 @@ public final class Constants {
 
         protected static double DISTANCE_OFFSET = - 2.0;
 
-        public static final double ROTATION_P = 0.50;
+        public static final double ROTATION_P = 0.74;
     }
 }

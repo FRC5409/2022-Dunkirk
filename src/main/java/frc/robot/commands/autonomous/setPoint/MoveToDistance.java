@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.autonomous.setPoint;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
@@ -47,7 +47,7 @@ public class MoveToDistance extends CommandBase {
 
     @Override
     public void end(boolean interrupted){
-        drive.setControlMode(TalonFXControlMode.PercentOutput, 0);
+        drive.setDefaultControlMode();
         SmartDashboard.putString("mode", "PercentOutput");
     }
 
