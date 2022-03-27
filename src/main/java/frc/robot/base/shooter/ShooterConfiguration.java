@@ -4,20 +4,25 @@ import org.jetbrains.annotations.Nullable;
 
 import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
+import frc.robot.base.shooter.target.FilterBase;
+import frc.robot.base.shooter.target.FilterFactory;
 
 public class ShooterConfiguration {
     private final ShooterExecutionModel executionModel;
     private final ShooterOdometryModel odometryModel;
+    private final FilterFactory targetFilterFactory;
     private final VisionPipeline visionPipeline;
     private final HoodPosition hoodConfiguration;
     private final ShooterMode shooterMode;
-
+    
     public ShooterConfiguration(
         ShooterMode shooterMode,
         HoodPosition hoodConfiguration,
         VisionPipeline visionPipeline,
+        FilterFactory<?> targetFilterFactory,
         ShooterOdometryModel odometryModel
     ) {
+        this.targetFilterFactory = targetFilterFactory;
         this.hoodConfiguration = hoodConfiguration;
         this.visionPipeline = visionPipeline;
         this.executionModel = null;
@@ -29,9 +34,11 @@ public class ShooterConfiguration {
         ShooterMode shooterMode,
         HoodPosition hoodConfiguration,
         VisionPipeline visionPipeline,
+        FilterFactory<?> targetFilterFactory,
         ShooterOdometryModel odometryModel,
         ShooterExecutionModel executionModel
     ) {
+        this.targetFilterFactory = targetFilterFactory;
         this.hoodConfiguration = hoodConfiguration;
         this.visionPipeline = visionPipeline;
         this.executionModel = executionModel;
@@ -58,5 +65,9 @@ public class ShooterConfiguration {
 
     public ShooterOdometryModel getOdometryModel() {
         return odometryModel;
+    }
+
+    public FilterBase getTargetFilter() {
+        return targetFilterFactory.create();
     }
 }
