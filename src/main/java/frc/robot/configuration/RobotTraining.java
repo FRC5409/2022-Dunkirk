@@ -57,7 +57,6 @@ import frc.robot.commands.indexer.IndexerIntakeActive;
 import frc.robot.commands.indexer.IndexerIntakeTest;
 import frc.robot.commands.indexer.IntakeActive;
 import frc.robot.commands.indexer.ReverseIntakeIndexer;
-import frc.robot.commands.indexer.RunIndexerBack;
 
 public class RobotTraining implements RobotConfiguration {
     private final ShooterFlywheel                Flywheel;
@@ -83,6 +82,7 @@ public class RobotTraining implements RobotConfiguration {
     
     private final Property<ShooterConfiguration> shooterConfiguration;
     private final Property<SweepDirection>       shooterSweepDirection;
+    private final Property<Boolean>              shooterArmed;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -112,6 +112,7 @@ public class RobotTraining implements RobotConfiguration {
 
         shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
         shooterConfiguration = new ValueProperty<>();
+        shooterArmed = new ValueProperty<>();
 
         Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
         Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
@@ -160,10 +161,10 @@ public class RobotTraining implements RobotConfiguration {
 
         joystickPrimary.getButton(ButtonType.kX)
             .whileHeld(new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary))
-            .whenReleased(new RunIndexerBack(Intake, Indexer).withTimeout(0.2));
+            .whenReleased(new PrimeShooter(Indexer, shooterArmed).withTimeout(0.2));
 
         joystickPrimary.getButton(ButtonType.kA)
-            .whileHeld(new TrainerOperateShooter(limelight, turret, Flywheel, Indexer, trainerDashboard, trainerContext, shooterSweepDirection))
+            .whileHeld(new TrainerOperateShooter(trainerDashboard, trainerContext, Flywheel, turret, limelight, Indexer, shooterSweepDirection, shooterArmed))
             .whenReleased(new RotateTurret(turret, 0));
 
         joystickSecondary.getButton(ButtonType.kRightBumper)
@@ -200,7 +201,7 @@ public class RobotTraining implements RobotConfiguration {
             .whenPressed(new UpdateTargetSetpoint(trainerDashboard, trainerContext));
 
         joystickSecondary.getButton(ButtonType.kA)
-            .whileHeld(new TrainerFocusShooter(limelight, turret, trainerDashboard, trainerContext, shooterSweepDirection))
+            .whileHeld(new TrainerFocusShooter(trainerDashboard, trainerContext, turret, limelight, shooterSweepDirection))
             .whenReleased(new RotateTurret(turret, 0));
 
         joystickSecondary.getButton(ButtonType.kBack)
@@ -254,6 +255,7 @@ public class RobotTraining implements RobotConfiguration {
                 90.0 - 61.5,
                 41.5 / 12.0,
                 0,
+                Constants.Shooter.TARGET_LOST_TIME,
                 new Vector2(59.6, 49.7)
             )
         );
@@ -264,6 +266,7 @@ public class RobotTraining implements RobotConfiguration {
                 90.0 - 45.5,
                 45 / 12.0,
                 0,
+                Constants.Shooter.TARGET_LOST_TIME,
                 new Vector2(59.6, 49.7)
             )
         );

@@ -17,6 +17,9 @@ import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.VisionPipeline;
 import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
+import frc.robot.base.shooter.target.FilterBase;
+import frc.robot.base.shooter.target.FilterFactory;
+import frc.robot.base.shooter.target.TargetFiltering;
 import frc.robot.base.shooter.HoodPosition;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.utils.*;
@@ -285,6 +288,7 @@ public final class Constants {
     public static final class Training {
         public static final Range  DISTANCE_RANGE = new Range(0.0, 20);
         public static final String TRAINER_HOSTNAME = "10.54.9.150";
+        public static final FilterFactory<?> DEFAULT_TARGET_FILTER = TargetFiltering.none();
     }
     
     public static final class Shooter {
@@ -345,15 +349,19 @@ public final class Constants {
         public static final double GUARD_FLYWHEEL_VELOCITY = 800;
         public static final double NEAR_FLYWHEEL_VELOCITY = 1702;
 
+        public static final double TARGET_LOST_TIME = 0.5;
+
         public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
             ShooterMode.kFar, new ShooterConfiguration(
                 ShooterMode.kFar,
                 HoodPosition.kUp,
                 VisionPipeline.FAR_TARGETING,
+                TargetFiltering.none(),
                 new ShooterOdometryModel(
                     90.0 - 61.5,
                     41.5 / 12.0,
                     0,
+                    TARGET_LOST_TIME,
                     new Vector2(59.6, 49.7)
                 ),
                 new ShooterExecutionModel(
@@ -371,10 +379,12 @@ public final class Constants {
                 ShooterMode.kNear,
                 HoodPosition.kDown,
                 VisionPipeline.NEAR_TARGETING,
+                TargetFiltering.none(),
                 new ShooterOdometryModel(
                     90.0 - 45.5,
                     45 / 12.0,
                     0,
+                    TARGET_LOST_TIME,
                     new Vector2(59.6, 49.7)
                 )
             ),
@@ -383,10 +393,12 @@ public final class Constants {
                 ShooterMode.kLow,
                 HoodPosition.kUp,
                 VisionPipeline.DEFAULT,
+                TargetFiltering.none(),
                 new ShooterOdometryModel(
                     90.0 - 61.5,
                     41.5 / 12.0,
                     0,
+                    TARGET_LOST_TIME,
                     new Vector2(59.6, 49.7)
                 )
             ),
@@ -395,10 +407,12 @@ public final class Constants {
                 ShooterMode.kGuard,
                 HoodPosition.kUp,
                 VisionPipeline.DEFAULT,
+                TargetFiltering.none(),
                 new ShooterOdometryModel(
                     90.0 - 61.5,
                     41.5 / 12.0,
                     0,
+                    TARGET_LOST_TIME,
                     new Vector2(59.6, 49.7)
                 ) 
             )
@@ -411,8 +425,6 @@ public final class Constants {
         public static final double INDEXER_SPEED = 0.5;
 
         public static final double ARMING_TIME = 0.2;
-
-        public static final double TARGET_LOST_TIME = 0.5;
     }
     
     public static final class Vision {
