@@ -18,7 +18,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 import frc.robot.Constants;
+import frc.robot.base.shooter.HoodPosition;
 import frc.robot.utils.MotorUtils;
+import frc.robot.utils.Range;
 import frc.robot.utils.Toggleable;
 
 /**
@@ -26,7 +28,17 @@ import frc.robot.utils.Toggleable;
  * @author Akil Pathiranage, Keith Davies
  */
 public class ShooterTurret extends SubsystemBase implements Toggleable {
+    public static enum ReferenceType {
+        kRotation, kOutput
+    }
+
+    private static enum LimitType {
+        kLeft, kRight, kNone
+    }
+
     private static final IdleMode DEFAULT_IDLE_MODE = IdleMode.kBrake;
+    private static final Range ROTATION_RANGE = Constants.Shooter.ROTATION_RANGE;
+    private static final Range MANUAL_ROTATION_RANGE = Constants.Shooter.MANUAL_ROTATION_RANGE;
 
     private static final double ROTATIONS_PER_DEGREE = (Constants.Shooter.GEAR_RATIO / 360); // Rotations per degree
     private static final double DEGREES_PER_ROTATION = 1 / ROTATIONS_PER_DEGREE; // Degrees per rotation
@@ -41,10 +53,12 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
     private final DoubleSolenoid                     dsl_hood; 
     private final DigitalInput                       lim_zero;
 
+    private ReferenceType                            referenceType;
+    private LimitType                                limitType;
     private boolean                                  calibrated;
-    private double                                   target;
     private boolean                                  enabled;
-    
+    private double                                   target;
+    private double                                   rotation;
 
     /**
      * Constructor for the turret.
@@ -58,8 +72,8 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
             enc_main.setPosition(0);
 
         ctr_main = mot_main.getPIDController();
-            ctr_main.setOutputRange(Constants.Shooter.TURRET_OUTPUT_RANGE.min(), Constants.Shooter.TURRET_OUTPUT_RANGE.max());
         MotorUtils.setGains(ctr_main, Constants.Shooter.TURRET_GAINS);
+        MotorUtils.setOutputRange(ctr_main, 0, Constants.Shooter.TURRET_OUTPUT_RANGE);
 
         lim_zero = new DigitalInput(Constants.kID.TurretLimitSwitch1);
 
@@ -73,9 +87,27 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         fields.put("rotation", Shuffleboard.getTab("Turret")
             .add("Turret Rotation", 0).getEntry());
 
+        referenceType = ReferenceType.kRotation;
         calibrated = false;
+        limitType = LimitType.kNone;
+        rotation = 0;
         enabled = false;
         target = 0;
+    }
+
+    /**
+     * Method for enabling the turret subsystem.
+     */
+    public void enable() {
+        enabled = true;
+    }
+
+
+    /**
+     * Brings the turret to its zero position. 
+     */
+    public void reset() {
+        setRotationTarget(0);
     }
 
     /**
@@ -83,14 +115,20 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
      */
     @Override
     public void periodic() {
-        if(lim_zero.get() == Constants.Shooter.ZERO_LIMIT_POLARITY) {
-            if (!calibrated) {
-                enc_main.setPosition(0);
-                calibrated = true;
+        if (enabled) {
+            rotation = enc_main.getPosition() * DEGREES_PER_ROTATION;
+            
+            if(lim_zero.get() == Constants.Shooter.ZERO_LIMIT_POLARITY) {
+                if (!calibrated) {
+                    enc_main.setPosition(0);
+                    calibrated = true;
+                }
+            } else {
+                if (calibrated)
+                    calibrated = false;
             }
-        } else {
-            if (!calibrated)
-                calibrated = false;
+
+            updateManualLimits();
         }
 
         switch(dsl_hood.get()) {
@@ -107,23 +145,8 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
                 fields.get("hood").setString("Off");
                 break;
         }
-
-        fields.get("rotation").setNumber(getRotation());
-    }
-
-    /**
-     * Method for enabling the turret subsystem.
-     */
-    public void enable() {
-        enabled = true;
-    }
-
-
-    /**
-     * Brings the turret to its zero position. 
-     */
-    public void reset() {
-        setRotationTarget(0);
+        
+        fields.get("rotation").setNumber(rotation);
     }
 
     /**
@@ -149,16 +172,37 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
      * 
      * @param value Angle to turn to in degrees, can be negative for turning
      *                  left, positive for turning right.
+     * 
+     * @deprecated {@link #setReference(double, ReferenceType) setReference(double, ReferenceType.kRotation)}
      */
+    @Deprecated
     public void setRotationTarget(double value) {
         if (!enabled) return;
         
         // TODO add safety
         ctr_main.setReference(
-            ROTATIONS_PER_DEGREE * Constants.Shooter.ROTATION_RANGE.clamp(value), 
+            ROTATIONS_PER_DEGREE * ROTATION_RANGE.clamp(value), 
             CANSparkMax.ControlType.kPosition);
         
         target = value;
+    }
+
+    public void setReference(double value, ReferenceType type) {
+        if (!enabled) return;
+        
+        if (type == ReferenceType.kOutput) {
+            if (!(limitType == LimitType.kLeft && value < 0 || limitType == LimitType.kRight && value > 0))
+                ctr_main.setReference(
+                    Constants.Shooter.TURRET_MANUAL_OUTPUT_RANGE.clamp(value), 
+                    CANSparkMax.ControlType.kDutyCycle);
+        } else {
+            ctr_main.setReference(
+                ROTATIONS_PER_DEGREE * ROTATION_RANGE.clamp(value), 
+                CANSparkMax.ControlType.kPosition);
+        }
+
+        target = value;
+        referenceType = type;
     }
 
     public void setIdleMode(IdleMode mode) {
@@ -195,7 +239,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
      * @return Angle in degrees.
      */
     public double getRotation() {
-        return enc_main.getPosition() * DEGREES_PER_ROTATION;
+        return rotation;
     }
 
     /**
@@ -204,9 +248,24 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
      * @return True if its aligned, false if not.
      */
     public boolean isTargetReached() {
-        return Math.abs(getRotation() - target) < Constants.Vision.ALIGNMENT_THRESHOLD;
+        return Math.abs(rotation - target) < Constants.Vision.ALIGNMENT_THRESHOLD;
     }
 
+    private void updateManualLimits() {
+        if (rotation > MANUAL_ROTATION_RANGE.max()) {
+            if (limitType != LimitType.kRight) {
+                if (referenceType == ReferenceType.kOutput && target > 0)
+                    mot_main.stopMotor();
+                limitType = LimitType.kRight;
+            }
+        } else if (rotation < MANUAL_ROTATION_RANGE.min()) {
+            if (limitType != LimitType.kLeft) {
+                if (referenceType == ReferenceType.kOutput && target < 0)
+                    mot_main.stopMotor();
+                limitType = LimitType.kLeft;
+            }
+        } else {
+            limitType = LimitType.kNone;
+        }
     }
-
 }

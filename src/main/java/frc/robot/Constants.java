@@ -310,7 +310,14 @@ public final class Constants {
         public static final Range SPEED_RANGE = new Range(0, 5500);
         public static final Range DISTANCE_RANGE = new Range(0, 25);
         public static final Range TURRET_OUTPUT_RANGE = new Range(-1, 1);
+        
+        public static final Range MANUAL_ROTATION_RANGE = new Range(-100, 100);
 
+        public static final Equation TURRET_MANUAL_OUTPUT_EASING =
+            x -> 1 - 2 * Math.pow(2, 10*(Math.abs(ROTATION_RANGE.normalize(x)) - 1));
+
+        public static final Range TURRET_MANUAL_OUTPUT_RANGE = new Range(-0.7, 0.7);
+        
         // Smooth Sweep Constants
         public static final double   SHOOTER_SWEEP_PERIOD = 1.6*1.65789;
         public static final double   SHOOTER_MAX_SWEEEP = 2;
