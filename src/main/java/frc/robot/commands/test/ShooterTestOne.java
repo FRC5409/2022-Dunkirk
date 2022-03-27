@@ -1,6 +1,7 @@
 package frc.robot.commands.test;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.base.shooter.HoodPosition;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
@@ -30,7 +31,7 @@ public class ShooterTestOne extends CommandBase{
         flywheel.setVelocity(2500);
         flywheel.spinFeederSetpoint(0.8);
         
-        turret.hoodDownPosition();
+        turret.setHoodPosition(HoodPosition.kDown);
 
         indexer.setSpeed(0.5);
     }

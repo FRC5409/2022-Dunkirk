@@ -167,6 +167,19 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         mot_main.setIdleMode(mode);
     }
 
+    public void setHoodPosition(HoodPosition position) {
+        if (!enabled) return;
+        
+        switch(position) {
+            case kUp:
+                dsl_hood.set(DoubleSolenoid.Value.kForward);
+                break;
+            case kDown:
+                dsl_hood.set(DoubleSolenoid.Value.kReverse);
+                break;
+        }
+    }
+
     /**1
      * Method for getting the current rotation target.
      * 
@@ -194,21 +207,6 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         return Math.abs(getRotation() - target) < Constants.Vision.ALIGNMENT_THRESHOLD;
     }
 
-
-    /**
-     * Method for setting the hood to the up position.
-     */
-    public void hoodUpPosition() {
-        if(!enabled) return;
-        dsl_hood.set(DoubleSolenoid.Value.kForward);
-    }
-
-    /**
-     * Method for setting the hood to the down position.
-     */
-    public void hoodDownPosition() {
-        if(!enabled) return;
-        dsl_hood.set(DoubleSolenoid.Value.kReverse);
     }
 
 }

@@ -49,16 +49,7 @@ public class ConfigureShooter extends CommandBase {
         configuration.set(config);
 
         limelight.setPipelineIndex(config.getPipeline().id());
-        switch (config.getHoodPosition()) {
-            case kDown: {
-                turret.hoodDownPosition();
-                break;
-            }
-            case kUp: {
-                turret.hoodUpPosition();
-                break;
-            }
-        }
+        turret.setHoodPosition(config.getHoodPosition());
     }
 
     @Override
