@@ -136,10 +136,10 @@ public class RobotCompetition implements RobotConfiguration {
         Shuffleboard.getTab("Shooter")
             .add("Hood down", new HoodDown(turret));
 
-        Shuffleboard.getTab("Shooter")
+        Shuffleboard.getTab("SmartDashboard")
             .add("Shooter Offset - Increment", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() + Constants.Shooter.OFFSET_INCREMENT)));
 
-        Shuffleboard.getTab("Shooter")
+        Shuffleboard.getTab("SmartDashboard")
             .add("Shooter Offset - Decrement", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() - Constants.Shooter.OFFSET_INCREMENT)));
     }
 

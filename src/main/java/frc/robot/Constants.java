@@ -406,7 +406,7 @@ public final class Constants {
 
         public static final double FEEDER_VELOCITY = -5000;
 
-        public static final int OFFSET_INCREMENT = 50;
+        public static final int OFFSET_INCREMENT = 25;
 
         public static final double INDEXER_SPEED = 0.5;
 

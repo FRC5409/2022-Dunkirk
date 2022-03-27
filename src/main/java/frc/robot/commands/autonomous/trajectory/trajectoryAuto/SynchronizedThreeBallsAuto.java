@@ -92,10 +92,10 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
 
         Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    List.of(),
-                                                                   new Pose2d((5.14+0.75*Math.cos(Math.PI*13/36)-0.01*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36)-0.01*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+                                                                   new Pose2d((5.14+0.75*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
                                                                    kAuto.configForwards);
 
-        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d((5.14+0.75*Math.cos(Math.PI*13/36)-0.01*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36)-0.01*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d((5.14+0.75*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
                                                                    List.of(),
                                                                    new Pose2d(1.7/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    kAuto.configBackwards);
