@@ -49,6 +49,8 @@ public class SimpleShooterOdometry extends ShooterOdometryBase {
         kLastDistance = 0;
         kLastTarget = null;
         kLastUpdate = Timer.getFPGATimestamp();
+
+        filter.reset();
     }
 
     public double getDistance() {
