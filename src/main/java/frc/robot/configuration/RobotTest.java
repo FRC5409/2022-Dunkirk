@@ -119,12 +119,6 @@ public class RobotTest implements RobotConfiguration {
         SmartDashboard.putData("Auto Chooser", autoCommandSelector);
 
         Shuffleboard.getTab("Shooter")
-            .add("Hood up", new HoodUp(turret));
-
-        Shuffleboard.getTab("Shooter")
-            .add("Hood down", new HoodDown(turret));
-
-        Shuffleboard.getTab("Shooter")
             .add("Shooter Offset - Increment", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() + Constants.Shooter.OFFSET_INCREMENT)));
 
         Shuffleboard.getTab("Shooter")

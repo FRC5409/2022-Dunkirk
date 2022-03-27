@@ -115,9 +115,6 @@ public class RobotTraining implements RobotConfiguration {
         shooterConfiguration = new ValueProperty<>();
         shooterArmed = new ValueProperty<>();
 
-        Shuffleboard.getTab("Turret").add("Hood up", new HoodUp(turret));
-        Shuffleboard.getTab("Turret").add("Hood down", new HoodDown(turret));
-
         try {
             configureTraining();
         } catch (IOException e) {
