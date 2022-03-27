@@ -1,7 +1,7 @@
 package frc.robot.base.shooter.odometry;
 
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import frc.robot.base.shooter.target.FilterBase;
 import frc.robot.utils.Equation;
 import frc.robot.utils.Range;
 import frc.robot.utils.Vector2;
@@ -18,10 +18,11 @@ public class DriveByShooterOdometry extends ActiveShooterOdometry {
 
     public DriveByShooterOdometry(
         ShooterOdometryModel model,
+        FilterBase filter,
         Equation kFlywheelOffsetMapping,
         Equation kTurretOffsetMapping
     ) {
-        super(model);
+        super(model, filter);
         
         kLastFlywheelOffset = 0;
         kLastTurretOffset = 0;

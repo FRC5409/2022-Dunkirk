@@ -1,22 +1,21 @@
 package frc.robot.base.shooter.odometry;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import frc.robot.base.shooter.target.FilterBase;
 import frc.robot.utils.Vector2;
 import frc.robot.utils.Vector3;
 
 /**
  * Experimental shooter position relative odometry.
  */
-public class ActiveShooterOdometry extends OdometryBase {
+public class ActiveShooterOdometry extends SimpleShooterOdometry {
     protected double  kLastSpeed;
-    protected Vector2 kLastTarget;
     protected Vector2 kLastVelocity;
-    protected double  kLastDistance;
     protected double  kLastRotation;
     protected Vector2 kLastDirection;
 
-    public ActiveShooterOdometry(ShooterOdometryModel model) {
-        super(model);
+    public ActiveShooterOdometry(ShooterOdometryModel model, FilterBase filter) {
+        super(model, filter);
         
         kLastDirection = new Vector2();
         kLastVelocity = new Vector2();
@@ -24,6 +23,11 @@ public class ActiveShooterOdometry extends OdometryBase {
         kLastRotation = 0;
         kLastTarget = new Vector2();
         kLastSpeed = 0;
+    }
+
+    @Override
+    public void update(Vector2 target) {
+        update(target, kLastSpeed, kLastRotation);
     }
 
     /**
@@ -62,10 +66,6 @@ public class ActiveShooterOdometry extends OdometryBase {
         kLastSpeed = 0;
     }
 
-    public Vector2 getTarget() {
-        return kLastTarget;
-    }
-
     public Vector2 getVelocity() {
         return kLastVelocity;
     }
@@ -74,16 +74,8 @@ public class ActiveShooterOdometry extends OdometryBase {
         return kLastDirection;
     }
 
-    public double getDistance() {
-        return kLastDistance;
-    }
-
     public double getRotation() {
         return kLastRotation;
-    }
-
-    public ShooterOdometryModel getModel() {
-        return model;
     }
 
     public double getSpeed() {

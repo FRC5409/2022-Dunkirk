@@ -11,11 +11,11 @@ import frc.robot.utils.Vector3;
 /**
  * Experimental shooter position relative odometry.
  */
-public class SimpleShooterOdometry extends OdometryBase {
+public class SimpleShooterOdometry extends ShooterOdometryBase {
     protected final FilterBase filter;
 
-    protected double kLastDistance;
     protected Vector2 kLastTarget;
+    protected double kLastDistance;
     protected double kLastUpdate;
 
 

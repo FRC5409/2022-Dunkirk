@@ -5,12 +5,11 @@ import frc.robot.utils.Matrix3;
 import frc.robot.utils.Vector2;
 import frc.robot.utils.Vector3;
 
-public abstract class OdometryBase implements Sendable {
+public abstract class ShooterOdometryBase implements Sendable {
     protected final ShooterOdometryModel model;
-    
     protected final Matrix3 kViewProjection;
 
-    public OdometryBase(ShooterOdometryModel model) {
+    public ShooterOdometryBase(ShooterOdometryModel model) {
         double kPitch = -Math.toRadians(model.kPitch);
         
         kViewProjection = new Matrix3(
@@ -23,6 +22,10 @@ public abstract class OdometryBase implements Sendable {
     }
 
     public abstract void reset();
+
+    public ShooterOdometryModel getModel() {
+        return model;
+    }
 
     protected Vector3 calculateTargetProjection(Vector2 target) {
         Vector2 viewTarget = new Vector2(
