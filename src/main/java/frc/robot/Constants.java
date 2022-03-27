@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.Map;
 
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 
@@ -423,5 +424,11 @@ public final class Constants {
         protected static double DISTANCE_OFFSET = - 2.0;
 
         public static final double ROTATION_P = 0.74;
+    }
+
+    public static final class Lights {
+        public static final Port SERIAL_CHANNEL = Port.kMXP;
+        public static final int SERIAL_BAUD_RATE = 96000;
+
     }
 }

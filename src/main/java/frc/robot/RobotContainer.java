@@ -9,6 +9,7 @@ import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.Limelight;
 
 import java.util.Objects;
@@ -26,6 +27,7 @@ import frc.robot.subsystems.Climber;
 
 public final class RobotContainer {
     public final ValueProperty<Boolean> climberActive;
+    
     public final ShooterFlywheel Flywheel;
     public final ShooterTurret   turret;
     public final DriveTrain      DriveTrain;
@@ -33,6 +35,7 @@ public final class RobotContainer {
     public final Indexer         Indexer;
     public final Intake          Intake;
     public final Climber         Climber;
+    public final Lights          lights;
     
     public final Joystick        joystickSecondary;
     public final Joystick        joystickPrimary;
@@ -48,6 +51,7 @@ public final class RobotContainer {
         Climber     = new Climber(climberActive);
         Indexer     = new Indexer();
         Intake      = new Intake();
+        lights      = new Lights();
     //  Pigeon      = new Pigeon();
         turret      = new ShooterTurret();
 
