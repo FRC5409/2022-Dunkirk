@@ -33,7 +33,7 @@ import frc.robot.commands.indexer.ReverseIntakeIndexer;
 import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.commands.shooter.*;
-import frc.robot.commands.test.ShooterOdometryTest;
+import frc.robot.commands.test.state.AlignTrackingState;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
@@ -137,7 +137,7 @@ public class RobotTest implements RobotConfiguration {
     private void configureCommands() {
         DriveTrain.setDefaultCommand(defaultDrive);
         Climber.setDefaultCommand(new DefaultElevator(Climber, joystickSecondary.getController()));
-        limelight.setDefaultCommand(new ShooterOdometryTest(turret, DriveTrain, limelight, shooterConfiguration));
+        limelight.setDefaultCommand(new AlignTrackingState(turret, DriveTrain, limelight, shooterConfiguration));
     }
 
 

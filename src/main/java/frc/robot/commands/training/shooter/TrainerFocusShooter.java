@@ -1,4 +1,4 @@
-package frc.robot.commands.training;
+package frc.robot.commands.training.shooter;
 
 import frc.robot.Constants;
 import frc.robot.base.Property;
@@ -9,7 +9,7 @@ import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
 import frc.robot.commands.shooter.state.AlignShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
 import frc.robot.commands.shooter.state.SweepShooterState;
-import frc.robot.commands.training.state.TrainerFocusShooterState;
+import frc.robot.commands.training.shooter.state.TrainerFocusShooterState;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.training.TrainerContext;

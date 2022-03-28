@@ -1,4 +1,4 @@
-package frc.robot.commands.training;
+package frc.robot.commands.training.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;

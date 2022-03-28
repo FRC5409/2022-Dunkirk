@@ -1,17 +1,16 @@
-package frc.robot.commands.training;
+package frc.robot.commands.training.shooter;
 
-import frc.robot.Constants;
 import frc.robot.training.Setpoint;
 import frc.robot.training.TrainerDashboard;
 import frc.robot.training.TrainerContext;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class ResetTargetSetpoint extends CommandBase {
+public class UndoTargetSetpoint extends CommandBase {
     private final TrainerContext _context;
     private final TrainerDashboard _dasboard;
 
-    public ResetTargetSetpoint(TrainerDashboard dashboard, TrainerContext context) {
+    public UndoTargetSetpoint(TrainerDashboard dashboard, TrainerContext context) {
         _context = context;
         _dasboard = dashboard;
     }
@@ -22,7 +21,10 @@ public class ResetTargetSetpoint extends CommandBase {
 
     @Override
     public void execute() {
-        _context.setSetpoint(new Setpoint(Constants.Shooter.SPEED_RANGE.mid(), Constants.Shooter.SPEED_RANGE));
+        Setpoint targetParent = _context.getSetpoint().getParent();
+        if (targetParent != null)
+            _context.setSetpoint(targetParent);
+        
         _dasboard.update();
     }
 

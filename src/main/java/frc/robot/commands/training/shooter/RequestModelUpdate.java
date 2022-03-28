@@ -1,4 +1,4 @@
-package frc.robot.commands.training;
+package frc.robot.commands.training.shooter;
 
 import java.util.concurrent.Future;
 
