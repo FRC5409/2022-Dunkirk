@@ -5,27 +5,21 @@
 package frc.robot.commands;
 
 import frc.robot.Constants;
-import frc.robot.Constants.kDriveTrain;
 import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Pigeon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /** An example command that uses an example subsystem. */
 public class DefaultElevator extends CommandBase {
     @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
     private final Climber climber;
-    // private final Pigeon pigeon;
     private final XboxController joystick;
 
     private final Timer timer = new Timer();
 
     /**
-     * Creates a new DefaultDrive
+     * Creates a new DefaultElevator
      * .
      *
      * @param subsystem The subsystem used by this command.
@@ -33,10 +27,8 @@ public class DefaultElevator extends CommandBase {
      */
     public DefaultElevator(Climber _climber, XboxController _joystick) {
         climber = _climber;
-        // pigeon = _pigeon;
         joystick = _joystick;
 
-        // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(_climber);
     }
 
@@ -73,13 +65,22 @@ public class DefaultElevator extends CommandBase {
             int pov = joystick.getPOV();
 
             if (pov == 0) {
-                CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
+                this.andThen(new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
+                this.cancel();
+                // CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
             } else if (pov == 90) {
-                CommandScheduler.getInstance().schedule(false, new ToggleClimberLockCommand(climber));
+                this.andThen(new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
+                this.cancel();
+                // CommandScheduler.getInstance().schedule(false, new ToggleClimberLockCommand(climber));
             } else if (pov == 180) {
-                CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_MIN, true));
-            } else if (pov == 270)
-                CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_LOW_RUNG));
+                this.andThen(new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
+                this.cancel();
+                // CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_MIN, true));
+            } else if (pov == 270) {
+                this.andThen(new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
+                this.cancel();
+                // CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_LOW_RUNG));
+            }
         }
     }
 

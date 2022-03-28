@@ -17,12 +17,10 @@ public class ElevateTo extends CommandBase {
     // private final XboxController m_joystick;
     private final Climber climber;
     private double toPos;
-    private boolean userVelForEnd = false;
+    private boolean useVelForEnd = false;
     private boolean lockOnDescend = false;
 
     boolean started = false;
-
-    private int direction = Constants.kClimber.DIRECTION_STATIONARY;
     private final Timer timer = new Timer();
 
     public ElevateTo(Climber subsystem, double endPos, boolean _lockOnDescend) {
@@ -70,26 +68,22 @@ public class ElevateTo extends CommandBase {
         timer.start();
 
         started = false;
-        if (toPos > climber.getPosition()) {
-            direction = Constants.kClimber.DIRECTION_EXTEND;
-        } else if (toPos < climber.getPosition()) {
-            direction = Constants.kClimber.DIRECTION_RETRACT;
-        }
     }
 
     @Override
     public void execute() {
+        if (!useVelForEnd && Math.abs(climber.getRPM()) >= 1.0)
+            useVelForEnd = true;
+
+        if (started)
+            return;
+
         if (timer.hasElapsed(0.2) || !climber.getLocked()) {
             climber.moveArm(toPos);
-
-            if (!started)
-                started = true;
-
             timer.stop();
-        }
 
-        if (Math.abs(climber.getRPM()) > 1.0)
-            userVelForEnd = true;
+            started = true;
+        }
     }
 
     // Called once the command ends or is interrupted.
@@ -106,6 +100,6 @@ public class ElevateTo extends CommandBase {
     public boolean isFinished() {
         return (climber.getDirection() == Constants.kClimber.DIRECTION_EXTEND && climber.getPosition() >= toPos)
                 || (climber.getDirection() == Constants.kClimber.DIRECTION_RETRACT && climber.getPosition() <= toPos)
-                || (userVelForEnd && Math.abs(climber.getRPM()) < 1.0);
+                || (useVelForEnd && Math.abs(climber.getRPM()) < 1.0);
     }
 }
