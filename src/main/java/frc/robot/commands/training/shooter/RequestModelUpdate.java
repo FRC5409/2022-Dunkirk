@@ -56,8 +56,7 @@ public class RequestModelUpdate extends CommandBase {
                 BundleSendable payload = (BundleSendable) response.getSendableResult();
 
                 ArraySendable parameters = (ArraySendable) payload.getSendable("trainer.model.parameters");
-
-                Model4 lastModel = context.getExecutionModel();
+                
                 context.setExecutionModel(
                     new Model4(
                         parameters.get(3, ValueSendable.class).getValue(double.class),

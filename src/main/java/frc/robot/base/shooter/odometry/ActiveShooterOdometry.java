@@ -10,10 +10,9 @@ import frc.robot.utils.Vector3;
  */
 public class ActiveShooterOdometry extends SimpleShooterOdometry {
     protected double  kLastSpeed;
-    protected Vector2 kLastVelocity;
     protected double  kLastRotation;
+    protected Vector2 kLastVelocity;
     protected Vector2 kLastDirection;
-    private boolean   kActive;
 
     public ActiveShooterOdometry(ShooterOdometryModel model, FilterBase filter) {
         super(model, filter);
@@ -24,7 +23,6 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
         kLastRotation = 0;
         kLastTarget = new Vector2();
         kLastSpeed = 0;
-        kActive = false;
     }
 
     @Override
@@ -51,8 +49,8 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
         double cy = Math.sin(rotation);
 
         kLastDirection = new Vector2(
-            tempVector.x * cy + tempVector.y * cx,
-            tempVector.x * cx - tempVector.y * cy
+            tempVector.x * cx - tempVector.y * cy,
+            tempVector.x * cy + tempVector.y * cx
         ).unit();
 
         kLastRotation = safe(Math.acos(kLastDirection.x)) * Math.signum(kLastDirection.y);
@@ -64,6 +62,7 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
     @Override
     public void reset() {
         super.reset();
+        kLastDirection = new Vector2();
         kLastVelocity = new Vector2();
         kLastRotation = 0;
         kLastSpeed = 0;
@@ -87,10 +86,9 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
 
     @Override
     public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
         builder.addStringProperty("Velocity", () -> getVelocity().toString(), null);
         builder.addStringProperty("Direction", () -> getDirection().toString(), null);
-        builder.addStringProperty("Target", () -> getTarget().toString(), null);
-        builder.addDoubleProperty("Distance", this::getDistance, null);
         builder.addDoubleProperty("Speed", this::getSpeed, null);
         builder.addDoubleProperty("Rotation", () -> Math.toDegrees(this.getRotation()), null);
     }
