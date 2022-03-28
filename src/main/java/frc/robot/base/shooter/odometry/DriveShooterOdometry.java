@@ -10,8 +10,8 @@ import frc.robot.utils.Vector2;
  * Experimental drive by shooter odometry
  */
 public class DriveShooterOdometry extends ActiveShooterOdometry {
-    private final Equation kFlywheelOffsetMapping;
-    private final Equation kTurretOffsetMapping;
+    private final Equation flywheelOffsetModel;
+    private final Equation turretOffsetModel;
 
     private double kLastTurretOffset;
     private double kLastFlywheelOffset;
@@ -19,16 +19,16 @@ public class DriveShooterOdometry extends ActiveShooterOdometry {
     public DriveShooterOdometry(
         ShooterOdometryModel model,
         FilterBase filter,
-        Equation kFlywheelOffsetMapping,
-        Equation kTurretOffsetMapping
+        Equation flywheelOffsetModel,
+        Equation turretOffsetModel
     ) {
         super(model, filter);
         
         kLastFlywheelOffset = 0;
         kLastTurretOffset = 0;
 
-        this.kFlywheelOffsetMapping = kFlywheelOffsetMapping;
-        this.kTurretOffsetMapping = kTurretOffsetMapping;
+        this.flywheelOffsetModel = flywheelOffsetModel;
+        this.turretOffsetModel = turretOffsetModel;
     }
 
 
@@ -36,11 +36,8 @@ public class DriveShooterOdometry extends ActiveShooterOdometry {
     public void update(Vector2 target, double speed, double rotation) {
         super.update(target, speed, rotation);
 
-        kLastFlywheelOffset = kFlywheelOffsetMapping.calculate(
-            Range.clamp(0, kLastDirection.x, 1));
-
-        kLastTurretOffset = kTurretOffsetMapping.calculate(
-            Range.clamp(0, kLastDirection.y, 1));
+        kLastFlywheelOffset = flywheelOffsetModel.calculate(kLastVelocity.x);
+        kLastTurretOffset = turretOffsetModel.calculate(kLastVelocity.y);
     }
 
     public void reset() {
