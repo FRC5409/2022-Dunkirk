@@ -5,12 +5,12 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
+import frc.robot.base.Model4;
 import frc.robot.base.shooter.ShooterMode;
-import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 
 public class TrainerContext {
-    private Map<ShooterMode, ShooterExecutionModel> executionModels;
+    private Map<ShooterMode, Model4> executionModels;
     private Map<ShooterMode, ShooterOdometryModel> odometryModels;
     private ShooterMode mode;
     private Setpoint target;
@@ -23,11 +23,11 @@ public class TrainerContext {
         distance = 0.0;
     }
 
-    public void setExecutionModel(ShooterExecutionModel model) {
+    public void setExecutionModel(Model4 model) {
         setExecutionModel(mode, model);
     }
 
-    public void setExecutionModel(ShooterMode mode, ShooterExecutionModel model) {
+    public void setExecutionModel(ShooterMode mode, Model4 model) {
         executionModels.put(mode, model);
     }
 
@@ -52,12 +52,12 @@ public class TrainerContext {
     }
 
     @Nullable
-    public ShooterExecutionModel getExecutionModel() {
+    public Model4 getExecutionModel() {
         return executionModels.get(mode);
     }
     
     @Nullable
-    public ShooterExecutionModel getExecutionModel(ShooterMode mode) {
+    public Model4 getExecutionModel(ShooterMode mode) {
         return executionModels.get(mode);
     }
     

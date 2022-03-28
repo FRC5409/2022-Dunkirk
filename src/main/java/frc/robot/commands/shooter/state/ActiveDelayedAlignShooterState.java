@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.command.TimedStateCommand;
-import frc.robot.base.shooter.odometry.DriveByShooterOdometry;
+import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
@@ -18,14 +18,14 @@ import frc.robot.utils.Vector2;
 
 // TODO update doc
 public class ActiveDelayedAlignShooterState extends TimedStateCommand {
-    private Property<DriveByShooterOdometry> sharedOdometry;
+    private Property<DriveShooterOdometry> sharedOdometry;
     
     private final ShooterTurret turret;
     private final DriveTrain drivetrain;
     private final Limelight limelight;
     private final Trigger trigger;
     
-    private DriveByShooterOdometry odometry;
+    private DriveShooterOdometry odometry;
     private boolean done;
 
     public ActiveDelayedAlignShooterState(
@@ -33,7 +33,7 @@ public class ActiveDelayedAlignShooterState extends TimedStateCommand {
         DriveTrain drivetrain,
         Limelight limelight,
         Trigger trigger,
-        Property<DriveByShooterOdometry> sharedOdometry
+        Property<DriveShooterOdometry> sharedOdometry
     ) {
         this.sharedOdometry = sharedOdometry;
         this.drivetrain = drivetrain;

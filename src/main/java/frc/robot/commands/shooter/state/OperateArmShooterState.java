@@ -2,11 +2,10 @@ package frc.robot.commands.shooter.state;
 
 import org.jetbrains.annotations.NotNull;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import frc.robot.base.Model4;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterConfiguration;
-import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
@@ -31,7 +30,7 @@ public class OperateArmShooterState extends StateCommandBase {
     private final Limelight limelight;
     
     private SimpleShooterOdometry odometry;
-    private ShooterExecutionModel model;
+    private Model4 model;
 
     private boolean done;
     

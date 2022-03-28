@@ -2,12 +2,12 @@ package frc.robot.commands.autonomous.setPoint.setPointsAuto;
 
 
 import frc.robot.Constants;
+import frc.robot.base.Model4;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
-import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import edu.wpi.first.wpilibj.XboxController;
 // commands
 import edu.wpi.first.wpilibj2.command.CommandBase;

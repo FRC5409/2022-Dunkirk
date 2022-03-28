@@ -7,13 +7,13 @@ import frc.robot.Constants;
 //Constants
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
-import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.RobotConfiguration;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.Joystick;
+import frc.robot.base.Model4;
 import frc.robot.base.Property;
 // Misc
 import edu.wpi.first.wpilibj.XboxController;
@@ -229,7 +229,7 @@ public class RobotTraining implements RobotConfiguration {
 
         trainerContext.setExecutionModel(
             ShooterMode.kNear, 
-            new ShooterExecutionModel(
+            new Model4(
                 0d, 0d, 0d, 0d,
                 1d,
                 Constants.Shooter.DISTANCE_RANGE,
@@ -239,7 +239,7 @@ public class RobotTraining implements RobotConfiguration {
 
         trainerContext.setExecutionModel(
             ShooterMode.kFar, 
-            new ShooterExecutionModel(
+            new Model4(
                 0d, 0d, 0d, 0d,
                 1d,
                 Constants.Shooter.DISTANCE_RANGE,

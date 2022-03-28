@@ -1,7 +1,7 @@
 package frc.robot.training;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.base.shooter.odometry.ShooterExecutionModel;
+import frc.robot.base.Model4;
 
 public class TrainerDashboard {
     private final TrainerContext context;
@@ -11,7 +11,7 @@ public class TrainerDashboard {
     }
 
     public void update() {
-        ShooterExecutionModel executionModel = context.getExecutionModel();
+        Model4 executionModel = context.getExecutionModel();
         Setpoint target = context.getSetpoint();
 
         SmartDashboard.putString("Trainer - Mode", context.getMode().name());

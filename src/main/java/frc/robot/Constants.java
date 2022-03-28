@@ -15,11 +15,11 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.VisionPipeline;
-import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 import frc.robot.base.shooter.target.FilterBase;
 import frc.robot.base.shooter.target.FilterFactory;
 import frc.robot.base.shooter.target.TargetFiltering;
+import frc.robot.base.Model4;
 import frc.robot.base.shooter.HoodPosition;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.utils.*;
@@ -372,7 +372,7 @@ public final class Constants {
                     new Vector3(7/12, 0, 15/12),
                     new Vector2(59.6, 49.7)
                 ),
-                new ShooterExecutionModel(
+                new Model4(
                     2.552187442779541,
                     0.5686905980110168,
                     -0.6887820363044739,

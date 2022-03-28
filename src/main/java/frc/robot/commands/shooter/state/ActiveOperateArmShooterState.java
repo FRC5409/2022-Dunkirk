@@ -4,12 +4,11 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import frc.robot.base.Model4;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterConfiguration;
-import frc.robot.base.shooter.odometry.DriveByShooterOdometry;
-import frc.robot.base.shooter.odometry.ShooterExecutionModel;
+import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
@@ -27,7 +26,7 @@ import frc.robot.Constants;
  * Experimental
  */
 public class ActiveOperateArmShooterState extends StateCommandBase {
-    private final Property<DriveByShooterOdometry> sharedOdometry;
+    private final Property<DriveShooterOdometry> sharedOdometry;
     private final Property<ShooterConfiguration> configuration;
     private final Property<Integer> offset;
     private final Property<Boolean> armed;
@@ -37,8 +36,8 @@ public class ActiveOperateArmShooterState extends StateCommandBase {
     private final DriveTrain drivetrain;
     private final Limelight limelight;
     
-    private DriveByShooterOdometry odometry;
-    private ShooterExecutionModel model;
+    private DriveShooterOdometry odometry;
+    private Model4 model;
 
     private boolean done;
     
@@ -48,7 +47,7 @@ public class ActiveOperateArmShooterState extends StateCommandBase {
         DriveTrain drivetrain,
         Limelight limelight,
         Property<ShooterConfiguration> configuration,
-        Property<DriveByShooterOdometry> sharedOdometry,
+        Property<DriveShooterOdometry> sharedOdometry,
         Property<Integer> offset,
         Property<Boolean> armed
     ) {

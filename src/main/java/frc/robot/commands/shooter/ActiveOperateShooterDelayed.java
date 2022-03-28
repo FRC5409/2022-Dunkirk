@@ -7,7 +7,7 @@ import frc.robot.base.ValueProperty;
 import frc.robot.base.command.ProxyStateCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
-import frc.robot.base.shooter.odometry.DriveByShooterOdometry;
+import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
@@ -28,7 +28,7 @@ import frc.robot.commands.shooter.state.SweepShooterState;
  * @author Keith Davies
  */
 public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
-    private final Property<DriveByShooterOdometry> sharedOdometry;
+    private final Property<DriveShooterOdometry> sharedOdometry;
     private final Property<ShooterConfiguration> configuration;
 
     public ActiveOperateShooterDelayed(
@@ -64,7 +64,7 @@ public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
 
         // Initialize odometry
         sharedOdometry.set(
-            new DriveByShooterOdometry(
+            new DriveShooterOdometry(
                 config.getOdometryModel(), 
                 config.getTargetFilter(),
                 Constants.Shooter.FLYWHEEL_OFFSET_MAPPING, 

@@ -2,13 +2,13 @@ package frc.robot.base.shooter;
 
 import org.jetbrains.annotations.Nullable;
 
-import frc.robot.base.shooter.odometry.ShooterExecutionModel;
+import frc.robot.base.Model4;
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 import frc.robot.base.shooter.target.FilterBase;
 import frc.robot.base.shooter.target.FilterFactory;
 
 public class ShooterConfiguration {
-    private final ShooterExecutionModel executionModel;
+    private final Model4 executionModel;
     private final ShooterOdometryModel odometryModel;
     private final FilterFactory targetFilterFactory;
     private final VisionPipeline visionPipeline;
@@ -36,7 +36,7 @@ public class ShooterConfiguration {
         VisionPipeline visionPipeline,
         FilterFactory<?> targetFilterFactory,
         ShooterOdometryModel odometryModel,
-        ShooterExecutionModel executionModel
+        Model4 executionModel
     ) {
         this.targetFilterFactory = targetFilterFactory;
         this.hoodConfiguration = hoodConfiguration;
@@ -59,7 +59,7 @@ public class ShooterConfiguration {
     }
 
     @Nullable
-    public ShooterExecutionModel getExecutionModel() {
+    public Model4 getExecutionModel() {
         return executionModel;
     }
 

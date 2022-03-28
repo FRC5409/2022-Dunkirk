@@ -3,7 +3,7 @@ package frc.robot.commands.training.shooter;
 import java.util.concurrent.Future;
 
 import frc.robot.Constants;
-import frc.robot.base.shooter.odometry.ShooterExecutionModel;
+import frc.robot.base.Model4;
 import frc.robot.training.TrainerDashboard;
 import frc.robot.training.TrainerContext;
 
@@ -57,14 +57,13 @@ public class RequestModelUpdate extends CommandBase {
 
                 ArraySendable parameters = (ArraySendable) payload.getSendable("trainer.model.parameters");
 
-                ShooterExecutionModel lastModel = context.getExecutionModel();
+                Model4 lastModel = context.getExecutionModel();
                 context.setExecutionModel(
-                    new ShooterExecutionModel(
+                    new Model4(
                         parameters.get(3, ValueSendable.class).getValue(double.class),
                         parameters.get(2, ValueSendable.class).getValue(double.class),
                         parameters.get(1, ValueSendable.class).getValue(double.class),
                         parameters.get(0, ValueSendable.class).getValue(double.class),
-                        lastModel.kOffset,
                         Constants.Shooter.DISTANCE_RANGE,
                         Constants.Shooter.SPEED_RANGE
                     )

@@ -4,9 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.base.Model4;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
-import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
@@ -37,7 +37,7 @@ public class TrainerFocusShooterState extends StateCommandBase {
     private final ShooterTurret turret;
     private final Limelight limelight;
 
-    private ShooterExecutionModel model;
+    private Model4 model;
     private SimpleShooterOdometry odometry;
     private boolean done;
 

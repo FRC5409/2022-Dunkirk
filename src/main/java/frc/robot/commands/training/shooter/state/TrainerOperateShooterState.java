@@ -4,9 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.base.Model4;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
-import frc.robot.base.shooter.odometry.ShooterExecutionModel;
 import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
@@ -42,7 +42,7 @@ public class TrainerOperateShooterState extends StateCommandBase {
     private final Indexer indexer;
 
     private SimpleShooterOdometry odometry;
-    private ShooterExecutionModel model;
+    private Model4 model;
     private boolean active;
     
     public TrainerOperateShooterState(
