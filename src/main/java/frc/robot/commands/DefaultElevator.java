@@ -60,11 +60,6 @@ public class DefaultElevator extends CommandBase {
             double l = joystick.getLeftTriggerAxis();
             double r = joystick.getRightTriggerAxis();
 
-            // if (timer.hasElapsed(0.2) && !allow) {
-            // timer.stop();
-            // allow = true;
-            // }
-
             if ((l > 0 || r > 0) && climber.getLocked()) {
                 climber.unlockArm();
                 timer.reset();
@@ -75,22 +70,6 @@ public class DefaultElevator extends CommandBase {
                 timer.stop();
             }
 
-            // if (allow && timer.hasElapsed(0.2) && !climber.getLocked()) {
-            // climber.moveArm(r, l);
-            // timer.stop();
-            // } else {
-            // climber.moveArm(0, 0);
-
-            // if (l > 0 || r > 0) {
-            // climber.unlockArm();
-
-            // timer.reset();
-            // timer.start();
-
-            // allow = true;
-            // }
-            // }
-
             int pov = joystick.getPOV();
 
             if (pov == 0) {
@@ -98,7 +77,7 @@ public class DefaultElevator extends CommandBase {
             } else if (pov == 90) {
                 CommandScheduler.getInstance().schedule(false, new ToggleClimberLockCommand(climber));
             } else if (pov == 180) {
-                CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_MIN));
+                CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_MIN, true));
             } else if (pov == 270)
                 CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_LOW_RUNG));
         }

@@ -18,11 +18,21 @@ public class ElevateTo extends CommandBase {
     private final Climber climber;
     private double toPos;
     private boolean userVelForEnd = false;
+    private boolean lockOnDescend = false;
 
     boolean started = false;
 
     private int direction = Constants.kClimber.DIRECTION_STATIONARY;
     private final Timer timer = new Timer();
+
+    public ElevateTo(Climber subsystem, double endPos, boolean _lockOnDescend) {
+        climber = subsystem;
+        toPos = endPos;
+        // Use addRequirements() here to declare subsystem dependencies.
+        lockOnDescend = _lockOnDescend;
+
+        addRequirements(subsystem);
+    }
 
     /**
      * Creates a new ExampleCommand.
@@ -87,7 +97,7 @@ public class ElevateTo extends CommandBase {
     public void end(boolean interrupted) {
         climber.disableMotors();
 
-        if (direction == Constants.kClimber.DIRECTION_RETRACT)
+        if (lockOnDescend)
             climber.lockArm();
     }
 
