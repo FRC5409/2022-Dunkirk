@@ -222,6 +222,10 @@ public class RobotTraining implements RobotConfiguration {
             .and(joystickSecondary.getButton(ButtonType.kA).negate())
             .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight));
     }  
+
+    public void teleopPeriodic(){
+        
+    }
     
     private void configureTraining() throws IOException {
         trainerContext = new TrainerContext(

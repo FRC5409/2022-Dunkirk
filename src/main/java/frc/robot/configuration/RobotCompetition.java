@@ -136,11 +136,11 @@ public class RobotCompetition implements RobotConfiguration {
         Shuffleboard.getTab("Shooter")
             .add("Hood down", new HoodDown(turret));
 
-        Shuffleboard.getTab("SmartDashboard")
-            .add("Shooter Offset - Increment", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() + Constants.Shooter.OFFSET_INCREMENT)));
+        SmartDashboard
+            .putData("Shooter Offset - Increment", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() + Constants.Shooter.OFFSET_INCREMENT)));
 
-        Shuffleboard.getTab("SmartDashboard")
-            .add("Shooter Offset - Decrement", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() - Constants.Shooter.OFFSET_INCREMENT)));
+        SmartDashboard
+            .putData("Shooter Offset - Decrement", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() - Constants.Shooter.OFFSET_INCREMENT)));
     }
 
 
@@ -149,6 +149,9 @@ public class RobotCompetition implements RobotConfiguration {
         Climber.setDefaultCommand(new DefaultElevator(Climber, joystickSecondary.getController()));
     }
 
+    public void teleopPeriodic(){
+        SmartDashboard.putNumber("Shooter Offset", shooterOffset.get());
+    }
 
     /**
      * Use this method to define your button->command mappings. Buttons can be
