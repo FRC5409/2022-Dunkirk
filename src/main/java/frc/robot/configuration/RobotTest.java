@@ -140,6 +140,10 @@ public class RobotTest implements RobotConfiguration {
         Climber.setDefaultCommand(new DefaultElevator(Climber, joystickSecondary.getController()));
     }
 
+    public void teleopPeriodic(){
+        
+    }
+
 
     /**
      * Use this method to define your button->command mappings. Buttons can be

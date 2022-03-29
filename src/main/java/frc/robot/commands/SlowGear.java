@@ -30,7 +30,7 @@ public class SlowGear extends CommandBase {
   @Override
   public void initialize() {
 
-    SmartDashboard.putBoolean("LowGear", true);
+    // SmartDashboard.putBoolean("LowGear", true);
 
     hasShift = false;
 

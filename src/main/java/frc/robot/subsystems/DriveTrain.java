@@ -636,7 +636,7 @@ public class DriveTrain extends SubsystemBase {
         if(Constants.kConfig.DEBUG){
             SmartDashboard.putString("Solenoid", "Fast");
         }
-        SmartDashboard.putBoolean("isLowGear", false);
+        //SmartDashboard.putBoolean("isLowGear", false);
         dsl_gear.set(DoubleSolenoid.Value.kForward);
 
     }
@@ -648,7 +648,7 @@ public class DriveTrain extends SubsystemBase {
         if(Constants.kConfig.DEBUG){
             SmartDashboard.putString("Solenoid", "Slow");
         }
-        SmartDashboard.putBoolean("isLowGear", true);
+        //SmartDashboard.putBoolean("isLowGear", true);
         dsl_gear.set(DoubleSolenoid.Value.kReverse);
     }
 

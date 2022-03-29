@@ -36,7 +36,7 @@ public class ToggleShooterElevator extends CommandBase {
     @Override
     public void execute() {
         climberActive.set(!climberActive.get());
-        SmartDashboard.putBoolean("Climber active", climberActive.get());
+        // SmartDashboard.putBoolean("Climber active", climberActive.get());
     }
 
     @Override
