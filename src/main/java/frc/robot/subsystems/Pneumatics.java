@@ -6,7 +6,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PneumaticsStates;
 import frc.robot.Constants.kID;
-import frc.robot.Constants;
+import frc.robot.Constants.kPneumatics;
+import frc.robot.Constants.kConfig;
 
 /**
  * Class for the maintaining the pneumatics code.
@@ -35,14 +36,14 @@ public class Pneumatics extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    if(Constants.kConfig.DEBUG)
+    if(kConfig.DEBUG)
       SmartDashboard.putNumber("PSI", compressor1.getPressure());
 
     // Check if pressure is too low or too high
-    if (state != PneumaticsStates.kStarted && compressor1.getPressure() <= Constants.kPneumatics.MIN_PSI) {
+    if (state != PneumaticsStates.kStarted && compressor1.getPressure() <= kPneumatics.MIN_PSI) {
       startLoop();
       state = PneumaticsStates.kStarted;
-    } else if (state != PneumaticsStates.kEnded && compressor1.getPressure() >= Constants.kPneumatics.MAX_PSI) {
+    } else if (state != PneumaticsStates.kEnded && compressor1.getPressure() >= kPneumatics.MAX_PSI) {
       endLoop();
       state = PneumaticsStates.kEnded;
     }
@@ -53,7 +54,7 @@ public class Pneumatics extends SubsystemBase {
    * This method will set the closed loop to true.
    */
   private void startLoop() {
-    compressor1.enableAnalog(Constants.kPneumatics.MIN_PSI, Constants.kPneumatics.MAX_PSI);
+    compressor1.enableAnalog(kPneumatics.MIN_PSI, kPneumatics.MAX_PSI);
     ;
   }
 

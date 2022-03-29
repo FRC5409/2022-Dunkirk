@@ -93,12 +93,6 @@ public final class Constants {
         public final int Pigeon = 23;
     }
 
-    public static class Pneumatics {
-        public static final int MODULE = 1;
-        public static final double MIN_PSI = 20;
-        public static final double MAX_PSI = 30;
-    }
-
     public static enum PneumaticsStates {
         kStarted, kEnded, kAny
     }
