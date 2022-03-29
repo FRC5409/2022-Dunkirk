@@ -23,7 +23,7 @@ public class IndexerIntakeActive extends CommandBase {
         this.intake = intake;
 
         rumbleCommand = new JoystickRumble(0.5)
-            .addJoysticks(joystickMain, joystickSecondary)
+            .addJoysticks(joystickSecondary)
             .withDebounce(0.1)
             .withTimeout(0.5);
 

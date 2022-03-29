@@ -227,25 +227,25 @@ public class RobotTraining implements RobotConfiguration {
             new Setpoint(Constants.Training.DISTANCE_RANGE.mid(), Constants.Training.DISTANCE_RANGE)
         );
 
-        trainerContext.setExecutionModel(
-            ShooterMode.kNear, 
-            new Model4(
-                0d, 0d, 0d, 0d,
-                1d,
-                Constants.Shooter.DISTANCE_RANGE,
-                Constants.Shooter.SPEED_RANGE
-            )
-        );
+        // trainerContext.setExecutionModel(
+        //     ShooterMode.kNear, 
+        //     new Model4(
+        //         0d, 0d, 0d, 0d,
+        //         1d,
+        //         Constants.Shooter.DISTANCE_RANGE,
+        //         Constants.Shooter.SPEED_RANGE
+        //     )
+        // );
 
-        trainerContext.setExecutionModel(
-            ShooterMode.kFar, 
-            new Model4(
-                0d, 0d, 0d, 0d,
-                1d,
-                Constants.Shooter.DISTANCE_RANGE,
-                Constants.Shooter.SPEED_RANGE
-            )
-        );
+        // trainerContext.setExecutionModel(
+        //     ShooterMode.kFar, 
+        //     new Model4(
+        //         0d, 0d, 0d, 0d,
+        //         1d,
+        //         Constants.Shooter.DISTANCE_RANGE,
+        //         Constants.Shooter.SPEED_RANGE
+        //     )
+        // );
 
         trainerContext.setOdometryModel(
             ShooterMode.kFar,

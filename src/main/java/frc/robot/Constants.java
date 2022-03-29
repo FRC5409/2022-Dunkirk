@@ -316,7 +316,7 @@ public final class Constants {
         public static final Equation TURRET_MANUAL_OUTPUT_EASING =
             x -> 1 - 2 * Math.pow(2, 10*(Math.abs(ROTATION_RANGE.normalize(x)) - 1));
 
-        public static final Range TURRET_MANUAL_OUTPUT_RANGE = new Range(-0.7, 0.7);
+        public static final Range TURRET_MANUAL_OUTPUT_RANGE = new Range(-0.8, 0.8);
         
         // Smooth Sweep Constants
         public static final double   SHOOTER_SWEEP_PERIOD = 1.6*1.65789;
@@ -365,9 +365,9 @@ public final class Constants {
                 VisionPipeline.FAR_TARGETING,
                 TargetFiltering.none(),
                 new ShooterOdometryModel(
-                    90.0 - 61.5,
+                    90.0 - 54.8,
                     41.5 / 12.0,
-                    0,
+                    2d,
                     TARGET_LOST_TIME,
                     new Vector3(7/12, 0, 15/12),
                     new Vector2(59.6, 49.7)
@@ -377,7 +377,6 @@ public final class Constants {
                     0.5686905980110168,
                     -0.6887820363044739,
                     0.3927091360092163,
-                    2d,
                     Constants.Shooter.DISTANCE_RANGE,
                     Constants.Shooter.SPEED_RANGE
                 )
@@ -404,7 +403,7 @@ public final class Constants {
                 VisionPipeline.DEFAULT,
                 TargetFiltering.none(),
                 new ShooterOdometryModel(
-                    90.0 - 61.5,
+                    90.0 - 54.8,
                     41.5 / 12.0,
                     0,
                     TARGET_LOST_TIME,
@@ -419,7 +418,7 @@ public final class Constants {
                 VisionPipeline.DEFAULT,
                 TargetFiltering.none(),
                 new ShooterOdometryModel(
-                    90.0 - 61.5,
+                    90.0 - 54.8,
                     41.5 / 12.0,
                     0,
                     TARGET_LOST_TIME,

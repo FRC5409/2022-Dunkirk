@@ -55,7 +55,8 @@ public class AlignTrackingState extends StateCommandBase {
         SmartDashboard.putNumber("Shooter D", SmartDashboard.getNumber("Shooter D", 0.0));
         SmartDashboard.putNumber("Shooter Output Thresh", SmartDashboard.getNumber("Shooter Output Thresh", 0.0));
         SmartDashboard.putNumber("Target Offset Smoothing", SmartDashboard.getNumber("Target Offset Smoothing", 0.0));
-
+        SmartDashboard.putNumber("Shooter Simulated Offset", SmartDashboard.getNumber("Shooter Simulated Offset", 0.0));
+        
         addRequirements(limelight, turret);
     }
 
@@ -69,7 +70,7 @@ public class AlignTrackingState extends StateCommandBase {
         if (!turret.isEnabled())
             turret.enable();
 
-        turret.setIdleMode(IdleMode.kCoast);
+        turret.setIdleMode(IdleMode.kBrake);
         
         ShooterConfiguration config = configuration.get();
 
@@ -98,10 +99,11 @@ public class AlignTrackingState extends StateCommandBase {
             controller.setI(SmartDashboard.getNumber("Shooter I", 0.0));
             controller.setD(SmartDashboard.getNumber("Shooter D", 0.0));
 
-            double offset = Math.toRadians(odometry.getTurretOffset());
+            double offset = //Math.toRadians(odometry.getTurretOffset());
+                Math.toRadians(SmartDashboard.getNumber("Shooter Simulated Offset", 0.0));
 
             Vector2 kNextDirection = new Vector2(Math.cos(offset), Math.sin(offset)).unit();
-            Vector2 kActiveDirection = odometry.getDirection();
+            Vector2 kActiveDirection = odometry.getVisionDirection();
 
             double relativeRotation = Math.atan2(
                 kActiveDirection.x * kNextDirection.y - kActiveDirection.y * kNextDirection.x,
@@ -115,7 +117,9 @@ public class AlignTrackingState extends StateCommandBase {
 
             if (Math.abs(output) > SmartDashboard.getNumber("Shooter Output Thresh", 0))
                 turret.setReference(output, ReferenceType.kOutput);
-
+            else
+                turret.setReference(0, ReferenceType.kOutput);
+            
             // double rotation = odometry.getRotation();
             // turret.setRotationTarget(-rotation*2);
 
@@ -124,9 +128,13 @@ public class AlignTrackingState extends StateCommandBase {
             SmartDashboard.putNumber("Odometry Distance", odometry.getDistance());
             SmartDashboard.putNumber("Odometry Speed", odometry.getSpeed());
             SmartDashboard.putString("Odometry Target", odometry.getTarget().toString());
+            SmartDashboard.putString("Odometry Vision Direction", odometry.getVisionDirection().toString());
             SmartDashboard.putString("Odometry Direction", odometry.getDirection().toString());
             SmartDashboard.putString("Odometry Next Direction", kNextDirection.toString());
             SmartDashboard.putString("Odometry Velocity", odometry.getVelocity().toString());
+        } else {
+            done = true;
+            next("frc.robot.shooter:sweep");
         }
     }
 

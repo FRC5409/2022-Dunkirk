@@ -36,7 +36,7 @@ public class ShooterOdometryTracking extends ProxyStateCommandGroup {
         sharedOdometry = new ValueProperty<>();
 
         addCommands(
-            new SearchShooterState(limelight, false),
+            new SearchShooterState(limelight, true),
             new SweepShooterState(turret, limelight, Property.cast(sharedOdometry), direction),
             new AlignTrackingState(turret, drivetrain, limelight, sharedOdometry, configuration)
         ); 

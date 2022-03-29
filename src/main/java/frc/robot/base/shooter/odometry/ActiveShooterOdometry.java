@@ -1,6 +1,7 @@
 package frc.robot.base.shooter.odometry;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.base.shooter.target.FilterBase;
 import frc.robot.utils.Vector2;
 import frc.robot.utils.Vector3;
@@ -13,15 +14,15 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
     protected double  kLastRotation;
     protected Vector2 kLastVelocity;
     protected Vector2 kLastDirection;
+    protected Vector2 kLastVisionDirection;
 
     public ActiveShooterOdometry(ShooterOdometryModel model, FilterBase filter) {
         super(model, filter);
         
+        kLastVisionDirection = new Vector2();
         kLastDirection = new Vector2();
         kLastVelocity = new Vector2();
-        kLastDistance = 0;
         kLastRotation = 0;
-        kLastTarget = new Vector2();
         kLastSpeed = 0;
     }
 
@@ -48,6 +49,7 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
         double cx = Math.cos(rotation);
         double cy = Math.sin(rotation);
 
+        kLastVisionDirection = new Vector2(tempVector.x, tempVector.y).unit();
         kLastDirection = new Vector2(
             tempVector.x * cx - tempVector.y * cy,
             tempVector.x * cy + tempVector.y * cx
@@ -56,16 +58,22 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
         kLastRotation = safe(Math.acos(kLastDirection.x)) * Math.signum(kLastDirection.y);
         kLastVelocity = kLastDirection.scale(speed);
         kLastTarget = new Vector2(target);
+        kLastUpdate = Timer.getFPGATimestamp();
         kLastSpeed = speed;
     }
 
     @Override
     public void reset() {
         super.reset();
+        kLastVisionDirection = new Vector2();
         kLastDirection = new Vector2();
         kLastVelocity = new Vector2();
         kLastRotation = 0;
         kLastSpeed = 0;
+    }
+
+    public Vector2 getVisionDirection() {
+        return kLastVisionDirection;
     }
 
     public Vector2 getVelocity() {

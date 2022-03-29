@@ -14,7 +14,7 @@ import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.RobotConfiguration;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.Joystick;
-
+import frc.robot.base.Model3;
 // Misc
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -32,7 +32,10 @@ import frc.robot.commands.indexer.IntakeActive;
 import frc.robot.commands.indexer.ReverseIntakeIndexer;
 import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.subsystems.shooter.*;
+import frc.robot.training.TrainingModel3;
+import frc.robot.utils.Range;
 import frc.robot.commands.shooter.*;
+import frc.robot.commands.test.ShooterOdometryTracking;
 import frc.robot.commands.test.state.AlignTrackingState;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
@@ -137,7 +140,6 @@ public class RobotTest implements RobotConfiguration {
     private void configureCommands() {
         DriveTrain.setDefaultCommand(defaultDrive);
         Climber.setDefaultCommand(new DefaultElevator(Climber, joystickSecondary.getController()));
-        limelight.setDefaultCommand(new AlignTrackingState(turret, DriveTrain, limelight, shooterConfiguration));
     }
 
 
@@ -189,14 +191,25 @@ public class RobotTest implements RobotConfiguration {
         joystickSecondary.getButton(ButtonType.kLeftBumper)
             .and(climberToggleTrigger.negate())
             .and(shooterModeTrigger.negate())
-            .whileActiveOnce(
-                new ActiveOperateShooterDelayed(
-                    limelight, turret, Flywheel, DriveTrain, Indexer,
-                    shooterSweepDirection, shooterConfiguration, shooterOffset, shooterArmed,
-                    new Trigger(joystickSecondary.getController()::getRightBumper)
-                )
-            )
-            .whenInactive(new RotateTurret(turret, 0));
+            .toggleWhenActive(
+                new ShooterOdometryTracking(
+                    Flywheel, turret, DriveTrain, limelight, Indexer, shooterSweepDirection, shooterConfiguration, shooterOffset,
+                    new TrainingModel3(0.0, 0.0, 0.0, new Range(0.0, 1.0), new Range(0.0, 1.0)))
+            );
+
+        joystickSecondary.getButton(ButtonType.kLeftBumper)
+            .whenReleased(new RotateTurret(turret, 0));
+        // joystickSecondary.getButton(ButtonType.kLeftBumper)
+        //     .and(climberToggleTrigger.negate())
+        //     .and(shooterModeTrigger.negate())
+        //     .whileActiveOnce(
+        //         new ActiveOperateShooterDelayed(
+        //             limelight, turret, Flywheel, DriveTrain, Indexer,
+        //             shooterSweepDirection, shooterConfiguration, shooterOffset, shooterArmed,
+        //             new Trigger(joystickSecondary.getController()::getRightBumper)
+        //         )
+        //     )
+        //     .whenInactive(new RotateTurret(turret, 0));
         
         joystickSecondary.getButton(ButtonType.kRightBumper)
             .and(climberToggleTrigger.negate())

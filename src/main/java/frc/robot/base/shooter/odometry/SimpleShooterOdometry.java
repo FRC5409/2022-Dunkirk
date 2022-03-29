@@ -59,6 +59,8 @@ public class SimpleShooterOdometry extends ShooterOdometryBase {
 
     @Nullable
     public Vector2 getTarget() {
+        if (kLastTarget == null)
+            return null;
         return new Vector2(kLastTarget);
     }
 

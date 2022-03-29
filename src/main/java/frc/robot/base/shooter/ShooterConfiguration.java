@@ -10,7 +10,7 @@ import frc.robot.base.shooter.target.FilterFactory;
 public class ShooterConfiguration {
     private final Model4 executionModel;
     private final ShooterOdometryModel odometryModel;
-    private final FilterFactory targetFilterFactory;
+    private final FilterFactory<?> targetFilterFactory;
     private final VisionPipeline visionPipeline;
     private final HoodPosition hoodConfiguration;
     private final ShooterMode shooterMode;
