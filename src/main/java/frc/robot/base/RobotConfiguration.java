@@ -20,4 +20,6 @@ public interface RobotConfiguration {
     default Command getAutonomousCommand() {
         return null;
     }
+
+    public void teleopPeriodic();
 }

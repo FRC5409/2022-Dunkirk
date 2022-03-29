@@ -36,6 +36,7 @@ import frc.robot.commands.*;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.FourBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.SynchronizedThreeBallsAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.Test;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
 
@@ -124,6 +125,9 @@ public class RobotCompetition implements RobotConfiguration {
             new FourBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterConfiguration, shooterSweepDirection, shooterOffset));
 
+        autoCommandSelector.addOption("Test",
+            new Test(DriveTrain));
+
         SmartDashboard.putData("Auto Chooser", autoCommandSelector);
 
         Shuffleboard.getTab("Shooter")
@@ -132,11 +136,11 @@ public class RobotCompetition implements RobotConfiguration {
         Shuffleboard.getTab("Shooter")
             .add("Hood down", new HoodDown(turret));
 
-        Shuffleboard.getTab("Shooter")
-            .add("Shooter Offset - Increment", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() + Constants.Shooter.OFFSET_INCREMENT)));
+        SmartDashboard
+            .putData("Shooter Offset - Increment", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() + Constants.Shooter.OFFSET_INCREMENT)));
 
-        Shuffleboard.getTab("Shooter")
-            .add("Shooter Offset - Decrement", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() - Constants.Shooter.OFFSET_INCREMENT)));
+        SmartDashboard
+            .putData("Shooter Offset - Decrement", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() - Constants.Shooter.OFFSET_INCREMENT)));
     }
 
 
@@ -145,6 +149,9 @@ public class RobotCompetition implements RobotConfiguration {
         Climber.setDefaultCommand(new DefaultElevator(Climber, joystickSecondary.getController()));
     }
 
+    public void teleopPeriodic(){
+        SmartDashboard.putNumber("Shooter Offset", shooterOffset.get());
+    }
 
     /**
      * Use this method to define your button->command mappings. Buttons can be

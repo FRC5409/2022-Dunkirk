@@ -25,7 +25,6 @@ import frc.robot.commands.indexer.IndexerIntakeActive;
 import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.OperateShooter;
-import frc.robot.commands.shooter.RotateTurret;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -69,7 +68,7 @@ public class TwoBallsAuto extends SequentialCommandGroup{
 
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(),
-                                                                   new Pose2d(1.75/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
+                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    kAuto.configForwards);
 
         RamseteCommand r1 = new RamseteCommand(t1, m_drive::getPose,

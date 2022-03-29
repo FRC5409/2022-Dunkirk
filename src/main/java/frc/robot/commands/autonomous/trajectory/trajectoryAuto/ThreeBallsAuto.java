@@ -11,7 +11,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.ProxyScheduleCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Shooter;
@@ -27,8 +26,6 @@ import frc.robot.commands.indexer.IndexerIntakeActive;
 import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.OperateShooter;
-import frc.robot.commands.shooter.RotateTurret;
-import frc.robot.commands.shooter.state.SweepShooterState;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -70,7 +67,15 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
         m_shooterSweepDirection = shooterSweepDirection;
         m_shooterOffset = shooterOffset;
 
-                
+        /*
+        Adjustment of robot position at the terminal
+
+        forward x meter: +x*Math.sin(Math.PI*13/36), +x*Math.cos(Math.PI*13/36)
+        backward x meter: -x*Math.sin(Math.PI*13/36), -x*Math.cos(Math.PI*13/36)
+        left x meter: -x*Math.cos(Math.PI*13/36), +x*Math.sin(Math.PI*13/36)
+        right x meter: +x*Math.cos(Math.PI*13/36), -x*Math.sin(Math.PI*13/36)
+        */
+      
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
                                                                    List.of(),
                                                                    new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
@@ -78,10 +83,10 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
 
         Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    List.of(),
-                                                                   new Pose2d(5.45/kAuto.kDistanceRatio, -0.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+                                                                   new Pose2d((5.14+0.75*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
                                                                    kAuto.configForwards);
 
-        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d(5.45/kAuto.kDistanceRatio, -0.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d((5.14+0.75*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
                                                                    List.of(),
                                                                    new Pose2d(1.7/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    kAuto.configBackwards);
@@ -124,15 +129,6 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
 
         addCommands(
 
-            // trajectory testing code
-            // new SlowGear(m_drive),
-            // new ResetOdometry(t1.getInitialPose(), m_drive),
-            // r1, 
-            // new ResetOdometry(t2.getInitialPose(), m_drive),
-            // r2, 
-            // new ResetOdometry(t3.getInitialPose(), m_drive),
-            // r3
-
             // V1: run intake while getting to the human station
             new SlowGear(m_drive),
             new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar),
@@ -167,35 +163,6 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
             ),
             new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(2)
 
-            // V2: run intake after got to the human station
-            // new SlowGear(m_drive),
-            // new ResetOdometry(t1.getInitialPose(), m_drive),
-            // new ParallelCommandGroup(
-            //     new SequentialCommandGroup(
-            //         new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
-            //         new ParallelRaceGroup(
-            //             new IndexerIntakeActive(m_indexer, m_intake),
-            //             r1
-            //         ),
-            //         new IndexerIntakeActive(m_indexer, m_intake).withTimeout(0.5),
-            //         new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME)
-            //     ),
-            //     new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
-            // ),
-            // new ParallelCommandGroup(
-            //     new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3),
-            //     new ResetOdometry(t2.getInitialPose(), m_drive)
-            // ),
-            // r2,
-            // new ParallelCommandGroup(
-            //     new SequentialCommandGroup(
-            //         new IndexerIntakeActive(m_indexer, m_intake).withTimeout(2.5),
-            //         new RunIndexerBack(m_intake, m_indexer).withTimeout(Shooter.ARMING_TIME)
-            //     ),
-            //     new ResetOdometry(t3.getInitialPose(), m_drive)
-            // ),
-            // r3, 
-            // new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3)
         );
     }
 }

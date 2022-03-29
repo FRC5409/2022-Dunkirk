@@ -74,6 +74,10 @@ public final class RobotContainer {
     public Command getAutonomousCommand() {
         return configuration.getAutonomousCommand();
     }
+
+    public void teleopPeriodic(){
+        configuration.teleopPeriodic();
+    }
     
     @Nullable
     private static RobotConfiguration getConfiguration(RobotContainer robot) {
