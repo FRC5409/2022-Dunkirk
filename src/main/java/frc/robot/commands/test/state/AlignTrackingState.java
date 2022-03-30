@@ -99,8 +99,8 @@ public class AlignTrackingState extends StateCommandBase {
             controller.setI(SmartDashboard.getNumber("Shooter I", 0.0));
             controller.setD(SmartDashboard.getNumber("Shooter D", 0.0));
 
-            double offset = //Math.toRadians(odometry.getTurretOffset());
-                Math.toRadians(SmartDashboard.getNumber("Shooter Simulated Offset", 0.0));
+            double offset = Math.toRadians(odometry.getTurretOffset());
+                //Math.toRadians(SmartDashboard.getNumber("Shooter Simulated Offset", 0.0));
 
             Vector2 kNextDirection = new Vector2(Math.cos(offset), Math.sin(offset)).unit();
             Vector2 kActiveDirection = odometry.getVisionDirection();
@@ -132,6 +132,8 @@ public class AlignTrackingState extends StateCommandBase {
             SmartDashboard.putString("Odometry Direction", odometry.getDirection().toString());
             SmartDashboard.putString("Odometry Next Direction", kNextDirection.toString());
             SmartDashboard.putString("Odometry Velocity", odometry.getVelocity().toString());
+            SmartDashboard.putNumber("Odometry Turret Offset", odometry.getTurretOffset());
+            SmartDashboard.putNumber("Odometry Flywheel Offset", odometry.getFlywheelOffset());
         } else {
             done = true;
             next("frc.robot.shooter:sweep");

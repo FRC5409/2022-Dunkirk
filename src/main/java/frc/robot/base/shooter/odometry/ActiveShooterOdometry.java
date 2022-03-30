@@ -39,7 +39,7 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
      */
     public void update(Vector2 target, double speed, double rotation) {
         Vector3 observerVector = calculateTargetProjection(filter.update(target));
-        kLastDistance = safe(model.kHeight / Math.tan(Math.asin(observerVector.z)));
+        kLastDistance = safe(model.kHeight / Math.tan(Math.asin(observerVector.z))) + model.kOffset;
 
         Vector3 tempVector = observerVector.scale(kLastDistance)
            .sub(model.kViewOffset).unit();

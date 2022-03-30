@@ -2,6 +2,7 @@ package frc.robot.configuration;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
@@ -17,6 +18,11 @@ import frc.robot.base.Joystick;
 import frc.robot.base.Model3;
 // Misc
 import edu.wpi.first.wpilibj.XboxController;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.wpi.first.wpilibj.GenericHID;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -33,10 +39,19 @@ import frc.robot.commands.indexer.ReverseIntakeIndexer;
 import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.training.TrainingModel3;
+import frc.robot.training.protocol.NetworkConnection;
+import frc.robot.training.protocol.NetworkServerSocket;
+import frc.robot.training.protocol.NetworkSocket;
+import frc.robot.training.protocol.SendableContext;
+import frc.robot.training.protocol.generic.ArraySendable;
+import frc.robot.training.protocol.generic.BundleSendable;
+import frc.robot.training.protocol.generic.StringSendable;
+import frc.robot.training.protocol.generic.ValueSendable;
 import frc.robot.utils.Range;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.test.ShooterOdometryTracking;
 import frc.robot.commands.test.state.AlignTrackingState;
+import frc.robot.commands.training.model.ModelTrainingSession;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
@@ -67,6 +82,9 @@ public class RobotTest implements RobotConfiguration {
     private final ValueProperty<Boolean> shooterArmed;
 
     private final SendableChooser<Command> autoCommandSelector;
+
+    private NetworkConnection clientConnection;
+    private Map<String, TrainingModel3> trainingModels;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -101,9 +119,46 @@ public class RobotTest implements RobotConfiguration {
 
         autoCommandSelector = new SendableChooser<Command>();
 
+        try {
+            configureTraining();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         configureButtonBindings();
         configureCommands();
         configureDashboard();
+    }
+
+    private void configureTraining() throws IOException {
+        SendableContext context = new SendableContext();
+            context.registerSendable(ValueSendable.class);
+            context.registerSendable(BundleSendable.class);
+            context.registerSendable(StringSendable.class);
+            context.registerSendable(ArraySendable.class);
+
+
+        NetworkServerSocket serverSocket = NetworkServerSocket.create(Constants.Training.TRAINER_PORT);
+        
+        System.out.println("Waiting for connection");
+        NetworkSocket clientSocket = serverSocket.accept();
+
+        System.out.println("Established connecton");
+        
+        clientConnection = new NetworkConnection(clientSocket, context);
+
+        trainingModels = new HashMap<>();
+        trainingModels.put("turret_offset", new TrainingModel3(
+            0.0, 0.0, 0.0,
+            new Range(-3.0, 3.0),
+            new Range(-30, 30)
+        ));
+
+        trainingModels.put("flywheel_offset", new TrainingModel3(
+            0.0, 0.0, 0.0,
+            new Range(-3.0, 3.0),
+            new Range(-1200, 1200)
+        ));
     }
 
     private void configureDashboard() {
@@ -168,9 +223,16 @@ public class RobotTest implements RobotConfiguration {
             .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
         
         joystickPrimary.getButton(ButtonType.kX)
-            .whileActiveOnce(new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary))
-            .whenActive(new ConfigureProperty<>(shooterArmed, false))
-            .whenInactive(new PrimeShooter(Indexer, shooterArmed));
+            .whileActiveOnce(
+                new SequentialCommandGroup(
+                    new ConfigureProperty<>(shooterArmed, false),    
+                    new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary)
+                )
+            );
+        
+        joystickPrimary.getButton(ButtonType.kX)
+            .whenReleased(new PrimeShooter(Indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME));
+
 
         joystickSecondary.getButton(ButtonType.kStart)
             .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber))
@@ -188,14 +250,21 @@ public class RobotTest implements RobotConfiguration {
             .and(climberToggleTrigger)
             .whenActive(Climber::zeroEncoder);
 
+        
         joystickSecondary.getButton(ButtonType.kLeftBumper)
             .and(climberToggleTrigger.negate())
             .and(shooterModeTrigger.negate())
-            .toggleWhenActive(
-                new ShooterOdometryTracking(
-                    Flywheel, turret, DriveTrain, limelight, Indexer, shooterSweepDirection, shooterConfiguration, shooterOffset,
-                    new TrainingModel3(0.0, 0.0, 0.0, new Range(0.0, 1.0), new Range(0.0, 1.0)))
-            );
+            .whileActiveOnce(
+                new ActiveOperateShooterDelayed(
+                    Flywheel, turret, DriveTrain, limelight, Indexer, 
+                    shooterSweepDirection, shooterConfiguration, shooterOffset, shooterArmed,
+                    new Trigger(joystickSecondary.getController()::getRightBumper),
+                    trainingModels.get("turret_offset"),
+                    trainingModels.get("flywheel_offset")
+                )
+            )
+            .whenInactive(new RotateTurret(turret, 0));
+        
 
         joystickSecondary.getButton(ButtonType.kLeftBumper)
             .whenReleased(new RotateTurret(turret, 0));
@@ -264,7 +333,10 @@ public class RobotTest implements RobotConfiguration {
                 new RotateTurret(turret, 0),
                 new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar)
             ),
-            new FindElevatorZero(Climber)
+            new FindElevatorZero(Climber),
+            new ScheduleCommand(
+                new ModelTrainingSession(clientConnection, trainingModels)
+            )
         );
     }
 

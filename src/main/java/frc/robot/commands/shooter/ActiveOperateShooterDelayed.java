@@ -1,5 +1,7 @@
 package frc.robot.commands.shooter;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.base.Property;
@@ -13,7 +15,8 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
-
+import frc.robot.utils.Equation;
+import frc.robot.commands.shooter.state.ActiveDelayedAlignShooterState;
 import frc.robot.commands.shooter.state.ActiveOperateArmShooterState;
 import frc.robot.commands.shooter.state.ActiveOperateRunShooterState;
 import frc.robot.commands.shooter.state.DelayedAlignShooterState;
@@ -30,30 +33,45 @@ import frc.robot.commands.shooter.state.SweepShooterState;
 public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
     private final Property<DriveShooterOdometry> sharedOdometry;
     private final Property<ShooterConfiguration> configuration;
+    private final PIDController sharedController;
+    private final Equation turretOffsetModel;
+    private final Equation flywheelOffsetModel;
 
     public ActiveOperateShooterDelayed(
-        Limelight limelight,
-        ShooterTurret turret,
         ShooterFlywheel flywheel,
+        ShooterTurret turret,
         DriveTrain drivetrain,
+        Limelight limelight,
         Indexer indexer,
         Property<SweepDirection> direction,
         Property<ShooterConfiguration> configuration,
         Property<Integer> offset,
         Property<Boolean> armed,
-        Trigger trigger
+        Trigger trigger,
+        Equation turretOffsetModel,
+        Equation flywheelOffsetModel
     ) {
         sharedOdometry = new ValueProperty<>();
+        sharedController = new PIDController(0.0,0.0,0.0);
+        sharedController.setTolerance(0.3);
+        
+        this.turretOffsetModel = turretOffsetModel;
+        this.flywheelOffsetModel = flywheelOffsetModel;
 
         addCommands(
             new SearchShooterState(limelight, true),
             new SweepShooterState(turret, limelight, Property.cast(sharedOdometry), direction),
-            new DelayedAlignShooterState(turret, limelight, trigger, Property.cast(sharedOdometry)),
-            new ActiveOperateArmShooterState(flywheel, turret, drivetrain, limelight, configuration, sharedOdometry, offset, armed),
-            new ActiveOperateRunShooterState(flywheel, turret, drivetrain, limelight, indexer, configuration, sharedOdometry, offset)
+            new ActiveDelayedAlignShooterState(turret, drivetrain, limelight, trigger, Property.cast(sharedOdometry), sharedController),
+            new ActiveOperateArmShooterState(flywheel, turret, drivetrain, limelight, configuration, sharedOdometry, offset, armed, sharedController),
+            new ActiveOperateRunShooterState(flywheel, turret, drivetrain, limelight, indexer, configuration, sharedOdometry, sharedController, offset)
         ); 
 
         setDefaultState("frc.robot.shooter:search");
+
+        SmartDashboard.putNumber("Shooter P", SmartDashboard.getNumber("Shooter P", 0.0));
+        SmartDashboard.putNumber("Shooter I", SmartDashboard.getNumber("Shooter I", 0.0));
+        SmartDashboard.putNumber("Shooter D", SmartDashboard.getNumber("Shooter D", 0.0));
+        SmartDashboard.putNumber("Shooter Output Thresh", SmartDashboard.getNumber("Shooter Output Thresh", 0.0));
 
         this.configuration = configuration;
     }
@@ -67,8 +85,8 @@ public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
             new DriveShooterOdometry(
                 config.getOdometryModel(), 
                 config.getTargetFilter(),
-                Constants.Shooter.FLYWHEEL_OFFSET_MAPPING, 
-                Constants.Shooter.TURRET_OFFSET_MAPPING
+                flywheelOffsetModel, 
+                turretOffsetModel
             )
         );
 

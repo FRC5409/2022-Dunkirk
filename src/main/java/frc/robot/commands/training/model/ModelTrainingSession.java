@@ -53,24 +53,23 @@ public class ModelTrainingSession extends CommandBase {
         NetworkServerRequest req = future.get();
         
         NetworkStatus status = req.getStatus();
-        BundleSendable payload = (BundleSendable) req.getPayload();
+        ArraySendable payload = (ArraySendable) req.getPayload();
         
         System.out.println("Got request:\n Status - " + status +
             "\n Payload - " + String.valueOf(payload));
 
         if (status == NetworkStatus.STATUS_OK && payload != null) {
-            ArraySendable updatedModels = (ArraySendable) payload.getSendable("trainer.models");
-            for (NetworkSendable value : updatedModels) {
+            for (NetworkSendable value : payload) {
                 BundleSendable model = (BundleSendable) value;
 
                 StringSendable modelName = (StringSendable) model.getSendable("trainer.model.name");
                 if (models.containsKey(modelName.getValue())) {
-                    ArraySendable parameters = (ArraySendable) payload.getSendable("trainer.model.parameters");
+                    ArraySendable parameters = (ArraySendable) model.getSendable("trainer.model.parameters");
                 
                     TrainingModel3 targetModel = models.get(modelName.getValue());
-                        targetModel.kA = parameters.get(3, ValueSendable.class).getValue(double.class);
-                        targetModel.kB = parameters.get(2, ValueSendable.class).getValue(double.class);
-                        targetModel.kC = parameters.get(1, ValueSendable.class).getValue(double.class);
+                        targetModel.kA = parameters.get(0, ValueSendable.class).getValue(double.class);
+                        targetModel.kB = parameters.get(1, ValueSendable.class).getValue(double.class);
+                        targetModel.kC = parameters.get(2, ValueSendable.class).getValue(double.class);
                         
                     System.out.println("Updated model '" + modelName.getValue() + "'.");
                 } else {

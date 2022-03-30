@@ -36,7 +36,7 @@ public class SimpleShooterOdometry extends ShooterOdometryBase {
     public void update(Vector2 target) {
         Vector3 observerVector = calculateTargetProjection(filter.update(target));
 
-        kLastDistance = model.kHeight / Math.tan(Math.asin(observerVector.z));
+        kLastDistance = model.kHeight / Math.tan(Math.asin(observerVector.z)) + model.kOffset;
         if (!Double.isFinite(kLastDistance))
             kLastDistance = 0;
 

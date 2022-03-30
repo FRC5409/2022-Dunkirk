@@ -3,6 +3,7 @@ package frc.robot.commands.shooter.state;
 import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.base.Model4;
 import frc.robot.base.Property;
@@ -15,9 +16,9 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
-
+import frc.robot.subsystems.shooter.ShooterTurret.ReferenceType;
 import frc.robot.utils.Toggleable;
-
+import frc.robot.utils.Vector2;
 import frc.robot.Constants;
 
 // TODO update doc
@@ -30,6 +31,8 @@ public class ActiveOperateRunShooterState extends StateCommandBase {
     private final Property<ShooterConfiguration> configuration;
     private final Property<Integer> offset;
 
+    private final PIDController sharedController;
+
     private final ShooterFlywheel flywheel;
     private final ShooterTurret turret;
     private final DriveTrain drivetrain;
@@ -37,6 +40,7 @@ public class ActiveOperateRunShooterState extends StateCommandBase {
     private final Indexer indexer;
     
     private DriveShooterOdometry odometry;
+    private boolean active;
     private Model4 model;
     
     public ActiveOperateRunShooterState(
@@ -47,8 +51,10 @@ public class ActiveOperateRunShooterState extends StateCommandBase {
         Indexer indexer,
         Property<ShooterConfiguration> configuration,
         Property<DriveShooterOdometry> sharedOdometry,
+        PIDController sharedController,
         Property<Integer> offset
     ) {
+        this.sharedController = sharedController;
         this.sharedOdometry = sharedOdometry;
         this.configuration = configuration;
         this.drivetrain = drivetrain;
@@ -76,13 +82,17 @@ public class ActiveOperateRunShooterState extends StateCommandBase {
         
         // Run feeder and indexer
         flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
-        indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
+        active = false;
     }
 
     @Override
     public void execute() {
         if (model == null)
             return;
+
+        sharedController.setP(SmartDashboard.getNumber("Shooter P", 0.0));
+        sharedController.setI(SmartDashboard.getNumber("Shooter I", 0.0));
+        sharedController.setD(SmartDashboard.getNumber("Shooter D", 0.0));
 
         // Update odometry target
         if (limelight.getTargetType() == TargetType.kHub) {
@@ -95,19 +105,40 @@ public class ActiveOperateRunShooterState extends StateCommandBase {
             
         // Set flywheel to estimated veloctity
         double velocity = model.calculate(odometry.getDistance());
-        flywheel.setVelocity(velocity + offset.get() + odometry.getFlywheelOffset());
+        
+        if (odometry.getTarget() != null && !odometry.isLost()) {
+            double offset = Math.toRadians(odometry.getTurretOffset());
+            
+            Vector2 kNextDirection = new Vector2(Math.cos(offset), Math.sin(offset)).unit();
+            Vector2 kActiveDirection = odometry.getVisionDirection();
 
-        // Continue aligning shooter
-        turret.setRotationTarget(
-            MathUtil.interpolate(
-                turret.getRotationTarget(),
-                odometry.getTurretOffset() - odometry.getRotation(),
-                SmartDashboard.getNumber("Rotation Smoothing", 0)
-            )
-        );
+            double relativeRotation = Math.atan2(
+                kActiveDirection.x * kNextDirection.y - kActiveDirection.y * kNextDirection.x,
+                kActiveDirection.x * kNextDirection.x + kActiveDirection.y * kNextDirection.y
+            );
 
+            SmartDashboard.putNumber("Relative Target Rotation", relativeRotation);
+
+            double output = sharedController.calculate(relativeRotation);
+            SmartDashboard.putNumber("Direction output", output);
+
+            if (Math.abs(output) > SmartDashboard.getNumber("Shooter Output Thresh", 0))
+                turret.setReference(output, ReferenceType.kOutput);
+            else
+                turret.setReference(0, ReferenceType.kOutput);
+
+            updateDashboard(kNextDirection);
+        }
+
+        flywheel.setVelocity(velocity);
+
+        if (flywheel.isTargetReached() && flywheel.feederReachedTarget() && !active) {
+            indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
+            active = true;
+        }
+
+        SmartDashboard.putNumber("Flywheel - Velocity Prediction", velocity);
         if (Constants.kConfig.DEBUG) {
-            SmartDashboard.putNumber("Flywheel - Velocity Prediction", velocity);
             SmartDashboard.putNumber("Flywheel - Active Velocity", flywheel.getVelocity());
             SmartDashboard.putNumber("Flywheel - Velocity Offset", offset.get());
 
@@ -134,5 +165,19 @@ public class ActiveOperateRunShooterState extends StateCommandBase {
     @Override
     public @NotNull String getStateName() {
         return "frc.robot.shooter:operate:run";
+    }
+
+    public void updateDashboard(Vector2 kNextDirection) {
+        SmartDashboard.putNumber("Turret Rotation", turret.getRotation());
+        SmartDashboard.putNumber("Odometry Rotation", odometry.getRotation());
+        SmartDashboard.putNumber("Odometry Distance", odometry.getDistance());
+        SmartDashboard.putNumber("Odometry Speed", odometry.getSpeed());
+        SmartDashboard.putString("Odometry Target", odometry.getTarget().toString());
+        SmartDashboard.putString("Odometry Vision Direction", odometry.getVisionDirection().toString());
+        SmartDashboard.putString("Odometry Direction", odometry.getDirection().toString());
+        SmartDashboard.putString("Odometry Next Direction", kNextDirection.toString());
+        SmartDashboard.putString("Odometry Velocity", odometry.getVelocity().toString());
+        SmartDashboard.putNumber("Odometry Turret Offset", odometry.getTurretOffset());
+        SmartDashboard.putNumber("Odometry Flywheel Offset", odometry.getFlywheelOffset());
     }
 }
