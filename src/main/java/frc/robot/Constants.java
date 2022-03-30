@@ -223,7 +223,10 @@ public final class Constants {
         // all units in meters and seconds
         public static final double kMaxSpeed = 2.4; 
         // work fine in 2.5, gives error when generating trajectory when exceed that value
-        public static final double kMaxAcceleration = 4.5; // any
+        public static final double kMaxAcceleration = 4.5; // TODO: increase this value
+
+        public static final double kMaxSpeedSlow = 1;
+        public static final double kMaxAccelerationSlow = 1;
 
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
         // works for most robots, if needs to be tuned: 
@@ -252,6 +255,13 @@ public final class Constants {
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)    
             .setEndVelocity(0)
+            .setReversed(false);
+
+        public static final TrajectoryConfig configBackwardsSlow = 
+            new TrajectoryConfig(kMaxSpeedSlow, kMaxAccelerationSlow)
+            .setKinematics(kDriveKinematics)
+            .addConstraint(autoVoltageConstraint)    
+            .setEndVelocity(1)
             .setReversed(false);
     }
 

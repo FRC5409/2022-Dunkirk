@@ -97,12 +97,18 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
 
         Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d((5.14+0.75*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
                                                                    List.of(),
+                                                                   new Pose2d((4.64+0.75*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(0)),
+                                                                   kAuto.configBackwardsSlow);
+
+        Trajectory t4 = TrajectoryGenerator.generateTrajectory(new Pose2d((4.64+0.75*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
+                                                                   List.of(),
                                                                    new Pose2d(1.7/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    kAuto.configBackwards);
 
         RamseteCommand r1 = createRamseteCommand(t1);
         RamseteCommand r2 = createRamseteCommand(t2);
         RamseteCommand r3 = createRamseteCommand(t3);
+        RamseteCommand r4 = createRamseteCommand(t4);
 
         Property<Boolean> runShooter = new ValueProperty<>(false);
         Trigger runShooterTrigger = new Trigger(runShooter::get);
@@ -169,7 +175,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
                 
             new ParallelCommandGroup(
                 // Run indexer for additional time
-                new IndexerIntakeActive(indexer, intake).withTimeout(2.0),
+                new IndexerIntakeActive(indexer, intake).withTimeout(3.0),
 
                 new SequentialCommandGroup(
                     new ParallelCommandGroup(
@@ -178,20 +184,24 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
                         new ResetOdometry(t3.getInitialPose(), drive)
                     ),
 
-                    // Run indexer and intake, while moving through trajectory #2
-                    new ParallelCommandGroup(
-                        r3,
-                        // Schedule shooter  
-                        new ScheduleCommand(
-                            new SequentialCommandGroup(
-                                new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight),
-                                new ConfigureProperty<>(shooterArmed, false),
-                                runShooterCommand2
-                            )
-                        )
+                    r3,
+                    new ResetOdometry(t4.getInitialPose(), drive)
+                )
+            ),
+
+            // Run indexer and intake, while moving through trajectory #2
+            new ParallelCommandGroup(
+                r4,
+                // Schedule shooter  
+                new ScheduleCommand(
+                    new SequentialCommandGroup(
+                        new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight),
+                        new ConfigureProperty<>(shooterArmed, false),
+                        runShooterCommand2
                     )
                 )
             ),
+
             // Prime shooter
             new PrimeShooter(indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME),
 
