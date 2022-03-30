@@ -123,7 +123,7 @@ public class RobotCompetition implements RobotConfiguration {
 
         autoCommandSelector.addOption("Four",
             new FourBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterConfiguration, shooterSweepDirection, shooterOffset));
+                shooterConfiguration, shooterSweepDirection, shooterOffset, shooterArmed));
 
         autoCommandSelector.addOption("Test",
             new Test(DriveTrain));

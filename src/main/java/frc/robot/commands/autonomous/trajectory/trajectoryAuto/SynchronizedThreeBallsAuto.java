@@ -173,7 +173,7 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
 
                 new SequentialCommandGroup(
                     new ParallelCommandGroup(
-                        new WaitCommand(1.5),
+                        new WaitCommand(1.5), // TODO: change this value smaller
                         // Reset Odometry to next position
                         new ResetOdometry(t3.getInitialPose(), drive)
                     ),
