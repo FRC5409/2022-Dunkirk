@@ -113,6 +113,15 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
         Command runShooterCommand2 = new OperateShooterDelayed(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration, shooterOffset, shooterArmed, runShooterTrigger);
 
         addCommands(
+
+            // // trajectory testing
+            // new ResetOdometry(t1.getInitialPose(), drive),
+            // r1, 
+            // new ResetOdometry(t2.getInitialPose(), drive),
+            // r2, 
+            // new ResetOdometry(t3.getInitialPose(), drive),
+            // r3
+
             new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
 
             // V1: run intake while getting to the human station
