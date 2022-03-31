@@ -10,21 +10,19 @@ import frc.robot.Constants.kPneumatics;
 import frc.robot.Constants.kConfig;
 
 /**
- * Class for the maintaining the pneumatics code.
+ * Class for the maintaining the pneumatics subsystem.
  * 
- * @author Selim Abdelwahab, Akil Pathiranage
+ * @author Selim Abdelwahab, Akil Pathiranage, Lex Stapleton, Sanad Al-Ajrami
  */
 public class Pneumatics extends SubsystemBase {
+
   Compressor compressor1;
-
   private PneumaticsStates state;
-
 
   /**
    * Constructor for the Pneumatics class
    */
   public Pneumatics() {
-
     compressor1 = new Compressor(kID.PneumaticHub, PneumaticsModuleType.REVPH);
 
     state = PneumaticsStates.kAny;
