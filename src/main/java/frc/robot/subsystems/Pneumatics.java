@@ -39,11 +39,15 @@ public class Pneumatics extends SubsystemBase {
 
     // Check if pressure is too low or too high
     if (state != PneumaticsStates.kStarted && compressor1.getPressure() <= kPneumatics.MIN_PSI) {
-      startLoop();
+      // System.out.println("State " + state);
+      // System.out.println("StartedPneumatics");
       state = PneumaticsStates.kStarted;
+      startLoop();
     } else if (state != PneumaticsStates.kEnded && compressor1.getPressure() >= kPneumatics.MAX_PSI) {
-      endLoop();
+      // System.out.println("EndedPneumatics");
+      // System.out.println("State " + state);
       state = PneumaticsStates.kEnded;
+      endLoop();
     }
 
   }
