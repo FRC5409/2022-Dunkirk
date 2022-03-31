@@ -5,13 +5,9 @@
 package frc.robot.commands;
 
 import frc.robot.Constants;
-import frc.robot.Constants.kDriveTrain;
 import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Pigeon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -19,13 +15,12 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class DefaultElevator extends CommandBase {
     @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
     private final Climber climber;
-    // private final Pigeon pigeon;
     private final XboxController joystick;
 
     private final Timer timer = new Timer();
 
     /**
-     * Creates a new DefaultDrive
+     * Creates a new DefaultElevator
      * .
      *
      * @param subsystem The subsystem used by this command.
@@ -33,10 +28,8 @@ public class DefaultElevator extends CommandBase {
      */
     public DefaultElevator(Climber _climber, XboxController _joystick) {
         climber = _climber;
-        // pigeon = _pigeon;
         joystick = _joystick;
 
-        // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(_climber);
     }
 
@@ -60,11 +53,6 @@ public class DefaultElevator extends CommandBase {
             double l = joystick.getLeftTriggerAxis();
             double r = joystick.getRightTriggerAxis();
 
-            // if (timer.hasElapsed(0.2) && !allow) {
-            // timer.stop();
-            // allow = true;
-            // }
-
             if ((l > 0 || r > 0) && climber.getLocked()) {
                 climber.unlockArm();
                 timer.reset();
@@ -75,22 +63,6 @@ public class DefaultElevator extends CommandBase {
                 timer.stop();
             }
 
-            // if (allow && timer.hasElapsed(0.2) && !climber.getLocked()) {
-            // climber.moveArm(r, l);
-            // timer.stop();
-            // } else {
-            // climber.moveArm(0, 0);
-
-            // if (l > 0 || r > 0) {
-            // climber.unlockArm();
-
-            // timer.reset();
-            // timer.start();
-
-            // allow = true;
-            // }
-            // }
-
             int pov = joystick.getPOV();
 
             if (pov == 0) {
@@ -98,9 +70,15 @@ public class DefaultElevator extends CommandBase {
             } else if (pov == 90) {
                 CommandScheduler.getInstance().schedule(false, new ToggleClimberLockCommand(climber));
             } else if (pov == 180) {
-                CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_MIN));
-            } else if (pov == 270)
+                CommandScheduler.getInstance().schedule(true,
+                        new ElevateTo(climber,
+                                (climber.getPrevMove() == Constants.kClimber.TO_LOW_RUNG)
+                                        ? Constants.kClimber.TO_MIN_LOW
+                                        : Constants.kClimber.TO_MIN_MID,
+                                true));
+            } else if (pov == 270) {
                 CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_LOW_RUNG));
+            }
         }
     }
 

@@ -19,6 +19,6 @@ public class AutoAlign extends SequentialCommandGroup {
                 new MoveToPosition(climber, driveTrain),
                 new ElevateTo(climber, Constants.kClimber.TO_MAX),
                 new MoveToPosition(climber, driveTrain, 0.2),
-                new ElevateTo(climber, Constants.kClimber.TO_MIN));
+                new ElevateTo(climber, Constants.kClimber.TO_MIN_MID));
     }
 }

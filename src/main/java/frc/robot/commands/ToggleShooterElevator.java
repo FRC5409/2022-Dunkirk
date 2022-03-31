@@ -26,21 +26,35 @@ import frc.robot.subsystems.shooter.ShooterTurret;
 
 public class ToggleShooterElevator extends CommandBase {    
     private final ValueProperty<Boolean> climberActive;
+    private final Subsystem[] subsystems;
+    private ShooterTurret turret;
 
 
-    public ToggleShooterElevator(ValueProperty<Boolean> climberActive, Subsystem... subsystems) {
+    public ToggleShooterElevator(ValueProperty<Boolean> climberActive, Subsystem... _subsystems) {
         this.climberActive = climberActive;
-        addRequirements(subsystems);
+        subsystems = _subsystems;
+        addRequirements(_subsystems);
     }
 
     @Override
-    public void execute() {
+    public void initialize() {
+        for (Subsystem sys : subsystems) {
+            if (sys instanceof ShooterTurret) {
+                turret = (ShooterTurret)sys;
+
+                turret.enable();
+
+                turret.setRotationTarget(climberActive.get() ? 0.0 : 90.0);                
+                break;
+            }
+        }
+
         climberActive.set(!climberActive.get());
         // SmartDashboard.putBoolean("Climber active", climberActive.get());
     }
 
     @Override
     public boolean isFinished() {
-        return true;
+        return turret.isTargetReached();
     }
 }

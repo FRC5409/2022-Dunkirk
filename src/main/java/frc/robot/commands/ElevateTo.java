@@ -4,12 +4,10 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Climber;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class ElevateTo extends CommandBase {
@@ -17,12 +15,26 @@ public class ElevateTo extends CommandBase {
     // private final XboxController m_joystick;
     private final Climber climber;
     private double toPos;
-    private boolean userVelForEnd = false;
+    private boolean useVelForEnd = false;
+    private boolean lockOnDescend = false;
 
     boolean started = false;
-
-    private int direction = Constants.kClimber.DIRECTION_STATIONARY;
     private final Timer timer = new Timer();
+
+    /**
+     * Creates a new instance of 
+     * @param subsystem
+     * @param endPos
+     * @param _lockOnDescend
+     */
+    public ElevateTo(Climber subsystem, double endPos, boolean _lockOnDescend) {
+        climber = subsystem;
+        toPos = endPos;
+        // Use addRequirements() here to declare subsystem dependencies.
+        lockOnDescend = _lockOnDescend;
+
+        addRequirements(subsystem);
+    }
 
     /**
      * Creates a new ExampleCommand.
@@ -60,26 +72,24 @@ public class ElevateTo extends CommandBase {
         timer.start();
 
         started = false;
-        if (toPos > climber.getPosition()) {
-            direction = Constants.kClimber.DIRECTION_EXTEND;
-        } else if (toPos < climber.getPosition()) {
-            direction = Constants.kClimber.DIRECTION_RETRACT;
-        }
+
+        climber.setPrevMove(toPos);
     }
 
     @Override
     public void execute() {
+        if (!useVelForEnd && Math.abs(climber.getRPM()) >= 1.0)
+            useVelForEnd = true;
+
+        if (started)
+            return;
+
         if (timer.hasElapsed(0.2) || !climber.getLocked()) {
             climber.moveArm(toPos);
-
-            if (!started)
-                started = true;
-
             timer.stop();
-        }
 
-        if (Math.abs(climber.getRPM()) > 1.0)
-            userVelForEnd = true;
+            started = true;
+        }
     }
 
     // Called once the command ends or is interrupted.
@@ -87,7 +97,7 @@ public class ElevateTo extends CommandBase {
     public void end(boolean interrupted) {
         climber.disableMotors();
 
-        if (direction == Constants.kClimber.DIRECTION_RETRACT)
+        if (lockOnDescend)
             climber.lockArm();
     }
 
@@ -96,6 +106,6 @@ public class ElevateTo extends CommandBase {
     public boolean isFinished() {
         return (climber.getDirection() == Constants.kClimber.DIRECTION_EXTEND && climber.getPosition() >= toPos)
                 || (climber.getDirection() == Constants.kClimber.DIRECTION_RETRACT && climber.getPosition() <= toPos)
-                || (userVelForEnd && Math.abs(climber.getRPM()) < 1.0);
+                || (useVelForEnd && Math.abs(climber.getRPM()) < 1.0);
     }
 }
