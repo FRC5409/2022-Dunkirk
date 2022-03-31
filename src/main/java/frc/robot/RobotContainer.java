@@ -10,6 +10,7 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Pneumatics;
 
 import java.util.Objects;
 
@@ -33,6 +34,7 @@ public final class RobotContainer {
     public final Indexer         Indexer;
     public final Intake          Intake;
     public final Climber         Climber;
+    public final Pneumatics         pneumatics;
     
     public final Joystick        joystickSecondary;
     public final Joystick        joystickPrimary;
@@ -50,6 +52,7 @@ public final class RobotContainer {
         Intake      = new Intake();
     //  Pigeon      = new Pigeon();
         turret      = new ShooterTurret();
+        pneumatics  = new Pneumatics();
 
         joystickPrimary = new Joystick(0);
         joystickSecondary = new Joystick(1);

@@ -87,16 +87,14 @@ public final class Constants {
     }
 
     public static class kPneumatics {
-        public static final double MIN_PSI = 100;
-        public static final double MAX_PSI = 120;
+        public static final double MIN_PSI = 90;
+        public static final double MAX_PSI = 115;
 
         public final int Pigeon = 23;
     }
 
-    public static class Pneumatics {
-        public static final int MODULE = 1;
-        public static final double MIN_PSI = 20;
-        public static final double MAX_PSI = 30;
+    public static enum PneumaticsStates {
+        kStarted, kEnded, kAny
     }
 
     public final class kClimber {
