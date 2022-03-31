@@ -5,11 +5,16 @@ import org.jetbrains.annotations.NotNull;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.base.Model4;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
+import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
+import frc.robot.commands.shooter.RotateTurret;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
@@ -27,6 +32,9 @@ import frc.robot.Constants;
  * Experimental
  */
 public class ActiveOperateRunShooterState extends StateCommandBase {
+    private final Property<IndexerArmedState> indexerArmedState;
+    private final Property<ShooterState> shooterState;
+    
     private final Property<DriveShooterOdometry> sharedOdometry;
     private final Property<ShooterConfiguration> configuration;
     private final Property<Integer> offset;
@@ -38,10 +46,15 @@ public class ActiveOperateRunShooterState extends StateCommandBase {
     private final DriveTrain drivetrain;
     private final Limelight limelight;
     private final Indexer indexer;
+    private final Trigger trigger;
     
     private DriveShooterOdometry odometry;
     private boolean active;
+    private boolean done;
     private Model4 model;
+
+    private Property<Double> driveSpeed;
+    private Property<Boolean> buttonDebounce;
     
     public ActiveOperateRunShooterState(
         ShooterFlywheel flywheel,
@@ -49,21 +62,32 @@ public class ActiveOperateRunShooterState extends StateCommandBase {
         DriveTrain drivetrain,
         Limelight limelight,
         Indexer indexer,
+        Trigger trigger,
+        Property<Boolean> buttonDebounce,
+        Property<ShooterState> shooterState,
+        Property<IndexerArmedState> indexerArmedState,
+        Property<Double> driveSpeed,
         Property<ShooterConfiguration> configuration,
         Property<DriveShooterOdometry> sharedOdometry,
         PIDController sharedController,
         Property<Integer> offset
     ) {
+        this.buttonDebounce = buttonDebounce;
+        this.indexerArmedState = indexerArmedState;
+        this.shooterState = shooterState;
+
         this.sharedController = sharedController;
         this.sharedOdometry = sharedOdometry;
         this.configuration = configuration;
         this.drivetrain = drivetrain;
         this.limelight = limelight;
         this.flywheel = flywheel;
+        this.trigger = trigger;
         this.indexer = indexer;
         this.turret = turret;
         this.offset = offset;
 
+        this.driveSpeed = driveSpeed;
         addRequirements(limelight, turret, flywheel, indexer);
     }
 
@@ -83,6 +107,9 @@ public class ActiveOperateRunShooterState extends StateCommandBase {
         // Run feeder and indexer
         flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
         active = false;
+        done = false;
+
+        shooterState.set(ShooterState.kActive);
     }
 
     @Override
@@ -145,6 +172,15 @@ public class ActiveOperateRunShooterState extends StateCommandBase {
             SmartDashboard.putData("Robot Odometry", odometry);
         }
 
+        if (!trigger.get()) {
+            next("frc.robot.shooter:align");
+            done = true;
+            buttonDebounce.set(true);
+        } else if (indexerArmedState.get() != IndexerArmedState.kArmed) {
+            next("frc.robot.shooter:operate");
+            done = true;
+        }
+
     }
 
     @Override
@@ -154,12 +190,20 @@ public class ActiveOperateRunShooterState extends StateCommandBase {
             flywheel.disable();
             indexer.disable();
             turret.disable();
+        } else if (getNextState().equals("frc.robot.shooter:operate")) {
+            flywheel.stopFeeder();
+            indexer.disable();
+            System.out.println("Stopped feeder");
+        } else if (getNextState().equals("frc.robot.shooter:align")) {
+            indexer.disable();
+            flywheel.disable();
         }
+        driveSpeed.set(1.0);
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return done;
     }
 
     @Override

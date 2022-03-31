@@ -6,8 +6,10 @@ package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.Constants.kDriveTrain;
+import frc.robot.base.Property;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Pigeon;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -19,6 +21,9 @@ public class DefaultDrive extends CommandBase {
   //private final Pigeon pigeon;
   private final XboxController joystick;
 
+  private final Property<Double> driveSpeed;
+  private double lastDriveSpeed;
+
   /**
    * Creates a new DefaultDrive
    *.
@@ -26,10 +31,15 @@ public class DefaultDrive extends CommandBase {
    * @param subsystem The subsystem used by this command.
    * @param joystick The input device used by this command.
    */
-  public DefaultDrive(DriveTrain _drive, /*Pigeon _pigeon,*/ XboxController _joystick) {
+  public DefaultDrive(DriveTrain _drive, /*Pigeon _pigeon,*/ XboxController _joystick, Property<Double> driveSpeed) {
     drive = _drive;
     //pigeon = _pigeon;
     joystick = _joystick;
+
+    this.driveSpeed = driveSpeed;
+
+    SmartDashboard.putNumber("Drive Speed Forward Smoothing", SmartDashboard.getNumber("Drive Speed Forward Smoothing", 0));
+    SmartDashboard.putNumber("Drive Speed Reverse Smoothing", SmartDashboard.getNumber("Drive Speed Reverse Smoothing", 0));
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
@@ -37,7 +47,10 @@ public class DefaultDrive extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    lastDriveSpeed = driveSpeed.get();
+
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -61,9 +74,23 @@ public class DefaultDrive extends CommandBase {
    * This method runs the robot with the aadilDrive control scheme
    */
   private void aadilDriveExecute(){
-    double leftTrigger = joystick.getLeftTriggerAxis();
-    double rightTrigger = joystick.getRightTriggerAxis();
-    double lxAxis = joystick.getLeftX();
+    double nextDriveSpeed = driveSpeed.get();
+
+    double t = 0;
+    if (nextDriveSpeed - lastDriveSpeed > 0)
+      t = SmartDashboard.getNumber("Drive Speed Forward Smoothing", 0);
+    else
+      t = SmartDashboard.getNumber("Drive Speed Reverse Smoothing", 0);
+
+    lastDriveSpeed = MathUtil.interpolate(
+      nextDriveSpeed, lastDriveSpeed, t
+    );
+
+    SmartDashboard.putNumber("Drive Speed", lastDriveSpeed);
+
+    double leftTrigger = joystick.getLeftTriggerAxis() * lastDriveSpeed;
+    double rightTrigger = joystick.getRightTriggerAxis() * lastDriveSpeed;
+    double lxAxis = joystick.getLeftX() * lastDriveSpeed;
 
 
     // Add when pigeon is online

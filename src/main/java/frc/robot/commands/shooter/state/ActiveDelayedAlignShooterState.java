@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.command.TimedStateCommand;
+import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Limelight;
@@ -30,17 +31,24 @@ public class ActiveDelayedAlignShooterState extends TimedStateCommand {
     
     private DriveShooterOdometry odometry;
     private boolean done;
+    private Property<ShooterState> shooterState;
+    private Property<Boolean> buttonDebounce;
+    private boolean debounce;
 
     public ActiveDelayedAlignShooterState(
         ShooterTurret turret,
         DriveTrain drivetrain,
         Limelight limelight,
         Trigger trigger,
+        Property<ShooterState> shooterState,
         Property<DriveShooterOdometry> sharedOdometry,
+        Property<Boolean> buttonDebounce,
         PIDController sharedController
     ) {
+        this.buttonDebounce = buttonDebounce;
         this.sharedController = sharedController;
         this.sharedOdometry = sharedOdometry;
+        this.shooterState = shooterState;
         this.drivetrain = drivetrain;
         this.limelight = limelight;
         this.trigger = trigger;
@@ -63,7 +71,10 @@ public class ActiveDelayedAlignShooterState extends TimedStateCommand {
 
         odometry = sharedOdometry.get();
 
+        shooterState.set(ShooterState.kTarget);
         done = false;
+
+        debounce = buttonDebounce.get();
     }
 
     @Override
@@ -108,9 +119,11 @@ public class ActiveDelayedAlignShooterState extends TimedStateCommand {
             next("frc.robot.shooter:sweep");
         }
 
-        if (trigger.get()) {
+        if (trigger.get() && !debounce) {
             next("frc.robot.shooter:operate");
             done = true;
+        } else if (debounce) {
+            debounce = false;
         }
         
         if(Constants.kConfig.DEBUG)
@@ -123,6 +136,7 @@ public class ActiveDelayedAlignShooterState extends TimedStateCommand {
             limelight.disable();
             turret.disable();
         }
+        buttonDebounce.set(false);
     }
 
     @Override

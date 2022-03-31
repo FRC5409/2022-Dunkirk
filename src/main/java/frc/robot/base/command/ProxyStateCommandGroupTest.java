@@ -1,7 +1,9 @@
 package frc.robot.base.command;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,11 +12,11 @@ import org.jetbrains.annotations.Nullable;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
- * <h2> ProxyStateCommandGroup </h2>
+ * <h2> ProxyStateCommandGroupTest </h2>
  * A command-based state machine representing a series of tasks to be performed by the robot
  * in an independant execution order.
  * 
- * <p>When the {@link ProxyStateCommandGroup} executes, it schedules states without obtaining
+ * <p>When the {@link ProxyStateCommandGroupTest} executes, it schedules states without obtaining
  * their requirements, as opposed to the typical behaviour of a {@link StateCommandGroup}.</p>
  * 
  * <p>Suppose a state group with states [A, B, C, D]. If state 'A' requires a given subsystem,
@@ -24,40 +26,39 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
  * @author Keith Davies
  * @see StateCommand, StateCommandGroup
  */
-public abstract class ProxyStateCommandGroup extends CommandBase {
+public abstract class ProxyStateCommandGroupTest extends CommandBase {
     protected Map<String, StateCommand> m_states;
+    protected StateExecutionStack m_stack;
     protected StateCommand m_default;
-    protected StateCommand m_active;
 
     /**
-     * Construct an empty {@link ProxyStateCommandGroup}.
+     * Construct an empty {@link ProxyStateCommandGroupTest}.
      */
-    public ProxyStateCommandGroup() {
-        m_active = null;
+    public ProxyStateCommandGroupTest() {
         m_default = null;
-
         m_states = new HashMap<>();
+        m_stack = null;
     }
     
     /**
-     * Construct a {@link ProxyStateCommandGroup} with several states.
+     * Construct a {@link ProxyStateCommandGroupTest} with several states.
      * 
      * @param commands The states included in the group.
      */
-    public ProxyStateCommandGroup(StateCommand... commands) {
+    public ProxyStateCommandGroupTest(StateCommand... commands) {
         this();
         addCommands(commands);
     }
 
     
     /**
-     * Construct a {@link ProxyStateCommandGroup} with several states,
+     * Construct a {@link ProxyStateCommandGroupTest} with several states,
      * as well as a default state.
      * 
      * @param commands         The states included in the group.
      * @param defaultStateName The default state name.
      */
-    public ProxyStateCommandGroup(String defaultStateName, StateCommand... commands) {
+    public ProxyStateCommandGroupTest(String defaultStateName, StateCommand... commands) {
         this();
         addCommands(commands);
         m_default = getCommand(defaultStateName);
@@ -65,44 +66,45 @@ public abstract class ProxyStateCommandGroup extends CommandBase {
 
     @Override
     public void initialize() {
-        // Check if state was externally set before command execution
-        if (m_active == null) {
-            // Use default command if specified
-            if (m_default == null) {
-                System.err.println("No initial state specified");
-                return;
-            }
-            
-            m_active = m_default;
-            System.out.println("Starting with state " + m_active.getStateName());
+        if (m_default == null) {
+            System.err.println("No initial state specified");
+            return;
         }
-
-        m_active.schedule();
+        
+        m_stack = new StateExecutionStack(m_default);
+        m_stack.schedule();
     }
 
     @Override
     public void execute() {
-        if (m_active == null)
+        if (m_stack == null)
             return;
         
-        if (!m_active.isScheduled()) {
-            String next = m_active.getNextState();
-            m_active.reset();
+        if (m_stack.isDirty()) {
+            if (m_stack.getNextStack() != null) {
+                m_stack = m_stack.getNextStack();
+            } else if (m_stack.getNextPath() != null) {
+                String[] path = m_stack.getNextPath();
 
-            if (next != null) {
-                m_active = getCommand(next);
-                System.out.println("Moving to state " + next);
-                m_active.schedule();
-            } else 
-                m_active = null;
+                StateCommand baseState = getCommand(path[0]);
+                
+                List<StateCommand> nextStates = StateCommandManager.getInstance()
+                    .getStatesOnPath(baseState, path, 1);
+
+                nextStates.add(0, baseState);
+
+                m_stack = new StateExecutionStack(nextStates);
+            } else {
+                m_stack = null;
+            }
         }
     }
 
     @Override
     public void end(boolean interrupted) {
-        if (m_active != null) {
-            m_active.cancel();
-            m_active = null;
+        if (m_stack != null) {
+            m_stack.cancel();
+            m_stack = null;
         }
     }
 
@@ -114,6 +116,8 @@ public abstract class ProxyStateCommandGroup extends CommandBase {
     public void addCommands(StateCommand... commands) {
         for (StateCommand cmd : Set.of(commands)) {
             final String name = cmd.getStateName();
+            StateFormat.validateName(name);
+
             if (m_states.containsKey(name)) {
                 throw new IllegalArgumentException(
                     "Conflict between commands using the name '"
@@ -154,26 +158,19 @@ public abstract class ProxyStateCommandGroup extends CommandBase {
      * @throws UnknownStateException If no command with {@code name} exists. 
      */
     public boolean setActiveState(String name) {
-        if (m_active == null)
+        if (m_stack == null)
             return false;
             
-        StateCommand command = getCommand(name);
+        StateCommand state = getCommand(name);
 
-        // Interrupt the active command
-        m_active.cancel();
+        // Interrupt the active stack
+        m_stack.cancel();
 
-        // Start new (or previously running) command
-        command.schedule();
-        m_active = command;
+        // Start new stack
+        m_stack = new StateExecutionStack(state);
+        m_stack.schedule();
 
         return true;
-    }
-
-    @Nullable
-    public String getActiveState() {
-        if (m_active == null)
-            return null;
-        return m_active.getStateName();
     }
 
     public StateCommand getCommand(String name) throws UnknownStateException {
@@ -189,6 +186,6 @@ public abstract class ProxyStateCommandGroup extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return m_active == null;
+        return m_states == null;
     }
 }

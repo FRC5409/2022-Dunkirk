@@ -179,12 +179,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
     public void setRotationTarget(double value) {
         if (!enabled) return;
         
-        // TODO add safety
-        ctr_main.setReference(
-            ROTATIONS_PER_DEGREE * ROTATION_RANGE.clamp(value), 
-            CANSparkMax.ControlType.kPosition);
-        
-        target = value;
+        setReference(value, ReferenceType.kRotation);
     }
 
     public void setReference(double value, ReferenceType type) {

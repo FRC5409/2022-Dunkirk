@@ -146,7 +146,7 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
             new IndexerIntakeActive(indexer, intake).withTimeout(0.5),
             
             // Prime shooter
-            new PrimeShooter(indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME),
+            new PrimeShooter(indexer, new ValueProperty<>()).withTimeout(Constants.Shooter.ARMING_TIME),
 
             // Simulate run shooter trigger
             new ConfigureProperty<>(runShooter, true),
@@ -193,7 +193,7 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
                 )
             ),
             // Prime shooter
-            new PrimeShooter(indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME),
+            new PrimeShooter(indexer, new ValueProperty<>()).withTimeout(Constants.Shooter.ARMING_TIME),
 
             // Simulate run shooter trigger
             new ConfigureProperty<>(runShooter, true),

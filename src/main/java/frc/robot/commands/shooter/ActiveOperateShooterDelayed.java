@@ -7,7 +7,9 @@ import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.ProxyStateCommandGroup;
+import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.DriveTrain;
@@ -36,6 +38,8 @@ public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
     private final PIDController sharedController;
     private final Equation turretOffsetModel;
     private final Equation flywheelOffsetModel;
+    private Property<Double> driveSpeed;
+    private Property<ShooterState> shooterState;
 
     public ActiveOperateShooterDelayed(
         ShooterFlywheel flywheel,
@@ -43,6 +47,9 @@ public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
         DriveTrain drivetrain,
         Limelight limelight,
         Indexer indexer,
+        Property<ShooterState> shooterState,
+        Property<IndexerArmedState> indexerArmedState,
+        Property<Double> driveSpeed,
         Property<SweepDirection> direction,
         Property<ShooterConfiguration> configuration,
         Property<Integer> offset,
@@ -54,16 +61,19 @@ public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
         sharedOdometry = new ValueProperty<>();
         sharedController = new PIDController(0.0,0.0,0.0);
         sharedController.setTolerance(0.3);
+
+        Property<Boolean> buttonDebounce = new ValueProperty<>(false);
         
         this.turretOffsetModel = turretOffsetModel;
         this.flywheelOffsetModel = flywheelOffsetModel;
+        this.driveSpeed = driveSpeed;
 
         addCommands(
             new SearchShooterState(limelight, true),
             new SweepShooterState(turret, limelight, Property.cast(sharedOdometry), direction),
-            new ActiveDelayedAlignShooterState(turret, drivetrain, limelight, trigger, Property.cast(sharedOdometry), sharedController),
-            new ActiveOperateArmShooterState(flywheel, turret, drivetrain, limelight, configuration, sharedOdometry, offset, armed, sharedController),
-            new ActiveOperateRunShooterState(flywheel, turret, drivetrain, limelight, indexer, configuration, sharedOdometry, sharedController, offset)
+            new ActiveDelayedAlignShooterState(turret, drivetrain, limelight, trigger, shooterState, Property.cast(sharedOdometry), buttonDebounce, sharedController),
+            new ActiveOperateArmShooterState(flywheel, turret, drivetrain, limelight, trigger, buttonDebounce, shooterState, indexerArmedState, driveSpeed, configuration, sharedOdometry, offset, sharedController),
+            new ActiveOperateRunShooterState(flywheel, turret, drivetrain, limelight, indexer, trigger, buttonDebounce, shooterState, indexerArmedState, driveSpeed, configuration, sharedOdometry, sharedController, offset)
         ); 
 
         setDefaultState("frc.robot.shooter:search");
@@ -72,7 +82,9 @@ public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
         SmartDashboard.putNumber("Shooter I", SmartDashboard.getNumber("Shooter I", 0.0));
         SmartDashboard.putNumber("Shooter D", SmartDashboard.getNumber("Shooter D", 0.0));
         SmartDashboard.putNumber("Shooter Output Thresh", SmartDashboard.getNumber("Shooter Output Thresh", 0.0));
+        SmartDashboard.putNumber("Driving Speed Factor", SmartDashboard.getNumber("Driving Speed Factor", 1));
 
+        this.shooterState = shooterState;
         this.configuration = configuration;
     }
     
@@ -90,14 +102,19 @@ public final class ActiveOperateShooterDelayed extends ProxyStateCommandGroup {
             )
         );
 
+        shooterState.set(ShooterState.kOff);
+
         super.initialize();
     }
 
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
+        driveSpeed.set(1.0);
         
         // Destroy odometry
         sharedOdometry.set(null);
+
+        shooterState.set(ShooterState.kOff);
     }
 }

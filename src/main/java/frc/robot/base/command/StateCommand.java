@@ -1,5 +1,8 @@
 package frc.robot.base.command;
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,5 +32,21 @@ public interface StateCommand extends Command {
     
     @NotNull
     String getStateName();
+
+    default void addStates(StateCommand... states) {
+        StateCommandManager.getInstance().addStateChildren(this, states);
+    }
     
+    default void addStates(Collection<StateCommand> states) {
+        StateCommandManager.getInstance().addStateChildren(this, states);
+    }
+
+    @Nullable
+    default StateCommand getParent() {
+        return StateCommandManager.getInstance().getStateParent(this);
+    }
+
+    default Map<String, StateCommand> getChildren() {
+        return StateCommandManager.getInstance().getStateChildren(this);
+    }
 }
