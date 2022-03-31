@@ -126,7 +126,9 @@ public final class Constants {
         public static final double TO_MAX = 106.5;
         public static final double TO_MID_RUNG = 104.0;
         public static final double TO_LOW_RUNG = 80.0;
-        public static final double TO_MIN = 10.0;
+        public static final double TO_MIN_MID = 10.0;
+        public static final double TO_MIN_LOW = 4.0;
+
     }
 
     public static final class kIntake{

@@ -7,12 +7,6 @@ package frc.robot.subsystems;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.playingwithfusion.TimeOfFlight;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -21,24 +15,16 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.NetworkButton;
 import frc.robot.Constants;
@@ -63,6 +49,7 @@ public class Climber extends SubsystemBase {
   private final DoubleSolenoid dsl_lock;
 
   private ValueProperty<Boolean> climberActive;
+  private double prevMove = 0;
 
   /**
    * Constructor for the climber.
@@ -111,7 +98,7 @@ public class Climber extends SubsystemBase {
         .withWidget(BuiltInWidgets.kCommand);
     setPoints.add("ELEVATE TO LOW", new ElevateTo(this, Constants.kClimber.TO_LOW_RUNG))
         .withWidget(BuiltInWidgets.kCommand);
-    setPoints.add("ELEVATE TO MIN", new ElevateTo(this, Constants.kClimber.TO_MIN)).withWidget(BuiltInWidgets.kCommand);
+    setPoints.add("ELEVATE TO MIN", new ElevateTo(this, Constants.kClimber.TO_MIN_MID)).withWidget(BuiltInWidgets.kCommand);
 
     shuffleboardFields.put("toPosition", sliders.add("TO POSITION", 0).withWidget(BuiltInWidgets.kNumberSlider)
         .withProperties(Map.of("min", 0.5, "max", 104)).getEntry());
@@ -320,7 +307,7 @@ public class Climber extends SubsystemBase {
 
     double avg = sum / measuredDistances.size();
 
-    if(Constants.kConfig.DEBUG){
+    if (Constants.kConfig.DEBUG) {
       SmartDashboard.putNumberArray("Distances", arr);
       SmartDashboard.putNumber("Avergae Distance", avg);
       SmartDashboard.putBoolean("AVG CALLED", true);
@@ -356,5 +343,13 @@ public class Climber extends SubsystemBase {
   public void lowerFrames() {
     MotorUtils.lowerFollowerStatusPeriod(mot_main);
     MotorUtils.lowerFollowerStatusPeriod(mot_follower);
+  }
+
+  public void setPrevMove(double move) {
+    prevMove = move;
+  }
+
+  public double getPrevMove() {
+    return prevMove;
   }
 }

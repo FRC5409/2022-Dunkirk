@@ -4,12 +4,10 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Climber;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class ElevateTo extends CommandBase {
@@ -23,6 +21,12 @@ public class ElevateTo extends CommandBase {
     boolean started = false;
     private final Timer timer = new Timer();
 
+    /**
+     * Creates a new instance of 
+     * @param subsystem
+     * @param endPos
+     * @param _lockOnDescend
+     */
     public ElevateTo(Climber subsystem, double endPos, boolean _lockOnDescend) {
         climber = subsystem;
         toPos = endPos;
@@ -68,6 +72,8 @@ public class ElevateTo extends CommandBase {
         timer.start();
 
         started = false;
+
+        climber.setPrevMove(toPos);
     }
 
     @Override

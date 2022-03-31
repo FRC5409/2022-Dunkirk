@@ -253,7 +253,7 @@ public class RobotCompetition implements RobotConfiguration {
                 new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kGuard),
                 new RunShooter(Flywheel, Indexer, Constants.Shooter.GUARD_FLYWHEEL_VELOCITY, 0.5)));
 
-        
+        joystickSecondary.getButton(ButtonType.kLeftBumper).and(climberToggleTrigger).whenActive(new FindElevatorZero(Climber));   
     }
 
     /**

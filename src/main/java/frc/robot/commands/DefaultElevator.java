@@ -9,6 +9,7 @@ import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /** An example command that uses an example subsystem. */
 public class DefaultElevator extends CommandBase {
@@ -65,21 +66,18 @@ public class DefaultElevator extends CommandBase {
             int pov = joystick.getPOV();
 
             if (pov == 0) {
-                this.andThen(new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
-                this.cancel();
-                // CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
+                CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
             } else if (pov == 90) {
-                this.andThen(new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
-                this.cancel();
-                // CommandScheduler.getInstance().schedule(false, new ToggleClimberLockCommand(climber));
+                CommandScheduler.getInstance().schedule(false, new ToggleClimberLockCommand(climber));
             } else if (pov == 180) {
-                this.andThen(new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
-                this.cancel();
-                // CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_MIN, true));
+                CommandScheduler.getInstance().schedule(true,
+                        new ElevateTo(climber,
+                                (climber.getPrevMove() == Constants.kClimber.TO_LOW_RUNG)
+                                        ? Constants.kClimber.TO_MIN_LOW
+                                        : Constants.kClimber.TO_MIN_MID,
+                                true));
             } else if (pov == 270) {
-                this.andThen(new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
-                this.cancel();
-                // CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_LOW_RUNG));
+                CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_LOW_RUNG));
             }
         }
     }
