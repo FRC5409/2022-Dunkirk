@@ -103,7 +103,7 @@ public class RobotTraining implements RobotConfiguration {
         turret      = robot.turret;
 
         // Init commands
-        defaultDrive        = new DefaultDrive((DriveTrain), joystickPrimary.getController());
+        //defaultDrive        = new DefaultDrive((DriveTrain), joystickPrimary.getController());
         indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary);
         reverse             = new ReverseIntakeIndexer(Intake, Indexer);
         intakeActive        = new IntakeActive(Intake, Indexer);
@@ -120,6 +120,8 @@ public class RobotTraining implements RobotConfiguration {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        defaultDrive = null;
 
         configureCommands();
         configureButtonBindings();
@@ -157,9 +159,9 @@ public class RobotTraining implements RobotConfiguration {
         joystickPrimary.getButton(ButtonType.kB)
             .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
 
-        joystickPrimary.getButton(ButtonType.kX)
-            .whileHeld(new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary))
-            .whenReleased(new PrimeShooter(Indexer, shooterArmed).withTimeout(0.2));
+        // joystickPrimary.getButton(ButtonType.kX)
+            // .whileHeld(new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary))
+            // .whenReleased(new PrimeShooter(Indexer, shooterArmed).withTimeout(0.2));
 
         joystickPrimary.getButton(ButtonType.kA)
             .whileHeld(new TrainerOperateShooter(trainerDashboard, trainerContext, Flywheel, turret, limelight, Indexer, shooterSweepDirection, shooterArmed))

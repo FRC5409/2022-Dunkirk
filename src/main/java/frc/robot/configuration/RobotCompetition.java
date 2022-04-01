@@ -93,7 +93,7 @@ public class RobotCompetition implements RobotConfiguration {
         // Init commands
         indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary);
         intakeActive        = new IntakeActive(Intake, Indexer);
-        defaultDrive        = new DefaultDrive(DriveTrain, joystickPrimary.getController());
+        defaultDrive        = null; //new DefaultDrive(DriveTrain, joystickPrimary.getController());
         reverse             = new ReverseIntakeIndexer(Intake, Indexer);
         test                = new IndexerIntakeTest(Indexer, Intake);
 
@@ -176,8 +176,8 @@ public class RobotCompetition implements RobotConfiguration {
                 )
             );
         
-        joystickPrimary.getButton(ButtonType.kX)
-            .whenReleased(new PrimeShooter(Indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME));
+        // joystickPrimary.getButton(ButtonType.kX)
+            // .whenReleased(new PrimeShooter(Indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME));
 
         joystickSecondary.getButton(ButtonType.kStart)
             .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber))

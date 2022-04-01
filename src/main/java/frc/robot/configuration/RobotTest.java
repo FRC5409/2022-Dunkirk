@@ -1,26 +1,34 @@
 package frc.robot.configuration;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants;
 //Constants
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.ShooterMode;
+import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.Joystick.ButtonType;
+import frc.robot.base.command.ProxySequentialCommandGroup;
+import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.RobotConfiguration;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.Joystick;
 import frc.robot.base.Model3;
+import frc.robot.base.CommandProperty;
 // Misc
 import edu.wpi.first.wpilibj.XboxController;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj.GenericHID;
@@ -38,6 +46,7 @@ import frc.robot.commands.indexer.IntakeActive;
 import frc.robot.commands.indexer.ReverseIntakeIndexer;
 import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.subsystems.shooter.*;
+// import frc.robot.test.TestStateCommand;
 import frc.robot.training.TrainingModel3;
 import frc.robot.training.protocol.NetworkConnection;
 import frc.robot.training.protocol.NetworkServerSocket;
@@ -49,13 +58,14 @@ import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
 import frc.robot.utils.Range;
 import frc.robot.commands.shooter.*;
-import frc.robot.commands.test.ShooterOdometryTracking;
+// import frc.robot.commands.shooter.experimental.ActiveOperateShooterDelayed;
+// import frc.robot.commands.test.ShooterOdometryTracking;
 import frc.robot.commands.test.state.AlignTrackingState;
 import frc.robot.commands.training.model.ModelTrainingSession;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
-import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
-import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
+// import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
+// import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
 
 public class RobotTest implements RobotConfiguration {
     private final ShooterFlywheel      Flywheel;
@@ -80,11 +90,17 @@ public class RobotTest implements RobotConfiguration {
     private final ValueProperty<Integer> shooterOffset;
     private final ValueProperty<Boolean> climberActive;
     private final ValueProperty<Boolean> shooterArmed;
+    private final ValueProperty<Double> drivetrainSpeed;
+
+    private final CommandProperty<ShooterState> shooterState;
+    private final CommandProperty<IndexerArmedState> indexerArmedState;
 
     private final SendableChooser<Command> autoCommandSelector;
 
     private NetworkConnection clientConnection;
     private Map<String, TrainingModel3> trainingModels;
+
+    private ShooterConfiguration trainerConfiguration;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -107,13 +123,16 @@ public class RobotTest implements RobotConfiguration {
         shooterArmed          = new ValueProperty<>(false);
         shooterOffset         = new ValueProperty<>(0);
         climberActive         = robot.climberActive;
+        shooterState          = new CommandProperty<>(ShooterState.kOff);
+        indexerArmedState     = new CommandProperty<>(IndexerArmedState.kArmed);
+        drivetrainSpeed       = new ValueProperty<>(1.0);
         
         // Initialize sub systems
 
         // Init commands
         indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary);
         intakeActive        = new IntakeActive(Intake, Indexer);
-        defaultDrive        = new DefaultDrive(DriveTrain, joystickPrimary.getController());
+        defaultDrive        = new DefaultDrive(DriveTrain, joystickPrimary.getController(), drivetrainSpeed);
         reverse             = new ReverseIntakeIndexer(Intake, Indexer);
         test                = new IndexerIntakeTest(Indexer, Intake);
 
@@ -162,17 +181,17 @@ public class RobotTest implements RobotConfiguration {
     }
 
     private void configureDashboard() {
-        autoCommandSelector.setDefaultOption("Default", 
-            new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterConfiguration, shooterSweepDirection, shooterOffset));
+        // autoCommandSelector.setDefaultOption("Default", 
+        //     new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+        //         shooterConfiguration, shooterSweepDirection, shooterOffset));
         
-        autoCommandSelector.addOption("One",
-            new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, 
-                shooterConfiguration, shooterSweepDirection, shooterOffset));
+        // autoCommandSelector.addOption("One",
+        //     new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, 
+        //         shooterConfiguration, shooterSweepDirection, shooterOffset));
         
-        autoCommandSelector.addOption("Two",
-            new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterConfiguration, shooterSweepDirection, shooterOffset));
+        // autoCommandSelector.addOption("Two",
+        //     new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+        //         shooterConfiguration, shooterSweepDirection, shooterOffset));
 
         SmartDashboard.putData("Auto Chooser", autoCommandSelector);
 
@@ -220,18 +239,25 @@ public class RobotTest implements RobotConfiguration {
             .whenReleased(new SlowGear(DriveTrain));
 
         joystickPrimary.getButton(ButtonType.kB)
-            .whileHeld(new ReverseIntakeIndexer(Intake, Indexer));
+            .whileHeld(
+                new ProxySequentialCommandGroup(
+                    indexerArmedState.configureTo(IndexerArmedState.kActive),
+                    shooterState.notEqualTo(ShooterState.kActive),
+                    new ReverseIntakeIndexer(Intake, Indexer)
+                )
+            );
         
         joystickPrimary.getButton(ButtonType.kX)
             .whileActiveOnce(
-                new SequentialCommandGroup(
-                    new ConfigureProperty<>(shooterArmed, false),    
+                new ProxySequentialCommandGroup(
+                    indexerArmedState.configureTo(IndexerArmedState.kActive),
+                    shooterState.notEqualTo(ShooterState.kActive), 
                     new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary)
                 )
             );
         
         joystickPrimary.getButton(ButtonType.kX)
-            .whenReleased(new PrimeShooter(Indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME));
+            .whenReleased(new PrimeShooter(Indexer, indexerArmedState).withTimeout(Constants.Shooter.ARMING_TIME));
 
 
         joystickSecondary.getButton(ButtonType.kStart)
@@ -251,20 +277,21 @@ public class RobotTest implements RobotConfiguration {
             .whenActive(Climber::zeroEncoder);
 
         
-        joystickSecondary.getButton(ButtonType.kLeftBumper)
+        Button yes = new Button(joystickSecondary.getButton(ButtonType.kLeftBumper)
             .and(climberToggleTrigger.negate())
-            .and(shooterModeTrigger.negate())
-            .whileActiveOnce(
-                new ActiveOperateShooterDelayed(
-                    Flywheel, turret, DriveTrain, limelight, Indexer, 
-                    shooterSweepDirection, shooterConfiguration, shooterOffset, shooterArmed,
-                    new Trigger(joystickSecondary.getController()::getRightBumper),
-                    trainingModels.get("turret_offset"),
-                    trainingModels.get("flywheel_offset")
-                )
+            .and(shooterModeTrigger.negate()));
+
+        yes.toggleWhenPressed(
+            new ActiveOperateShooterDelayed(
+                Flywheel, turret, DriveTrain, limelight, Indexer, 
+                shooterState, indexerArmedState, drivetrainSpeed, shooterSweepDirection,
+                shooterConfiguration, shooterOffset,
+                new ValueProperty<>(),
+                new Trigger(joystickSecondary.getController()::getRightBumper),
+                trainingModels.get("turret_offset"),
+                trainingModels.get("flywheel_offset")
             )
-            .whenInactive(new RotateTurret(turret, 0));
-        
+        );
 
         joystickSecondary.getButton(ButtonType.kLeftBumper)
             .whenReleased(new RotateTurret(turret, 0));
@@ -328,16 +355,36 @@ public class RobotTest implements RobotConfiguration {
      */
     @Override
     public Command getTeleopCommand() {
-        return new ParallelCommandGroup(
-            new SequentialCommandGroup(    
-                new RotateTurret(turret, 0),
-                new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar)
-            ),
-            new FindElevatorZero(Climber),
-            new ScheduleCommand(
-                new ModelTrainingSession(clientConnection, trainingModels)
-            )
-        );
+        
+        // return new ParallelCommandGroup(
+        //     new SequentialCommandGroup(    
+        //         new RotateTurret(turret, 0),
+        //         new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar)
+        //     ),
+        //     new FindElevatorZero(Climber),
+        //     new ScheduleCommand(
+        //         new ModelTrainingSession(clientConnection, trainingModels),
+        //         new CommandBase() {
+        //             public void execute() {
+        //                 SmartDashboard.putString("Shooter State", shooterState.toString());
+        //                 SmartDashboard.putString("Indexer Armed State", indexerArmedState.toString());
+        //             };
+
+        //             @Override
+        //             public boolean isFinished() {
+        //                 return false;
+        //             }
+        //         }
+        //     )
+        // );
+    
+        // return new TestStateCommand(List.of(
+        //     new SubsystemBase() {},
+        //     new SubsystemBase() {},
+        //     new SubsystemBase() {},
+        //     new SubsystemBase() {}
+        // ));
+        return null;
     }
 
     /**
