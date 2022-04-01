@@ -185,19 +185,22 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
     public void setReference(double value, ReferenceType type) {
         if (!enabled) return;
         
-        if (type == ReferenceType.kOutput) {
-            if (!(limitType == LimitType.kLeft && value < 0 || limitType == LimitType.kRight && value > 0))
+        if (!(value == target && type == referenceType)) {
+            if (type == ReferenceType.kOutput) {
+                if (!(limitType == LimitType.kLeft && value < 0 || limitType == LimitType.kRight && value > 0)) {
+                    ctr_main.setReference(
+                        Constants.Shooter.TURRET_MANUAL_OUTPUT_RANGE.clamp(value), 
+                        CANSparkMax.ControlType.kDutyCycle);
+                }
+            } else {
                 ctr_main.setReference(
-                    Constants.Shooter.TURRET_MANUAL_OUTPUT_RANGE.clamp(value), 
-                    CANSparkMax.ControlType.kDutyCycle);
-        } else {
-            ctr_main.setReference(
-                ROTATIONS_PER_DEGREE * ROTATION_RANGE.clamp(value), 
-                CANSparkMax.ControlType.kPosition);
-        }
+                    ROTATIONS_PER_DEGREE * ROTATION_RANGE.clamp(value), 
+                    CANSparkMax.ControlType.kPosition);
+            }
 
-        target = value;
-        referenceType = type;
+            target = value;
+            referenceType = type;
+        }
     }
 
     public void setIdleMode(IdleMode mode) {
