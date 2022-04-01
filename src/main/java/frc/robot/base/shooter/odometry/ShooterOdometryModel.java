@@ -9,7 +9,6 @@ public class ShooterOdometryModel implements Sendable {
     public final double kPitch;
     public final double kHeight;
     public final double kOffset;
-    public final double kkAcquistionTimeout;
     public final Vector3 kViewOffset;
     public final Vector2 kFieldOfView;
     
@@ -17,7 +16,6 @@ public class ShooterOdometryModel implements Sendable {
         double kPitch,
         double kHeight,
         double kOffset,
-        double kAcquistionTimeout,
         Vector3 kViewOffset,
         Vector2 kFieldOfView
     ) {
@@ -26,7 +24,6 @@ public class ShooterOdometryModel implements Sendable {
         this.kOffset = kOffset;
         this.kViewOffset = kViewOffset;
         this.kFieldOfView = kFieldOfView;
-        this.kkAcquistionTimeout = kAcquistionTimeout;
     }
 
     @Override
@@ -36,6 +33,5 @@ public class ShooterOdometryModel implements Sendable {
         builder.addDoubleProperty("kOffset", () -> kOffset, null); 
         builder.addStringProperty("kViewOffset", () -> kViewOffset.toString(), null); 
         builder.addStringProperty("kFieldOfView", () -> kFieldOfView.toString(), null);
-        builder.addDoubleProperty("kkAcquistionTimeout", () -> kkAcquistionTimeout, null); 
     }
 }

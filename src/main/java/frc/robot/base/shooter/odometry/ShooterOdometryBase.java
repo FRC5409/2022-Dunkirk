@@ -6,11 +6,11 @@ import frc.robot.utils.Vector2;
 import frc.robot.utils.Vector3;
 
 public abstract class ShooterOdometryBase implements Sendable {
-    protected final ShooterOdometryModel model;
+    protected final ShooterOdometryModel odometryModel;
     protected final Matrix3 kViewProjection;
 
-    public ShooterOdometryBase(ShooterOdometryModel model) {
-        double kPitch = -Math.toRadians(model.kPitch);
+    public ShooterOdometryBase(ShooterOdometryModel odometryModel) {
+        double kPitch = -Math.toRadians(odometryModel.kPitch);
         
         kViewProjection = new Matrix3(
              Math.cos(kPitch), 0d, Math.sin(kPitch),
@@ -18,13 +18,13 @@ public abstract class ShooterOdometryBase implements Sendable {
             -Math.sin(kPitch), 0d, Math.cos(kPitch)
         );
         
-        this.model = model;
+        this.odometryModel = odometryModel;
     }
 
     public abstract void reset();
 
-    public ShooterOdometryModel getModel() {
-        return model;
+    public ShooterOdometryModel getOdometryModel() {
+        return odometryModel;
     }
 
     protected Vector3 calculateTargetProjection(Vector2 target) {

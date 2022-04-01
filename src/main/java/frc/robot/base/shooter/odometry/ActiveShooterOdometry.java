@@ -2,7 +2,6 @@ package frc.robot.base.shooter.odometry;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.base.shooter.target.FilterBase;
 import frc.robot.utils.Vector2;
 import frc.robot.utils.Vector3;
 
@@ -16,8 +15,11 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
     protected Vector2 kLastDirection;
     protected Vector2 kLastVisionDirection;
 
-    public ActiveShooterOdometry(ShooterOdometryModel model, FilterBase filter) {
-        super(model, filter);
+    public ActiveShooterOdometry(
+        ShooterOdometryModel odometryModel,
+        ShooterTrackingModel trackingModel
+    ) {
+        super(odometryModel, trackingModel);
         
         kLastVisionDirection = new Vector2();
         kLastDirection = new Vector2();
@@ -38,11 +40,11 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
      * @param rotation The observed view rotation
      */
     public void update(Vector2 target, double speed, double rotation) {
-        Vector3 observerVector = calculateTargetProjection(filter.update(target));
-        kLastDistance = safe(model.kHeight / Math.tan(Math.asin(observerVector.z))) + model.kOffset;
+        Vector3 observerVector = calculateTargetProjection(kFilter.update(target));
+        kLastDistance = safe(odometryModel.kHeight / Math.tan(Math.asin(observerVector.z))) + odometryModel.kOffset;
 
         Vector3 tempVector = observerVector.scale(kLastDistance)
-           .sub(model.kViewOffset).unit();
+           .sub(odometryModel.kViewOffset).unit();
 
         rotation = Math.toRadians(rotation);
 

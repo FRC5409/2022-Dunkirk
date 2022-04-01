@@ -10,25 +10,17 @@ import frc.robot.utils.Vector2;
  * Experimental drive by shooter odometry
  */
 public class DriveShooterOdometry extends ActiveShooterOdometry {
-    private final Equation flywheelOffsetModel;
-    private final Equation turretOffsetModel;
-
     private double kLastTurretOffset;
     private double kLastFlywheelOffset;
 
     public DriveShooterOdometry(
-        ShooterOdometryModel model,
-        FilterBase filter,
-        Equation flywheelOffsetModel,
-        Equation turretOffsetModel
+        ShooterOdometryModel odometryModel,
+        ShooterTrackingModel trackingModel
     ) {
-        super(model, filter);
+        super(odometryModel, trackingModel);
         
         kLastFlywheelOffset = 0;
         kLastTurretOffset = 0;
-
-        this.flywheelOffsetModel = flywheelOffsetModel;
-        this.turretOffsetModel = turretOffsetModel;
     }
 
 
@@ -36,8 +28,8 @@ public class DriveShooterOdometry extends ActiveShooterOdometry {
     public void update(Vector2 target, double speed, double rotation) {
         super.update(target, speed, rotation);
 
-        kLastFlywheelOffset = flywheelOffsetModel.calculate(kLastVelocity.x);
-        kLastTurretOffset = turretOffsetModel.calculate(kLastVelocity.y);
+        kLastFlywheelOffset = trackingModel.kFlywheelModel.calculate(kLastVelocity.x);
+        kLastTurretOffset = trackingModel.kTurretModel.calculate(kLastVelocity.y);
     }
 
     public void reset() {

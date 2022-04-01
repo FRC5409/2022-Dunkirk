@@ -4,13 +4,13 @@ import org.jetbrains.annotations.Nullable;
 
 import frc.robot.base.Model4;
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
-import frc.robot.base.shooter.target.FilterBase;
+import frc.robot.base.shooter.odometry.ShooterTrackingModel;
 import frc.robot.base.shooter.target.FilterFactory;
 
 public class ShooterConfiguration {
     private final Model4 executionModel;
+    private final ShooterTrackingModel trackingModel;
     private final ShooterOdometryModel odometryModel;
-    private final FilterFactory<?> targetFilterFactory;
     private final VisionPipeline visionPipeline;
     private final HoodPosition hoodConfiguration;
     private final ShooterMode shooterMode;
@@ -19,13 +19,13 @@ public class ShooterConfiguration {
         ShooterMode shooterMode,
         HoodPosition hoodConfiguration,
         VisionPipeline visionPipeline,
-        FilterFactory<?> targetFilterFactory,
+        ShooterTrackingModel trackingModel,
         ShooterOdometryModel odometryModel
     ) {
-        this.targetFilterFactory = targetFilterFactory;
         this.hoodConfiguration = hoodConfiguration;
         this.visionPipeline = visionPipeline;
         this.executionModel = null;
+        this.trackingModel = trackingModel;
         this.odometryModel = odometryModel;
         this.shooterMode = shooterMode;
     }
@@ -35,14 +35,15 @@ public class ShooterConfiguration {
         HoodPosition hoodConfiguration,
         VisionPipeline visionPipeline,
         FilterFactory<?> targetFilterFactory,
+        ShooterTrackingModel trackingModel,
         ShooterOdometryModel odometryModel,
         Model4 executionModel
     ) {
-        this.targetFilterFactory = targetFilterFactory;
         this.hoodConfiguration = hoodConfiguration;
         this.visionPipeline = visionPipeline;
         this.executionModel = executionModel;
         this.odometryModel = odometryModel;
+        this.trackingModel = trackingModel;
         this.shooterMode = shooterMode;
     }
 
@@ -67,7 +68,7 @@ public class ShooterConfiguration {
         return odometryModel;
     }
 
-    public FilterBase getTargetFilter() {
-        return targetFilterFactory.create();
+    public ShooterTrackingModel getTrackingModel() {
+        return trackingModel;
     }
 }

@@ -12,21 +12,26 @@ import frc.robot.utils.Vector3;
  * Experimental shooter position relative odometry.
  */
 public class SimpleShooterOdometry extends ShooterOdometryBase {
-    protected final FilterBase filter;
+    protected final ShooterTrackingModel trackingModel;
+    protected final FilterBase kFilter;
 
     protected Vector2 kLastTarget;
     protected double kLastDistance;
     protected double kLastUpdate;
 
-
-    public SimpleShooterOdometry(ShooterOdometryModel model, FilterBase filter) {
-        super(model);
+    public SimpleShooterOdometry(
+        ShooterOdometryModel odometryModel,
+        ShooterTrackingModel trackingModel
+    ) {
+        super(odometryModel);
         
         kLastDistance = 0;
         kLastTarget = null;
         kLastUpdate = 0;
 
-        this.filter = filter;
+        kFilter = trackingModel.kTargetFilter.create();
+
+        this.trackingModel = trackingModel;
     }
 
     /**
@@ -34,9 +39,9 @@ public class SimpleShooterOdometry extends ShooterOdometryBase {
      * @param target   The observed vision target
      */
     public void update(Vector2 target) {
-        Vector3 observerVector = calculateTargetProjection(filter.update(target));
+        Vector3 observerVector = calculateTargetProjection(kFilter.update(target));
 
-        kLastDistance = model.kHeight / Math.tan(Math.asin(observerVector.z)) + model.kOffset;
+        kLastDistance = odometryModel.kHeight / Math.tan(Math.asin(observerVector.z)) + odometryModel.kOffset;
         if (!Double.isFinite(kLastDistance))
             kLastDistance = 0;
 
@@ -50,7 +55,7 @@ public class SimpleShooterOdometry extends ShooterOdometryBase {
         kLastTarget = null;
         kLastUpdate = Timer.getFPGATimestamp();
 
-        filter.reset();
+        kFilter.reset();
     }
 
     public double getDistance() {
@@ -69,7 +74,7 @@ public class SimpleShooterOdometry extends ShooterOdometryBase {
     }
 
     public boolean isLost() {
-        return (Timer.getFPGATimestamp() - kLastUpdate) > model.kkAcquistionTimeout;
+        return (Timer.getFPGATimestamp() - kLastUpdate) > trackingModel.kAcquistionTimeout;
     }
 
     @Override
