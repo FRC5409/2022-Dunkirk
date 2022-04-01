@@ -30,10 +30,6 @@ public interface StateCommand extends Command {
     default void addStates(StateCommand... states) {
         StateCommandManager.getInstance().addStateChildren(this, states);
     }
-    
-    default void addStates(Collection<StateCommand> states) {
-        StateCommandManager.getInstance().addStateChildren(this, states);
-    }
 
     void setExecutionIndex(int index);
 
@@ -44,7 +40,7 @@ public interface StateCommand extends Command {
     String getStateName();
 
     int getExecutionIndex();
-    
+
     @Nullable
     default StateCommand getParent() {
         return StateCommandManager.getInstance().getStateParent(this);
