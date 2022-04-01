@@ -19,4 +19,8 @@ public interface Property<T> {
     T set(T value);
 
     T get();
+
+    default boolean isEqual(T value) {
+        return get().equals(value);
+    };
 }
