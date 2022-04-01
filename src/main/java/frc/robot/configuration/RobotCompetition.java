@@ -35,10 +35,10 @@ import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.FourBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
-import frc.robot.commands.autonomous.trajectory.trajectoryAuto.SynchronizedThreeBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.Test;
-import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto.DeprecatedThreeBallsAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto.SynchronizedThreeBallsAuto;
 
 public class RobotCompetition implements RobotConfiguration {
     private final ShooterFlywheel      Flywheel;
@@ -113,20 +113,13 @@ public class RobotCompetition implements RobotConfiguration {
             new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterConfiguration, shooterSweepDirection, shooterOffset));
 
-        autoCommandSelector.addOption("Three",
-            new ThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterConfiguration, shooterSweepDirection, shooterOffset));
-
-        autoCommandSelector.setDefaultOption("Three Synchronized",
+        autoCommandSelector.setDefaultOption("Three",
             new SynchronizedThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterConfiguration, shooterSweepDirection, shooterOffset, shooterArmed));
 
         autoCommandSelector.addOption("Four",
             new FourBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterConfiguration, shooterSweepDirection, shooterOffset, shooterArmed));
-
-        autoCommandSelector.addOption("Test",
-            new Test(DriveTrain));
 
         SmartDashboard.putData("Auto Chooser", autoCommandSelector);
 
@@ -256,7 +249,7 @@ public class RobotCompetition implements RobotConfiguration {
                 new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kGuard),
                 new RunShooter(Flywheel, Indexer, Constants.Shooter.GUARD_FLYWHEEL_VELOCITY, 0.5)));
 
-        
+        joystickSecondary.getButton(ButtonType.kLeftBumper).and(climberToggleTrigger).whenActive(new FindElevatorZero(Climber));   
     }
 
     /**
