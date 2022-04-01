@@ -94,15 +94,6 @@ class StateExecutionStack implements Command {
         }
 
         if (m_exitor != -1) {
-            // Interrupt any commands above the exitor on the stack
-            // since they do not have authority over the exit
-            for (int i = m_states.size()-1; i > m_exitor; i--) {               
-                StateCommand state = m_states.get(i);
-                state.end(true);
-            }
-
-            // End the exitor state, and don't interrupt it because
-            // the exitor has authority over the exit
             StateCommand exitorState = m_states.get(m_exitor);
             
             // Query next state
@@ -113,20 +104,62 @@ class StateExecutionStack implements Command {
                 // Get next states
                 List<StateCommand> nextStates = StateCommandManager.getInstance()
                     .getStatesOnPath(exitorState, path);
+                
+                // Check if the state we are transitioning from contains
+                // the next stat within its local ancestry
+                if (nextStates == null) {
+                    // Walk backward up stack chain to find nearest
+                    // next state to transition to.
+                    int idx = -1;
+                    for (int i = m_exitor; i >= 0; i--) {
+                        StateCommand state = m_states.get(i);
 
+                        nextStates = StateCommandManager.getInstance()
+                            .getStatesOnPath(state, path);
+
+                        // Check if state path exists within its local
+                        // ancestry
+                        if (nextStates != null) {
+                            idx = i;
+                            break;
+                        }
+                    }
+                   
+                    // Because we had to walk back up the stack to find a pathway
+                    // for the next transition, we effectively moved the exitor
+                    // backwards, since we are now moving from this state to another now.
+                    if (idx != -1) {
+                        m_exitor = idx;
+                        exitorState = m_states.get(idx);
+                    }
+                }
+
+                // Interrupt any commands above the exitor on the stack
+                // since they do not have authority over the exit
+                for (int i = m_states.size()-1; i > m_exitor; i--) {               
+                    StateCommand state = m_states.get(i);
+
+                    state.end(true);
+                    state.reset();
+    
+                    m_states.remove(i);
+                }
+    
                 // Check if the next states exist within the stack ancestry.
-                // (If next state has the same ancestor as the root state of this stack)
+                // (If next state has the same ancestor as the exitor state of this stack)
                 if (nextStates != null) {
                     m_states.addAll(nextStates);
-            
+
                     // Check if requirements change during state transition
                     Set<Subsystem> nextRequirements = getStateRequirements(m_states);
                     if (nextRequirements.equals(m_requirements)) {
                         // Continue execution on same stack and initialize new states
-                        for (int i = m_exitor; i < m_states.size(); i++)
+                        for (int i = m_exitor+1; i < m_states.size(); i++)
                             m_states.get(i).initialize();
         
                         updateIndexes();
+
+                        m_exitor = -1;
                     } else {
                         // Branch onto new stack with new requirements, and discard
                         // current stack
@@ -139,11 +172,49 @@ class StateExecutionStack implements Command {
                         m_dirty = true;
                     }
                 } else {
-                    exitorState.end(false);
-                    exitorState.reset();
                     // The next states exist outside of the ancestry of this stack
+                    for (int i = m_states.size()-1; i >= 0; i--) {
+                        StateCommand state = m_states.get(i);
+
+                        // Interupt active states
+                        state.end(true);
+                        state.reset();
+                    }
+
+                    // Mark this stack as dirty
                     m_next = path;
                     m_dirty = true;
+                }
+            } else {
+                for (int i = m_states.size()-1; i >= m_exitor; i--) {
+                    StateCommand state = m_states.get(i);
+    
+                    // End active states
+                    state.end(i != m_exitor);
+                    state.reset();
+                    
+                    m_states.remove(i);
+                }
+
+                // If the exitor is the root of the stack,
+                // mark this stack as dirty, ending its execution.
+                if (m_exitor == 0) {
+                    m_dirty = true;
+                } else {
+                    // Check if requirements changed
+                    Set<Subsystem> nextRequirements = getStateRequirements(m_states);
+                    if (nextRequirements.equals(m_requirements)) {
+                        // Continue execution on same stack and update indexes
+                        updateIndexes();
+                        m_exitor = -1;
+                    } else {
+                        // Branch onto new stack with new requirements, and discard
+                        // current stack
+                        m_nextStack = new StateExecutionStack(m_states, nextRequirements, m_exitor);
+                        m_nextStack.schedule();
+
+                        m_dirty = true;
+                    }
                 }
             }
         }
@@ -154,7 +225,7 @@ class StateExecutionStack implements Command {
         if (m_dirty) return;
 
         if (interrupted) {
-            for (int i = m_states.size(); i > 0; i--) {
+            for (int i = m_states.size()-1; i >= 0; i--) {
                 StateCommand state = m_states.get(i);
 
                 // Interupt active states
