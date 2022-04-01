@@ -22,16 +22,14 @@ class StateExecutionStack implements Command {
 
     private static Set<Subsystem> getStateRequirements(Iterable<StateCommand> states) {
         Set<Subsystem> requirements = new HashSet<>();
-        for (StateCommand command : states) {
-            requirements.addAll(command.getRequirements());
-        }
+        for (StateCommand state : states)
+            requirements.addAll(state.getRequirements());
         return requirements;
     }
 
     private static List<StateCommand> asGroup(StateCommand state) {
         List<StateCommand> states = new ArrayList<>();
         states.add(state);
-
         return states;
     }
 
@@ -61,6 +59,10 @@ class StateExecutionStack implements Command {
     public void initialize() {
         if (m_dirty) return;
 
+        // Update indexes before state execution in case
+        // they need correct values very early on
+        updateIndexes();
+
         if (m_branch != -1) {
             // Initialize new states starting from branch index,
             // and preserve state execution of already running states
@@ -68,6 +70,7 @@ class StateExecutionStack implements Command {
                 m_states.get(i).initialize();
         } 
 
+        
         m_exitor = -1;
         m_next = null;
     }
@@ -122,6 +125,8 @@ class StateExecutionStack implements Command {
                         // Continue execution on same stack and initialize new states
                         for (int i = m_exitor; i < m_states.size(); i++)
                             m_states.get(i).initialize();
+        
+                        updateIndexes();
                     } else {
                         // Branch onto new stack with new requirements, and discard
                         // current stack
@@ -163,11 +168,6 @@ class StateExecutionStack implements Command {
     }
 
     @Override
-    public boolean isFinished() {
-        return m_dirty == true;
-    }
-
-    @Override
     public void schedule(boolean interruptible) {
         // Check if stack was already scheduled (and discarded)
         if (m_dirty)
@@ -193,5 +193,17 @@ class StateExecutionStack implements Command {
 
     public boolean isDirty() {
         return m_dirty;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return m_dirty == true;
+    }
+
+    private void updateIndexes() {
+        int size = m_states.size();
+        for (int i = 0; i < size; i++) {
+            m_states.get(i).setExecutionIndex(size-(i+1));
+        }
     }
 }

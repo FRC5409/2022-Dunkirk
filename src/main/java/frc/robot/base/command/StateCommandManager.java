@@ -77,7 +77,7 @@ public class StateCommandManager {
             throw new IllegalArgumentException("State does not exist on manager.");
         else if (path.length == 0)
             throw new IllegalArgumentException("Cannot search for states on empty path.");
-        else if (startIndex > path.length)
+        else if (startIndex >= path.length)
             throw new IllegalArgumentException("Start index is greater than path length");
 
         StateCommand base = root;
