@@ -16,6 +16,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.VisionPipeline;
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
+import frc.robot.base.shooter.odometry.ShooterTrackingModel;
 import frc.robot.base.shooter.target.FilterBase;
 import frc.robot.base.shooter.target.FilterFactory;
 import frc.robot.base.shooter.target.TargetFiltering;
@@ -312,7 +313,7 @@ public final class Constants {
         public static final Range DISTANCE_RANGE = new Range(0, 25);
         public static final Range TURRET_OUTPUT_RANGE = new Range(-1, 1);
         
-        public static final Range MANUAL_ROTATION_RANGE = new Range(-100, 100);
+        public static final Range MANUAL_ROTATION_RANGE = new Range(-110, 110);
 
         public static final Equation TURRET_MANUAL_OUTPUT_EASING =
             x -> 1 - 2 * Math.pow(2, 10*(Math.abs(ROTATION_RANGE.normalize(x)) - 1));
@@ -320,7 +321,7 @@ public final class Constants {
         public static final Range TURRET_MANUAL_OUTPUT_RANGE = new Range(-0.8, 0.8);
         
         // Smooth Sweep Constants
-        public static final double   SHOOTER_SWEEP_PERIOD = 1.6*1.65789;
+        public static final double   SHOOTER_SWEEP_PERIOD = 1.6*0.85789;
         public static final double   SHOOTER_MAX_SWEEEP = 2;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
@@ -359,17 +360,26 @@ public final class Constants {
 
         public static final double TARGET_LOST_TIME = 0.5;
 
+                
+        private static final ShooterTrackingModel DEFAULT_TRACKING_MODEL = new ShooterTrackingModel(
+            TargetFiltering.none(), 
+            TARGET_LOST_TIME,
+            0.3,
+            0.85,
+            x -> 0, 
+            x -> 0
+        );
+
         public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
             ShooterMode.kFar, new ShooterConfiguration(
                 ShooterMode.kFar,
                 HoodPosition.kUp,
                 VisionPipeline.FAR_TARGETING,
-                TargetFiltering.none(),
+                DEFAULT_TRACKING_MODEL,
                 new ShooterOdometryModel(
                     90.0 - 54.8,
                     41.5 / 12.0,
                     2d,
-                    TARGET_LOST_TIME,
                     new Vector3(7/12, 0, 15/12),
                     new Vector2(59.6, 49.7)
                 ),
@@ -387,12 +397,11 @@ public final class Constants {
                 ShooterMode.kNear,
                 HoodPosition.kDown,
                 VisionPipeline.NEAR_TARGETING,
-                TargetFiltering.none(),
+                DEFAULT_TRACKING_MODEL,
                 new ShooterOdometryModel(
                     90.0 - 45.5,
                     45 / 12.0,
                     0,
-                    TARGET_LOST_TIME,
                     new Vector3(),
                     new Vector2(59.6, 49.7)
                 )
@@ -402,12 +411,11 @@ public final class Constants {
                 ShooterMode.kLow,
                 HoodPosition.kUp,
                 VisionPipeline.DEFAULT,
-                TargetFiltering.none(),
+                DEFAULT_TRACKING_MODEL,
                 new ShooterOdometryModel(
                     90.0 - 54.8,
                     41.5 / 12.0,
                     0,
-                    TARGET_LOST_TIME,
                     new Vector3(),
                     new Vector2(59.6, 49.7)
                 )
@@ -417,12 +425,11 @@ public final class Constants {
                 ShooterMode.kGuard,
                 HoodPosition.kUp,
                 VisionPipeline.DEFAULT,
-                TargetFiltering.none(),
+                DEFAULT_TRACKING_MODEL,
                 new ShooterOdometryModel(
                     90.0 - 54.8,
                     41.5 / 12.0,
                     0,
-                    TARGET_LOST_TIME,
                     new Vector3(),
                     new Vector2(59.6, 49.7)
                 ) 
@@ -435,7 +442,10 @@ public final class Constants {
 
         public static final double INDEXER_SPEED = 0.5;
 
-        public static final double ARMING_TIME = 0.2;
+        public static final double ARMING_TIME = 0.32;
+
+        public static Gains TURRET_MANUAL_GAINS = new Gains(2.8, 0.1, 0.0, 0,0,0);
+        public static double TURRET_MANUAL_THRESHOLD = 0.3;
     }
     
     public static final class Vision {
