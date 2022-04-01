@@ -6,6 +6,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
+import edu.wpi.first.math.controller.PIDController;
+
 public final class MotorUtils {
     public static final WPI_TalonFX setGains(WPI_TalonFX motor, int slotIdx, Gains gains) {
         motor.config_kP(slotIdx, gains.kP);
@@ -70,6 +72,11 @@ public final class MotorUtils {
 
     public static SparkMaxPIDController setOutputRange(SparkMaxPIDController controller, int slotIdx, Range range) {
         controller.setOutputRange(range.min(), range.max(), slotIdx);
+        return controller;
+    }
+
+    public static PIDController setGains(PIDController controller, Gains gains) {
+        controller.setPID(gains.kP, gains.kI, gains.kD);
         return controller;
     }
 }
