@@ -27,8 +27,9 @@ public interface StateCommand extends Command {
 
     void reset();
 
-    default void addStates(StateCommand... states) {
+    default StateCommand addStates(StateCommand... states) {
         StateCommandManager.getInstance().addStateChildren(this, states);
+        return this;
     }
 
     void setExecutionIndex(int index);

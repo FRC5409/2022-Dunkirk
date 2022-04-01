@@ -1,4 +1,4 @@
-package frc.robot.commands.shooter.v2.state.operate;
+package frc.robot.commands.shooter.state.operate;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -14,25 +14,25 @@ public class DormantShooterState extends StateCommandBase {
     private final Property<DriveShooterOdometry> sharedOdometry;
     private final Property<ShooterState> shooterState;
     private final Property<Boolean> shooterTriggerDebounce;
-    
-    private final ShooterConditions shooterConditions;
+    private final Property<Double> driveSpeed;
+
     private final Trigger shooterTrigger;
     
     private DriveShooterOdometry odometry;
     private boolean debounce;
 
     public DormantShooterState(
-        ShooterConditions shooterConditions,
         Trigger shooterTrigger,
         Property<DriveShooterOdometry> sharedOdometry,
         Property<ShooterState> shooterState,
-        Property<Boolean> shooterTriggerDebounce
+        Property<Boolean> shooterTriggerDebounce,
+        Property<Double> driveSpeed
     ) {
         this.shooterTriggerDebounce = shooterTriggerDebounce;
-        this.shooterConditions = shooterConditions;
         this.shooterTrigger = shooterTrigger;
         this.sharedOdometry = sharedOdometry;
         this.shooterState = shooterState;
+        this.driveSpeed = driveSpeed;
     }
 
     @Override
@@ -41,6 +41,7 @@ public class DormantShooterState extends StateCommandBase {
 
         debounce = shooterTriggerDebounce.get();
         shooterState.set(ShooterState.kDormant);
+        driveSpeed.set(1.0);
     }
 
     @Override

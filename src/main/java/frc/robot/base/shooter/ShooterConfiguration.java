@@ -34,7 +34,6 @@ public class ShooterConfiguration {
         ShooterMode shooterMode,
         HoodPosition hoodConfiguration,
         VisionPipeline visionPipeline,
-        FilterFactory<?> targetFilterFactory,
         ShooterTrackingModel trackingModel,
         ShooterOdometryModel odometryModel,
         Model4 executionModel

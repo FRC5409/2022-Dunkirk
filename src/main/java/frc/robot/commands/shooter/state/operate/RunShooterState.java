@@ -1,11 +1,7 @@
-package frc.robot.commands.shooter.v2.state.operate;
+package frc.robot.commands.shooter.state.operate;
 
 import org.jetbrains.annotations.NotNull;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.base.Model4;
 import frc.robot.base.Property;
@@ -14,16 +10,9 @@ import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
-import frc.robot.commands.shooter.RotateTurret;
-import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
-import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
-import frc.robot.subsystems.shooter.ShooterTurret;
-import frc.robot.subsystems.shooter.ShooterTurret.ReferenceType;
 import frc.robot.utils.Toggleable;
-import frc.robot.utils.Vector2;
 import frc.robot.Constants;
 
 // TODO update doc

@@ -1,9 +1,6 @@
 package frc.robot.base.shooter.odometry;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
-import frc.robot.base.shooter.target.FilterBase;
-import frc.robot.utils.Equation;
-import frc.robot.utils.Range;
 import frc.robot.utils.Vector2;
 
 /**

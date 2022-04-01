@@ -5,12 +5,13 @@ import org.jetbrains.annotations.NotNull;
 import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.command.TimedStateCommand;
+import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;
-import frc.robot.utils.Toggleable;
+import frc.robot.subsystems.shooter.ShooterTurret.ReferenceType;
 
 // TODO update doc
 
@@ -27,23 +28,26 @@ import frc.robot.utils.Toggleable;
 public class SweepShooterState extends TimedStateCommand {
     protected final Property<SimpleShooterOdometry> sharedOdometry;
     protected final Property<SweepDirection> sweepDirection;
+    protected final Property<ShooterState> shooterState;
+
     protected final ShooterTurret turret;
     protected final Limelight limelight;
     
     protected SimpleShooterOdometry odometry;
-    protected double  direction;
-    protected boolean done;
-    protected double  offset;
-
+    protected double direction;
+    protected double offset;
+    private boolean done;
 
     public SweepShooterState(
         ShooterTurret turret, 
         Limelight limelight,
         Property<SimpleShooterOdometry> sharedOdometry,
-        Property<SweepDirection> sweepDirection
+        Property<SweepDirection> sweepDirection,
+        Property<ShooterState> shooterState
     ) {
         this.sharedOdometry = sharedOdometry;
         this.sweepDirection = sweepDirection;
+        this.shooterState = shooterState;
         this.limelight = limelight;
         this.turret = turret;
 
@@ -66,8 +70,8 @@ public class SweepShooterState extends TimedStateCommand {
             direction = (odometry.getTarget().x > 0) ? -1 : 1;
         } else
             direction = (sweepDirection.get() == SweepDirection.kLeft) ? 1 : -1;
-        offset = Constants.Shooter.SHOOTER_SWEEP_INVERSE.calculate(turret.getRotation());
 
+        offset = Constants.Shooter.SHOOTER_SWEEP_INVERSE.calculate(turret.getRotation());
         done = false;
     }
 
@@ -77,14 +81,13 @@ public class SweepShooterState extends TimedStateCommand {
 
         if (limelight.getTargetType() == TargetType.kHub) {
             odometry.update(limelight.getTargetPosition());
-
-            next("frc.robot.shooter:align");
-            done = true;
+            next("frc.robot.shooter.operate");
         } else if (time / Constants.Shooter.SHOOTER_SWEEP_PERIOD > Constants.Shooter.SHOOTER_MAX_SWEEEP) {
             done = true;
         } else {
-            turret.setRotationTarget(
-                Constants.Shooter.SHOOTER_SWEEP_FUNCTION.calculate(offset + time*direction)
+            turret.setReference(
+                Constants.Shooter.SHOOTER_SWEEP_FUNCTION.calculate(offset + time*direction),
+                ReferenceType.kRotation
             );
         } 
     }
@@ -104,6 +107,6 @@ public class SweepShooterState extends TimedStateCommand {
 
     @Override
     public @NotNull String getStateName() {
-        return "frc.robot.shooter:sweep";
+        return "frc.robot.shooter.sweep";
     }
 }

@@ -9,11 +9,13 @@ public class ShooterTrackingModel {
     public final Equation kTurretModel;
     public final double kAcquistionTimeout;
     public final double kMinOutput;
+    public final double kDriveSpeed;
 
     public ShooterTrackingModel(
         FilterFactory<?> kTargetFilter,
         double kAcquistionTimeout,
         double kMinOutput,
+        double kDriveSpeed,
         Equation kFlywheelModel,
         Equation kTurretModel
     ) {
@@ -21,6 +23,7 @@ public class ShooterTrackingModel {
         this.kFlywheelModel = kFlywheelModel;
         this.kTargetFilter = kTargetFilter;
         this.kTurretModel = kTurretModel;
+        this.kDriveSpeed = kDriveSpeed;
         this.kMinOutput = kMinOutput;
     }
 }
