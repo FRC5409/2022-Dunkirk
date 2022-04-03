@@ -5,15 +5,14 @@ import org.jetbrains.annotations.Nullable;
 import frc.robot.base.Model4;
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 import frc.robot.base.shooter.odometry.ShooterTrackingModel;
-import frc.robot.base.shooter.target.FilterFactory;
 
 public class ShooterConfiguration {
-    private final Model4 executionModel;
     private final ShooterTrackingModel trackingModel;
     private final ShooterOdometryModel odometryModel;
     private final VisionPipeline visionPipeline;
     private final HoodPosition hoodConfiguration;
     private final ShooterMode shooterMode;
+    private final Model4 executionModel;
     
     public ShooterConfiguration(
         ShooterMode shooterMode,
