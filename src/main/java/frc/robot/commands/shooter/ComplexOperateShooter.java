@@ -69,10 +69,8 @@ public final class ComplexOperateShooter extends ProxyStateCommandGroup {
             new SearchShooterState(limelight, shooterState),
             new SweepShooterState(turret, limelight, Property.cast(sharedOdometry), shooterSweepDirection, shooterState),
             
-            new OperateShooterState(flywheel, turret, drivetrain, limelight, 
-                indexer, shooterTrigger, turretController, shooterConditions, 
-                shooterConfiguration, sharedOdometry, indexerArmedState, 
-                shooterState, shooterOffset, driveSpeed)
+            new OperateShooterState(turret, drivetrain, limelight, turretController, shooterConditions, 
+                shooterConfiguration, sharedOdometry, indexerArmedState)
                 .addStates(
                     new DormantShooterState(shooterTrigger, sharedOdometry, 
                         shooterState, shooterTriggerDebounce, driveSpeed),

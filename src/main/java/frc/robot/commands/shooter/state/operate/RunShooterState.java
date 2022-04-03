@@ -98,7 +98,7 @@ public class RunShooterState extends StateCommandBase {
             active = true;
         }
 
-        if (!shooterTrigger.get() || indexerArmedState.get() != IndexerArmedState.kArmed) {
+        if (!shooterTrigger.get() || !indexerArmedState.isEqual(IndexerArmedState.kArmed)) {
             shooterTriggerDebounce.set(true);
             next("dormant");
         }
@@ -109,11 +109,11 @@ public class RunShooterState extends StateCommandBase {
     public void end(boolean interrupted) {
         if (interrupted || getNextState() == null) {
             flywheel.disable();
-            indexer.disable();
         } else {
             flywheel.stopFeeder();
-            indexer.disable();
         }
+        
+        indexer.disable();
     }
 
     @Override

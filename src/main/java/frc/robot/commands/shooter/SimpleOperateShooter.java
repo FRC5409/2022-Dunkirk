@@ -3,8 +3,10 @@ package frc.robot.commands.shooter;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.base.ConstantProperty;
 import frc.robot.base.NullDrive;
 import frc.robot.base.Property;
+import frc.robot.base.RobotDrive;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.ProxyStateCommandGroup;
 import frc.robot.base.indexer.IndexerArmedState;
@@ -57,24 +59,23 @@ public final class SimpleOperateShooter extends ProxyStateCommandGroup {
         Property<Double> driveSpeed = new ValueProperty<>(1.0);
 
         Trigger shooterTrigger = new Trigger(() -> true);
+        RobotDrive drivetrain = new NullDrive();
 
         sharedOdometry = new ValueProperty<>();
-
         shooterConditions = new ShooterConditions();
+        shooterTriggerDebounce = new ConstantProperty<>(false);
 
         turretController = new PIDController(0,0,0);
             MotorUtils.setGains(turretController, Constants.Shooter.TURRET_MANUAL_GAINS);
         turretController.setTolerance(Constants.Shooter.TURRET_MANUAL_THRESHOLD);
 
-        shooterTriggerDebounce = new ValueProperty<>(false);
 
         addStates(
             new SearchShooterState(limelight, shooterState),
             new SweepShooterState(turret, limelight, Property.cast(sharedOdometry), shooterSweepDirection, shooterState),
 
-            new OperateShooterState(flywheel, turret, new NullDrive(), limelight, 
-                indexer, shooterTrigger, turretController, shooterConditions, 
-                shooterConfiguration, sharedOdometry, indexerArmedState, shooterState, shooterOffset, driveSpeed)
+            new OperateShooterState(turret, drivetrain, limelight, turretController, shooterConditions, 
+                shooterConfiguration, sharedOdometry, indexerArmedState)
                 .addStates(
                     new DormantShooterState(shooterTrigger, sharedOdometry, 
                         shooterState, shooterTriggerDebounce, driveSpeed),

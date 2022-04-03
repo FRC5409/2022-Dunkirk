@@ -68,6 +68,7 @@ public class SweepShooterState extends TimedStateCommand {
 
         if (odometry.getTarget() != null) {
             direction = (odometry.getTarget().x > 0) ? -1 : 1;
+            odometry.reset();
         } else
             direction = (sweepDirection.get() == SweepDirection.kLeft) ? 1 : -1;
 
