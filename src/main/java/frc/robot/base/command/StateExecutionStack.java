@@ -117,8 +117,7 @@ class StateExecutionStack implements Command {
                         nextStates = StateCommandManager.getInstance()
                             .getStatesOnPath(state, path);
 
-                        // Check if state path exists within its local
-                        // ancestry
+                        // Check if state path exists within its local ancestry
                         if (nextStates != null) {
                             idx = i;
                             break;
@@ -153,11 +152,11 @@ class StateExecutionStack implements Command {
                     // Check if requirements change during state transition
                     Set<Subsystem> nextRequirements = getStateRequirements(m_states);
                     if (nextRequirements.equals(m_requirements)) {
+                        updateIndexes();
+
                         // Continue execution on same stack and initialize new states
                         for (int i = m_exitor+1; i < m_states.size(); i++)
                             m_states.get(i).initialize();
-        
-                        updateIndexes();
 
                         m_exitor = -1;
                     } else {
@@ -210,7 +209,7 @@ class StateExecutionStack implements Command {
                     } else {
                         // Branch onto new stack with new requirements, and discard
                         // current stack
-                        m_nextStack = new StateExecutionStack(m_states, nextRequirements, m_exitor);
+                        m_nextStack = new StateExecutionStack(m_states, nextRequirements, -1);
                         m_nextStack.schedule();
 
                         m_dirty = true;
