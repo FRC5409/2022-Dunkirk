@@ -1,10 +1,9 @@
 package frc.robot.commands.training.shooter;
 
-import frc.robot.training.SetpointType;
-import frc.robot.training.TrainerDashboard;
-import frc.robot.training.TrainerContext;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.base.training.SetpointType;
+import frc.robot.base.training.TrainerContext;
+import frc.robot.base.training.TrainerDashboard;
 
 public class BranchTargetSetpoint extends CommandBase {
     private final TrainerDashboard _dasboard;

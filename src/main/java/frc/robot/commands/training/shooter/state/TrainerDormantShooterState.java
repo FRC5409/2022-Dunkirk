@@ -7,10 +7,10 @@ import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
+import frc.robot.base.training.TrainerContext;
+import frc.robot.base.training.TrainerDashboard;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterTurret;
-import frc.robot.training.TrainerDashboard;
-import frc.robot.training.TrainerContext;
 import frc.robot.utils.Toggleable;
 
 // TODO update doc

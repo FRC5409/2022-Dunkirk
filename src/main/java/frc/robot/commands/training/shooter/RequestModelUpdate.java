@@ -4,9 +4,8 @@ import java.util.concurrent.Future;
 
 import frc.robot.Constants;
 import frc.robot.base.Model4;
-import frc.robot.training.TrainerDashboard;
-import frc.robot.training.TrainerContext;
-
+import frc.robot.base.training.TrainerContext;
+import frc.robot.base.training.TrainerDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.training.protocol.NetworkClient;
 import frc.robot.training.protocol.NetworkStatus;

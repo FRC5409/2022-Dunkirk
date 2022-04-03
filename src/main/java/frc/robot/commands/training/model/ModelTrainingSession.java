@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.training.TrainingModel3;
+import frc.robot.base.training.TrainingModel3;
 import frc.robot.training.protocol.NetworkConnection;
 import frc.robot.training.protocol.NetworkSendable;
 import frc.robot.training.protocol.NetworkServerRequest;

@@ -9,13 +9,13 @@ import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.SimpleShooterOdometry;
+import frc.robot.base.training.TrainerContext;
+import frc.robot.base.training.TrainerDashboard;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
-import frc.robot.training.TrainerDashboard;
-import frc.robot.training.TrainerContext;
 import frc.robot.utils.Toggleable;
 
 // TODO update doc
@@ -38,25 +38,23 @@ public class TrainerRunShooterState extends StateCommandBase {
     private final TrainerContext context;
 
     private final Trigger shooterTrigger;
-
+    
     private final ShooterFlywheel flywheel;
     private final Indexer indexer;
 
     private SimpleShooterOdometry odometry;
     private boolean active;
-    private Limelight limelight;
     
     public TrainerRunShooterState(
         TrainerDashboard dashboard,
         TrainerContext context,
         ShooterFlywheel flywheel,
-        Limelight limelight,
         Indexer indexer,
         Trigger shooterTrigger,
-        Property<Boolean> shooterTriggerDebounce,
         Property<SimpleShooterOdometry> sharedOdometry,
         Property<IndexerArmedState> indexerArmedState,
-        Property<ShooterState> shooterState
+        Property<ShooterState> shooterState,
+        Property<Boolean> shooterTriggerDebounce
     ) {
         this.shooterTriggerDebounce = shooterTriggerDebounce;
         this.indexerArmedState = indexerArmedState;
@@ -90,15 +88,16 @@ public class TrainerRunShooterState extends StateCommandBase {
     @Override
     public void execute() {
         // Set flywheel to estimated veloctity
-        if (odometry.hasTarget())
+        if (odometry.hasTarget()) {
             flywheel.setVelocity(context.getSetpoint().getTarget());
-
+            context.setDistance(odometry.getDistance());
+        }
         if (flywheel.isTargetReached() && flywheel.feederReachedTarget() && !active) {
             indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
             active = true;
         }
 
-        if (!shooterTrigger.get() || indexerArmedState.get() != IndexerArmedState.kArmed) {
+        if (!shooterTrigger.get() || !indexerArmedState.isEqual(IndexerArmedState.kArmed)) {
             shooterTriggerDebounce.set(true);
             next("dormant");
         }

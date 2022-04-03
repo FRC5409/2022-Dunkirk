@@ -13,8 +13,8 @@ import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
 import frc.robot.Constants;
 import frc.robot.base.Model4;
-import frc.robot.training.TrainerDashboard;
-import frc.robot.training.TrainerContext;
+import frc.robot.base.training.TrainerContext;
+import frc.robot.base.training.TrainerDashboard;
 
 public class SubmitSetpointData extends CommandBase {
     private final TrainerDashboard dashboard;

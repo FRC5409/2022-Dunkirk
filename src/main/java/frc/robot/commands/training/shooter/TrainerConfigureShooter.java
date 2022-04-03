@@ -5,10 +5,10 @@ import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
+import frc.robot.base.training.TrainerContext;
+import frc.robot.base.training.TrainerDashboard;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterTurret;
-import frc.robot.training.TrainerContext;
-import frc.robot.training.TrainerDashboard;
 
 public class TrainerConfigureShooter extends CommandBase {
     private final Property<ShooterConfiguration> configuration;
