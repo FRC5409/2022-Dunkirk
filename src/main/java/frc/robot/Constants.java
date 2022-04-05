@@ -21,6 +21,7 @@ import frc.robot.base.shooter.target.FilterBase;
 import frc.robot.base.shooter.target.FilterFactory;
 import frc.robot.base.shooter.target.TargetFiltering;
 import frc.robot.base.Model4;
+import frc.robot.base.shooter.CompetitionConfiguration;
 import frc.robot.base.shooter.HoodPosition;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.utils.*;
@@ -371,7 +372,7 @@ public final class Constants {
         );
 
         public static final Map<ShooterMode, ShooterConfiguration> CONFIGURATIONS = Map.of(
-            ShooterMode.kFar, new ShooterConfiguration(
+            ShooterMode.kFar, new CompetitionConfiguration(
                 ShooterMode.kFar,
                 HoodPosition.kUp,
                 VisionPipeline.FAR_TARGETING,
@@ -393,7 +394,7 @@ public final class Constants {
                 )
             ),
             
-            ShooterMode.kNear, new ShooterConfiguration(
+            ShooterMode.kNear, new CompetitionConfiguration(
                 ShooterMode.kNear,
                 HoodPosition.kDown,
                 VisionPipeline.NEAR_TARGETING,
@@ -407,7 +408,7 @@ public final class Constants {
                 )
             ),
             
-            ShooterMode.kLow, new ShooterConfiguration(
+            ShooterMode.kLow, new CompetitionConfiguration(
                 ShooterMode.kLow,
                 HoodPosition.kUp,
                 VisionPipeline.DEFAULT,
@@ -421,7 +422,7 @@ public final class Constants {
                 )
             ),
             
-            ShooterMode.kGuard, new ShooterConfiguration(
+            ShooterMode.kGuard, new CompetitionConfiguration(
                 ShooterMode.kGuard,
                 HoodPosition.kUp,
                 VisionPipeline.DEFAULT,
