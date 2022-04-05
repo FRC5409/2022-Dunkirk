@@ -35,14 +35,6 @@ public interface StateCommand extends Command {
     void setExecutionIndex(int index);
 
     @Nullable
-    String getNextState();
-    
-    @NotNull
-    String getStateName();
-
-    int getExecutionIndex();
-
-    @Nullable
     default StateCommand getParent() {
         return StateCommandManager.getInstance().getStateParent(this);
     }
@@ -50,4 +42,16 @@ public interface StateCommand extends Command {
     default Map<String, StateCommand> getChildren() {
         return StateCommandManager.getInstance().getStateChildren(this);
     }
+    
+    @Nullable
+    String getNextState();
+    
+    @NotNull
+    String getStateName();
+
+    default String getStatePath() {
+        return StateCommandManager.getInstance().getStatePath(this);
+    }
+
+    int getExecutionIndex();
 }

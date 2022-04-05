@@ -16,14 +16,16 @@ public class StateCommandManager {
         return m_instance;
     }
 
-    private final Map<StateCommand, StateCommand> m_parent;
-    private final Map<StateCommand, StateCommand> m_ancestor;
     private final Map<StateCommand, Map<String, StateCommand>> m_children;
+    private final Map<StateCommand, StateCommand> m_ancestor;
+    private final Map<StateCommand, StateCommand> m_parent;
+    private final Map<StateCommand, String> m_path;
 
     public StateCommandManager() {
-        m_parent = new WeakHashMap<>();
         m_ancestor = new WeakHashMap<>();
         m_children = new WeakHashMap<>();
+        m_parent = new WeakHashMap<>();
+        m_path = new WeakHashMap<>();
     }
 
     public void addState(StateCommand state) {
@@ -97,7 +99,8 @@ public class StateCommandManager {
             children = m_children.get(base);
 
             if (!children.containsKey(path[i]))
-                throw new RuntimeException("State with name '" + StateFormat.formatPath(path) + "' does not exist.");
+                throw new RuntimeException("State with name '" + 
+                    StateFormat.formatPath(path) + "' does not exist on state '" + getStatePath(base) + "'");
 
             base = children.get(path[i]);
             states.add(base);
@@ -118,6 +121,39 @@ public class StateCommandManager {
         if (!exists(state))
             throw new IllegalArgumentException("State does not exist on manager.");
         return Collections.unmodifiableMap(m_children.get(state));
+    }
+
+    public String getStatePath(StateCommand state) {
+        if (!exists(state))
+            throw new IllegalArgumentException("State does not exist on manager.");
+        
+        // Lazily calculate state path
+        if (!m_path.containsKey(state)) {
+            List<StateCommand> ancestry = new ArrayList<>();
+            ancestry.add(state);
+
+            StateCommand parent = getStateParent(state);
+            while (parent != null) {
+                ancestry.add(parent);
+                parent = getStateParent(parent);
+            }
+
+            StringBuilder builder = new StringBuilder();
+            for (int i = ancestry.size()-1; i >= 0; i--) {
+                builder.append(ancestry.get(i).getStateName());
+                builder.append(StateFormat.SEPERATOR);
+            }
+
+            builder.deleteCharAt(builder.length()-1);
+
+            String path = builder.toString();
+
+            m_path.put(state, path);
+
+            return path;
+        } else {
+            return m_path.get(state);
+        }
     }
 
     public boolean exists(StateCommand state) {
