@@ -2,6 +2,7 @@ package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.shooter.*;
+import frc.robot.subsystems.shooter.ShooterTurret.ReferenceType;
 
 // TODO update doc
 
@@ -31,7 +32,7 @@ public final class RotateTurret extends CommandBase {
 
     @Override
     public void execute() {
-        turret.setRotationTarget(target);
+        turret.setReference(target, ReferenceType.kRotation);
     }
 
     @Override

@@ -12,9 +12,11 @@ import frc.robot.training.protocol.generic.BundleSendable;
 import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
 import frc.robot.Constants;
-import frc.robot.base.Model4;
+
 import frc.robot.base.training.TrainerContext;
 import frc.robot.base.training.TrainerDashboard;
+import frc.robot.base.training.TrainingConfiguration;
+import frc.robot.base.training.TrainingModel4;
 
 public class SubmitSetpointData extends CommandBase {
     private final TrainerDashboard dashboard;
@@ -33,22 +35,24 @@ public class SubmitSetpointData extends CommandBase {
 
     @Override
     public void initialize() {
+        TrainingConfiguration configuration = context.getConfiguration();
+
         BundleSendable payload = new BundleSendable();
             payload.putSendable("trainer.topic", new StringSendable("trainer:submitData"));
             payload.putSendable("trainer.configuration", new StringSendable(context.getMode().name()));
 
             payload.putDouble("trainer.data.speed",
-                Constants.Shooter.SPEED_RANGE.normalize(context.getSetpoint().getTarget()));
+                Constants.Shooter.SPEED_RANGE.normalize(configuration.getExecutionModel().getSetpoint().getTarget()));
 
             payload.putDouble("trainer.data.distance",
-                Constants.Shooter.DISTANCE_RANGE.normalize(context.getDistance()));
+                Constants.Shooter.DISTANCE_RANGE.normalize(configuration.getDistance()));
 
         request = client.submitRequestAsync(new NetworkRequest(payload));
         System.out.println("Sent request " + payload);
     }
 
     @Override
-    public void end(boolean interrupted) {    
+    public void end(boolean interrupted) {
         try {
             NetworkResponse response = request.get();
 
@@ -60,16 +64,13 @@ public class SubmitSetpointData extends CommandBase {
 
                 ArraySendable parameters = (ArraySendable) payload.getSendable("trainer.model.parameters");
 
-                Model4 lastModel = context.getExecutionModel();
-                context.setExecutionModel(
-                    new Model4(
-                        parameters.get(3, ValueSendable.class).getValue(double.class),
-                        parameters.get(2, ValueSendable.class).getValue(double.class),
-                        parameters.get(1, ValueSendable.class).getValue(double.class),
-                        parameters.get(0, ValueSendable.class).getValue(double.class),
-                        Constants.Shooter.DISTANCE_RANGE,
-                        Constants.Shooter.SPEED_RANGE
-                    )
+                TrainingModel4 executionModel = context.getConfiguration().getExecutionModel();
+
+                executionModel.setModel(
+                    parameters.get(3, ValueSendable.class).getValue(double.class),
+                    parameters.get(2, ValueSendable.class).getValue(double.class),
+                    parameters.get(1, ValueSendable.class).getValue(double.class),
+                    parameters.get(0, ValueSendable.class).getValue(double.class)
                 );
             }
 

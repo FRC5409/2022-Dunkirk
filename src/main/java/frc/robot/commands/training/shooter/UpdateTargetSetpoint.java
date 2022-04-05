@@ -4,6 +4,8 @@ import frc.robot.Constants;
 import frc.robot.base.training.Setpoint;
 import frc.robot.base.training.TrainerContext;
 import frc.robot.base.training.TrainerDashboard;
+import frc.robot.base.training.TrainingConfiguration;
+import frc.robot.base.training.TrainingModel4;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class UpdateTargetSetpoint extends CommandBase {
@@ -17,9 +19,12 @@ public class UpdateTargetSetpoint extends CommandBase {
 
     @Override
     public void initialize() {
-        context.setSetpoint(
+        TrainingConfiguration configuration = context.getConfiguration();
+        TrainingModel4 executionModel = configuration.getExecutionModel();
+
+        executionModel.setSetpoint(
             new Setpoint(
-                context.getExecutionModel().calculate(context.getDistance()),
+                configuration.getExecutionModel().calculateReal(configuration.getDistance()),
                 Constants.Shooter.SPEED_RANGE
             )
         );

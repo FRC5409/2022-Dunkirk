@@ -4,14 +4,16 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.base.training.Setpoint;
 import frc.robot.base.training.TrainerContext;
 import frc.robot.base.training.TrainerDashboard;
+import frc.robot.base.training.TrainingConfiguration;
+import frc.robot.base.training.TrainingModel4;
 
 public class UndoTargetSetpoint extends CommandBase {
-    private final TrainerContext _context;
-    private final TrainerDashboard _dasboard;
+    private final TrainerContext context;
+    private final TrainerDashboard dashboard;
 
     public UndoTargetSetpoint(TrainerDashboard dashboard, TrainerContext context) {
-        _context = context;
-        _dasboard = dashboard;
+        this.context = context;
+        this.dashboard = dashboard;
     }
 
     @Override
@@ -20,11 +22,14 @@ public class UndoTargetSetpoint extends CommandBase {
 
     @Override
     public void execute() {
-        Setpoint targetParent = _context.getSetpoint().getParent();
-        if (targetParent != null)
-            _context.setSetpoint(targetParent);
+        TrainingModel4 executionModel = context.getConfiguration()
+            .getExecutionModel();
         
-        _dasboard.update();
+        Setpoint targetParent = executionModel.getSetpoint().getParent();
+        if (targetParent != null)
+            executionModel.setSetpoint(targetParent);
+        
+        dashboard.update();
     }
 
     @Override

@@ -5,30 +5,28 @@ import frc.robot.base.training.Setpoint;
 import frc.robot.base.training.SetpointType;
 import frc.robot.base.training.TrainerContext;
 import frc.robot.base.training.TrainerDashboard;
+import frc.robot.base.training.TrainingModel4;
 
 public class FlipTargetSetpoint extends CommandBase {
-    private final TrainerContext _context;
-    private final TrainerDashboard _dasboard;
+    private final TrainerContext context;
+    private final TrainerDashboard dashboard;
 
     public FlipTargetSetpoint(TrainerDashboard dashboard, TrainerContext context) {
-        _context = context;
-        _dasboard = dashboard;
-    }
-
-    @Override
-    public void initialize() {
+        this.context = context;
+        this.dashboard = dashboard;
     }
 
     @Override
     public void execute() {    
-        Setpoint target = _context.getSetpoint();
+        TrainingModel4 executionModel = context.getConfiguration().getExecutionModel();
         
+        Setpoint target = executionModel.getSetpoint();
         if (target.getType() == SetpointType.kLeft)
-            _context.setSetpoint(target.getParent().branch(SetpointType.kRight));
+            executionModel.setSetpoint(target.getParent().branch(SetpointType.kRight));
         else if (target.getType() == SetpointType.kRight)
-            _context.setSetpoint(target.getParent().branch(SetpointType.kLeft));
+            executionModel.setSetpoint(target.getParent().branch(SetpointType.kLeft));
         
-        _dasboard.update();
+        dashboard.update();
     }
 
     @Override
