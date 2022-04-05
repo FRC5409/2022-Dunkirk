@@ -13,6 +13,8 @@ import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
+import frc.robot.base.training.TrainerContext;
+import frc.robot.base.training.TrainerDashboard;
 import frc.robot.commands.shooter.state.OperateShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
 import frc.robot.commands.shooter.state.SweepShooterState;
@@ -21,6 +23,7 @@ import frc.robot.commands.shooter.state.operate.DormantShooterState;
 import frc.robot.commands.shooter.state.operate.RunShooterState;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Pigeon;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.utils.MotorUtils;
@@ -39,10 +42,15 @@ public final class TrainerOperateShooter extends ProxyStateCommandGroup {
     private final Property<Boolean> shooterTriggerDebounce;
     private final Property<Double> driveSpeed;
 
+    private final TrainerDashboard dashboard;
+    private final TrainerContext context;
+
     private final ShooterConditions shooterConditions;
     private final PIDController turretController;
 
     public TrainerOperateShooter(
+        TrainerContext context,
+        TrainerDashboard dashboard,
         ShooterFlywheel flywheel,
         ShooterTurret turret,
         RobotDrive drivetrain,
@@ -56,10 +64,9 @@ public final class TrainerOperateShooter extends ProxyStateCommandGroup {
         Property<Double> shooterOffset,
         Property<Double> driveSpeed
     ) {
-        sharedOdometry = new ValueProperty<>();
         shooterTriggerDebounce = new ValueProperty<>(false);
-
         shooterConditions = new ShooterConditions();
+        sharedOdometry = new ValueProperty<>();
 
         turretController = new PIDController(0,0,0);
             MotorUtils.setGains(turretController, Constants.Shooter.TURRET_MANUAL_GAINS);
@@ -87,6 +94,8 @@ public final class TrainerOperateShooter extends ProxyStateCommandGroup {
 
         setDefaultState("frc.robot.shooter.search");
 
+        this.context = context;
+        this.dashboard = dashboard;
         this.driveSpeed = driveSpeed;
         this.shooterState = shooterState;
         this.shooterConfiguration = shooterConfiguration;
@@ -107,6 +116,17 @@ public final class TrainerOperateShooter extends ProxyStateCommandGroup {
         shooterState.set(ShooterState.kOff);
 
         super.initialize();
+    }
+
+    @Override
+    public void execute() {
+        super.execute();
+        
+        DriveShooterOdometry odometry = sharedOdometry.get();
+        if (odometry.hasTarget()) {
+            context.getConfiguration()
+                .setDistance(odometry.getDistance());
+        }
     }
 
     @Override
