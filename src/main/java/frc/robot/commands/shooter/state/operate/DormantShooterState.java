@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
-import frc.robot.base.shooter.ShooterConditions;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 

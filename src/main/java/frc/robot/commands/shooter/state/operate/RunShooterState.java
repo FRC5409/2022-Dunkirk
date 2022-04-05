@@ -3,7 +3,6 @@ package frc.robot.commands.shooter.state.operate;
 import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.base.Model4;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.indexer.IndexerArmedState;
@@ -12,6 +11,7 @@ import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
+import frc.robot.utils.Equation;
 import frc.robot.utils.Toggleable;
 import frc.robot.Constants;
 
@@ -35,9 +35,9 @@ public class RunShooterState extends StateCommandBase {
     private final Indexer indexer;
     
     private DriveShooterOdometry odometry;
+    private Equation executionModel;
     private boolean active;
-    private Model4 executionModel;
-
+    
     public RunShooterState(
         ShooterFlywheel flywheel,
         Indexer indexer,
@@ -98,9 +98,11 @@ public class RunShooterState extends StateCommandBase {
             active = true;
         }
 
-        if (!shooterTrigger.get() || !indexerArmedState.isEqual(IndexerArmedState.kArmed)) {
+        if (!shooterTrigger.get()) {
             shooterTriggerDebounce.set(true);
             next("dormant");
+        } else if (!indexerArmedState.isEqual(IndexerArmedState.kArmed)) {
+            next("arm");
         }
 
     }
@@ -112,7 +114,7 @@ public class RunShooterState extends StateCommandBase {
         } else {
             flywheel.stopFeeder();
         }
-        
+
         indexer.disable();
     }
 

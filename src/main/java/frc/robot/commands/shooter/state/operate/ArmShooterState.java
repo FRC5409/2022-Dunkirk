@@ -3,7 +3,6 @@ package frc.robot.commands.shooter.state.operate;
 import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.base.Model4;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.indexer.IndexerArmedState;
@@ -13,6 +12,7 @@ import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
+import frc.robot.utils.Equation;
 
 // TODO update doc
 
@@ -33,7 +33,7 @@ public class ArmShooterState extends StateCommandBase {
     private final ShooterFlywheel flywheel;
     
     private DriveShooterOdometry odometry;
-    private Model4 executionModel;
+    private Equation executionModel;
     
     public ArmShooterState(
         ShooterFlywheel flywheel,
