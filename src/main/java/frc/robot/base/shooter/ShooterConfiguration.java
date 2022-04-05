@@ -2,71 +2,21 @@ package frc.robot.base.shooter;
 
 import org.jetbrains.annotations.Nullable;
 
-import frc.robot.base.Model4;
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 import frc.robot.base.shooter.odometry.ShooterTrackingModel;
+import frc.robot.utils.Equation;
 
-public class ShooterConfiguration {
-    private final ShooterTrackingModel trackingModel;
-    private final ShooterOdometryModel odometryModel;
-    private final VisionPipeline visionPipeline;
-    private final HoodPosition hoodConfiguration;
-    private final ShooterMode shooterMode;
-    private final Model4 executionModel;
-    
-    public ShooterConfiguration(
-        ShooterMode shooterMode,
-        HoodPosition hoodConfiguration,
-        VisionPipeline visionPipeline,
-        ShooterTrackingModel trackingModel,
-        ShooterOdometryModel odometryModel
-    ) {
-        this.hoodConfiguration = hoodConfiguration;
-        this.visionPipeline = visionPipeline;
-        this.executionModel = null;
-        this.trackingModel = trackingModel;
-        this.odometryModel = odometryModel;
-        this.shooterMode = shooterMode;
-    }
+public interface ShooterConfiguration {
+    ShooterMode getMode();
 
-    public ShooterConfiguration(
-        ShooterMode shooterMode,
-        HoodPosition hoodConfiguration,
-        VisionPipeline visionPipeline,
-        ShooterTrackingModel trackingModel,
-        ShooterOdometryModel odometryModel,
-        Model4 executionModel
-    ) {
-        this.hoodConfiguration = hoodConfiguration;
-        this.visionPipeline = visionPipeline;
-        this.executionModel = executionModel;
-        this.odometryModel = odometryModel;
-        this.trackingModel = trackingModel;
-        this.shooterMode = shooterMode;
-    }
+    VisionPipeline getPipeline();
 
-    public ShooterMode getMode() {
-        return shooterMode;
-    }
-
-    public VisionPipeline getPipeline() {
-        return visionPipeline;
-    }
-
-    public HoodPosition getHoodPosition() {
-        return hoodConfiguration;
-    }
+    HoodPosition getHoodPosition();
 
     @Nullable
-    public Model4 getExecutionModel() {
-        return executionModel;
-    }
+    Equation getExecutionModel();
 
-    public ShooterOdometryModel getOdometryModel() {
-        return odometryModel;
-    }
+    ShooterOdometryModel getOdometryModel();
 
-    public ShooterTrackingModel getTrackingModel() {
-        return trackingModel;
-    }
+    ShooterTrackingModel getTrackingModel();
 }
