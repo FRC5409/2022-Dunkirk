@@ -76,6 +76,7 @@ public class Limelight extends SubsystemBase implements Toggleable {
         targetArea      = data.getEntry("ta");
         cameraMode      = data.getEntry("camMode");
         ledMode         = data.getEntry("ledMode");
+        data.getEntry("stream").setNumber(0);
         
         position = new Vector2();
         area = 0.0;
