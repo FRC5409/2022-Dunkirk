@@ -1,13 +1,10 @@
 package frc.robot.base.command;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.jetbrains.annotations.Nullable;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -82,7 +79,6 @@ public abstract class ProxyStateCommandGroup extends CommandBase {
         
         // Check if stack is dirty
         if (m_stack.isDirty()) {
-
             // If the dirty stack already scheduled a new stack,
             // discard the current one and continue execution
             if (m_stack.getNextStack() != null) {
@@ -90,7 +86,6 @@ public abstract class ProxyStateCommandGroup extends CommandBase {
             } else if (m_stack.getNextPath() != null) {
                 // Stack needs to be replaced with new stack
                 // and new state ancestry
-
                 String[] path = m_stack.getNextPath();
 
                 StateCommand baseState = getState(path[0]);

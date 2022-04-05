@@ -25,7 +25,7 @@ public class Matrix3 implements Sendable {
         double m10, double m11, double m12,
         double m20, double m21, double m22
     ) { 
-        m = new double[] {m00,m01,m02,m10,m11,m12,m20,m21,m22};
+        m = new double[] {m00,m01,m02, m10,m11,m12, m20,m21,m22};
     }
 
     public Matrix3(double[] components) {

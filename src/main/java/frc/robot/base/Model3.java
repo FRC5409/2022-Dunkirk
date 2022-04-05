@@ -1,11 +1,10 @@
 package frc.robot.base;
 
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.utils.Equation;
 import frc.robot.utils.Range;
 
-public class Model3 implements Equation, Sendable {
+public class Model3 implements Equation {
     public final double kA;
     public final double kB;
     public final double kC;

@@ -106,10 +106,10 @@ class StateExecutionStack implements Command {
                     .getStatesOnPath(exitorState, path);
                 
                 // Check if the state we are transitioning from contains
-                // the next stat within its local ancestry
+                // the next state within its local ancestry
                 if (nextStates == null) {
-                    // Walk backward up stack chain to find nearest
-                    // next state to transition to.
+                    // Walk backward up the stack to find the
+                    // next state to transition from.
                     int idx = -1;
                     for (int i = m_exitor; i >= 0; i--) {
                         StateCommand state = m_states.get(i);
@@ -148,6 +148,8 @@ class StateExecutionStack implements Command {
                 // (If next state has the same ancestor as the exitor state of this stack)
                 if (nextStates != null) {
                     m_states.addAll(nextStates);
+                    
+                    exitorState.reset();
 
                     // Check if requirements change during state transition
                     Set<Subsystem> nextRequirements = getStateRequirements(m_states);
@@ -164,8 +166,6 @@ class StateExecutionStack implements Command {
                         // current stack
                         m_nextStack = new StateExecutionStack(m_states, nextRequirements, m_exitor+1);
                         m_nextStack.schedule();
-                        
-                        exitorState.reset();
 
                         // Mark current stack as dirty
                         m_dirty = true;

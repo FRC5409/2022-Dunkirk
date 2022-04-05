@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 import org.jetbrains.annotations.Nullable;
 
 public final class StateFormat {
-    private static final String SEPERATOR = ":";
+    public static final String SEPERATOR = ":";
     private static final Pattern PATH_FORMAT_MATCHER = Pattern.compile("^([^"+SEPERATOR+"]+"+SEPERATOR+"?)+(?<!"+SEPERATOR+")$");
     private static final Pattern NAME_FORMAT_MATCHER = Pattern.compile("^[^"+SEPERATOR+"]+$");
 
