@@ -13,7 +13,7 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
     protected double  kLastRotation;
     protected Vector2 kLastVelocity;
     protected Vector2 kLastDirection;
-    protected Vector2 kLastVisionDirection;
+    protected Vector2 kLastViewDirection;
 
     public ActiveShooterOdometry(
         ShooterOdometryModel odometryModel,
@@ -21,7 +21,7 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
     ) {
         super(odometryModel, trackingModel);
         
-        kLastVisionDirection = new Vector2();
+        kLastViewDirection = new Vector2();
         kLastDirection = new Vector2();
         kLastVelocity = new Vector2();
         kLastRotation = 0;
@@ -51,7 +51,8 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
         double cx = Math.cos(rotation);
         double cy = Math.sin(rotation);
 
-        kLastVisionDirection = new Vector2(tempVector.x, tempVector.y).unit();
+        kLastViewDirection = new Vector2(tempVector.x, tempVector.y).unit();
+
         kLastDirection = new Vector2(
             tempVector.x * cx - tempVector.y * cy,
             tempVector.x * cy + tempVector.y * cx
@@ -67,15 +68,15 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
     @Override
     public void reset() {
         super.reset();
-        kLastVisionDirection = new Vector2();
+        kLastViewDirection = new Vector2();
         kLastDirection = new Vector2();
         kLastVelocity = new Vector2();
         kLastRotation = 0;
         kLastSpeed = 0;
     }
 
-    public Vector2 getVisionDirection() {
-        return kLastVisionDirection;
+    public Vector2 getViewDirection() {
+        return kLastViewDirection;
     }
 
     public Vector2 getVelocity() {

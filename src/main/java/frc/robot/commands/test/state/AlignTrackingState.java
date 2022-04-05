@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.command.StateCommandBase;
 import frc.robot.base.shooter.ShooterConfiguration;
@@ -103,7 +102,7 @@ public class AlignTrackingState extends StateCommandBase {
                 //Math.toRadians(SmartDashboard.getNumber("Shooter Simulated Offset", 0.0));
 
             Vector2 kNextDirection = new Vector2(Math.cos(offset), Math.sin(offset)).unit();
-            Vector2 kActiveDirection = odometry.getVisionDirection();
+            Vector2 kActiveDirection = odometry.getViewDirection();
 
             double relativeRotation = Math.atan2(
                 kActiveDirection.x * kNextDirection.y - kActiveDirection.y * kNextDirection.x,
@@ -128,7 +127,7 @@ public class AlignTrackingState extends StateCommandBase {
             SmartDashboard.putNumber("Odometry Distance", odometry.getDistance());
             SmartDashboard.putNumber("Odometry Speed", odometry.getSpeed());
             SmartDashboard.putString("Odometry Target", odometry.getTarget().toString());
-            SmartDashboard.putString("Odometry Vision Direction", odometry.getVisionDirection().toString());
+            SmartDashboard.putString("Odometry Vision Direction", odometry.getViewDirection().toString());
             SmartDashboard.putString("Odometry Direction", odometry.getDirection().toString());
             SmartDashboard.putString("Odometry Next Direction", kNextDirection.toString());
             SmartDashboard.putString("Odometry Velocity", odometry.getVelocity().toString());
