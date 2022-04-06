@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import frc.robot.Constants;
 import frc.robot.base.Property;
+import frc.robot.base.command.InterruptType;
 import frc.robot.base.command.TimedStateCommand;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.SweepDirection;
@@ -74,6 +75,8 @@ public class SweepShooterState extends TimedStateCommand {
 
         offset = Constants.Shooter.SHOOTER_SWEEP_INVERSE.calculate(turret.getRotation());
         done = false;
+
+        shooterState.set(ShooterState.kSweep);
     }
 
     @Override
@@ -81,8 +84,9 @@ public class SweepShooterState extends TimedStateCommand {
         double time = getElapsedTime();
 
         if (limelight.getTargetType() == TargetType.kHub) {
+            System.out.println("Shooter targeted after sweep");
             odometry.update(limelight.getTargetPosition());
-            next("frc.robot.shooter.operate");
+            next("frc.robot.shooter.operate:dormant");
         } else if (time / Constants.Shooter.SHOOTER_SWEEP_PERIOD > Constants.Shooter.SHOOTER_MAX_SWEEEP) {
             done = true;
         } else {
@@ -94,8 +98,8 @@ public class SweepShooterState extends TimedStateCommand {
     }
 
     @Override
-    public void end(boolean interrupted) {
-        if (interrupted || getNextState() == null) {
+    public void end(InterruptType interrupt) {
+        if (interrupt == InterruptType.kCancel || getNextState() == null) {
             limelight.disable();
             turret.disable();
         }
@@ -107,7 +111,7 @@ public class SweepShooterState extends TimedStateCommand {
     }
 
     @Override
-    public @NotNull String getStateName() {
+    public @NotNull String getName() {
         return "frc.robot.shooter.sweep";
     }
 }

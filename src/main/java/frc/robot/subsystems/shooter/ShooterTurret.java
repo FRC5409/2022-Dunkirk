@@ -70,6 +70,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
 
         enc_main = mot_main.getEncoder();
             enc_main.setPosition(0);
+            enc_main.setPositionConversionFactor(360.0 / Constants.Shooter.GEAR_RATIO);
 
         ctr_main = mot_main.getPIDController();
         MotorUtils.setGains(ctr_main, Constants.Shooter.TURRET_GAINS);
@@ -116,7 +117,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
     @Override
     public void periodic() {
         if (enabled) {
-            rotation = enc_main.getPosition() * DEGREES_PER_ROTATION;
+            rotation = enc_main.getPosition();
             
             if(lim_zero.get() == Constants.Shooter.ZERO_LIMIT_POLARITY) {
                 if (!calibrated) {
@@ -194,7 +195,7 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
                 }
             } else {
                 ctr_main.setReference(
-                    ROTATIONS_PER_DEGREE * ROTATION_RANGE.clamp(value), 
+                    ROTATION_RANGE.clamp(value), 
                     CANSparkMax.ControlType.kPosition);
             }
 

@@ -7,7 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.base.Property;
-import frc.robot.base.command.StateCommandBase;
+import frc.robot.base.command.InterruptType;
+import frc.robot.base.command.StateBase;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
@@ -19,7 +20,7 @@ import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.subsystems.shooter.ShooterTurret.ReferenceType;
 import frc.robot.utils.Vector2;
 
-public class AlignTrackingState extends StateCommandBase {
+public class AlignTrackingState extends StateBase {
     private final Property<ShooterConfiguration> configuration;
     private final Property<DriveShooterOdometry> sharedOdometry;
     
@@ -140,8 +141,8 @@ public class AlignTrackingState extends StateCommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {
-        if (interrupted || getNextState() == null) {
+    public void end(InterruptType interrupt) {
+        if (interrupt == InterruptType.kCancel|| getNextState() == null) {
             turret.disable();
             limelight.disable();
         }
@@ -153,7 +154,7 @@ public class AlignTrackingState extends StateCommandBase {
     }
 
     @Override
-    public @NotNull String getStateName() {
+    public @NotNull String getName() {
         return "frc.robot.shooter:align";
     }
 }
