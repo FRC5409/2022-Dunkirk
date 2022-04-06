@@ -21,41 +21,41 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
  * of individual States.
  * 
  * @author Keith Davies
- * @see StateCommand
+ * @see State
  */
-public abstract class StateCommandGroup extends CommandBase {
-    protected Map<String, StateCommand> m_states;
-    protected StateCommand m_default;
-    protected StateCommand m_active;
+public abstract class StateGroupCommand extends CommandBase {
+    protected Map<String, State> m_states;
+    protected State m_default;
+    protected State m_active;
 
     /**
-     * Construct an empty {@link StateCommandGroup}.
+     * Construct an empty {@link StateGroupCommand}.
      */
-    public StateCommandGroup() {
+    public StateGroupCommand() {
         m_active = null;
         m_default = null;
         m_states = new HashMap<>();
     }
     
     /**
-     * Construct a {@link StateCommandGroup} with several states.
+     * Construct a {@link StateGroupCommand} with several states.
      * 
      * @param commands The states included in the group.
      */
-    public StateCommandGroup(StateCommand... commands) {
+    public StateGroupCommand(State... commands) {
         this();
         addCommands(commands);
     }
 
     
     /**
-     * Construct a {@link StateCommandGroup} with several states,
+     * Construct a {@link StateGroupCommand} with several states,
      * as well as a default state.
      * 
      * @param commands         The states included in the group.
      * @param defaultStateName The default state name.
      */
-    public StateCommandGroup(String defaultStateName, StateCommand... commands) {
+    public StateGroupCommand(String defaultStateName, State... commands) {
         this();
         addCommands(commands);
         m_default = getCommand(defaultStateName);
@@ -72,7 +72,7 @@ public abstract class StateCommandGroup extends CommandBase {
             }
             
             m_active = m_default;
-            System.out.println ("Starting with state " + m_active.getStateName());
+            System.out.println ("Starting with state " + m_active.getName());
         }
 
         m_active.initialize();
@@ -85,18 +85,20 @@ public abstract class StateCommandGroup extends CommandBase {
 
         // A state can only switch when finished
         if (m_active.isFinished()) {
-            m_active.end(false);
-
             String next = m_active.getNextState();
-            m_active.reset();
-
+            
             if (next != null) {
+                m_active.end(InterruptType.kTransition);
+                m_active.reset();
+
                 m_active = getCommand(next);
                 System.out.println("Moving to state " + next);
 
                 m_active.initialize();
-            } else 
+            } else {
+                m_active.end(InterruptType.kFinish);
                 m_active = null;
+            }
         } else
             m_active.execute();
     }
@@ -106,7 +108,10 @@ public abstract class StateCommandGroup extends CommandBase {
         if (m_active == null)
             return;
 
-        m_active.end(interrupted);
+        // We don't need to check the interrupted flag
+        // because, under normal circumstances, m_active
+        // will be null when the state command group ends
+        m_active.end(InterruptType.kCancel);
         m_active = null;
     }
 
@@ -115,9 +120,9 @@ public abstract class StateCommandGroup extends CommandBase {
      * 
      * @param commands The states to add.
      */
-    public void addCommands(StateCommand... commands) {
-        for (StateCommand cmd : Set.of(commands)) {
-            final String name = cmd.getStateName();
+    public void addCommands(State... commands) {
+        for (State cmd : Set.of(commands)) {
+            final String name = cmd.getName();
             if (m_states.containsKey(name)) {
                 throw new IllegalArgumentException(
                     "Conflict between commands using the name '"
@@ -162,10 +167,10 @@ public abstract class StateCommandGroup extends CommandBase {
         if (m_active == null)
             return false;
 
-        StateCommand command = getCommand(name);
+        State command = getCommand(name);
 
         // Interrupt the active command
-        m_active.end(true);
+        m_active.end(InterruptType.kCancel);
 
         // Start new (or previously running) command
         command.initialize();
@@ -179,17 +184,17 @@ public abstract class StateCommandGroup extends CommandBase {
     public String getActiveState() {
         if (m_active == null)
             return null;
-        return m_active.getStateName();
+        return m_active.getName();
     }
 
-    public StateCommand getCommand(String name) throws UnknownStateException {
-        StateCommand command = m_states.get(name);
+    public State getCommand(String name) throws UnknownStateException {
+        State command = m_states.get(name);
         if (command == null)
             throw new UnknownStateException("Command state '" + name + "' does not exist.");
         return command;
     }
 
-    public Map<String, StateCommand> getCommands() {
+    public Map<String, State> getCommands() {
         return Collections.unmodifiableMap(m_states);
     }
 

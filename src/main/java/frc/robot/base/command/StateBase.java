@@ -1,17 +1,22 @@
 package frc.robot.base.command;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.HashSet;
+import java.util.Set;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public abstract class StateCommandBase extends CommandBase implements StateCommand {
-    @Nullable
+public abstract class StateBase implements State {
+    protected Set<Subsystem> m_requirements = new HashSet<>();
     protected String m_next = null;
     protected int    m_executionIndex = -1;
 
-    protected StateCommandBase() {
+
+    protected StateBase() {
         StateCommandManager.getInstance().addState(this);
+    }
+        
+    public final void addRequirements(Subsystem... requirements) {
+        m_requirements.addAll(Set.of(requirements));
     }
     
     @Override
@@ -26,17 +31,11 @@ public abstract class StateCommandBase extends CommandBase implements StateComma
     }
 
     @Override
-    public final void schedule(boolean interruptible) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("Cannot schedule a state command.");
-    }
-
-    @Override
     public void setExecutionIndex(int index) {
         m_executionIndex = index;
     }
 
     @Override
-    @Nullable
     public String getNextState() {
         return m_next;
     }
@@ -46,6 +45,11 @@ public abstract class StateCommandBase extends CommandBase implements StateComma
         return m_executionIndex;
     }
 
+    @Override
+    public Set<Subsystem> getRequirements() {
+        return m_requirements;
+    }
+
     /**
      * If the state is not operating at the top of the execution
      * stack.
@@ -53,14 +57,7 @@ public abstract class StateCommandBase extends CommandBase implements StateComma
      */
     public final boolean isDormant() {
         if (m_executionIndex == -1)
-            throw new RuntimeException("Cannot checky dormancy when state while state is not executing");
+            throw new RuntimeException("Cannot check dormancy when state is not executing");
         return m_executionIndex != 0;
-    }
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        super.initSendable(builder);
-        builder.addStringProperty("State Name", this::getStateName, null);
-        builder.addStringProperty("Next State", this::getNextState, null);
     }
 }

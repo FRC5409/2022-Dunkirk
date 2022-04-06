@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
@@ -13,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
  * A command-based state machine representing a series of tasks to be performed by the robot
  * in an independant execution order.
  * 
- * <p>When the {@link ProxyStateCommandGroup} executes, it schedules states without obtaining
- * their requirements, as opposed to the typical behaviour of a {@link StateCommandGroup}.</p>
+ * <p>When the {@link ProxyStateGroupCommand} executes, it schedules states without obtaining
+ * their requirements, as opposed to the typical behaviour of a {@link StateGroupCommand}.</p>
  * 
  * <p>Suppose a state group with states [A, B, C, D]. If state 'A' requires a given subsystem,
  * the state will only obtain ownership of the subsytem upon its individual execution, as opposed
@@ -23,39 +24,39 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
  * @author Keith Davies
  * @see StateCommand, StateCommandGroup
  */
-public abstract class ProxyStateCommandGroup extends CommandBase {
-    protected Map<String, StateCommand> m_states;
+public abstract class ProxyStateGroupCommand extends CommandBase {
+    protected Map<String, State> m_states;
     protected StateExecutionStack m_stack;
-    protected StateCommand m_default;
+    protected State m_default;
 
     /**
-     * Construct an empty {@link ProxyStateCommandGroup}.
+     * Construct an empty {@link ProxyStateGroupCommand}.
      */
-    public ProxyStateCommandGroup() {
+    public ProxyStateGroupCommand() {
         m_default = null;
         m_states = new HashMap<>();
         m_stack = null;
     }
     
     /**
-     * Construct a {@link ProxyStateCommandGroup} with several states.
+     * Construct a {@link ProxyStateGroupCommand} with several states.
      * 
      * @param commands The states included in the group.
      */
-    public ProxyStateCommandGroup(StateCommand... commands) {
+    public ProxyStateGroupCommand(State... commands) {
         this();
         addStates(commands);
     }
 
     
     /**
-     * Construct a {@link ProxyStateCommandGroup} with several states,
+     * Construct a {@link ProxyStateGroupCommand} with several states,
      * as well as a default state.
      * 
      * @param commands         The states included in the group.
      * @param defaultStateName The default state name.
      */
-    public ProxyStateCommandGroup(String defaultStateName, StateCommand... commands) {
+    public ProxyStateGroupCommand(String defaultStateName, State... commands) {
         this();
         addStates(commands);
         m_default = getState(defaultStateName);
@@ -88,9 +89,9 @@ public abstract class ProxyStateCommandGroup extends CommandBase {
                 // and new state ancestry
                 String[] path = m_stack.getNextPath();
 
-                StateCommand baseState = getState(path[0]);
+                State baseState = getState(path[0]);
                 if (path.length > 1) {
-                    List<StateCommand> nextStates = StateCommandManager.getInstance()
+                    List<State> nextStates = StateCommandManager.getInstance()
                         .getStatesOnPath(baseState, path, 1);
 
                     nextStates.add(0, baseState);
@@ -109,6 +110,7 @@ public abstract class ProxyStateCommandGroup extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        System.out.println(String.valueOf(m_stack));
         if (m_stack != null) {
             m_stack.cancel();
             m_stack = null;
@@ -120,9 +122,9 @@ public abstract class ProxyStateCommandGroup extends CommandBase {
      * 
      * @param commands The states to add.
      */
-    public void addStates(StateCommand... commands) {
-        for (StateCommand cmd : Set.of(commands)) {
-            final String name = cmd.getStateName();
+    public void addStates(State... commands) {
+        for (State cmd : Set.of(commands)) {
+            final String name = cmd.getName();
             StateFormat.validateName(name);
 
             if (m_states.containsKey(name)) {
@@ -168,7 +170,7 @@ public abstract class ProxyStateCommandGroup extends CommandBase {
         if (m_stack == null)
             return false;
             
-        StateCommand state = getState(name);
+        State state = getState(name);
 
         // Interrupt the active stack
         m_stack.cancel();
@@ -180,19 +182,28 @@ public abstract class ProxyStateCommandGroup extends CommandBase {
         return true;
     }
 
-    public StateCommand getState(String name) throws UnknownStateException {
-        StateCommand command = m_states.get(name);
+    public State getState(String name) throws UnknownStateException {
+        State command = m_states.get(name);
         if (command == null)
             throw new UnknownStateException("Command state '" + name + "' does not exist.");
         return command;
     }
 
-    public Map<String, StateCommand> getStates() {
+    public Map<String, State> getStates() {
         return Collections.unmodifiableMap(m_states);
     }
 
     @Override
     public boolean isFinished() {
-        return m_states == null;
+        return m_stack == null;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addStringArrayProperty("Active States", () -> {
+            if (m_stack == null)
+                return new String[]{};
+            return m_stack.getStates();
+        }, null);
     }
 }

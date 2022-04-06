@@ -1,12 +1,14 @@
 package frc.robot.base.command;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
  * <h2> StateCommand </h2>
@@ -22,12 +24,22 @@ import edu.wpi.first.wpilibj2.command.Command;
  * 
  * @author Keith Davies
  */
-public interface StateCommand extends Command {
+public interface State extends Sendable {
+    default void initialize() {}
+    default void execute() {}
+    default void end(InterruptType interrupt) {}
+
+    default boolean isFinished() {
+        return false;
+    }
+    
+    public Set<Subsystem> getRequirements();
+    
     void next(String stateName);
 
     void reset();
 
-    default StateCommand addStates(StateCommand... states) {
+    default State addStates(State... states) {
         StateCommandManager.getInstance().addStateChildren(this, states);
         return this;
     }
@@ -35,11 +47,11 @@ public interface StateCommand extends Command {
     void setExecutionIndex(int index);
 
     @Nullable
-    default StateCommand getParent() {
+    default State getParent() {
         return StateCommandManager.getInstance().getStateParent(this);
     }
 
-    default Map<String, StateCommand> getChildren() {
+    default Map<String, State> getChildren() {
         return StateCommandManager.getInstance().getStateChildren(this);
     }
     
@@ -47,11 +59,20 @@ public interface StateCommand extends Command {
     String getNextState();
     
     @NotNull
-    String getStateName();
+    String getName();
 
-    default String getStatePath() {
+    default String getPath() {
         return StateCommandManager.getInstance().getStatePath(this);
     }
 
     int getExecutionIndex();
+
+    @Override
+    default void initSendable(SendableBuilder builder) {
+        builder.addStringProperty("Path", this::getPath, null);
+        builder.addStringProperty("Name", this::getName, null);
+        builder.addStringProperty("Next State", () -> String.valueOf(this.getNextState()), null);
+        builder.addDoubleProperty("Execution Index", this::getExecutionIndex, null);
+
+    }
 }

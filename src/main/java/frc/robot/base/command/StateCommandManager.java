@@ -16,10 +16,10 @@ public class StateCommandManager {
         return m_instance;
     }
 
-    private final Map<StateCommand, Map<String, StateCommand>> m_children;
-    private final Map<StateCommand, StateCommand> m_ancestor;
-    private final Map<StateCommand, StateCommand> m_parent;
-    private final Map<StateCommand, String> m_path;
+    private final Map<State, Map<String, State>> m_children;
+    private final Map<State, State> m_ancestor;
+    private final Map<State, State> m_parent;
+    private final Map<State, String> m_path;
 
     public StateCommandManager() {
         m_ancestor = new WeakHashMap<>();
@@ -28,53 +28,53 @@ public class StateCommandManager {
         m_path = new WeakHashMap<>();
     }
 
-    public void addState(StateCommand state) {
+    public void addState(State state) {
         m_parent.put(state, null);
         m_ancestor.put(state, state);
         m_children.put(state, new HashMap<>());
     }
 
-    public void addStateChildren(StateCommand parent, StateCommand[] states) {
+    public void addStateChildren(State parent, State[] states) {
         addStateChildren(parent, List.of(states));
     }
 
-    public void addStateChildren(StateCommand parent, Iterable<StateCommand> states) {
+    public void addStateChildren(State parent, Iterable<State> states) {
         if (!exists(parent))
             throw new IllegalArgumentException("State does not exist on manager.");
 
-        StateCommand ancestor = m_ancestor.get(parent);
+        State ancestor = m_ancestor.get(parent);
 
-        Map<String, StateCommand> children = m_children.get(parent);
-        for (StateCommand child : states) {
+        Map<String, State> children = m_children.get(parent);
+        for (State child : states) {
             if (!exists(child))
-                throw new IllegalArgumentException("Child state '" + child.getStateName() + "' does not exist on manager.");
+                throw new IllegalArgumentException("Child state '" + child.getName() + "' does not exist on manager.");
             
-            if (children.containsKey(child.getStateName())) {
-                throw new IllegalArgumentException("Child state '" + child.getStateName()
-                    + "' already exists on parent state '" + parent.getStateName());
+            if (children.containsKey(child.getName())) {
+                throw new IllegalArgumentException("Child state '" + child.getName()
+                    + "' already exists on parent state '" + parent.getName());
             } else {
-                StateCommand childParent = getStateParent(child);
+                State childParent = getStateParent(child);
                 if (childParent != null) {
                     if (childParent.equals(parent))
                         continue;
                         
-                    throw new IllegalArgumentException("Child state '" + child.getStateName()
-                        + "' already has parent state '" + childParent.getStateName());
+                    throw new IllegalArgumentException("Child state '" + child.getName()
+                        + "' already has parent state '" + childParent.getName());
                 }
             } 
 
-            children.put(child.getStateName(), child);
+            children.put(child.getName(), child);
             m_ancestor.put(child, ancestor);
         }
     }
     
     @Nullable
-    public List<StateCommand> getStatesOnPath(StateCommand root, String[] path) {
+    public List<State> getStatesOnPath(State root, String[] path) {
         return getStatesOnPath(root, path, 0);   
     }
 
     @Nullable
-    public List<StateCommand> getStatesOnPath(StateCommand root, String[] path, int startIndex) {
+    public List<State> getStatesOnPath(State root, String[] path, int startIndex) {
         if (!exists(root))
             throw new IllegalArgumentException("State does not exist on manager.");
         else if (path.length == 0)
@@ -82,20 +82,20 @@ public class StateCommandManager {
         else if (startIndex >= path.length)
             throw new IllegalArgumentException("Start index is greater than path length");
 
-        StateCommand base = root;
-        Map<String, StateCommand> children = m_children.get(base);
+        State base = root;
+        Map<String, State> children = m_children.get(base);
 
         // State path does not exist within ancestry
-        if (!children.containsKey(path[0]))
+        if (!children.containsKey(path[startIndex]))
             return null;
 
-        List<StateCommand> states = new ArrayList<>();
+        List<State> states = new ArrayList<>();
 
-        base = children.get(path[0]);
+        base = children.get(path[startIndex]);
         states.add(base);
 
         // Walk up state structure with path components
-        for (int i = 1; i < path.length; i++) {
+        for (int i = startIndex+1; i < path.length; i++) {
             children = m_children.get(base);
 
             if (!children.containsKey(path[i]))
@@ -110,29 +110,29 @@ public class StateCommandManager {
     }
 
     @Nullable
-    public StateCommand getStateParent(StateCommand state) {
+    public State getStateParent(State state) {
         if (!exists(state))
             throw new IllegalArgumentException("State does not exist on manager.");
         
         return m_parent.get(state);
     }
 
-    public Map<String, StateCommand> getStateChildren(StateCommand state) {
+    public Map<String, State> getStateChildren(State state) {
         if (!exists(state))
             throw new IllegalArgumentException("State does not exist on manager.");
         return Collections.unmodifiableMap(m_children.get(state));
     }
 
-    public String getStatePath(StateCommand state) {
+    public String getStatePath(State state) {
         if (!exists(state))
             throw new IllegalArgumentException("State does not exist on manager.");
         
         // Lazily calculate state path
         if (!m_path.containsKey(state)) {
-            List<StateCommand> ancestry = new ArrayList<>();
+            List<State> ancestry = new ArrayList<>();
             ancestry.add(state);
 
-            StateCommand parent = getStateParent(state);
+            State parent = getStateParent(state);
             while (parent != null) {
                 ancestry.add(parent);
                 parent = getStateParent(parent);
@@ -140,7 +140,7 @@ public class StateCommandManager {
 
             StringBuilder builder = new StringBuilder();
             for (int i = ancestry.size()-1; i >= 0; i--) {
-                builder.append(ancestry.get(i).getStateName());
+                builder.append(ancestry.get(i).getName());
                 builder.append(StateFormat.SEPERATOR);
             }
 
@@ -156,7 +156,7 @@ public class StateCommandManager {
         }
     }
 
-    public boolean exists(StateCommand state) {
+    public boolean exists(State state) {
         return m_parent.containsKey(state);
     }
 }

@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 class StateExecutionStack implements Command {
-    private final List<StateCommand> m_states;
+    private final List<State> m_states;
     private final Set<Subsystem> m_requirements;
     private final int m_branch;
 
@@ -20,28 +20,28 @@ class StateExecutionStack implements Command {
     private boolean m_dirty;
     private int m_exitor;
 
-    private static Set<Subsystem> getStateRequirements(Iterable<StateCommand> states) {
+    private static Set<Subsystem> getStateRequirements(Iterable<State> states) {
         Set<Subsystem> requirements = new HashSet<>();
-        for (StateCommand state : states)
+        for (State state : states)
             requirements.addAll(state.getRequirements());
         return requirements;
     }
 
-    private static List<StateCommand> asGroup(StateCommand state) {
-        List<StateCommand> states = new ArrayList<>();
+    private static List<State> asGroup(State state) {
+        List<State> states = new ArrayList<>();
         states.add(state);
         return states;
     }
 
-    public StateExecutionStack(StateCommand state) {
+    public StateExecutionStack(State state) {
         this(asGroup(state));
     }
 
-    public StateExecutionStack(List<StateCommand> states) {
+    public StateExecutionStack(List<State> states) {
         this(states, getStateRequirements(states), 0);
     }
 
-    private StateExecutionStack(List<StateCommand> states, Set<Subsystem> requirements, int branchIndex) {
+    private StateExecutionStack(List<State> states, Set<Subsystem> requirements, int branchIndex) {
         if (states.size() == 0)
             throw new IllegalArgumentException("Cannot create execution stack with no states");
         else if (branchIndex != -1 && branchIndex > states.size())
@@ -80,7 +80,7 @@ class StateExecutionStack implements Command {
         if (m_dirty) return;
 
         for (int i = 0; i < m_states.size(); i++) {
-            StateCommand state = m_states.get(i);
+            State state = m_states.get(i);
 
             // Update state
             state.execute();
@@ -94,7 +94,7 @@ class StateExecutionStack implements Command {
         }
 
         if (m_exitor != -1) {
-            StateCommand exitorState = m_states.get(m_exitor);
+            State exitorState = m_states.get(m_exitor);
             
             // Query next state
             String nextStatePath = exitorState.getNextState();
@@ -102,7 +102,7 @@ class StateExecutionStack implements Command {
                 String[] path = StateFormat.parsePath(nextStatePath);
 
                 // Get next states
-                List<StateCommand> nextStates = StateCommandManager.getInstance()
+                List<State> nextStates = StateCommandManager.getInstance()
                     .getStatesOnPath(exitorState, path);
                 
                 // Check if the state we are transitioning from contains
@@ -112,7 +112,7 @@ class StateExecutionStack implements Command {
                     // next state to transition from.
                     int idx = -1;
                     for (int i = m_exitor; i >= 0; i--) {
-                        StateCommand state = m_states.get(i);
+                        State state = m_states.get(i);
 
                         nextStates = StateCommandManager.getInstance()
                             .getStatesOnPath(state, path);
@@ -136,9 +136,9 @@ class StateExecutionStack implements Command {
                 // Interrupt any commands above the exitor on the stack
                 // since they do not have authority over the exit
                 for (int i = m_states.size()-1; i > m_exitor; i--) {               
-                    StateCommand state = m_states.get(i);
+                    State state = m_states.get(i);
 
-                    state.end(true);
+                    state.end(InterruptType.kDetach);
                     state.reset();
     
                     m_states.remove(i);
@@ -148,9 +148,8 @@ class StateExecutionStack implements Command {
                 // (If next state has the same ancestor as the exitor state of this stack)
                 if (nextStates != null) {
                     m_states.addAll(nextStates);
-                    
-                    exitorState.reset();
 
+                    exitorState.reset();
                     // Check if requirements change during state transition
                     Set<Subsystem> nextRequirements = getStateRequirements(m_states);
                     if (nextRequirements.equals(m_requirements)) {
@@ -173,10 +172,14 @@ class StateExecutionStack implements Command {
                 } else {
                     // The next states exist outside of the ancestry of this stack
                     for (int i = m_states.size()-1; i >= 0; i--) {
-                        StateCommand state = m_states.get(i);
+                        State state = m_states.get(i);
 
-                        // Interupt active states
-                        state.end(true);
+                        // End active states
+                        if (i == m_exitor)
+                            state.end(InterruptType.kTransition);
+                        else
+                            state.end(InterruptType.kDetach);
+
                         state.reset();
                     }
 
@@ -186,10 +189,14 @@ class StateExecutionStack implements Command {
                 }
             } else {
                 for (int i = m_states.size()-1; i >= m_exitor; i--) {
-                    StateCommand state = m_states.get(i);
+                    State state = m_states.get(i);
     
                     // End active states
-                    state.end(i != m_exitor);
+                    if (i == m_exitor)
+                        state.end(InterruptType.kFinish);
+                    else
+                        state.end(InterruptType.kDetach);
+
                     state.reset();
                     
                     m_states.remove(i);
@@ -224,11 +231,12 @@ class StateExecutionStack implements Command {
         if (m_dirty) return;
 
         if (interrupted) {
+            System.out.println("Cancelling states");
             for (int i = m_states.size()-1; i >= 0; i--) {
-                StateCommand state = m_states.get(i);
+                State state = m_states.get(i);
 
                 // Interupt active states
-                state.end(true);
+                state.end(InterruptType.kCancel);
                 state.reset();
             }
 
@@ -271,9 +279,19 @@ class StateExecutionStack implements Command {
     }
 
     private void updateIndexes() {
+        System.out.println("Updated indexees");
         int size = m_states.size();
         for (int i = 0; i < size; i++) {
             m_states.get(i).setExecutionIndex(size-(i+1));
         }
+    }
+
+    public String[] getStates() {
+        String[] stateNames = new String[m_states.size()];
+        for (int i = 0; i < m_states.size(); i++) {
+            stateNames[i] = m_states.get(i).getPath();
+        }
+
+        return stateNames;
     }
 }
