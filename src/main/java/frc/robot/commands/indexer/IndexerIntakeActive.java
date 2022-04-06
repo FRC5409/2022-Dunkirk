@@ -43,7 +43,7 @@ public class IndexerIntakeActive extends CommandBase {
     @Override
     public void initialize() {
         indexer.enable();
-        indexer.setSpeed(1);
+        indexer.setSpeed(0.75);
 
         // Tested value is 0.3 //Cam bump this up once extra wheels added to first indexer roller
         intake.intakeOn(0.4);
