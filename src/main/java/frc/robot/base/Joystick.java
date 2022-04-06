@@ -59,13 +59,13 @@ public class Joystick implements Subsystem {
         m_buttonBack        = new JoystickButton(m_controller, XboxController.Button.kBack.value);
         m_buttonStart       = new JoystickButton(m_controller, XboxController.Button.kStart.value);
         
-        m_buttonRightTrigger = new Button(
+        m_buttonLeftTrigger = new Button(
             new Trigger(
                 () -> m_controller.getLeftTriggerAxis() >= 0.5
             ).debounce(0.1)
         );
 
-        m_buttonLeftTrigger = new Button(
+        m_buttonRightTrigger = new Button(
             new Trigger(
                 () -> m_controller.getRightTriggerAxis() >= 0.5
             ).debounce(0.1)
