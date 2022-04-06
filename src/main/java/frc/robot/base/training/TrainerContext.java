@@ -6,6 +6,8 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import frc.robot.base.Model4;
+import frc.robot.base.Property;
+import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 
@@ -38,5 +40,19 @@ public class TrainerContext {
 
     public ShooterMode getMode() {
         return mode;
+    }
+
+    public Property<ShooterConfiguration> getConfigurationProperty() {
+        return new Property<ShooterConfiguration>() {
+            @Override
+            public ShooterConfiguration get() {
+                return getConfiguration();
+            }
+
+            @Override
+            public ShooterConfiguration set(ShooterConfiguration value) {
+                return getConfiguration();
+            }
+        };
     }
 }
