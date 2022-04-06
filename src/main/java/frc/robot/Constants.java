@@ -322,7 +322,7 @@ public final class Constants {
         public static final Range TURRET_MANUAL_OUTPUT_RANGE = new Range(-0.8, 0.8);
         
         // Smooth Sweep Constants
-        public static final double   SHOOTER_SWEEP_PERIOD = 1.6*0.85789;
+        public static final double   SHOOTER_SWEEP_PERIOD = 1.6*1.45789;
         public static final double   SHOOTER_MAX_SWEEEP = 2;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
@@ -365,8 +365,15 @@ public final class Constants {
         private static final ShooterTrackingModel DEFAULT_TRACKING_MODEL = new ShooterTrackingModel(
             TargetFiltering.none(), 
             TARGET_LOST_TIME,
-            0.3,
+            
+            -0.67841,
+            2.0,
+
             0.85,
+            0.15,
+
+            new Gains(16.8, 0.5, 0.1, 0,0,0),
+
             x -> 0, 
             x -> 0
         );
@@ -385,10 +392,10 @@ public final class Constants {
                     new Vector2(59.6, 49.7)
                 ),
                 new Model4(
-                    2.552187442779541,
-                    0.5686905980110168,
-                    -0.6887820363044739,
-                    0.3927091360092163,
+                    -0.010504270903766155,
+                    0.709503173828125,
+                    0.007261261343955994,
+                    0.25371038913726807,
                     Constants.Shooter.DISTANCE_RANGE,
                     Constants.Shooter.SPEED_RANGE
                 )
