@@ -14,6 +14,7 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
     protected Vector2 kLastVelocity;
     protected Vector2 kLastDirection;
     protected Vector2 kLastViewDirection;
+    protected double  kLastPrediction;
 
     public ActiveShooterOdometry(
         ShooterOdometryModel odometryModel,
@@ -48,21 +49,53 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
 
         rotation = Math.toRadians(rotation);
 
-        double cx = Math.cos(rotation);
-        double cy = Math.sin(rotation);
-
         kLastViewDirection = new Vector2(tempVector.x, tempVector.y).unit();
+        kLastDirection = rotate(kLastViewDirection, rotation).unit();
 
-        kLastDirection = new Vector2(
-            tempVector.x * cx - tempVector.y * cy,
-            tempVector.x * cy + tempVector.y * cx
-        ).unit();
-
+        kLastPrediction = Timer.getFPGATimestamp();
         kLastRotation = safe(Math.acos(kLastDirection.x)) * Math.signum(kLastDirection.y);
         kLastVelocity = kLastDirection.scale(speed);
+        kLastUpdate = kLastPrediction;
         kLastTarget = new Vector2(target);
-        kLastUpdate = Timer.getFPGATimestamp();
         kLastSpeed = speed;
+        
+    }
+
+    public void update(double speed, double rotation, double turnRate) {
+        if (kLastTarget == null)
+            return;
+
+        double now = Timer.getFPGATimestamp();
+        double delta = (now - kLastPrediction);
+
+        Vector2 nextPosition;
+        if (turnRate == 0) {
+            nextPosition = kLastDirection.scale(speed * delta);
+        } else {
+            double rotationAmount = turnRate * delta;
+
+            double cx = Math.cos(rotationAmount);
+            double cy = Math.sin(rotationAmount);
+
+            double lx = kLastDirection.x * speed / turnRate;
+            double ly = kLastDirection.y * speed / turnRate;
+
+            nextPosition = new Vector2(
+                lx * cx + ly * (cx - 1),
+                ly * cy - lx * (cx - 1)
+            );
+
+            kLastDirection = new Vector2(
+                kLastDirection.x * cx - kLastDirection.y * cy,
+                kLastDirection.x * cy + kLastDirection.y * cx
+            );
+
+            kLastRotation += rotationAmount;
+        }
+
+        kLastViewDirection = nextPosition.unit();
+        kLastPrediction = now;
+        kLastVelocity = kLastDirection.scale(speed);
     }
 
     @Override
@@ -108,5 +141,15 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
         if (!Double.isFinite(x))
             return 0;
         return x;
+    }
+
+    protected Vector2 rotate(Vector2 vector, double rotation) {
+        double cx = Math.cos(rotation);
+        double cy = Math.sin(rotation);
+
+        return new Vector2(
+            vector.x * cx - vector.y * cy,
+            vector.x * cy + vector.y * cx
+        );
     }
 }
