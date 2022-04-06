@@ -1,17 +1,19 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.base.Property;
-import frc.robot.base.RobotDrive;
 import frc.robot.base.ValueProperty;
-import frc.robot.base.command.ProxyStateCommandGroup;
+import frc.robot.base.command.ProxyStateGroupCommand;
+import frc.robot.base.command.State;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConditions;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.SweepDirection;
+import frc.robot.base.shooter.TrackingController;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.commands.shooter.state.OperateShooterState;
 import frc.robot.commands.shooter.state.SearchShooterState;
@@ -19,6 +21,7 @@ import frc.robot.commands.shooter.state.SweepShooterState;
 import frc.robot.commands.shooter.state.operate.ArmShooterState;
 import frc.robot.commands.shooter.state.operate.DormantShooterState;
 import frc.robot.commands.shooter.state.operate.RunShooterState;
+import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
@@ -32,7 +35,7 @@ import frc.robot.utils.MotorUtils;
  * 
  * @author Keith Davies
  */
-public final class ComplexOperateShooter extends ProxyStateCommandGroup {
+public final class ComplexOperateShooter extends ProxyStateGroupCommand {
     private final Property<ShooterConfiguration> shooterConfiguration;
     private final Property<DriveShooterOdometry> sharedOdometry;
     private final Property<ShooterState> shooterState;
@@ -40,12 +43,11 @@ public final class ComplexOperateShooter extends ProxyStateCommandGroup {
     private final Property<Double> driveSpeed;
 
     private final ShooterConditions shooterConditions;
-    private final PIDController turretController;
-
+    
     public ComplexOperateShooter(
         ShooterFlywheel flywheel,
         ShooterTurret turret,
-        RobotDrive drivetrain,
+        DriveTrain drivetrain,
         Limelight limelight,
         Indexer indexer,
         Trigger shooterTrigger,
@@ -57,19 +59,13 @@ public final class ComplexOperateShooter extends ProxyStateCommandGroup {
         Property<Double> driveSpeed
     ) {
         sharedOdometry = new ValueProperty<>();
-
         shooterConditions = new ShooterConditions();
-
-        turretController = new PIDController(0,0,0);
-            MotorUtils.setGains(turretController, Constants.Shooter.TURRET_MANUAL_GAINS);
-        turretController.setTolerance(Constants.Shooter.TURRET_MANUAL_THRESHOLD);
-
         shooterTriggerDebounce = new ValueProperty<>(false);
+        
         addStates(
             new SearchShooterState(limelight, shooterState),
             new SweepShooterState(turret, limelight, Property.cast(sharedOdometry), shooterSweepDirection, shooterState),
-            
-            new OperateShooterState(turret, drivetrain, limelight, turretController, shooterConditions, 
+            new OperateShooterState(turret, drivetrain, limelight, shooterConditions, 
                 shooterConfiguration, sharedOdometry, indexerArmedState)
                 .addStates(
                     new DormantShooterState(shooterTrigger, sharedOdometry, 
@@ -114,7 +110,6 @@ public final class ComplexOperateShooter extends ProxyStateCommandGroup {
         super.end(interrupted);
         
         shooterConditions.reset();
-        turretController.reset();
         
         // Reconfigure properties
         driveSpeed.set(1.0);

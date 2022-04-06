@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import frc.robot.Constants;
 import frc.robot.base.Property;
+import frc.robot.base.command.InterruptType;
 import frc.robot.base.command.TimedStateCommand;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.subsystems.Limelight;
@@ -51,20 +52,20 @@ public class SearchShooterState extends TimedStateCommand {
     @Override
     public void execute() {
         if (limelight.getTargetType() == TargetType.kHub) {
-            next("frc.robot.shooter:operate");
+            next("frc.robot.shooter.operate:dormant");
         } else if (getElapsedTime() > Constants.Vision.ACQUISITION_DELAY) {
-            next("frc.robot.shooter:sweep");
+            next("frc.robot.shooter.sweep");
         }
     }
     
     @Override
-    public void end(boolean interrupted) {
-        if (interrupted || getNextState() == null)
+    public void end(InterruptType interrupt) {
+        if (interrupt == InterruptType.kCancel || getNextState() == null)
             limelight.disable();
     }
 
     @Override
-    public @NotNull String getStateName() {
+    public @NotNull String getName() {
         return "frc.robot.shooter.search";
     }
 }

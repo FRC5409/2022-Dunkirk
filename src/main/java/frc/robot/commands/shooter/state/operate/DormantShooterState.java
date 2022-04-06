@@ -4,12 +4,13 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.base.Property;
-import frc.robot.base.command.StateCommandBase;
+import frc.robot.base.command.InterruptType;
+import frc.robot.base.command.StateBase;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 
 // TODO update doc
-public class DormantShooterState extends StateCommandBase {
+public class DormantShooterState extends StateBase {
     private final Property<DriveShooterOdometry> sharedOdometry;
     private final Property<ShooterState> shooterState;
     private final Property<Boolean> shooterTriggerDebounce;
@@ -57,12 +58,12 @@ public class DormantShooterState extends StateCommandBase {
     }
     
     @Override
-    public void end(boolean interrupted) {
+    public void end(InterruptType interrupt) {
         shooterTriggerDebounce.set(false);
     }
 
     @Override
-    public @NotNull String getStateName() {
+    public @NotNull String getName() {
         return "dormant";
     }
 }

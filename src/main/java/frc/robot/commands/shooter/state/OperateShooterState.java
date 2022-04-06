@@ -2,23 +2,22 @@ package frc.robot.commands.shooter.state;
 
 import org.jetbrains.annotations.NotNull;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.base.Property;
-import frc.robot.base.RobotDrive;
-import frc.robot.base.command.StateCommandBase;
+import frc.robot.base.command.InterruptType;
+import frc.robot.base.command.StateBase;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConditionType;
 import frc.robot.base.shooter.ShooterConditions;
 import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.TrackingController;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
-import frc.robot.base.shooter.odometry.ShooterTrackingModel;
+import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.subsystems.shooter.ShooterTurret.ReferenceType;
 import frc.robot.utils.Toggleable;
-import frc.robot.utils.Vector2;
 
 // TODO update doc
 
@@ -31,26 +30,24 @@ import frc.robot.utils.Vector2;
  * Once both systems have reached their respective targets,
  * the indexer triggers, feeding powercells into the turret.</p>
  */
-public class OperateShooterState extends StateCommandBase {
+public class OperateShooterState extends StateBase {
     private final Property<ShooterConfiguration> shooterConfiguration;
     private final Property<DriveShooterOdometry> sharedOdometry;
     private final Property<IndexerArmedState> indexerArmedState;
     
     private final ShooterConditions shooterConditions;
-    private final PIDController turretController;
-
+    
     private final ShooterTurret turret;
-    private final RobotDrive drivetrain;
+    private final DriveTrain drivetrain;
     private final Limelight limelight;
     
-    private ShooterTrackingModel trackingModel;
+    private TrackingController trackingController;
     private DriveShooterOdometry odometry;
     
     public OperateShooterState(
         ShooterTurret turret,
-        RobotDrive drivetrain,
+        DriveTrain drivetrain,
         Limelight limelight,
-        PIDController turretController,
         ShooterConditions shooterConditions,
         Property<ShooterConfiguration> shooterConfiguration,
         Property<DriveShooterOdometry> sharedOdometry,
@@ -59,7 +56,6 @@ public class OperateShooterState extends StateCommandBase {
         this.shooterConfiguration = shooterConfiguration;
         this.indexerArmedState = indexerArmedState;
         this.shooterConditions = shooterConditions;
-        this.turretController = turretController;
         this.sharedOdometry = sharedOdometry;
         this.drivetrain = drivetrain;
         this.limelight = limelight;
@@ -76,14 +72,9 @@ public class OperateShooterState extends StateCommandBase {
         if (!turret.isEnabled())
             turret.enable();
 
-        // Obtain shooter configuration
-        ShooterConfiguration config = shooterConfiguration.get();
-
         // Initialize odometry
         odometry = sharedOdometry.get();
-        trackingModel = config.getTrackingModel();
-
-        next("dormant");
+        trackingController = new TrackingController(shooterConfiguration.get().getTrackingModel());
     }
 
     @Override
@@ -98,26 +89,19 @@ public class OperateShooterState extends StateCommandBase {
         }
 
         if (odometry.getTarget() != null) {
-            double offset = Math.toRadians(odometry.getTurretOffset());
-            
-            Vector2 kNextDirection = new Vector2(Math.cos(offset), Math.sin(offset)).unit();
-            Vector2 kActiveDirection = odometry.getVisionDirection();
-
-            double relativeRotation = Math.atan2(
-                kActiveDirection.x * kNextDirection.y - kActiveDirection.y * kNextDirection.x,
-                kActiveDirection.x * kNextDirection.x + kActiveDirection.y * kNextDirection.y
+            trackingController.update(
+                odometry.getViewDirection(),
+                odometry.getTurretOffset(),
+                drivetrain.TurnRate(),
+                odometry.getVelocity().y
             );
 
-            double output = turretController.calculate(relativeRotation);
-            if (Math.abs(output) > trackingModel.kMinOutput)
-                turret.setReference(output, ReferenceType.kOutput);
-            else
-                turret.setReference(0, ReferenceType.kOutput);
-
-            updateDashboard(kNextDirection);
+            turret.setReference(
+                turret.getRotation() + trackingController.getOutput(), 
+                ReferenceType.kRotation);
         }
         
-        if (turretController.atSetpoint())
+        if (trackingController.isTargetReached())
             shooterConditions.addCondition(ShooterConditionType.kTurretReached);
         else
             shooterConditions.removeCondition(ShooterConditionType.kTurretReached);
@@ -129,34 +113,42 @@ public class OperateShooterState extends StateCommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {
-        if (interrupted || getNextState() == null) {
-            limelight.disable();
+    public void end(InterruptType interrupt) {
+        if (interrupt == InterruptType.kCancel || interrupt == InterruptType.kFinish) {
             turret.disable();
+            limelight.disable();
         }
+        
+        odometry = null;
     }
 
     @Override
     public boolean isFinished() {
-        return isDormant();
+        return !isDormant();
     }
 
     @Override
-    public @NotNull String getStateName() {
+    public @NotNull String getName() {
         return "frc.robot.shooter.operate";
     }
 
-    public void updateDashboard(Vector2 kNextDirection) {
-        SmartDashboard.putNumber("Turret Rotation", turret.getRotation());
-        SmartDashboard.putNumber("Odometry Rotation", odometry.getRotation());
-        SmartDashboard.putNumber("Odometry Distance", odometry.getDistance());
-        SmartDashboard.putNumber("Odometry Speed", odometry.getSpeed());
-        SmartDashboard.putString("Odometry Target", odometry.getTarget().toString());
-        SmartDashboard.putString("Odometry Vision Direction", odometry.getVisionDirection().toString());
-        SmartDashboard.putString("Odometry Direction", odometry.getDirection().toString());
-        SmartDashboard.putString("Odometry Next Direction", kNextDirection.toString());
-        SmartDashboard.putString("Odometry Velocity", odometry.getVelocity().toString());
-        SmartDashboard.putNumber("Odometry Turret Offset", odometry.getTurretOffset());
-        SmartDashboard.putNumber("Odometry Flywheel Offset", odometry.getFlywheelOffset());
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+
+        builder.addDoubleProperty("Turret Rotation", turret::getRotation, null);
+        builder.addDoubleProperty("Odometry Rotation",         () -> (hasOdometry() ? odometry.getRotation()                : 0), null);
+        builder.addDoubleProperty("Odometry Distance",         () -> (hasOdometry() ? odometry.getDistance()                : 0), null);
+        builder.addDoubleProperty("Odometry Speed",            () -> (hasOdometry() ? odometry.getSpeed()                   : 0), null);
+        builder.addDoubleProperty("Odometry Turret Offset",    () -> (hasOdometry() ? odometry.getTurretOffset()            : 0), null);
+        builder.addDoubleProperty("Odometry Flywheel Offset",  () -> (hasOdometry() ? odometry.getFlywheelOffset()          : 0), null);
+        builder.addStringProperty("Odometry Target",           () -> (hasOdometry() ? odometry.getTarget().toString()        :  ""), null);
+        builder.addStringProperty("Odometry Vision Direction", () -> (hasOdometry() ? odometry.getViewDirection().toString() :  ""), null);
+        builder.addStringProperty("Odometry Direction",        () -> (hasOdometry() ? odometry.getDirection().toString()     :  ""), null);
+        builder.addStringProperty("Odometry Velocity",         () -> (hasOdometry() ? odometry.getVelocity().toString()      :  ""), null);
+    }
+
+    private boolean hasOdometry() {
+        return (odometry != null && odometry.getTarget() != null);
     }
 }

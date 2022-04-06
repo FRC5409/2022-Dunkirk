@@ -4,7 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.base.Property;
-import frc.robot.base.command.StateCommandBase;
+import frc.robot.base.command.InterruptType;
+import frc.robot.base.command.StateBase;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConditionType;
 import frc.robot.base.shooter.ShooterConditions;
@@ -19,7 +20,7 @@ import frc.robot.utils.Equation;
 /**
  * Experimental
  */
-public class ArmShooterState extends StateCommandBase {
+public class ArmShooterState extends StateBase {
     private final Property<ShooterConfiguration> shooterConfiguration;
     private final Property<DriveShooterOdometry> sharedOdometry;
     private final Property<ShooterState> shooterState;
@@ -70,8 +71,10 @@ public class ArmShooterState extends StateCommandBase {
         executionModel = config.getExecutionModel();
         odometry = sharedOdometry.get();
         
+        if (shooterState.get() != ShooterState.kRun)
+            driveSpeed.set(config.getTrackingModel().kDriveSpeed);
+
         shooterState.set(ShooterState.kArm);
-        driveSpeed.set(config.getTrackingModel().kDriveSpeed);
     }
 
     @Override
@@ -99,15 +102,15 @@ public class ArmShooterState extends StateCommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {
-        if (interrupted || getNextState() == null) {
+    public void end(InterruptType interrupt) {
+        if (interrupt == InterruptType.kCancel || getNextState() == null) {
             flywheel.disable();
             driveSpeed.set(1.0);
         }
     }
 
     @Override
-    public @NotNull String getStateName() {
+    public @NotNull String getName() {
         return "arm";
     }
 }

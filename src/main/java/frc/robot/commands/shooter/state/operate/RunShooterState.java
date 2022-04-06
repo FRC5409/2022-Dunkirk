@@ -4,7 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.base.Property;
-import frc.robot.base.command.StateCommandBase;
+import frc.robot.base.command.InterruptType;
+import frc.robot.base.command.StateBase;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterState;
@@ -20,7 +21,7 @@ import frc.robot.Constants;
 /**
  * Experimental
  */
-public class RunShooterState extends StateCommandBase {
+public class RunShooterState extends StateBase {
     private final Property<DriveShooterOdometry> sharedOdometry;
     private final Property<ShooterConfiguration> shooterConfiguration;
     private final Property<IndexerArmedState> indexerArmedState;
@@ -71,10 +72,14 @@ public class RunShooterState extends StateCommandBase {
 
         if (!indexer.isEnabled())
             indexer.enable();
+
+        ShooterConfiguration config = shooterConfiguration.get();
     
-        // Run feeder and indexer
+        // Run feeder
         flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
+        
         shooterState.set(ShooterState.kRun);
+        driveSpeed.set(config.getTrackingModel().kDriveSpeed);
         
         executionModel = shooterConfiguration.get().getExecutionModel();
         odometry = sharedOdometry.get();
@@ -108,18 +113,22 @@ public class RunShooterState extends StateCommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {
-        if (interrupted || getNextState() == null) {
+    public void end(InterruptType interrupt) {
+        if (interrupt == InterruptType.kCancel || getNextState() == null) {
+            flywheel.disable();
+        } else if (getNextState().equals("dormant")) {
             flywheel.disable();
         } else {
             flywheel.stopFeeder();
         }
 
+        driveSpeed.set(1.0);
+
         indexer.disable();
     }
 
     @Override
-    public @NotNull String getStateName() {
+    public @NotNull String getName() {
         return "run";
     }
 }
