@@ -30,6 +30,6 @@ public class ShooterConditions implements Sendable {
     }
 
     public boolean hasCondition(ShooterConditionType type) {
-        return (condition & type.value) != 0;
+        return (condition & type.value) == type.value;
     }
 }

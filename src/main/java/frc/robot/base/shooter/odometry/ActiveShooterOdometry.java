@@ -45,7 +45,7 @@ public class ActiveShooterOdometry extends SimpleShooterOdometry {
         kLastDistance = safe(odometryModel.kHeight / Math.tan(Math.asin(observerVector.z))) + odometryModel.kOffset;
 
         Vector3 tempVector = observerVector.scale(kLastDistance)
-           .sub(odometryModel.kViewOffset).unit();
+           .add(odometryModel.kViewOffset).unit();
 
         rotation = Math.toRadians(rotation);
 

@@ -1,5 +1,7 @@
 package frc.robot.commands.training.shooter;
 
+import org.jetbrains.annotations.Nullable;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.base.Property;
@@ -23,7 +25,7 @@ public class TrainerConfigureShooter extends CommandBase {
         ShooterTurret turret,
         Limelight limelight,
         TrainerContext context,
-        TrainerDashboard dashboard,
+        @Nullable TrainerDashboard dashboard,
         Property<ShooterConfiguration> configuration,
         ShooterMode target
     ) {
@@ -48,7 +50,8 @@ public class TrainerConfigureShooter extends CommandBase {
 
         context.setMode(target);
 
-        dashboard.update();
+        if (dashboard != null)
+            dashboard.update();
     }
 
     @Override
