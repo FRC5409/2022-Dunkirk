@@ -123,7 +123,7 @@ public final class Constants {
 
         public static final double TO_MAX = 106.5;
         public static final double TO_MID_RUNG = 104.0;
-        public static final double TO_LOW_RUNG = 80.0;
+        public static final double TO_LOW_RUNG = 55.0;
         public static final double TO_MIN_MID = 10.0;
         public static final double TO_MIN_LOW = 4.0;
 
@@ -351,7 +351,7 @@ public final class Constants {
                 HoodPosition.kUp,
                 VisionPipeline.FAR_TARGETING,
                 new ShooterOdometryModel(
-                    90.0 - 61.5,
+                    90.0 - 54.8,
                     41.5 / 12.0,
                     0,
                     new Vector2(59.6, 49.7)
@@ -384,7 +384,7 @@ public final class Constants {
                 HoodPosition.kUp,
                 VisionPipeline.DEFAULT,
                 new ShooterOdometryModel(
-                    90.0 - 61.5,
+                    90.0 - 54.8,
                     41.5 / 12.0,
                     0,
                     new Vector2(59.6, 49.7)
@@ -396,7 +396,7 @@ public final class Constants {
                 HoodPosition.kUp,
                 VisionPipeline.DEFAULT,
                 new ShooterOdometryModel(
-                    90.0 - 61.5,
+                    90.0 - 54.8,
                     41.5 / 12.0,
                     0,
                     new Vector2(59.6, 49.7)
