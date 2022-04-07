@@ -144,11 +144,6 @@ public final class Constants {
         public static final int velocityMaxIntakeJam = 1000;
     }
 
-    public static enum kIntakeStates{
-        kExtended, kRetracted;
-
-    }
-
     public static final class kDriveTrain{
         
         // Current Limits

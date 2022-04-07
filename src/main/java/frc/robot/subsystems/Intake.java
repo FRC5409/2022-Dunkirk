@@ -4,7 +4,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.kID;
 import frc.robot.Constants.kIntake;
-import frc.robot.Constants.kIntakeStates;
 import frc.robot.utils.MotorUtils;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -21,6 +20,16 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 
 public class Intake extends SubsystemBase{
+
+    /**
+     * Constants representing the current state of the 
+     * solenoids for the intake. This is used to prevent
+     * flooding of the CAN bus. 
+     */
+    public static enum kIntakeStates{
+        kExtended, kRetracted;
+    }
+
 
     private WPI_TalonFX mot_intake;
     private CANSparkMax mot_intakeIn;
@@ -74,14 +83,14 @@ public class Intake extends SubsystemBase{
     public void intakeIn(double speed){
         if (speed == targetIn) return;
         mot_intakeIn.set(speed);
-        target = speed;
+        targetIn = speed;
     }
 
     public void reverseIntakeIn(double speed){
         speed *= -1;
-        if(speed == target) return;
+        if(speed == targetIn) return;
         mot_intakeIn.set(speed);
-        target = speed;
+        targetIn = speed;
     }
 
 
