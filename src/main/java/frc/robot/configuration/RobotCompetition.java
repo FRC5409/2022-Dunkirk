@@ -136,7 +136,7 @@ public class RobotCompetition implements RobotConfiguration {
         Shuffleboard.getTab("Shooter")
             .add("Hood down", new HoodDown(turret));
 
-        SmartDashboard.putData("Cycle Limelight View", new ChangeLimelightView(limelight));
+        //SmartDashboard.putData("Cycle Limelight View", new ChangeLimelightView(limelight));
         SmartDashboard
             .putData("Shooter Offset - Increment", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() + Constants.Shooter.OFFSET_INCREMENT)));
 
