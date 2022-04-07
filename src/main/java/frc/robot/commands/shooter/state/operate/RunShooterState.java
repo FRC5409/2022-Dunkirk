@@ -8,6 +8,7 @@ import frc.robot.base.command.InterruptType;
 import frc.robot.base.command.StateBase;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterModelProvider;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.Indexer;
@@ -23,13 +24,13 @@ import frc.robot.Constants;
  */
 public class RunShooterState extends StateBase {
     private final Property<DriveShooterOdometry> sharedOdometry;
-    private final Property<ShooterConfiguration> shooterConfiguration;
     private final Property<IndexerArmedState> indexerArmedState;
     private final Property<ShooterState> shooterState;
     private final Property<Boolean> shooterTriggerDebounce;
     private final Property<Double> shooterOffset;
     private final Property<Double> driveSpeed;
 
+    private final ShooterModelProvider shooterModelProvider;
     private final Trigger shooterTrigger;
 
     private final ShooterFlywheel flywheel;
@@ -43,7 +44,7 @@ public class RunShooterState extends StateBase {
         ShooterFlywheel flywheel,
         Indexer indexer,
         Trigger shooterTrigger,
-        Property<ShooterConfiguration> shooterConfiguration,
+        ShooterModelProvider shooterModelProvider,
         Property<DriveShooterOdometry> sharedOdometry,
         Property<IndexerArmedState> indexerArmedState,
         Property<ShooterState> shooterState,
@@ -52,7 +53,7 @@ public class RunShooterState extends StateBase {
         Property<Double> driveSpeed
     ) {
         this.shooterTriggerDebounce = shooterTriggerDebounce;
-        this.shooterConfiguration = shooterConfiguration;
+        this.shooterModelProvider = shooterModelProvider;
         this.indexerArmedState = indexerArmedState;
         this.sharedOdometry = sharedOdometry;
         this.shooterTrigger = shooterTrigger;
@@ -72,16 +73,14 @@ public class RunShooterState extends StateBase {
 
         if (!indexer.isEnabled())
             indexer.enable();
-
-        ShooterConfiguration config = shooterConfiguration.get();
     
         // Run feeder
-        flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
+        flywheel.setFeederOutput(Constants.Shooter.FEEDER_VELOCITY);
         
         shooterState.set(ShooterState.kRun);
-        driveSpeed.set(config.getTrackingModel().kDriveSpeed);
+        driveSpeed.set(shooterModelProvider.getTrackingModel().kDriveSpeed);
         
-        executionModel = shooterConfiguration.get().getExecutionModel();
+        executionModel = shooterModelProvider.getExecutionModel();
         odometry = sharedOdometry.get();
         active = false;
     }
@@ -94,11 +93,11 @@ public class RunShooterState extends StateBase {
         // Set flywheel to estimated veloctity
         if (odometry.hasTarget()) {
             flywheel.setVelocity(
-                executionModel.calculate(odometry.getDistance()) + shooterOffset.get()
+                executionModel.calculate(odometry.getDistance()) + odometry.getFlywheelOffset() + shooterOffset.get()
             );
         }
 
-        if (flywheel.isTargetReached() && flywheel.feederReachedTarget() && !active) {
+        if (flywheel.isTargetReached() && flywheel.isFeederTargetReached() && !active) {
             indexer.setSpeed(Constants.Shooter.INDEXER_SPEED);
             active = true;
         }

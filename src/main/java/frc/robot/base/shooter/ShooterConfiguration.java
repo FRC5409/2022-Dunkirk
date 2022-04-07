@@ -1,22 +1,29 @@
 package frc.robot.base.shooter;
 
-import org.jetbrains.annotations.Nullable;
+public class ShooterConfiguration {
+    private final VisionPipeline visionPipeline;
+    private final HoodPosition hoodConfiguration;
+    private final ShooterMode shooterMode;
+    
+    public ShooterConfiguration(
+        ShooterMode shooterMode,
+        HoodPosition hoodConfiguration,
+        VisionPipeline visionPipeline
+    ) {
+        this.hoodConfiguration = hoodConfiguration;
+        this.visionPipeline = visionPipeline;
+        this.shooterMode = shooterMode;
+    }
 
-import frc.robot.base.shooter.odometry.ShooterOdometryModel;
-import frc.robot.base.shooter.odometry.ShooterTrackingModel;
-import frc.robot.utils.Equation;
+    public ShooterMode getMode() {
+        return shooterMode;
+    }
 
-public interface ShooterConfiguration {
-    ShooterMode getMode();
+    public VisionPipeline getPipeline() {
+        return visionPipeline;
+    }
 
-    VisionPipeline getPipeline();
-
-    HoodPosition getHoodPosition();
-
-    @Nullable
-    Equation getExecutionModel();
-
-    ShooterOdometryModel getOdometryModel();
-
-    ShooterTrackingModel getTrackingModel();
+    public HoodPosition getHoodPosition() {
+        return hoodConfiguration;
+    }
 }

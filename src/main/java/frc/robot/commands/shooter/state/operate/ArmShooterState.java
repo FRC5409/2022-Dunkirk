@@ -10,6 +10,7 @@ import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConditionType;
 import frc.robot.base.shooter.ShooterConditions;
 import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterModelProvider;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
@@ -21,13 +22,13 @@ import frc.robot.utils.Equation;
  * Experimental
  */
 public class ArmShooterState extends StateBase {
-    private final Property<ShooterConfiguration> shooterConfiguration;
     private final Property<DriveShooterOdometry> sharedOdometry;
     private final Property<ShooterState> shooterState;
     private final Property<Boolean> shooterTriggerDebounce;
     private final Property<Double> shooterOffset;
     private final Property<Double> driveSpeed;
 
+    private final ShooterModelProvider shooterModelProvider;
     private final ShooterConditions shooterConditions;
     private final Trigger shooterTrigger;
 
@@ -40,7 +41,7 @@ public class ArmShooterState extends StateBase {
         ShooterFlywheel flywheel,
         ShooterConditions shooterConditions,
         Trigger shooterTrigger,
-        Property<ShooterConfiguration> shooterConfiguration,
+        ShooterModelProvider shooterModelProvider,
         Property<DriveShooterOdometry> sharedOdometry,
         Property<IndexerArmedState> indexerArmedState,
         Property<ShooterState> shooterState,
@@ -49,7 +50,7 @@ public class ArmShooterState extends StateBase {
         Property<Double> driveSpeed
     ) {
         this.shooterTriggerDebounce = shooterTriggerDebounce;
-        this.shooterConfiguration = shooterConfiguration;
+        this.shooterModelProvider = shooterModelProvider;
         this.shooterConditions = shooterConditions;
         this.sharedOdometry = sharedOdometry;
         this.shooterTrigger = shooterTrigger;
@@ -66,13 +67,12 @@ public class ArmShooterState extends StateBase {
         if (!flywheel.isEnabled())
             flywheel.enable();
     
-        ShooterConfiguration config = shooterConfiguration.get();
-
-        executionModel = config.getExecutionModel();
+        executionModel = shooterModelProvider.getExecutionModel();
         odometry = sharedOdometry.get();
         
+        // Check if previous state wasnt run
         if (shooterState.get() != ShooterState.kRun)
-            driveSpeed.set(config.getTrackingModel().kDriveSpeed);
+            driveSpeed.set(shooterModelProvider.getTrackingModel().kDriveSpeed);
 
         shooterState.set(ShooterState.kArm);
     }
@@ -84,7 +84,7 @@ public class ArmShooterState extends StateBase {
 
         if (odometry.getTarget() != null && !odometry.isLost()) {
             flywheel.setVelocity(
-                executionModel.calculate(odometry.getDistance()) + shooterOffset.get()
+                executionModel.calculate(odometry.getDistance()) + odometry.getFlywheelOffset() + shooterOffset.get()
             );
         }
 

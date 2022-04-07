@@ -12,40 +12,51 @@ import frc.robot.training.protocol.generic.BundleSendable;
 import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
 import frc.robot.Constants;
-
-import frc.robot.base.training.TrainerContext;
+import frc.robot.base.Property;
+import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.TrainingModelProvider;
 import frc.robot.base.training.TrainerDashboard;
-import frc.robot.base.training.TrainingConfiguration;
 import frc.robot.base.training.TrainingModel4;
 
 public class SubmitSetpointData extends CommandBase {
+    private final Property<ShooterConfiguration> configuration;
+    private final TrainingModelProvider provider;
     private final TrainerDashboard dashboard;
-    private final TrainerContext context;
     private final NetworkClient client;
 
     private Future<NetworkResponse> request;
 
-    public SubmitSetpointData(TrainerDashboard dashboard, NetworkClient client, TrainerContext context) {
-        this.context = context;
-        this.client = client;
+    public SubmitSetpointData(
+        Property<ShooterConfiguration> configuration,
+        TrainingModelProvider provider,
+        TrainerDashboard dashboard,
+        NetworkClient client
+    ) {
+        this.configuration = configuration;
         this.dashboard = dashboard;
+        this.provider = provider;
+        this.client = client;
 
         request = null;
     }
 
     @Override
     public void initialize() {
-        TrainingConfiguration configuration = context.getConfiguration();
+        ShooterConfiguration config = configuration.get();
+        if (config == null)
+            throw new RuntimeException("Null configuration");
+
+        TrainingModel4 executionModel = provider.getExecutionModel();
 
         BundleSendable payload = new BundleSendable();
             payload.putSendable("trainer.topic", new StringSendable("trainer:submitData"));
-            payload.putSendable("trainer.configuration", new StringSendable(context.getMode().name()));
+            payload.putSendable("trainer.configuration", new StringSendable(config.getMode().name()));
 
             payload.putDouble("trainer.data.speed",
-                Constants.Shooter.SPEED_RANGE.normalize(configuration.getExecutionModel().getSetpoint().getTarget()));
+                Constants.Shooter.SPEED_RANGE.normalize(executionModel.getSetpoint().getTarget()));
 
             payload.putDouble("trainer.data.distance",
-                Constants.Shooter.DISTANCE_RANGE.normalize(configuration.getDistance()));
+                Constants.Shooter.DISTANCE_RANGE.normalize(executionModel.getDistance()));
 
         request = client.submitRequestAsync(new NetworkRequest(payload));
         System.out.println("Sent request " + payload);
@@ -64,7 +75,7 @@ public class SubmitSetpointData extends CommandBase {
 
                 ArraySendable parameters = (ArraySendable) payload.getSendable("trainer.model.parameters");
 
-                TrainingModel4 executionModel = context.getConfiguration().getExecutionModel();
+                TrainingModel4 executionModel = provider.getExecutionModel();
 
                 executionModel.setModel(
                     parameters.get(3, ValueSendable.class).getValue(double.class),

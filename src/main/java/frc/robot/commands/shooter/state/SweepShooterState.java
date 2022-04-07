@@ -87,8 +87,8 @@ public class SweepShooterState extends TimedStateCommand {
             System.out.println("Shooter targeted after sweep");
             odometry.update(limelight.getTargetPosition());
             next("frc.robot.shooter.operate:dormant");
-        } else if (time / Constants.Shooter.SHOOTER_SWEEP_PERIOD > Constants.Shooter.SHOOTER_MAX_SWEEEP) {
-            done = true;
+        //} else if (time / Constants.Shooter.SHOOTER_SWEEP_PERIOD > Constants.Shooter.SHOOTER_MAX_SWEEEP) {
+        //    done = true;
         } else {
             turret.setReference(
                 Constants.Shooter.SHOOTER_SWEEP_FUNCTION.calculate(offset + time*direction),

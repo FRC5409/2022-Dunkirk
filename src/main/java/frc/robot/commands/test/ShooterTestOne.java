@@ -29,7 +29,7 @@ public class ShooterTestOne extends CommandBase{
     @Override
     public void execute() {
         flywheel.setVelocity(2500);
-        flywheel.spinFeederSetpoint(0.8);
+        flywheel.setFeederVelocity(0.8);
         
         turret.setHoodPosition(HoodPosition.kDown);
 

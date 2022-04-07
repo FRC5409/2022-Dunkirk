@@ -45,7 +45,7 @@ public class ConfigureShooter extends CommandBase {
         turret.enable();
         limelight.enable();
 
-        ShooterConfiguration config = Constants.Shooter.CONFIGURATIONS.get(target);
+        ShooterConfiguration config = Constants.Shooter.CONFIGURATIONS.getConfiguration(target);
         configuration.set(config);
 
         limelight.setPipelineIndex(config.getPipeline().id());

@@ -54,7 +54,7 @@ public final class RunShooter extends CommandBase {
         indexer.enable();
 
         flywheel.setVelocity(target);
-        flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
+        flywheel.setFeederOutput(Constants.Shooter.FEEDER_VELOCITY);
 
         shooterState.set(ShooterState.kRun);
 
@@ -63,7 +63,7 @@ public final class RunShooter extends CommandBase {
 
     @Override
     public void execute() {     
-        if (!active && flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
+        if (!active && flywheel.isTargetReached() && flywheel.isFeederTargetReached()) {
             indexer.setSpeed(indexerTarget);
             active = true;
         }

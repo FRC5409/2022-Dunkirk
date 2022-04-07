@@ -1,22 +1,20 @@
 package frc.robot.base.training;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.base.shooter.TrainingModelProvider;
 
 public class TrainerDashboard {
-    private final TrainerContext context;
+    private final TrainingModelProvider provider;
 
-    public TrainerDashboard(TrainerContext context) {
-        this.context = context;
+    public TrainerDashboard(TrainingModelProvider provider) {
+        this.provider = provider;
+
+        SmartDashboard.putData("Trainer - Execution Model", provider.getExecutionModel());
+        SmartDashboard.putData("Trainer - Odometry Model", provider.getOdometryModel());
     }
 
     public void update() {
-        TrainingConfiguration configuration = context.getConfiguration();
-
-        SmartDashboard.putString("Trainer - Mode", context.getMode().name());
-        SmartDashboard.putData("Trainer - Execution Model", configuration.getExecutionModel());
-        SmartDashboard.putData("Trainer - Odometry Model", configuration.getOdometryModel());
-
-        TrainingModel4 model = configuration.getExecutionModel();
+        TrainingModel4 model = provider.getExecutionModel();
 
         Setpoint setpoint = model.getSetpoint();
 
@@ -24,7 +22,7 @@ public class TrainerDashboard {
         SmartDashboard.putString("Trainer - Setpoint Type", setpoint.getType().name());
         SmartDashboard.putNumber("Trainer - Setpoint Range Max", setpoint.getRange().max());
         SmartDashboard.putNumber("Trainer - Setpoint Range Min", setpoint.getRange().min());
-        SmartDashboard.putNumber("Trainer - Estimated Distance", configuration.getDistance());
-        SmartDashboard.putNumber("Trainer - Estimated Target", model.calculateReal(configuration.getDistance()));
+        SmartDashboard.putNumber("Trainer - Estimated Distance", model.getDistance());
+        SmartDashboard.putNumber("Trainer - Estimated Target", model.calculateReal(model.getDistance()));
     }
 }

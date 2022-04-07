@@ -11,6 +11,7 @@ import frc.robot.base.command.State;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConditions;
 import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterModelProvider;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.TrackingController;
@@ -35,14 +36,16 @@ import frc.robot.utils.MotorUtils;
  * 
  * @author Keith Davies
  */
-public final class ComplexOperateShooter extends ProxyStateGroupCommand {
-    private final Property<ShooterConfiguration> shooterConfiguration;
-    private final Property<DriveShooterOdometry> sharedOdometry;
-    private final Property<ShooterState> shooterState;
-    private final Property<Boolean> shooterTriggerDebounce;
-    private final Property<Double> driveSpeed;
+public class ComplexOperateShooter extends ProxyStateGroupCommand {
+    protected final Property<ShooterConfiguration> shooterConfiguration;
+    protected final Property<DriveShooterOdometry> sharedOdometry;
+    protected final Property<TrackingController> sharedController;
+    protected final Property<ShooterState> shooterState;
+    protected final Property<Boolean> shooterTriggerDebounce;
+    protected final Property<Double> driveSpeed;
 
-    private final ShooterConditions shooterConditions;
+    protected final ShooterModelProvider shooterModelProvider;
+    protected final ShooterConditions shooterConditions;
     
     public ComplexOperateShooter(
         ShooterFlywheel flywheel,
@@ -51,6 +54,7 @@ public final class ComplexOperateShooter extends ProxyStateGroupCommand {
         Limelight limelight,
         Indexer indexer,
         Trigger shooterTrigger,
+        ShooterModelProvider shooterModelProvider,
         Property<ShooterConfiguration> shooterConfiguration,
         Property<IndexerArmedState> indexerArmedState,
         Property<SweepDirection> shooterSweepDirection,
@@ -59,6 +63,7 @@ public final class ComplexOperateShooter extends ProxyStateGroupCommand {
         Property<Double> driveSpeed
     ) {
         sharedOdometry = new ValueProperty<>();
+        sharedController = new ValueProperty<>();
         shooterConditions = new ShooterConditions();
         shooterTriggerDebounce = new ValueProperty<>(false);
         
@@ -66,16 +71,16 @@ public final class ComplexOperateShooter extends ProxyStateGroupCommand {
             new SearchShooterState(limelight, shooterState),
             new SweepShooterState(turret, limelight, Property.cast(sharedOdometry), shooterSweepDirection, shooterState),
             new OperateShooterState(turret, drivetrain, limelight, shooterConditions, 
-                shooterConfiguration, sharedOdometry, indexerArmedState)
+                sharedController, sharedOdometry, indexerArmedState)
                 .addStates(
                     new DormantShooterState(shooterTrigger, sharedOdometry, 
                         shooterState, shooterTriggerDebounce, driveSpeed),
                     
-                    new ArmShooterState(flywheel, shooterConditions, shooterTrigger, shooterConfiguration, 
+                    new ArmShooterState(flywheel, shooterConditions, shooterTrigger, shooterModelProvider,
                         sharedOdometry, indexerArmedState, shooterState, shooterTriggerDebounce, 
                         shooterOffset, driveSpeed),
 
-                    new RunShooterState(flywheel, indexer, shooterTrigger, shooterConfiguration, sharedOdometry,
+                    new RunShooterState(flywheel, indexer, shooterTrigger, shooterModelProvider, sharedOdometry,
                         indexerArmedState, shooterState, shooterTriggerDebounce, 
                         shooterOffset, driveSpeed)
                 )
@@ -85,18 +90,17 @@ public final class ComplexOperateShooter extends ProxyStateGroupCommand {
 
         this.driveSpeed = driveSpeed;
         this.shooterState = shooterState;
+        this.shooterModelProvider = shooterModelProvider;
         this.shooterConfiguration = shooterConfiguration;
     }
     
     @Override
     public void initialize() {
-        ShooterConfiguration config = shooterConfiguration.get();
-
         // Initialize odometry
         sharedOdometry.set(
             new DriveShooterOdometry(
-                config.getOdometryModel(), 
-                config.getTrackingModel()
+                shooterModelProvider.getOdometryModel(), 
+                shooterModelProvider.getTrackingModel()
             )
         );
 

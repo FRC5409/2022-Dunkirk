@@ -99,7 +99,7 @@ class StateExecutionStack implements Command {
             // Query next state
             String nextStatePath = exitorState.getNextState();
             if (nextStatePath != null && !nextStatePath.isEmpty()) {
-                String[] path = StateFormat.parsePath(nextStatePath);
+                String[] path = StateNameFormat.parsePath(nextStatePath);
 
                 // Get next states
                 List<State> nextStates = StateCommandManager.getInstance()

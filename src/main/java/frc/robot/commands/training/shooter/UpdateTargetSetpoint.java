@@ -1,30 +1,28 @@
 package frc.robot.commands.training.shooter;
 
 import frc.robot.Constants;
+import frc.robot.base.shooter.TrainingModelProvider;
 import frc.robot.base.training.Setpoint;
-import frc.robot.base.training.TrainerContext;
 import frc.robot.base.training.TrainerDashboard;
-import frc.robot.base.training.TrainingConfiguration;
 import frc.robot.base.training.TrainingModel4;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class UpdateTargetSetpoint extends CommandBase {
+    private final TrainingModelProvider provider;
     private final TrainerDashboard dashboard;
-    private final TrainerContext context;
 
-    public UpdateTargetSetpoint(TrainerDashboard dashboard, TrainerContext context) {
+    public UpdateTargetSetpoint(TrainingModelProvider provider, TrainerDashboard dashboard) {
         this.dashboard = dashboard;
-        this.context = context;
+        this.provider = provider;
     }
 
     @Override
     public void initialize() {
-        TrainingConfiguration configuration = context.getConfiguration();
-        TrainingModel4 executionModel = configuration.getExecutionModel();
+        TrainingModel4 executionModel = provider.getExecutionModel();
 
         executionModel.setSetpoint(
             new Setpoint(
-                configuration.getExecutionModel().calculateReal(configuration.getDistance()),
+                executionModel.calculateReal(executionModel.getDistance()),
                 Constants.Shooter.SPEED_RANGE
             )
         );

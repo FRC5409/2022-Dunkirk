@@ -125,7 +125,7 @@ public abstract class ProxyStateGroupCommand extends CommandBase {
     public void addStates(State... commands) {
         for (State cmd : Set.of(commands)) {
             final String name = cmd.getName();
-            StateFormat.validateName(name);
+            StateNameFormat.assertName(name);
 
             if (m_states.containsKey(name)) {
                 throw new IllegalArgumentException(

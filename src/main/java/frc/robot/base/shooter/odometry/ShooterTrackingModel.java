@@ -1,39 +1,42 @@
 package frc.robot.base.shooter.odometry;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import frc.robot.base.shooter.TrackingGains;
 import frc.robot.base.shooter.target.FilterFactory;
 import frc.robot.utils.Equation;
-import frc.robot.utils.Gains;
 
-public class ShooterTrackingModel {
+public class ShooterTrackingModel implements Sendable {
     public final FilterFactory<?> kTargetFilter; 
+    public final TrackingGains kGains;
     public final Equation kFlywheelModel;
     public final Equation kTurretModel;
-    public final double kVelocityCompensation;
-    public final double kRotationCompensation;
-    public final double kAcquistionTimeout;
-    public final double kDriveSpeed;
-    public final double kTolerance;
-    public final Gains kRotationGains;
+    public double kAcquistionTimeout;
+    public double kDriveSpeed;
+    public double kTolerance;
 
     public ShooterTrackingModel(
         FilterFactory<?> kTargetFilter,
+        TrackingGains kGains,
         double kAcquistionTimeout,
-        double kVelocityCompensation,
-        double kRotationCompensation,
         double kDriveSpeed,
         double kTolerance,
-        Gains kRotationGains,
         Equation kFlywheelModel,
         Equation kTurretModel
     ) {
-        this.kRotationCompensation = kRotationCompensation;
-        this.kVelocityCompensation = kVelocityCompensation;
         this.kAcquistionTimeout = kAcquistionTimeout;
         this.kFlywheelModel = kFlywheelModel;
-        this.kRotationGains = kRotationGains;
         this.kTargetFilter = kTargetFilter;
         this.kTurretModel = kTurretModel;
         this.kDriveSpeed = kDriveSpeed;
         this.kTolerance = kTolerance;
+        this.kGains = kGains;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("kAcquistionTimeout", () -> kAcquistionTimeout, x -> kAcquistionTimeout = x);
+        builder.addDoubleProperty("kDriveSpeed", () -> kDriveSpeed, x -> kDriveSpeed = x);
+        builder.addDoubleProperty("kTolerance", () -> kTolerance, x -> kTolerance = x);
     }
 }

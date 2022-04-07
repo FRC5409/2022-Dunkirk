@@ -100,7 +100,7 @@ public class StateCommandManager {
 
             if (!children.containsKey(path[i]))
                 throw new RuntimeException("State with name '" + 
-                    StateFormat.formatPath(path) + "' does not exist on state '" + getStatePath(base) + "'");
+                    StateNameFormat.formatPath(path) + "' does not exist on state '" + getStatePath(base) + "'");
 
             base = children.get(path[i]);
             states.add(base);
@@ -141,7 +141,7 @@ public class StateCommandManager {
             StringBuilder builder = new StringBuilder();
             for (int i = ancestry.size()-1; i >= 0; i--) {
                 builder.append(ancestry.get(i).getName());
-                builder.append(StateFormat.SEPERATOR);
+                builder.append(StateNameFormat.SEPERATOR);
             }
 
             builder.deleteCharAt(builder.length()-1);

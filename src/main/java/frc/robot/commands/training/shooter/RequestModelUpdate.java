@@ -4,9 +4,10 @@ import java.util.concurrent.Future;
 
 import frc.robot.Constants;
 import frc.robot.base.Model4;
-import frc.robot.base.training.TrainerContext;
+import frc.robot.base.Property;
+import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.TrainingModelProvider;
 import frc.robot.base.training.TrainerDashboard;
-import frc.robot.base.training.TrainingConfiguration;
 import frc.robot.base.training.TrainingModel4;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.training.protocol.NetworkClient;
@@ -19,24 +20,36 @@ import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
 
 public class RequestModelUpdate extends CommandBase {
+    private final Property<ShooterConfiguration> configuration;
+    private final TrainingModelProvider provider;
     private final TrainerDashboard dashboard;
-    private final TrainerContext context;
     private final NetworkClient client;
 
     private Future<NetworkResponse> request;
 
-    public RequestModelUpdate(TrainerDashboard dashboard, NetworkClient client, TrainerContext context) {
-        this.context = context;
-        this.client = client;
-        this.request = null;
+    public RequestModelUpdate(
+        Property<ShooterConfiguration> configuration,
+        TrainingModelProvider provider,
+        TrainerDashboard dashboard,
+        NetworkClient client
+    ) {
+        this.configuration = configuration;
         this.dashboard = dashboard;
+        this.provider = provider;
+        this.client = client;
+
+        request = null;
     }
 
     @Override
     public void initialize() {
+        ShooterConfiguration config = configuration.get();
+        if (config == null)
+            throw new RuntimeException("Null configuration");
+
         BundleSendable payload = new BundleSendable();
             payload.putSendable("trainer.topic", new StringSendable("trainer:getModel"));
-            payload.putSendable("trainer.configuration", new StringSendable(context.getMode().name()));
+            payload.putSendable("trainer.configuration", new StringSendable(config.getMode().name()));
 
         System.out.println("Sent request " + payload);
 
@@ -58,7 +71,7 @@ public class RequestModelUpdate extends CommandBase {
 
                 ArraySendable parameters = (ArraySendable) payload.getSendable("trainer.model.parameters");
                 
-                TrainingModel4 executionModel = context.getConfiguration().getExecutionModel();
+                TrainingModel4 executionModel = provider.getExecutionModel();
 
                 executionModel.setModel(
                     parameters.get(3, ValueSendable.class).getValue(double.class),

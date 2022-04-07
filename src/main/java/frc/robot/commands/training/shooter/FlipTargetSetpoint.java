@@ -1,24 +1,24 @@
 package frc.robot.commands.training.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.base.shooter.TrainingModelProvider;
 import frc.robot.base.training.Setpoint;
 import frc.robot.base.training.SetpointType;
-import frc.robot.base.training.TrainerContext;
 import frc.robot.base.training.TrainerDashboard;
 import frc.robot.base.training.TrainingModel4;
 
 public class FlipTargetSetpoint extends CommandBase {
-    private final TrainerContext context;
+    private final TrainingModelProvider provider;
     private final TrainerDashboard dashboard;
 
-    public FlipTargetSetpoint(TrainerDashboard dashboard, TrainerContext context) {
-        this.context = context;
+    public FlipTargetSetpoint(TrainingModelProvider provider, TrainerDashboard dashboard) {
         this.dashboard = dashboard;
+        this.provider = provider;
     }
 
     @Override
-    public void execute() {    
-        TrainingModel4 executionModel = context.getConfiguration().getExecutionModel();
+    public void initialize() { 
+        TrainingModel4 executionModel = provider.getExecutionModel();
         
         Setpoint target = executionModel.getSetpoint();
         if (target.getType() == SetpointType.kLeft)

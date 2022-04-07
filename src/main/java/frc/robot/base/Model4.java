@@ -11,7 +11,7 @@ public class Model4 implements Equation {
     public final double kD;
     public final Range  kRange;
     public final Range  kDomain;
-    
+
     public Model4(
         double kA, 
         double kB, 
@@ -24,8 +24,12 @@ public class Model4 implements Equation {
         this.kB      = kB;
         this.kC      = kC;
         this.kD      = kD;
-        this.kDomain = kDomain;
         this.kRange  = kRange;
+        this.kDomain = kDomain;
+    }
+    
+    public Model4(Range kDomain, Range kRange) {
+        this(0.0, 0.0, 0.0, 0.0, kDomain, kRange);
     }
 
     public double calculate(double x) {

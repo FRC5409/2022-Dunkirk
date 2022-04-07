@@ -21,8 +21,8 @@ public class Model3 implements Equation {
         this.kA      = kA;
         this.kB      = kB;
         this.kC      = kC;
-        this.kDomain = kDomain;
         this.kRange  = kRange;
+        this.kDomain = kDomain;
     }
 
     public double calculate(double x) {
