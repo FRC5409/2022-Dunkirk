@@ -1,6 +1,7 @@
 package frc.robot.base.training;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.base.shooter.ShooterTrainingModel4;
 import frc.robot.base.shooter.TrainingModelProvider;
 
 public class TrainerDashboard {
@@ -14,7 +15,7 @@ public class TrainerDashboard {
     }
 
     public void update() {
-        TrainingModel4 model = provider.getExecutionModel();
+        ShooterTrainingModel4 model = provider.getExecutionModel();
 
         Setpoint setpoint = model.getSetpoint();
 

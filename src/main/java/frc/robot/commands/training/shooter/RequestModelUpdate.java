@@ -6,9 +6,9 @@ import frc.robot.Constants;
 import frc.robot.base.Model4;
 import frc.robot.base.Property;
 import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterTrainingModel4;
 import frc.robot.base.shooter.TrainingModelProvider;
 import frc.robot.base.training.TrainerDashboard;
-import frc.robot.base.training.TrainingModel4;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.training.protocol.NetworkClient;
 import frc.robot.training.protocol.NetworkStatus;
@@ -71,7 +71,7 @@ public class RequestModelUpdate extends CommandBase {
 
                 ArraySendable parameters = (ArraySendable) payload.getSendable("trainer.model.parameters");
                 
-                TrainingModel4 executionModel = provider.getExecutionModel();
+                ShooterTrainingModel4 executionModel = provider.getExecutionModel();
 
                 executionModel.setModel(
                     parameters.get(3, ValueSendable.class).getValue(double.class),

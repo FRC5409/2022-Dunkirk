@@ -7,37 +7,42 @@ public class TrackingGains implements Sendable {
     /**
      * Feed Forward Rotation Factor
      */
-    public double kFR;
+    public final double kFR;
 
     /**
      * Feed Forward Velocity Factor
      */
-    public double kFV;
+    public final double kFV;
 
     /**
      * Target Compensation Factor
      */
-    public double kT;
+    public final double kT;
 
     /**
      * Feed Forward Max Output
      */
-    public double kFMax;
+    public final double kFMax;
     
     /**
      * Feed Forward Max Output
      */
-    public double kFMin;
+    public final double kFMin;
 
     /**
      * Target Compensation Max
      */
-    public double kTMax;
+    public final double kTMax;
 
     /**
      * Target Compensation Min
      */
-    public double kTMin;
+    public final double kTMin;
+
+    /**
+     * Rotation Deadband 
+     */
+    public final double kDeadband;
 
     public TrackingGains(
         double kFR,
@@ -46,8 +51,10 @@ public class TrackingGains implements Sendable {
         double kFMax,
         double kFMin,
         double kTMax,
-        double kTMin
+        double kTMin,
+        double kDeadband
     ) {
+        this.kDeadband = kDeadband;
         this.kFMax = kFMax;
         this.kFMin = kFMin;
         this.kTMax = kTMax;
@@ -59,12 +66,13 @@ public class TrackingGains implements Sendable {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addDoubleProperty("kFMax", () -> kFMax, x -> kFMax = x);
-        builder.addDoubleProperty("kFMin", () -> kFMin, x -> kFMin = x);
-        builder.addDoubleProperty("kTMax", () -> kTMax, x -> kTMax = x);
-        builder.addDoubleProperty("kTMin", () -> kTMin, x -> kTMin = x);
-        builder.addDoubleProperty("kFR", () -> kFR, x -> kFR = x);
-        builder.addDoubleProperty("kFV", () -> kFV, x -> kFV = x);
-        builder.addDoubleProperty("kT", () -> kT, x -> kT = x);
+        builder.addDoubleProperty("kDeadband", () -> kDeadband, null);
+        builder.addDoubleProperty("kFMax", () -> kFMax, null);
+        builder.addDoubleProperty("kFMin", () -> kFMin, null);
+        builder.addDoubleProperty("kTMax", () -> kTMax, null);
+        builder.addDoubleProperty("kTMin", () -> kTMin, null);
+        builder.addDoubleProperty("kFR", () -> kFR, null);
+        builder.addDoubleProperty("kFV", () -> kFV, null);
+        builder.addDoubleProperty("kT", () -> kT, null);
     }
 }

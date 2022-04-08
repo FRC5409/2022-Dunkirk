@@ -2,17 +2,16 @@ package frc.robot.base.shooter;
 
 import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 import frc.robot.base.shooter.odometry.ShooterTrackingModel;
-import frc.robot.base.training.TrainingModel4;
 
 public class TrainingModelProvider implements ShooterModelProvider {
     private final ShooterOdometryModel odometryModel;
     private final ShooterTrackingModel trackingModel;
-    private final TrainingModel4 trainingModel;
+    private final ShooterTrainingModel4 trainingModel;
 
     public TrainingModelProvider(
         ShooterOdometryModel odometryModel,
         ShooterTrackingModel trackingModel,
-        TrainingModel4 trainingModel
+        ShooterTrainingModel4 trainingModel
     ) {
         this.odometryModel = odometryModel;
         this.trackingModel = trackingModel;
@@ -29,7 +28,7 @@ public class TrainingModelProvider implements ShooterModelProvider {
     }
 
     @Override
-    public TrainingModel4 getExecutionModel() {
+    public ShooterTrainingModel4 getExecutionModel() {
         return trainingModel;
     }
 }

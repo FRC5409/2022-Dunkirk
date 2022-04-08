@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants;
+import frc.robot.base.shooter.ConstantModelProvider;
 import frc.robot.base.shooter.HoodPosition;
 //Constants
 import frc.robot.base.shooter.ShooterConfiguration;
@@ -21,9 +22,9 @@ import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 import frc.robot.base.shooter.odometry.ShooterTrackingModel;
 import frc.robot.base.shooter.target.TargetFiltering;
 import frc.robot.base.training.TrainingModel3;
-import frc.robot.base.training.TrainingModel4;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterState;
+import frc.robot.base.shooter.ShooterTrainingModel4;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.command.ProxySequentialCommandGroup;
 import frc.robot.base.indexer.IndexerArmedState;
@@ -88,29 +89,23 @@ public class RobotTest implements RobotConfiguration {
     private final Joystick             joystickPrimary; // = new XboxController(0);
     private final Joystick             joystickSecondary;
 
-    private final ReverseIntakeIndexer reverse;
-    private final IndexerIntakeActive  indexerIntakeActive;
-    private final IndexerIntakeTest    test;
     private final DefaultDrive         defaultDrive;
-    private final IntakeActive         intakeActive;
 
+    private final CommandProperty<IndexerArmedState> indexerArmedState;
+    private final CommandProperty<ShooterState> shooterState;
     private final ValueProperty<ShooterConfiguration> shooterConfiguration;
     private final ValueProperty<SweepDirection> shooterSweepDirection;
-    private final ValueProperty<Double> shooterOffset;
     private final ValueProperty<Boolean> climberActive;
-    private final ValueProperty<Boolean> shooterArmed;
+    private final ValueProperty<Boolean> shooterEnabled;
+    private final ValueProperty<Double> shooterOffset;
     private final ValueProperty<Double> drivetrainSpeed;
-
-    private final CommandProperty<ShooterState> shooterState;
-    private final CommandProperty<IndexerArmedState> indexerArmedState;
-    private final Property<Boolean> shooterEnabled = new ValueProperty<>(false);
 
     private final SendableChooser<Command> autoCommandSelector;
 
     private NetworkConnection clientConnection;
     private Map<String, TrainingModel3> trainingModels;
 
-    private TrainingModelProvider trainingModelProvider;
+    private ConstantModelProvider shooterModelProvider;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -127,30 +122,18 @@ public class RobotTest implements RobotConfiguration {
         Indexer           = robot.Indexer;
         turret            = robot.turret;
 
-        // Init controller
         shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
         shooterConfiguration  = new ValueProperty<>(Constants.Shooter.CONFIGURATIONS.getConfiguration(ShooterMode.kFar));
-        shooterArmed          = new ValueProperty<>(false);
-        shooterOffset         = new ValueProperty<>(0.0);
-        climberActive         = robot.climberActive;
-        shooterState          = new CommandProperty<>(ShooterState.kOff);
         indexerArmedState     = new CommandProperty<>(IndexerArmedState.kArmed);
         drivetrainSpeed       = new ValueProperty<>(1.0);
-        // Initialize sub systems
+        shooterEnabled        = new ValueProperty<>(false);
+        climberActive         = robot.climberActive;
+        shooterOffset         = new ValueProperty<>(0.0);
+        shooterState          = new CommandProperty<>(ShooterState.kOff);
 
-        // Init commands
-        indexerIntakeActive = new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary);
-        intakeActive        = new IntakeActive(Intake, Indexer);
         defaultDrive        = new DefaultDrive(DriveTrain, joystickPrimary.getController(), drivetrainSpeed);
-        reverse             = new ReverseIntakeIndexer(Intake, Indexer);
-        test                = new IndexerIntakeTest(Indexer, Intake);
 
         autoCommandSelector = new SendableChooser<Command>();
-        trainingModelProvider = new TrainingModelProvider(
-            Constants.Shooter.ODOMETRY_MODEL,
-            Constants.Shooter.TRACKING_MODEL,
-            new TrainingModel4(Constants.Shooter.DISTANCE_RANGE, Constants.Shooter.SPEED_RANGE)
-        );
 
         try {
             configureTraining();
@@ -193,21 +176,24 @@ public class RobotTest implements RobotConfiguration {
             new Range(-1200, 1200)
         ));
 
-        ShooterTrackingModel DEFAULT_TRACKING_MODEL = new ShooterTrackingModel(
+        ShooterTrackingModel trainerTrackingModel = new ShooterTrackingModel(
             TargetFiltering.none(), 
-            new TrackingGains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+            new TrackingGains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
             Constants.Vision.TARGET_LOST_TIME,
             
             0.85,
             0.15,
 
-            x -> 0,
-            x -> 0
-            // trainingModels.get("flywheel_offset"),
-            // trainingModels.get("turret_offset")
+            trainingModels.get("flywheel_offset"),
+            trainingModels.get("turret_offset")
         );
 
-        SmartDashboard.putData("Tracking Model", DEFAULT_TRACKING_MODEL);
+        shooterModelProvider = new ConstantModelProvider(
+            Constants.Shooter.ODOMETRY_MODEL,
+            trainerTrackingModel,
+            Constants.Shooter.EXECUTION_MODEL
+        );
+        SmartDashboard.putData("Tracking Model", trainerTrackingModel);
     }
 
     private void configureDashboard() {
@@ -273,6 +259,7 @@ public class RobotTest implements RobotConfiguration {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+        Trigger shooterEnabledTrigger = new Trigger(shooterEnabled::get);
         Trigger climberToggleTrigger = new Trigger(climberActive::get);
         Trigger shooterModeTrigger = new Trigger(() -> shooterConfiguration.get().getMode() == ShooterMode.kNear);
 
@@ -322,24 +309,21 @@ public class RobotTest implements RobotConfiguration {
         joystickSecondary.getButton(ButtonType.kY)
             .and(climberToggleTrigger)
             .whenActive(Climber::zeroEncoder);
-
         
         joystickSecondary.getButton(ButtonType.kLeftBumper)
             .and(climberToggleTrigger.negate())
             .and(shooterModeTrigger.negate())
             .whenActive(new ConfigureProperty<Boolean>(shooterEnabled, () -> !shooterEnabled.get()));
 
-        Trigger shooterTrigger = new Trigger(shooterEnabled::get);
-
         ComplexOperateShooter shooterCommand = new ComplexOperateShooter(
             Flywheel, turret, DriveTrain, limelight, Indexer,
             new Trigger(joystickSecondary.getController()::getRightBumper),
-            trainingModelProvider, shooterConfiguration, indexerArmedState, shooterSweepDirection, shooterState, 
+            shooterModelProvider, shooterConfiguration, indexerArmedState, shooterSweepDirection, shooterState, 
             shooterOffset, drivetrainSpeed
         );
 
-        shooterTrigger.whileActiveOnce(shooterCommand);
-        shooterTrigger.negate()
+        shooterEnabledTrigger.whileActiveOnce(shooterCommand);
+        shooterEnabledTrigger.negate()
             .whileActiveOnce(new RotateTurret(turret, 0));
 
         SmartDashboard.putData("Shooter State Machine", shooterCommand);

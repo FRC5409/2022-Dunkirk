@@ -20,6 +20,7 @@ import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 import frc.robot.base.shooter.odometry.ShooterTrackingModel;
 import frc.robot.base.shooter.target.FilterFactory;
 import frc.robot.base.shooter.target.TargetFiltering;
+import frc.robot.base.Model3;
 import frc.robot.base.Model4;
 import frc.robot.base.shooter.HoodPosition;
 import frc.robot.base.shooter.ShooterMode;
@@ -295,6 +296,11 @@ public final class Constants {
     }
     
     public static final class Shooter {
+        // ============================================================== \\
+        //               NICOLE TUNE THIS PURR - Keith
+        public static final double SHOOTER_PITCH = 54.8;
+        // ============================================================== \\
+
         public static final boolean ZERO_LIMIT_POLARITY = false;
 
         public static final int HOOD_FORWARD_CHANNEL = 13;
@@ -313,13 +319,7 @@ public final class Constants {
         public static final Range SPEED_RANGE = new Range(0, 5500);
         public static final Range DISTANCE_RANGE = new Range(0, 25);
         public static final Range TURRET_OUTPUT_RANGE = new Range(-1, 1);
-        
         public static final Range MANUAL_ROTATION_RANGE = new Range(-110, 110);
-
-        public static final Equation TURRET_MANUAL_OUTPUT_EASING =
-            x -> 1 - 2 * Math.pow(2, 10*(Math.abs(ROTATION_RANGE.normalize(x)) - 1));
-
-        public static final Range TURRET_MANUAL_OUTPUT_RANGE = new Range(-1, 1);
         
         // Smooth Sweep Constants
         public static final double   SHOOTER_SWEEP_PERIOD = 2.75;
@@ -352,7 +352,7 @@ public final class Constants {
         );
         
         public static final Gains TURRET_TRACKING_GAINS = new Gains(
-            /*0.35d*/ 0.08d, 0.0, 1.352d, 0,0,0
+            /*0.35d*/ 0.08d, 0.0, 0.852d, 0,0,0
         );
 
         public static final double ALIGNMENT_MAX_TIME = 2;
@@ -365,24 +365,32 @@ public final class Constants {
   
         public static final ShooterTrackingModel TRACKING_MODEL = new ShooterTrackingModel(
             TargetFiltering.none(), 
-            new TrackingGains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+            new TrackingGains(-0.95, 0, -24.8, 1.0, -1.0, 2.0, -2.0, 1.8),
             Constants.Vision.TARGET_LOST_TIME,
-            
-            // -0.67841,
-            // 2.0,
 
             0.85,
             0.15,
+            
+            // flywheel_offset
+            new Model3(
+                -0.9193102305476797, 0.4188739587798073, 0.5203905782470171,
+                new Range(-3.0, 3.0),
+                new Range(-1200, 1200)
+            ),
 
-            x -> 0, 
-            x -> 0
+            // turret_offset
+            new Model3(
+                0.6438283462911326, -2.39209095654224, 1.5350883916983353, 
+                new Range(-3.0, 3.0),
+                new Range(-30, 30)
+            )
         );
 
         public static final ShooterOdometryModel ODOMETRY_MODEL = new ShooterOdometryModel(
-            90.0 - 54.8,
+            90.0 - SHOOTER_PITCH,
             41.5 / 12.0,
-            2d,
-            new Vector3(7/12, 0, 15/12),
+            0d,
+            new Vector3(7/12, 0, -15/12),
             new Vector2(59.6, 49.7)
         );
 

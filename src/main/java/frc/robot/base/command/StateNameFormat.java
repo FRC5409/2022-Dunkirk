@@ -3,17 +3,10 @@ import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.Nullable;
 
-import frc.robot.base.Named;
-
 public final class StateNameFormat {
     public static final String SEPERATOR = ":";
     private static final Pattern PATH_FORMAT_MATCHER = Pattern.compile("^([^"+SEPERATOR+"]+"+SEPERATOR+"?)+(?<!"+SEPERATOR+")$");
     private static final Pattern NAME_FORMAT_MATCHER = Pattern.compile("^[^"+SEPERATOR+"]+$");
-
-    @Nullable
-    public static final void assertName(Named named) throws IllegalArgumentException {
-        assertName(named.getName());
-    }
 
     @Nullable
     public static final void assertName(String name) throws IllegalArgumentException {

@@ -70,8 +70,13 @@ public class SweepShooterState extends TimedStateCommand {
         if (odometry.getTarget() != null) {
             direction = (odometry.getTarget().x > 0) ? -1 : 1;
             odometry.reset();
-        } else
+
+            System.out.println("Using target to predict sweep");
+        } else {
             direction = (sweepDirection.get() == SweepDirection.kLeft) ? 1 : -1;
+
+            System.out.println("Using swwep direction to predict sweep");
+        }
 
         offset = Constants.Shooter.SHOOTER_SWEEP_INVERSE.calculate(turret.getRotation());
         done = false;
@@ -84,7 +89,6 @@ public class SweepShooterState extends TimedStateCommand {
         double time = getElapsedTime();
 
         if (limelight.getTargetType() == TargetType.kHub) {
-            System.out.println("Shooter targeted after sweep");
             odometry.update(limelight.getTargetPosition());
             next("frc.robot.shooter.operate:dormant");
         //} else if (time / Constants.Shooter.SHOOTER_SWEEP_PERIOD > Constants.Shooter.SHOOTER_MAX_SWEEEP) {

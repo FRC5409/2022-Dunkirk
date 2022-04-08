@@ -23,9 +23,9 @@ import frc.robot.base.shooter.target.TargetFiltering;
 import frc.robot.base.training.SetpointType;
 import frc.robot.base.training.TrainerDashboard;
 import frc.robot.base.training.TrainingModel3;
-import frc.robot.base.training.TrainingModel4;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterState;
+import frc.robot.base.shooter.ShooterTrainingModel4;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.command.ProxySequentialCommandGroup;
 import frc.robot.base.indexer.IndexerArmedState;
@@ -156,7 +156,7 @@ public class RobotTraining implements RobotConfiguration {
         trainingModelProvider = new TrainingModelProvider(
             Constants.Shooter.ODOMETRY_MODEL,
             Constants.Shooter.TRACKING_MODEL,
-            new TrainingModel4(Constants.Shooter.DISTANCE_RANGE, Constants.Shooter.SPEED_RANGE)
+            new ShooterTrainingModel4(Constants.Shooter.DISTANCE_RANGE, Constants.Shooter.SPEED_RANGE)
         );
 
         autoCommandSelector = new SendableChooser<Command>();

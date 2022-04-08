@@ -1,10 +1,10 @@
 package frc.robot.commands.training.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.base.shooter.ShooterTrainingModel4;
 import frc.robot.base.shooter.TrainingModelProvider;
 import frc.robot.base.training.SetpointType;
 import frc.robot.base.training.TrainerDashboard;
-import frc.robot.base.training.TrainingModel4;
 
 public class BranchTargetSetpoint extends CommandBase {
     private final TrainingModelProvider provider;
@@ -19,7 +19,7 @@ public class BranchTargetSetpoint extends CommandBase {
 
     @Override
     public void execute() {
-        TrainingModel4 executionModel = provider.getExecutionModel();
+        ShooterTrainingModel4 executionModel = provider.getExecutionModel();
         executionModel.setSetpoint(executionModel.getSetpoint().branch(type));
         dashboard.update();
     }

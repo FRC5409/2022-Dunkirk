@@ -14,9 +14,9 @@ import frc.robot.training.protocol.generic.ValueSendable;
 import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.shooter.ShooterConfiguration;
+import frc.robot.base.shooter.ShooterTrainingModel4;
 import frc.robot.base.shooter.TrainingModelProvider;
 import frc.robot.base.training.TrainerDashboard;
-import frc.robot.base.training.TrainingModel4;
 
 public class SubmitSetpointData extends CommandBase {
     private final Property<ShooterConfiguration> configuration;
@@ -46,7 +46,7 @@ public class SubmitSetpointData extends CommandBase {
         if (config == null)
             throw new RuntimeException("Null configuration");
 
-        TrainingModel4 executionModel = provider.getExecutionModel();
+        ShooterTrainingModel4 executionModel = provider.getExecutionModel();
 
         BundleSendable payload = new BundleSendable();
             payload.putSendable("trainer.topic", new StringSendable("trainer:submitData"));
@@ -75,7 +75,7 @@ public class SubmitSetpointData extends CommandBase {
 
                 ArraySendable parameters = (ArraySendable) payload.getSendable("trainer.model.parameters");
 
-                TrainingModel4 executionModel = provider.getExecutionModel();
+                ShooterTrainingModel4 executionModel = provider.getExecutionModel();
 
                 executionModel.setModel(
                     parameters.get(3, ValueSendable.class).getValue(double.class),

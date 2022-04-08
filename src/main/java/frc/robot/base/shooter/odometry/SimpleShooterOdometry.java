@@ -69,7 +69,7 @@ public class SimpleShooterOdometry extends ShooterOdometryBase {
         return new Vector2(kLastTarget);
     }
 
-    public boolean hasTarget(){
+    public boolean hasTarget() {
         return kLastTarget != null;
     }
 

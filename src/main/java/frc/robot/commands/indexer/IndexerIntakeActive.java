@@ -67,15 +67,15 @@ public class IndexerIntakeActive extends CommandBase {
         }
         
         if (tofBall1 && tofExit) {
-            //if (active) {
+            if (active) {
                 indexer.setSpeed(0);
-            //    active = false;
-            //}
+                active = false;
+            }
         } else {
-            //if (!active) {
+            if (!active) {
                 indexer.setSpeed(0.75);
-            //    active = true;
-            //}
+                active = true;
+            }
         }
 
         this.tofEnter = tofEnter;

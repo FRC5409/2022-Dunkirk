@@ -1,13 +1,10 @@
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.ProxyStateGroupCommand;
-import frc.robot.base.command.State;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConditions;
 import frc.robot.base.shooter.ShooterConfiguration;
@@ -27,7 +24,6 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
-import frc.robot.utils.MotorUtils;
 
 /**
  * This is a StateCommandGroup commmand that handles all the states for the shooter. 
@@ -67,24 +63,27 @@ public class ComplexOperateShooter extends ProxyStateGroupCommand {
         shooterConditions = new ShooterConditions();
         shooterTriggerDebounce = new ValueProperty<>(false);
         
+        OperateShooterState state = new OperateShooterState(turret, drivetrain, limelight, shooterConditions, 
+            sharedController, sharedOdometry, indexerArmedState);
+
         addStates(
             new SearchShooterState(limelight, shooterState),
             new SweepShooterState(turret, limelight, Property.cast(sharedOdometry), shooterSweepDirection, shooterState),
-            new OperateShooterState(turret, drivetrain, limelight, shooterConditions, 
-                sharedController, sharedOdometry, indexerArmedState)
-                .addStates(
-                    new DormantShooterState(shooterTrigger, sharedOdometry, 
-                        shooterState, shooterTriggerDebounce, driveSpeed),
-                    
-                    new ArmShooterState(flywheel, shooterConditions, shooterTrigger, shooterModelProvider,
-                        sharedOdometry, indexerArmedState, shooterState, shooterTriggerDebounce, 
-                        shooterOffset, driveSpeed),
+            state.addStates(
+                new DormantShooterState(shooterTrigger, sharedOdometry, 
+                    shooterState, shooterTriggerDebounce, driveSpeed),
+                
+                new ArmShooterState(flywheel, shooterConditions, shooterTrigger, shooterModelProvider,
+                    sharedOdometry, indexerArmedState, shooterState, shooterTriggerDebounce, 
+                    shooterOffset, driveSpeed),
 
-                    new RunShooterState(flywheel, indexer, shooterTrigger, shooterModelProvider, sharedOdometry,
-                        indexerArmedState, shooterState, shooterTriggerDebounce, 
-                        shooterOffset, driveSpeed)
-                )
+                new RunShooterState(flywheel, turret, indexer, shooterTrigger, shooterModelProvider, sharedOdometry,
+                    indexerArmedState, shooterState, shooterTriggerDebounce, 
+                    shooterOffset, driveSpeed)
+            )
         ); 
+
+        SmartDashboard.putData("Operate Shooter", state);
 
         setDefaultState("frc.robot.shooter.search");
 
@@ -104,6 +103,10 @@ public class ComplexOperateShooter extends ProxyStateGroupCommand {
             )
         );
 
+        sharedController.set(
+            new TrackingController(shooterModelProvider.getTrackingModel())
+        );
+
         shooterState.set(ShooterState.kOff);
 
         super.initialize();
@@ -119,6 +122,7 @@ public class ComplexOperateShooter extends ProxyStateGroupCommand {
         driveSpeed.set(1.0);
         shooterState.set(ShooterState.kOff);
         sharedOdometry.set(null);
+        sharedController.set(null);
         shooterTriggerDebounce.set(false);
     }
 }

@@ -10,7 +10,6 @@ import frc.robot.base.command.StateBase;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConditionType;
 import frc.robot.base.shooter.ShooterConditions;
-import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.TrackingController;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.DriveTrain;
@@ -98,11 +97,10 @@ public class OperateShooterState extends StateBase {
                 odometry.getVelocity().y
             );
 
-            //turret.setReference(turret.getRotation() + controller.getOutput(), ReferenceType.kRotation);
             turret.setReference(controller.getReference(), controller.getFeedForward(), ReferenceType.kRotation);
         }
         
-        if (turret.isTargetReached())
+        if (odometry.getTarget() != null && turret.isTargetReached())
             shooterConditions.addCondition(ShooterConditionType.kTurretReached);
         else
             shooterConditions.removeCondition(ShooterConditionType.kTurretReached);
