@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.kPneumatics;
+import frc.robot.base.drive.DriveOdometry;
 import frc.robot.utils.Convert;
 import frc.robot.utils.MotorUtils;
 import frc.robot.Constants.kID;
@@ -34,7 +35,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.kDriveTrain;
 import frc.robot.utils.Convert;
 
-public class DriveTrain extends SubsystemBase {
+public class DriveTrain extends SubsystemBase implements DriveOdometry {
 
     private final WPI_TalonFX mot_leftFrontDrive;
     private final WPI_TalonFX mot_leftRearDrive;

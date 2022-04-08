@@ -1,45 +1,36 @@
 package frc.robot.configuration;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
-import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+
 import frc.robot.RobotContainer;
 import frc.robot.Constants;
 import frc.robot.base.shooter.ConstantModelProvider;
-import frc.robot.base.shooter.HoodPosition;
 //Constants
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.TrackingGains;
-import frc.robot.base.shooter.TrainingModelProvider;
-import frc.robot.base.shooter.VisionPipeline;
-import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 import frc.robot.base.shooter.odometry.ShooterTrackingModel;
 import frc.robot.base.shooter.target.TargetFiltering;
 import frc.robot.base.training.TrainingModel3;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterState;
-import frc.robot.base.shooter.ShooterTrainingModel4;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.command.ProxySequentialCommandGroup;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.RobotConfiguration;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.Joystick;
-import frc.robot.base.Model3;
-import frc.robot.base.Property;
 import frc.robot.base.CommandProperty;
 // Misc
 import edu.wpi.first.wpilibj.XboxController;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj.GenericHID;
@@ -51,10 +42,7 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight.LedMode;
 import frc.robot.commands.indexer.IndexerIntakeActive;
-import frc.robot.commands.indexer.IndexerIntakeTest;
-import frc.robot.commands.indexer.IntakeActive;
 import frc.robot.commands.indexer.ReverseIntakeIndexer;
-import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.training.protocol.NetworkConnection;
 import frc.robot.training.protocol.NetworkServerSocket;
@@ -64,10 +52,7 @@ import frc.robot.training.protocol.generic.ArraySendable;
 import frc.robot.training.protocol.generic.BundleSendable;
 import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
-import frc.robot.utils.Gains;
 import frc.robot.utils.Range;
-import frc.robot.utils.Vector2;
-import frc.robot.utils.Vector3;
 import frc.robot.commands.shooter.*;
 // import frc.robot.commands.shooter.experimental.ActiveOperateShooterDelayed;
 // import frc.robot.commands.test.ShooterOdometryTracking;
@@ -193,24 +178,11 @@ public class RobotTest implements RobotConfiguration {
             trainerTrackingModel,
             Constants.Shooter.EXECUTION_MODEL
         );
+
         SmartDashboard.putData("Tracking Model", trainerTrackingModel);
     }
 
     private void configureDashboard() {
-        // autoCommandSelector.setDefaultOption("Default", 
-        //     new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-        //         shooterConfiguration, shooterSweepDirection, shooterOffset));
-        
-        // autoCommandSelector.addOption("One",
-        //     new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, 
-        //         shooterConfiguration, shooterSweepDirection, shooterOffset));
-        
-        // autoCommandSelector.addOption("Two",
-        //     new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-        //         shooterConfiguration, shooterSweepDirection, shooterOffset));
-
-        SmartDashboard.putData("Auto Chooser", autoCommandSelector);
-
         Shuffleboard.getTab("Shooter")
             .add("Shooter Offset - Increment", new ConfigureProperty<Double>(shooterOffset, p -> p.set(p.get() + Constants.Shooter.OFFSET_INCREMENT)));
 
@@ -218,21 +190,10 @@ public class RobotTest implements RobotConfiguration {
             .add("Shooter Offset - Decrement", new ConfigureProperty<Double>(shooterOffset, p -> p.set(p.get() - Constants.Shooter.OFFSET_INCREMENT)));
 
         Shuffleboard.getTab("Testing")
-            .add("Limelight - On", new CommandBase(){
-                public void initialize() {
-                    limelight.setLedMode(LedMode.kModeOn);
-                };
-                public boolean isFinished() { return true; };
-            });
+            .add("Limelight - Off", new RunCommand(() -> limelight.setLedMode(LedMode.kModeOn)));
 
-            
         Shuffleboard.getTab("Testing")
-        .add("Limelight - Off", new CommandBase(){
-            public void initialize() {
-                limelight.setLedMode(LedMode.kModeOff);
-            };
-            public boolean isFinished() { return true; };
-        });
+            .add("Limelight - Off", new RunCommand(() -> limelight.setLedMode(LedMode.kModeOff)));
 
         SmartDashboard.putNumber("Rotation Smoothing", SmartDashboard.getNumber("Rotation Smoothing", 0));
         SmartDashboard.putNumber("Flywheel Offset Factor", SmartDashboard.getNumber("Flywheel Offset Factor", 0));
@@ -243,16 +204,10 @@ public class RobotTest implements RobotConfiguration {
         SmartDashboard.putNumber("Simulated Velocity", SmartDashboard.getNumber("Simulated Velocity", 0));
     }
 
-
     private void configureCommands() {
         DriveTrain.setDefaultCommand(defaultDrive);
         Climber.setDefaultCommand(new DefaultElevator(Climber, joystickSecondary.getController()));
     }
-
-    public void teleopPeriodic(){
-        
-    }
-
 
     /**
      * Use this method to define your button->command mappings. Buttons can be

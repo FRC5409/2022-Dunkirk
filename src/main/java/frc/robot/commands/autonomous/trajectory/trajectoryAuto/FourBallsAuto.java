@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -24,15 +25,20 @@ import frc.robot.base.ValueProperty;
 import frc.robot.base.command.DelayedCancelCommand;
 import frc.robot.base.command.DelayedCommand;
 import frc.robot.base.command.ProxySequentialCommandGroup;
+import frc.robot.base.drive.DriveOdometry;
+import frc.robot.base.drive.MockDriveOdometry;
+import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
+import frc.robot.base.shooter.ShooterModelProvider;
+import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.ConfigureProperty;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.autonomous.trajectory.ResetOdometry;
 import frc.robot.commands.indexer.IndexerIntakeActive;
+import frc.robot.commands.shooter.ComplexOperateShooter;
 import frc.robot.commands.shooter.ConfigureShooter;
-import frc.robot.commands.shooter.OperateShooterDelayed;
 import frc.robot.commands.shooter.PrimeShooter;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
@@ -41,41 +47,27 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
+/**
+ * @author Nicole Jin
+ */
 public class FourBallsAuto extends ProxySequentialCommandGroup {
-
-    DriveTrain drive;
-    Intake intake;
-    Indexer indexer;
-    Limelight limelight;
-    ShooterTurret turret;
-    ShooterFlywheel flywheel;
-    Property<ShooterConfiguration> shooterConfiguration;
-    Property<SweepDirection> shooterSweepDirection;
-    Property<Integer> shooterOffset;
+    private final DriveTrain drivetrain;
 
     public FourBallsAuto(
-        DriveTrain drive, 
+        DriveTrain drivetrain, 
         Intake intake, 
         Indexer indexer, 
         Limelight limelight, 
         ShooterTurret turret, 
-        ShooterFlywheel shooterFlywheel, 
+        ShooterFlywheel flywheel, 
+        ShooterModelProvider shooterModelProvider,
         Property<ShooterConfiguration> shooterConfiguration, 
         Property<SweepDirection> shooterSweepDirection,
-        Property<Integer> shooterOffset,
-        Property<Boolean> shooterArmed
+        Property<IndexerArmedState> indexerArmedState,
+        Property<ShooterState> shooterState,
+        Property<Double> shooterOffset
     ) {
-
-        this.drive   = drive;
-        this.intake  = intake;
-        this.indexer = indexer;
-        this.limelight = limelight;
-        this.turret = turret;
-        this.flywheel = shooterFlywheel;
-        this.shooterConfiguration = shooterConfiguration;
-        this.shooterSweepDirection = shooterSweepDirection;
-        this.shooterOffset = shooterOffset;
-
+        this.drivetrain = drivetrain;
         /*
         Adjustment of robot position at the terminal
 
@@ -85,6 +77,9 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
         right x meter: +x*Math.cos(Math.PI*13/36), -x*Math.sin(Math.PI*13/36)
         */
 
+        // =====================================================================
+        // Odometry Poses
+        
         Pose2d p1 = createPose(0, 0, 0);
 
         Pose2d p2 = createPose(1.5, 0, 0);
@@ -101,6 +96,8 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
 
         Pose2d p5 = createPose(1.7, 0, 0);
 
+        // =====================================================================
+        // Odometry Trajectories
         
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(
             p1, List.of(), p2, kAuto.configForwards
@@ -118,40 +115,51 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
             p4, List.of(), p5, kAuto.configBackwards
         );
         
+        // =====================================================================
+        // Ramsete Commands
 
         RamseteCommand r1 = createRamseteCommand(t1);
         RamseteCommand r2 = createRamseteCommand(t2);
         RamseteCommand r3 = createRamseteCommand(t3);
         RamseteCommand r4 = createRamseteCommand(t4);
+        
+        // =====================================================================
+        // Shooter Commands
+
+        DriveOdometry mockDrivetrain = new MockDriveOdometry();
 
         Property<Boolean> runShooter = new ValueProperty<>(false);
+        Property<Double> mockDriveSpeed = new ValueProperty<>(0.0);
+
         Trigger runShooterTrigger = new Trigger(runShooter::get);
 
-        drive.setBrakeMode(true);
+        ComplexOperateShooter runShooterCommand = new ComplexOperateShooter(
+            flywheel, turret, mockDrivetrain, limelight, indexer, runShooterTrigger, 
+            shooterModelProvider, shooterConfiguration, indexerArmedState, 
+            shooterSweepDirection, shooterState, shooterOffset, mockDriveSpeed);
 
-        Command runShooterCommand1 = new OperateShooterDelayed(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration, shooterOffset, shooterArmed, runShooterTrigger);
-        Command runShooterCommand2 = new OperateShooterDelayed(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration, shooterOffset, shooterArmed, runShooterTrigger);
+        // =====================================================================
 
         addCommands(
-
             // // trajectory testing
-            // new ResetOdometry(t1.getInitialPose(), drive),
+            // new ResetOdometry(t1.getInitialPose(), drivetrain),
             // r1, 
-            // new ResetOdometry(t2.getInitialPose(), drive),
+            // new ResetOdometry(t2.getInitialPose(), drivetrain),
             // r2, 
-            // new ResetOdometry(t3.getInitialPose(), drive),
+            // new ResetOdometry(t3.getInitialPose(), drivetrain),
             // r3,
-            // new ResetOdometry(t4.getInitialPose(), drive),
+            // new ResetOdometry(t4.getInitialPose(), drivetrain),
             // r4
+
+            new RunCommand(() -> drivetrain.setBrakeMode(true), drivetrain),
 
             new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
 
             // V1: run intake while getting to the human station
-            new SlowGear(drive),
+            new SlowGear(drivetrain),
 
             // Reset Odometry to initial position
-            new ResetOdometry(t1.getInitialPose(), drive),
-
+            new ResetOdometry(t1.getInitialPose(), drivetrain),
 
             new ParallelCommandGroup(
                 // Run indexer, while moving trough trajectory #2
@@ -163,12 +171,10 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
                 
                 // Schedule shooter  
                 new ScheduleCommand(
-                    new DelayedCommand(1.5, 
-                        new SequentialCommandGroup(
-                            new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft),
-                            new ConfigureProperty<>(shooterArmed, false),
-                            runShooterCommand1
-                        )
+                    new SequentialCommandGroup(
+                        new WaitCommand(1.5), // Delay
+                        new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft),
+                        runShooterCommand
                     )
                 )
             ),
@@ -176,20 +182,19 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
             // Run indexer for additional time
             new IndexerIntakeActive(indexer, intake).withTimeout(0.5),
             
-            // Prime shooter
-            new PrimeShooter(indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME),
+            new ParallelCommandGroup(
+                // Prime shooter
+                new PrimeShooter(indexer, indexerArmedState).withTimeout(Constants.Shooter.ARMING_TIME),
 
-            // Simulate run shooter trigger
-            new ConfigureProperty<>(runShooter, true),
+                // Simulate run shooter trigger
+                new ConfigureProperty<>(runShooter, true)
+            ),
 
             // Shooter is shooting (eiow)
             // ...
-
-            // Stop shooter from shooting after one second
-            new DelayedCancelCommand(2, runShooterCommand1),
             
             // Reset Odometry to next position
-            new ResetOdometry(t2.getInitialPose(), drive),
+            new ResetOdometry(t2.getInitialPose(), drivetrain),
             new ConfigureProperty<>(runShooter, false),
             
             // Run indexer and intake, while moving through trajectory #2
@@ -206,43 +211,32 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
                     new ParallelCommandGroup(
                         new WaitCommand(0.5), // time stopped at the terminal
                         // Reset Odometry to next position
-                        new ResetOdometry(t3.getInitialPose(), drive)
+                        new ResetOdometry(t3.getInitialPose(), drivetrain)
                     ),
 
                     r3,
-                    new ResetOdometry(t4.getInitialPose(), drive)
+                    new ResetOdometry(t4.getInitialPose(), drivetrain)
                 )
             ),
 
-            // Run indexer and intake, while moving through trajectory #2
+            r4,
+
             new ParallelCommandGroup(
-                r4,
-                // Schedule shooter  
-                new ScheduleCommand(
-                    new SequentialCommandGroup(
-                        new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight),
-                        new ConfigureProperty<>(shooterArmed, false),
-                        runShooterCommand2
-                    )
-                )
+                // Prime shooter
+                new PrimeShooter(indexer, indexerArmedState).withTimeout(Constants.Shooter.ARMING_TIME),
+
+                // Simulate run shooter trigger
+                new ConfigureProperty<>(runShooter, true)
             ),
 
-            // Prime shooter
-            new PrimeShooter(indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME),
-
-            // Simulate run shooter trigger
-            new ConfigureProperty<>(runShooter, true),
 
             // Stop shooter from shooting after one second
-            new DelayedCancelCommand(2, runShooterCommand2)
-
-            // // Finish
-
+            new DelayedCancelCommand(2, runShooterCommand)
         );
     }
 
     private RamseteCommand createRamseteCommand(Trajectory trajectory) {
-        return new RamseteCommand(trajectory, drive::getPose,
+        return new RamseteCommand(trajectory, drivetrain::getPose,
             new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
             new SimpleMotorFeedforward(
                 kAuto.ksVolts, 
@@ -250,11 +244,11 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
                 kAuto.kaVoltSecondsSquaredPerMeter
             ),
             kAuto.kDriveKinematics,
-            drive::getWheelSpeeds,
+            drivetrain::getWheelSpeeds,
             new PIDController(kAuto.kPDriveVel, 0, 0), 
             new PIDController(kAuto.kPDriveVel, 0, 0),
-            drive::tankDriveVolts, 
-            drive
+            drivetrain::tankDriveVolts, 
+            drivetrain
         ); 
     }
 

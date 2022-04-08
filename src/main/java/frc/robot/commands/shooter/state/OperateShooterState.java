@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.base.Property;
 import frc.robot.base.command.InterruptType;
 import frc.robot.base.command.StateBase;
+import frc.robot.base.drive.DriveOdometry;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConditionType;
 import frc.robot.base.shooter.ShooterConditions;
@@ -38,7 +39,7 @@ public class OperateShooterState extends StateBase {
     private final ShooterConditions shooterConditions;
     
     private final ShooterTurret turret;
-    private final DriveTrain drivetrain;
+    private final DriveOdometry drivetrain;
     private final Limelight limelight;
     
     private DriveShooterOdometry odometry;
@@ -46,7 +47,7 @@ public class OperateShooterState extends StateBase {
     
     public OperateShooterState(
         ShooterTurret turret,
-        DriveTrain drivetrain,
+        DriveOdometry drivetrain,
         Limelight limelight,
         ShooterConditions shooterConditions,
         Property<TrackingController> sharedController,

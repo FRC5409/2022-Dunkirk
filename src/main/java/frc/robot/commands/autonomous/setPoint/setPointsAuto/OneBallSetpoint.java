@@ -7,8 +7,8 @@ import frc.robot.base.shooter.SweepDirection;
 // commands
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.shooter.ConfigureShooter;
-import frc.robot.commands.shooter.OperateShooter;
 import frc.robot.commands.shooter.RotateTurret;
+import frc.robot.commands.shooter.legacy.OperateShooter;
 // subsystems
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.Limelight;

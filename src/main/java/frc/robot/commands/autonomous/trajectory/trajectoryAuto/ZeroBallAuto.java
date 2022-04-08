@@ -16,6 +16,9 @@ import frc.robot.Constants.kAuto;
 import frc.robot.commands.autonomous.trajectory.ResetOdometry;
 import frc.robot.subsystems.DriveTrain;
 
+/**
+ * @author Nicole Jin
+ */
 public class ZeroBallAuto extends SequentialCommandGroup{
 
     DriveTrain m_drive;

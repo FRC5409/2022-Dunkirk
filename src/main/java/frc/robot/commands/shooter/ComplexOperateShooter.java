@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.ProxyStateGroupCommand;
+import frc.robot.base.drive.DriveOdometry;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConditions;
 import frc.robot.base.shooter.ShooterConfiguration;
@@ -46,7 +47,7 @@ public class ComplexOperateShooter extends ProxyStateGroupCommand {
     public ComplexOperateShooter(
         ShooterFlywheel flywheel,
         ShooterTurret turret,
-        DriveTrain drivetrain,
+        DriveOdometry drivetrain,
         Limelight limelight,
         Indexer indexer,
         Trigger shooterTrigger,
