@@ -41,7 +41,7 @@ public final class Constants {
             kCompetition, kTraining, kTest
         }
 
-        public static final Configuration ROBOT_CONFIGURATION = Configuration.kTest;
+        public static final Configuration ROBOT_CONFIGURATION = Configuration.kCompetition;
     }
 
     public static class kConfig {
