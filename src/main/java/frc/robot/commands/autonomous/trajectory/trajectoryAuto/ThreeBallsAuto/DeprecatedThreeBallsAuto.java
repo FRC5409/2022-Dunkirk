@@ -1,4 +1,4 @@
-package frc.robot.commands.autonomous.trajectory.trajectoryAuto;
+package frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
-public class ThreeBallsAuto extends SequentialCommandGroup{
+public class DeprecatedThreeBallsAuto extends SequentialCommandGroup{
 
     DriveTrain m_drive;
     Intake m_intake;
@@ -45,7 +45,7 @@ public class ThreeBallsAuto extends SequentialCommandGroup{
     Property<SweepDirection> m_shooterSweepDirection;
     Property<Integer> m_shooterOffset;
 
-    public ThreeBallsAuto(
+    public DeprecatedThreeBallsAuto(
         DriveTrain drive, 
         Intake intake, 
         Indexer indexer, 

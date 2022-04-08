@@ -285,7 +285,9 @@ public class DriveTrain extends SubsystemBase {
         m_odometry.update(
             gyro_pigeon.getRotation2d(), getEncoderPositionLeft(), getEncoderPositionRight());
 
-    }
+        SmartDashboard.putNumber("Turn Rate", TurnRate());
+        }
+
 
     @Override
     public void simulationPeriodic() {
