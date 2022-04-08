@@ -307,7 +307,7 @@ public final class Constants {
         //               NICOLE TUNE THIS PURR - Keith
 
         public static final double SHOOTER_PITCH = 54.8;
-        
+
         public static final double INITIAL_SHOOTER_OFFSET = 0;
 
         public static final Range ROTATION_RANGE = new Range(-110, 110);

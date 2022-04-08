@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.kAuto;
 import frc.robot.base.Property;
+import frc.robot.base.command.ProxySequentialCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
@@ -27,7 +28,7 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
-public class OneBallAuto extends SequentialCommandGroup{
+public class OneBallAuto extends ProxySequentialCommandGroup {
 
     DriveTrain m_drive;
     Indexer m_indexer;

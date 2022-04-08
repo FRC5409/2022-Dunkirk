@@ -43,7 +43,6 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight.LedMode;
 import frc.robot.commands.indexer.IndexerIntakeActive;
-import frc.robot.commands.indexer.ReverseIntakeIndexer;
 import frc.robot.commands.indexer.RunIndexer;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.training.protocol.NetworkConnection;
@@ -87,10 +86,8 @@ public class RobotTest implements RobotConfiguration {
     private final ValueProperty<Double> shooterOffset;
     private final ValueProperty<Double> drivetrainSpeed;
 
-    private final SendableChooser<Command> autoCommandSelector;
-
-    private NetworkConnection clientConnection;
     private Map<String, TrainingModel3> trainingModels;
+    private NetworkConnection clientConnection;
 
     private ConstantModelProvider shooterModelProvider;
 
@@ -118,10 +115,8 @@ public class RobotTest implements RobotConfiguration {
         shooterOffset         = new ValueProperty<>(0.0);
         shooterState          = new CommandProperty<>(ShooterState.kOff);
 
-        defaultDrive        = new DefaultDrive(DriveTrain, joystickPrimary.getController(), drivetrainSpeed);
-
-        autoCommandSelector = new SendableChooser<Command>();
-
+        defaultDrive          = new DefaultDrive(DriveTrain, joystickPrimary.getController(), drivetrainSpeed);
+        
         try {
             configureTraining();
         } catch (IOException e) {
@@ -371,6 +366,6 @@ public class RobotTest implements RobotConfiguration {
      */
     @Override
     public Command getAutonomousCommand() {
-        return autoCommandSelector.getSelected(); 
+        return null;
     }
 }

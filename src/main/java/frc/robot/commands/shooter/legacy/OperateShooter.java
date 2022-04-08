@@ -1,5 +1,6 @@
 package frc.robot.commands.shooter.legacy;
 
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
@@ -28,7 +29,7 @@ import frc.robot.subsystems.shooter.ShooterTurret;
  * @deprecated Use {@link frc.robot.commands.shooter.ComplexOperateShooter ComplexOperateShooter} instead.
  */
 @Deprecated
-public class OperateShooter extends SequentialCommandGroup {
+public class OperateShooter extends ParallelCommandGroup {
     private final Property<ShooterConfiguration> shooterConfiguration;
     private final Property<SweepDirection> shooterSweepDirection;
     private final Property<Integer> shooterOffset;

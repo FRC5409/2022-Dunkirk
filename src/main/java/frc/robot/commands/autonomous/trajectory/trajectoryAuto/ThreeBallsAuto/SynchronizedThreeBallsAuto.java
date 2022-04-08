@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -138,7 +139,7 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
             // new ResetOdometry(t3.getInitialPose(), drivetrain),
             // r3
 
-            new RunCommand(() -> drivetrain.setBrakeMode(true), drivetrain),
+            new InstantCommand(() -> drivetrain.setBrakeMode(true), drivetrain),
 
             new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
 
