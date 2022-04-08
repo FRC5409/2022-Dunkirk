@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -16,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 import frc.robot.Constants.kAuto;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
@@ -136,6 +136,8 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
             // r2,
             // new ResetOdometry(t3.getInitialPose(), drivetrain),
             // r3
+
+            new InstantCommand(() -> drivetrain.setBrakeMode(true), drivetrain),
 
             new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
 
