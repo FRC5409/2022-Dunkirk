@@ -87,16 +87,14 @@ public final class Constants {
     }
 
     public static class kPneumatics {
-        public static final double MIN_PSI = 100;
-        public static final double MAX_PSI = 120;
+        public static final double MIN_PSI = 90;
+        public static final double MAX_PSI = 115;
 
         public final int Pigeon = 23;
     }
 
-    public static class Pneumatics {
-        public static final int MODULE = 1;
-        public static final double MIN_PSI = 20;
-        public static final double MAX_PSI = 30;
+    public static enum PneumaticsStates {
+        kStarted, kEnded, kAny
     }
 
     public final class kClimber {
@@ -125,8 +123,10 @@ public final class Constants {
 
         public static final double TO_MAX = 106.5;
         public static final double TO_MID_RUNG = 104.0;
-        public static final double TO_LOW_RUNG = 80.0;
-        public static final double TO_MIN = 10.0;
+        public static final double TO_LOW_RUNG = 55.0;
+        public static final double TO_MIN_MID = 10.0;
+        public static final double TO_MIN_LOW = 4.0;
+
     }
 
     public static final class kIntake{
@@ -394,7 +394,7 @@ public final class Constants {
                 HoodPosition.kUp,
                 VisionPipeline.DEFAULT,
                 new ShooterOdometryModel(
-                    90.0 - 61.5,
+                    90.0 - 54.8,
                     41.5 / 12.0,
                     0,
                     new Vector2(59.6, 49.7)
@@ -406,7 +406,7 @@ public final class Constants {
                 HoodPosition.kUp,
                 VisionPipeline.DEFAULT,
                 new ShooterOdometryModel(
-                    90.0 - 61.5,
+                    90.0 - 54.8,
                     41.5 / 12.0,
                     0,
                     new Vector2(59.6, 49.7)

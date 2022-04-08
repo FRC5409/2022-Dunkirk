@@ -4,14 +4,9 @@
 
 package frc.robot.commands;
 
-import frc.robot.Constants.kDriveTrain;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Pigeon;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Climber;
 
 /** An example command that uses an example subsystem. */
 public class FindElevatorZero extends CommandBase {
@@ -37,8 +32,6 @@ public class FindElevatorZero extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        System.out.println("Started");
-
         climber.unlockArm();
 
         started = false;
@@ -69,7 +62,6 @@ public class FindElevatorZero extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        System.out.println("Ended");
         climber.disableMotors();
         climber.zeroEncoder();
     }

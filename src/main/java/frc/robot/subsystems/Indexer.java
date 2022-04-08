@@ -43,9 +43,11 @@ public class Indexer extends SubsystemBase implements Toggleable {
     private final TimeOfFlight          tof_ball1;
 
 
+
     private boolean                     enabled;
     private int                         count;
     private int                         state;
+    private double target;
 
     public Indexer() {
         tof_enter = new TimeOfFlight(Constants.Indexer.TOF_ENTER_CHANNEL);
@@ -74,6 +76,7 @@ public class Indexer extends SubsystemBase implements Toggleable {
 
         enabled = false;
         count = 0;
+        target = 0;
     }
 
     @Override
@@ -87,6 +90,7 @@ public class Indexer extends SubsystemBase implements Toggleable {
         if (!enabled) return;
 
         mot_indexerBelt.stopMotor();
+        target = 0;
         enabled = false;
     }
 
@@ -115,7 +119,12 @@ public class Indexer extends SubsystemBase implements Toggleable {
     }
 
     public void setSpeed(double speed) {
-        mot_indexerBelt.set(speed);
+        if(!enabled) return;
+
+        if(target != speed){
+            mot_indexerBelt.set(target);
+            target = speed;
+        }
     }
 
     public void setControlMode(double setpoint, ControlType mode) {
