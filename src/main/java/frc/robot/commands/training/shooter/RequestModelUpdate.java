@@ -2,8 +2,6 @@ package frc.robot.commands.training.shooter;
 
 import java.util.concurrent.Future;
 
-import frc.robot.Constants;
-import frc.robot.base.Model4;
 import frc.robot.base.Property;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterTrainingModel4;

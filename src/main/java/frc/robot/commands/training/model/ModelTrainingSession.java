@@ -11,7 +11,6 @@ import frc.robot.training.protocol.NetworkConnection;
 import frc.robot.training.protocol.NetworkSendable;
 import frc.robot.training.protocol.NetworkServerRequest;
 import frc.robot.training.protocol.NetworkServerResponse;
-import frc.robot.training.protocol.NetworkSocket;
 import frc.robot.training.protocol.NetworkStatus;
 import frc.robot.training.protocol.generic.ArraySendable;
 import frc.robot.training.protocol.generic.BundleSendable;
