@@ -7,13 +7,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.Constants;
-//Constants
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.TrainingModelProvider;
 import frc.robot.base.training.SetpointType;
 import frc.robot.base.training.TrainerDashboard;
-import frc.robot.base.training.TrainingModel3;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.ShooterTrainingModel4;
@@ -25,27 +23,21 @@ import frc.robot.base.ValueProperty;
 import frc.robot.base.Joystick;
 import frc.robot.base.Property;
 import frc.robot.base.CommandProperty;
-// Misc
 import edu.wpi.first.wpilibj.XboxController;
 
 import java.io.IOException;
-import java.util.Map;
 
 import edu.wpi.first.wpilibj.GenericHID;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight.LedMode;
 import frc.robot.commands.indexer.IndexerIntakeActive;
-import frc.robot.commands.indexer.IndexerIntakeTest;
-import frc.robot.commands.indexer.IntakeActive;
 import frc.robot.commands.indexer.ReverseIntakeIndexer;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.training.protocol.NetworkClient;
-import frc.robot.training.protocol.NetworkConnection;
 import frc.robot.training.protocol.NetworkSocket;
 import frc.robot.training.protocol.SendableContext;
 import frc.robot.training.protocol.generic.ArraySendable;
@@ -53,9 +45,6 @@ import frc.robot.training.protocol.generic.BundleSendable;
 import frc.robot.training.protocol.generic.StringSendable;
 import frc.robot.training.protocol.generic.ValueSendable;
 import frc.robot.commands.shooter.*;
-// import frc.robot.commands.shooter.experimental.ActiveOperateShooterDelayed;
-// import frc.robot.commands.test.ShooterOdometryTracking;
-import frc.robot.commands.training.model.ModelTrainingSession;
 import frc.robot.commands.training.shooter.*;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
@@ -77,22 +66,16 @@ public class RobotTraining implements RobotConfiguration {
     private       TrainerDashboard               trainerDashboard;
     private       NetworkClient                  trainerClient;
     
+    private final CommandProperty<IndexerArmedState> indexerArmedState;
+    private final CommandProperty<ShooterState> shooterState;
     private final ValueProperty<ShooterConfiguration> shooterConfiguration;
     private final ValueProperty<SweepDirection> shooterSweepDirection;
     private final ValueProperty<Double> shooterOffset;
     private final ValueProperty<Boolean> climberActive;
-    private final ValueProperty<Boolean> shooterArmed;
     private final ValueProperty<Double> drivetrainSpeed;
-    private final TrainingModelProvider trainingModelProvider;
     private final Property<Boolean> shooterEnabled;
-
-    private final CommandProperty<ShooterState> shooterState;
-    private final CommandProperty<IndexerArmedState> indexerArmedState;
-
-    private final SendableChooser<Command> autoCommandSelector;
-
-    private NetworkConnection clientConnection;
-    private Map<String, TrainingModel3> trainingModels;
+    
+    private final TrainingModelProvider trainingModelProvider;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -112,13 +95,12 @@ public class RobotTraining implements RobotConfiguration {
         // Init controller
         shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
         shooterConfiguration  = new ValueProperty<>(Constants.Shooter.CONFIGURATIONS.getConfiguration(ShooterMode.kFar));
-        shooterArmed          = new ValueProperty<>(false);
-        shooterOffset         = new ValueProperty<>(0.0);
-        climberActive         = robot.climberActive;
-        shooterState          = new CommandProperty<>(ShooterState.kOff);
         indexerArmedState     = new CommandProperty<>(IndexerArmedState.kArmed);
         drivetrainSpeed       = new ValueProperty<>(1.0);
         shooterEnabled        = new ValueProperty<>(false);
+        shooterOffset         = new ValueProperty<>(0.0);
+        climberActive         = robot.climberActive;
+        shooterState          = new CommandProperty<>(ShooterState.kOff);
         
         defaultDrive = new DefaultDrive(DriveTrain, joystickPrimary.getController(), drivetrainSpeed);
         
@@ -127,8 +109,6 @@ public class RobotTraining implements RobotConfiguration {
             Constants.Shooter.TRACKING_MODEL,
             new ShooterTrainingModel4(Constants.Shooter.DISTANCE_RANGE, Constants.Shooter.SPEED_RANGE)
         );
-
-        autoCommandSelector = new SendableChooser<Command>();
 
         try {
             configureTraining();
@@ -348,20 +328,6 @@ public class RobotTraining implements RobotConfiguration {
             new FindElevatorZero(Climber),
 
             new ConfigureProperty<>(shooterEnabled, false)
-            // new ScheduleCommand(
-            //     new ModelTrainingSession(clientConnection, trainingModels),
-            //     new CommandBase() {
-            //         public void execute() {
-            //             SmartDashboard.putString("Shooter State", shooterState.toString());
-            //             SmartDashboard.putString("Indexer Armed State", indexerArmedState.toString());
-            //         };
-
-            //         @Override
-            //         public boolean isFinished() {
-            //             return false;
-            //         }
-            //     }
-            // )
         );
     }
 }

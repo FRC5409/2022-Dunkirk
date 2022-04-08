@@ -9,7 +9,6 @@ import frc.robot.base.command.StateBase;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConditionType;
 import frc.robot.base.shooter.ShooterConditions;
-import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterModelProvider;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;

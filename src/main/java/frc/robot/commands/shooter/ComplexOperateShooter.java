@@ -1,6 +1,5 @@
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
@@ -20,7 +19,6 @@ import frc.robot.commands.shooter.state.SweepShooterState;
 import frc.robot.commands.shooter.state.operate.ArmShooterState;
 import frc.robot.commands.shooter.state.operate.DormantShooterState;
 import frc.robot.commands.shooter.state.operate.RunShooterState;
-import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
@@ -63,25 +61,24 @@ public class ComplexOperateShooter extends ProxyStateGroupCommand {
         sharedController = new ValueProperty<>();
         shooterConditions = new ShooterConditions();
         shooterTriggerDebounce = new ValueProperty<>(false);
-        
-        OperateShooterState state = new OperateShooterState(turret, drivetrain, limelight, shooterConditions, 
-            sharedController, sharedOdometry, indexerArmedState);
 
         addStates(
             new SearchShooterState(limelight, shooterState),
             new SweepShooterState(turret, limelight, Property.cast(sharedOdometry), shooterSweepDirection, shooterState),
-            state.addStates(
-                new DormantShooterState(shooterTrigger, sharedOdometry, 
-                    shooterState, shooterTriggerDebounce, driveSpeed),
-                
-                new ArmShooterState(flywheel, shooterConditions, shooterTrigger, shooterModelProvider,
-                    sharedOdometry, indexerArmedState, shooterState, shooterTriggerDebounce, 
-                    shooterOffset, driveSpeed),
+            new OperateShooterState(turret, drivetrain, limelight, shooterConditions, 
+                sharedController, sharedOdometry, indexerArmedState)
+                .addStates(
+                    new DormantShooterState(shooterTrigger, sharedOdometry, 
+                        shooterState, shooterTriggerDebounce, driveSpeed),
+                    
+                    new ArmShooterState(flywheel, shooterConditions, shooterTrigger, shooterModelProvider,
+                        sharedOdometry, indexerArmedState, shooterState, shooterTriggerDebounce, 
+                        shooterOffset, driveSpeed),
 
-                new RunShooterState(flywheel, turret, indexer, shooterTrigger, shooterModelProvider, sharedOdometry,
-                    indexerArmedState, shooterState, shooterTriggerDebounce, 
-                    shooterOffset, driveSpeed)
-            )
+                    new RunShooterState(flywheel, indexer, shooterTrigger, shooterModelProvider, sharedOdometry,
+                        indexerArmedState, shooterState, shooterTriggerDebounce, 
+                        shooterOffset, driveSpeed)
+                )
         ); 
 
         setDefaultState("frc.robot.shooter.search");

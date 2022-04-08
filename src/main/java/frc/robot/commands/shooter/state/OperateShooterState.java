@@ -13,7 +13,6 @@ import frc.robot.base.shooter.ShooterConditionType;
 import frc.robot.base.shooter.ShooterConditions;
 import frc.robot.base.shooter.TrackingController;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
-import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.TargetType;
 import frc.robot.subsystems.shooter.ShooterTurret;

@@ -12,7 +12,6 @@ import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
-import frc.robot.subsystems.shooter.ShooterTurret;
 import frc.robot.utils.Equation;
 import frc.robot.utils.Toggleable;
 import frc.robot.Constants;
@@ -34,7 +33,6 @@ public class RunShooterState extends StateBase {
     private final Trigger shooterTrigger;
 
     private final ShooterFlywheel flywheel;
-    private final ShooterTurret turret;
     private final Indexer indexer;
     
     private DriveShooterOdometry odometry;
@@ -43,7 +41,6 @@ public class RunShooterState extends StateBase {
     
     public RunShooterState(
         ShooterFlywheel flywheel,
-        ShooterTurret turret,
         Indexer indexer,
         Trigger shooterTrigger,
         ShooterModelProvider shooterModelProvider,
@@ -64,7 +61,6 @@ public class RunShooterState extends StateBase {
         this.driveSpeed = driveSpeed;
         this.flywheel = flywheel;
         this.indexer = indexer;
-        this.turret = turret;
     }
 
     @Override
