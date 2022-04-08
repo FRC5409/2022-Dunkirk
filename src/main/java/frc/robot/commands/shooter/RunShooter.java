@@ -1,8 +1,9 @@
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.base.Property;
+import frc.robot.base.shooter.ShooterState;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 
@@ -15,29 +16,36 @@ import frc.robot.subsystems.shooter.ShooterFlywheel;
  * @author Keith Davies
  */
 public final class RunShooter extends CommandBase {
+    private final Property<ShooterState> shooterState;
     private final ShooterFlywheel flywheel;
     private final Indexer indexer;
+
     private final double target;
     private final double indexerTarget;
+
+    private boolean active;
 
     public RunShooter(
         ShooterFlywheel flywheel,
         Indexer indexer,
+        Property<ShooterState> shooterState,
         double target,
         double indexerTarget
     ) {
+        this.indexerTarget = indexerTarget; 
+        this.shooterState = shooterState;
         this.flywheel = flywheel;
         this.indexer = indexer;
-        this.indexerTarget = indexerTarget;
         this.target = target;
     }
     
     public RunShooter(
         ShooterFlywheel flywheel,
         Indexer indexer,
+        Property<ShooterState> shooterState,
         double target
     ) {
-        this(flywheel, indexer, target, 1);
+        this(flywheel, indexer, shooterState, target, 1);
     }
 
     @Override
@@ -46,13 +54,18 @@ public final class RunShooter extends CommandBase {
         indexer.enable();
 
         flywheel.setVelocity(target);
-        flywheel.spinFeeder(Constants.Shooter.FEEDER_VELOCITY);
+        flywheel.setFeederOutput(Constants.Shooter.FEEDER_VELOCITY);
+
+        shooterState.set(ShooterState.kRun);
+
+        active = false;
     }
 
     @Override
     public void execute() {     
-        if (flywheel.isTargetReached() && flywheel.feederReachedTarget()) {
+        if (!active && flywheel.isTargetReached() && flywheel.isFeederTargetReached()) {
             indexer.setSpeed(indexerTarget);
+            active = true;
         }
     }
 
@@ -61,6 +74,7 @@ public final class RunShooter extends CommandBase {
     public void end(boolean interrupted) {
         flywheel.disable();
         indexer.disable();
+        shooterState.set(ShooterState.kOff);
     }
 
     @Override

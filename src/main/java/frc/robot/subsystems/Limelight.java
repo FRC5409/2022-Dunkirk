@@ -67,7 +67,8 @@ public class Limelight extends SubsystemBase implements Toggleable {
      * Constructs the Limelight subsystem.
      */
     public Limelight() {
-        data = NetworkTableInstance.getDefault().getTable(Constants.Limelight.NETWORK_TABLE_NAME);
+        data = NetworkTableInstance.getDefault()
+            .getTable(Constants.Limelight.NETWORK_TABLE_NAME);
 
         targetPositionX = data.getEntry("tx");
         targetPositionY = data.getEntry("ty");
@@ -129,6 +130,7 @@ public class Limelight extends SubsystemBase implements Toggleable {
      * @see CameraMode
      */
     public void setCameraMode(CameraMode mode) {
+        if (!enabled) return;
         cameraMode.setDouble(mode.value);
     }
 
@@ -140,6 +142,7 @@ public class Limelight extends SubsystemBase implements Toggleable {
      * @see LedMode
      */
     public void setLedMode(LedMode mode) {
+        //if (!enabled) return;
         ledMode.setDouble(mode.value);
     }
 
@@ -149,6 +152,7 @@ public class Limelight extends SubsystemBase implements Toggleable {
      * @param index The pipeline index. [0-9]
      */
     public void setPipelineIndex(int index) {
+        if (!enabled) return;
         pipelineIndex.setDouble(Range.clamp(0, index, 9));
     }
 

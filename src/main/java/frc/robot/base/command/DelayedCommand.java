@@ -19,13 +19,11 @@ public class DelayedCommand extends CommandBase {
     
     @Override
     public void initialize() {
-        System.out.println("Startin g new asryasr");
         last = Timer.getFPGATimestamp();
     }
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println("Scheduled new target after delay of " + delay + "s");
         target.schedule();
     }
 

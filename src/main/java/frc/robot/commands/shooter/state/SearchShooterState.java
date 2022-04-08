@@ -3,11 +3,13 @@ package frc.robot.commands.shooter.state;
 import org.jetbrains.annotations.NotNull;
 
 import frc.robot.Constants;
+import frc.robot.base.Property;
+import frc.robot.base.command.InterruptType;
 import frc.robot.base.command.TimedStateCommand;
+import frc.robot.base.shooter.ShooterState;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.LedMode;
 import frc.robot.subsystems.Limelight.TargetType;
-import frc.robot.utils.Toggleable;
 
 // TODO update doc
 
@@ -23,15 +25,16 @@ import frc.robot.utils.Toggleable;
  * over to the {@code kSweeping} state.</p>
  */
 public class SearchShooterState extends TimedStateCommand {
-    private final Limelight limelight;
-    private final boolean doAlignment;
+    private final Property<ShooterState> shooterState;
 
-    private boolean done;
+    private final Limelight limelight;
     
-    
-    public SearchShooterState(Limelight limelight, boolean doAlignment) {
+    public SearchShooterState(
+        Limelight limelight,
+        Property<ShooterState> shooterState
+    ) {
+        this.shooterState = shooterState;
         this.limelight = limelight;
-        this.doAlignment = doAlignment;
 
         addRequirements(limelight);
     }
@@ -43,37 +46,26 @@ public class SearchShooterState extends TimedStateCommand {
         limelight.enable();
         limelight.setLedMode(LedMode.kModeOn);
 
-        done = false;
+        shooterState.set(ShooterState.kSearch);
     }
 
     @Override
     public void execute() {
         if (limelight.getTargetType() == TargetType.kHub) {
-            if (doAlignment)
-                next("frc.robot.shooter:align");
-            else
-                next("frc.robot.shooter:operate");
-                
-            done = true;
+            next("frc.robot.shooter.operate:dormant");
         } else if (getElapsedTime() > Constants.Vision.ACQUISITION_DELAY) {
-            next("frc.robot.shooter:sweep");
-            done = true;
+            next("frc.robot.shooter.sweep");
         }
     }
     
     @Override
-    public void end(boolean interrupted) {
-        if (interrupted || getNextState() == null)
+    public void end(InterruptType interrupt) {
+        if (interrupt == InterruptType.kCancel || getNextState() == null)
             limelight.disable();
-    }
-    
-    @Override
-    public boolean isFinished() {
-        return done;
     }
 
     @Override
-    public @NotNull String getStateName() {
-        return "frc.robot.shooter:search";
+    public @NotNull String getName() {
+        return "frc.robot.shooter.search";
     }
 }

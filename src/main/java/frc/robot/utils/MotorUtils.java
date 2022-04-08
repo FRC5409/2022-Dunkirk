@@ -6,7 +6,13 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
+import edu.wpi.first.math.controller.PIDController;
+
 public final class MotorUtils {
+    public static final WPI_TalonFX setGains(WPI_TalonFX motor, Gains gains) {
+        return setGains(motor, 0, gains);    
+    }
+
     public static final WPI_TalonFX setGains(WPI_TalonFX motor, int slotIdx, Gains gains) {
         motor.config_kP(slotIdx, gains.kP);
         motor.config_kI(slotIdx, gains.kI);
@@ -14,6 +20,33 @@ public final class MotorUtils {
         motor.config_kF(slotIdx, gains.kF);
 
         return motor;
+    }
+
+    public static final SparkMaxPIDController setGains(SparkMaxPIDController controller, Gains gains) {
+        return setGains(controller, 0, gains);    
+    }
+
+    public static final SparkMaxPIDController setGains(SparkMaxPIDController controller, int slotIdx, Gains gains) {
+        controller.setP(gains.kP);
+        controller.setI(gains.kI);
+        controller.setD(gains.kD);
+        controller.setFF(gains.kF);
+
+        return controller;
+    }
+
+    public static PIDController setGains(PIDController controller, Gains gains) {
+        controller.setPID(gains.kP, gains.kI, gains.kD);
+        return controller;
+    }
+
+    public static SparkMaxPIDController setOutputRange(SparkMaxPIDController controller, Range range) {
+        return setOutputRange(controller, 0, range);
+    }
+    
+    public static SparkMaxPIDController setOutputRange(SparkMaxPIDController controller, int slotIdx, Range range) {
+        controller.setOutputRange(range.min(), range.max(), slotIdx);
+        return controller;
     }
 
     public static final WPI_TalonFX lowerFollowerStatusPeriod(WPI_TalonFX motor) {
@@ -34,15 +67,6 @@ public final class MotorUtils {
         motor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
         
         return motor;
-    }
-
-    public static final SparkMaxPIDController setGains(SparkMaxPIDController controller, Gains gains) {
-        controller.setP(gains.kP);
-        controller.setI(gains.kI);
-        controller.setD(gains.kD);
-        controller.setFF(gains.kF);
-
-        return controller;
     }
 
     public static final CANSparkMax lowerFollowerStatusPeriod(CANSparkMax motor) {
