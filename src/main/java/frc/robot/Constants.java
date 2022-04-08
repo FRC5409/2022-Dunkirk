@@ -386,14 +386,14 @@ public final class Constants {
             
             // flywheel_offset
             new Model3(
-                -0.9193102305476797, 0.4188739587798073, 0.5203905782470171,
+                -0.06823772956504384, -1.3965513908806815, 1.18121626304908,
                 new Range(-3.0, 3.0),
                 new Range(-1200, 1200)
             ),
 
             // turret_offset
             new Model3(
-                0.6438283462911326, -2.39209095654224, 1.5350883916983353, 
+                0.1357190569153385, -1.3929300904057553, 1.1600000296421455, 
                 new Range(-3.0, 3.0),
                 new Range(-30, 30)
             )
@@ -402,7 +402,7 @@ public final class Constants {
         public static final ShooterOdometryModel ODOMETRY_MODEL = new ShooterOdometryModel(
             90.0 - SHOOTER_PITCH,
             41.5 / 12.0,
-            0.75d,
+            0.25d,
             new Vector3(7/12, 0, -15/12),
             new Vector2(59.6, 49.7)
         );
