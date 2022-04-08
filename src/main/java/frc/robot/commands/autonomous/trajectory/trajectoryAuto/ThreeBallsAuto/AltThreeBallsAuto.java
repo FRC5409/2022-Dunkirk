@@ -180,6 +180,9 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
             
             // Reset Odometry to next position
             new ResetOdometry(t2.getInitialPose(), drivetrain),
+
+            new WaitCommand(2.0),
+            
             new ConfigureProperty<>(runShooter, false),
             
             // Run indexer and intake, while moving through trajectory #2
