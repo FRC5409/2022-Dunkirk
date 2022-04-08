@@ -84,8 +84,6 @@ public class ComplexOperateShooter extends ProxyStateGroupCommand {
             )
         ); 
 
-        SmartDashboard.putData("Operate Shooter", state);
-
         setDefaultState("frc.robot.shooter.search");
 
         this.driveSpeed = driveSpeed;
