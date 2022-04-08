@@ -1,21 +1,27 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.base.Property;
+import frc.robot.base.command.TimedCommand;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.subsystems.Indexer;
 
-public class PrimeShooter extends CommandBase {
+public class PrimeShooter extends TimedCommand {
     private final Property<IndexerArmedState> indexerArmedState;
     private final Indexer indexer;
+
 
     public PrimeShooter(Indexer indexer, Property<IndexerArmedState> indexerArmedState) {
         this.indexer = indexer;
         this.indexerArmedState = indexerArmedState;
+
+        addRequirements(indexer);
     }
 
     @Override
     public void initialize() {
+        super.initialize();
         indexer.enable();
         indexer.setSpeed(-0.5);
         indexerArmedState.set(IndexerArmedState.kActive);
@@ -24,8 +30,15 @@ public class PrimeShooter extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        if (!interrupted) {
+            indexerArmedState.set(IndexerArmedState.kArmed);
+        } else 
+            System.out.println("Shooter armed interrupted - " + interrupted);
         indexer.disable();
-        indexerArmedState.set(IndexerArmedState.kArmed);
-        System.out.println("Shooter armed interrupted - " + interrupted);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return getElapsedTime() > Constants.Shooter.ARMING_TIME;
     }
 }

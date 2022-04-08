@@ -105,6 +105,8 @@ public class ArmShooterState extends StateBase {
         if (interrupt == InterruptType.kCancel || getNextState() == null) {
             flywheel.disable();
             driveSpeed.set(1.0);
+        } else if (getNextState().equals("dormant")) {
+            flywheel.disable();
         }
     }
 

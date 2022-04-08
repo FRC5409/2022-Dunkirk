@@ -73,17 +73,17 @@ public class DefaultDrive extends CommandBase {
    * This method runs the robot with the aadilDrive control scheme
    */
   private void aadilDriveExecute(){
-    double nextDriveSpeed = driveSpeed.get();
+    double lastDriveSpeed = driveSpeed.get();
 
-    double t = 0;
-    if (nextDriveSpeed - lastDriveSpeed > 0)
-      t = SmartDashboard.getNumber("Drive Speed Forward Smoothing", 0);
-    else
-      t = SmartDashboard.getNumber("Drive Speed Reverse Smoothing", 0);
+    // double t = 0;
+    // if (nextDriveSpeed - lastDriveSpeed > 0)
+    //   t = SmartDashboard.getNumber("Drive Speed Forward Smoothing", 0);
+    // else
+    //   t = SmartDashboard.getNumber("Drive Speed Reverse Smoothing", 0);
 
-    lastDriveSpeed = MathUtil.interpolate(
-      nextDriveSpeed, lastDriveSpeed, t
-    );
+    // lastDriveSpeed = MathUtil.interpolate(
+    //   nextDriveSpeed, lastDriveSpeed, t
+    // );
 
     SmartDashboard.putNumber("Drive Speed", lastDriveSpeed);
 

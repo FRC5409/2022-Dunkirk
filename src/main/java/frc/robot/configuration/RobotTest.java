@@ -20,6 +20,7 @@ import frc.robot.base.training.TrainingModel3;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.Joystick.ButtonType;
+import frc.robot.base.command.CancelCommand;
 import frc.robot.base.command.ProxySequentialCommandGroup;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.RobotConfiguration;
@@ -43,6 +44,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight.LedMode;
 import frc.robot.commands.indexer.IndexerIntakeActive;
 import frc.robot.commands.indexer.ReverseIntakeIndexer;
+import frc.robot.commands.indexer.RunIndexer;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.training.protocol.NetworkConnection;
 import frc.robot.training.protocol.NetworkServerSocket;
@@ -221,7 +223,7 @@ public class RobotTest implements RobotConfiguration {
         Trigger shooterEnabledTrigger = new Trigger(shooterEnabled::get);
         Trigger climberToggleTrigger = new Trigger(climberActive::get);
         Trigger shooterModeTrigger = new Trigger(() -> shooterConfiguration.get().getMode() == ShooterMode.kNear);
-
+        
         joystickPrimary.getButton(ButtonType.kStart)
             .whenPressed(DriveTrain::cycleDriveMode);
 
@@ -236,13 +238,16 @@ public class RobotTest implements RobotConfiguration {
                 new ProxySequentialCommandGroup(
                     indexerArmedState.configureTo(IndexerArmedState.kActive),
                     shooterState.notEqualTo(ShooterState.kRun),
-                    new ReverseIntakeIndexer(Intake, Indexer)
+                    new RunIndexer(Indexer, -0.5)
                 )
             );
         
+        Command yes = new PrimeShooter(Indexer, indexerArmedState);
+
         joystickPrimary.getButton(ButtonType.kX)
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
+                    new CancelCommand(yes),
                     indexerArmedState.configureTo(IndexerArmedState.kActive),
                     shooterState.notEqualTo(ShooterState.kRun), 
                     new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary)
@@ -250,11 +255,10 @@ public class RobotTest implements RobotConfiguration {
             );
         
         joystickPrimary.getButton(ButtonType.kX)
-            .whenReleased(new PrimeShooter(Indexer, indexerArmedState).withTimeout(Constants.Shooter.ARMING_TIME));
-
+            .whenReleased(yes);
 
         joystickSecondary.getButton(ButtonType.kStart)
-            .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber))
+            .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, Flywheel, Indexer, Climber))
             .beforeStarting(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear)));
 
         joystickSecondary.getButton(ButtonType.kX)
@@ -274,18 +278,17 @@ public class RobotTest implements RobotConfiguration {
             .and(shooterModeTrigger.negate())
             .whenActive(new ConfigureProperty<Boolean>(shooterEnabled, () -> !shooterEnabled.get()));
 
-        ComplexOperateShooter shooterCommand = new ComplexOperateShooter(
-            Flywheel, turret, DriveTrain, limelight, Indexer,
-            new Trigger(joystickSecondary.getController()::getRightBumper),
-            shooterModelProvider, shooterConfiguration, indexerArmedState, shooterSweepDirection, shooterState, 
-            shooterOffset, drivetrainSpeed
+        shooterEnabledTrigger.whileActiveOnce(
+            new ComplexOperateShooter(
+                Flywheel, turret, DriveTrain, limelight, Indexer,
+                new Trigger(joystickSecondary.getController()::getRightBumper),
+                shooterModelProvider, shooterConfiguration, indexerArmedState, shooterSweepDirection, 
+                shooterState, shooterOffset, drivetrainSpeed
+            )
         );
 
-        shooterEnabledTrigger.whileActiveOnce(shooterCommand);
         shooterEnabledTrigger.negate()
             .whileActiveOnce(new RotateTurret(turret, 0));
-
-        SmartDashboard.putData("Shooter State Machine", shooterCommand);
 
         joystickSecondary.getButton(ButtonType.kRightBumper)
             .and(climberToggleTrigger.negate())
@@ -297,7 +300,6 @@ public class RobotTest implements RobotConfiguration {
                     new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85)
                 )
             ).whenInactive(new RotateTurret(turret, 0));
-
             
         joystickSecondary.getButton(ButtonType.kUpPov)
             .and(joystickSecondary.getButton(ButtonType.kA).negate())
@@ -309,16 +311,6 @@ public class RobotTest implements RobotConfiguration {
             .and(climberToggleTrigger.negate())
             .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear));
         
-        // joystickSecondary.getButton(ButtonType.kUpPov)
-        //     .and(joystickSecondary.getButton(ButtonType.kA).negate())
-        //     .and(climberToggleTrigger.negate())
-        //     .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar));
-
-        // joystickSecondary.getButton(ButtonType.kDownPov)
-        //     .and(joystickSecondary.getButton(ButtonType.kA).negate())
-        //     .and(climberToggleTrigger.negate())
-        //     .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear));
-
         joystickSecondary.getButton(ButtonType.kLeftPov)
             .and(joystickSecondary.getButton(ButtonType.kA).negate())
             .and(climberToggleTrigger.negate())
@@ -333,8 +325,7 @@ public class RobotTest implements RobotConfiguration {
             .and(climberToggleTrigger.negate())
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
-                    shooterState.equalTo(ShooterState.kOff), 
+                    indexerArmedState.equalTo(IndexerArmedState.kArmed),
                     new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kLow),
                     new RotateTurret(turret, 0),
                     new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.LOW_FLYWHEEL_VELOCITY, 0.5)
@@ -345,13 +336,12 @@ public class RobotTest implements RobotConfiguration {
             .and(climberToggleTrigger.negate())
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
-                    shooterState.equalTo(ShooterState.kOff), 
-                    new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kLow),
+                    indexerArmedState.equalTo(IndexerArmedState.kArmed),
+                    new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kGuard),
                     new RotateTurret(turret, 0),
                     new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.GUARD_FLYWHEEL_VELOCITY, 0.5)
                 )
-            );        
+            );      
     }
 
     /**

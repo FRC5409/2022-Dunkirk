@@ -224,7 +224,7 @@ public class RobotTraining implements RobotConfiguration {
             );
         
         joystickPrimary.getButton(ButtonType.kX)
-            .whenReleased(new PrimeShooter(Indexer, indexerArmedState).withTimeout(Constants.Shooter.ARMING_TIME));
+            .whenReleased(new PrimeShooter(Indexer, indexerArmedState));
 
         joystickSecondary.getButton(ButtonType.kX)
             .and(climberToggleTrigger)

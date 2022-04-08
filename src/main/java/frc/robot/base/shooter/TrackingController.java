@@ -36,7 +36,7 @@ public class TrackingController {
         double kVelocityCompensation = Range.normalizeField(-1.8, speed, 1.8) *  trackingModel.kGains.kFV;
         double kTargetCompensation = relativeRotation * trackingModel.kGains.kT;
 
-        double kNewReference = rotation + viewOffest +   
+        double kNewReference = rotation - viewOffest +   
             Range.clamp(trackingModel.kGains.kTMin, kTargetCompensation, trackingModel.kGains.kTMax);
         
         if (Math.abs(kNewReference - kLastReference) > trackingModel.kGains.kDeadband)

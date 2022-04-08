@@ -305,7 +305,14 @@ public final class Constants {
     public static final class Shooter {
         // ============================================================== \\
         //               NICOLE TUNE THIS PURR - Keith
+
         public static final double SHOOTER_PITCH = 54.8;
+        
+        public static final double INITIAL_SHOOTER_OFFSET = 0;
+
+        public static final Range ROTATION_RANGE = new Range(-110, 110);
+        
+        //                                                                //
         // ============================================================== \\
 
         public static final boolean ZERO_LIMIT_POLARITY = false;
@@ -322,7 +329,6 @@ public final class Constants {
         public static final double GEAR_RATIO = 280;
             
         // Range Configurations
-        public static final Range ROTATION_RANGE = new Range(-110, 110);
         public static final Range SPEED_RANGE = new Range(0, 5500);
         public static final Range DISTANCE_RANGE = new Range(0, 25);
         public static final Range TURRET_OUTPUT_RANGE = new Range(-1, 1);
@@ -396,7 +402,7 @@ public final class Constants {
         public static final ShooterOdometryModel ODOMETRY_MODEL = new ShooterOdometryModel(
             90.0 - SHOOTER_PITCH,
             41.5 / 12.0,
-            0d,
+            0.75d,
             new Vector3(7/12, 0, -15/12),
             new Vector2(59.6, 49.7)
         );

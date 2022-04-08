@@ -183,7 +183,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
             
             new ParallelCommandGroup(
                 // Prime shooter
-                new PrimeShooter(indexer, indexerArmedState).withTimeout(Constants.Shooter.ARMING_TIME),
+                new PrimeShooter(indexer, indexerArmedState),
 
                 // Simulate run shooter trigger
                 new ConfigureProperty<>(runShooter, true)
@@ -225,7 +225,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
 
             new ParallelCommandGroup(
                 // Prime shooter
-                new PrimeShooter(indexer, indexerArmedState).withTimeout(Constants.Shooter.ARMING_TIME),
+                new PrimeShooter(indexer, indexerArmedState),
 
                 // Simulate run shooter trigger
                 new ConfigureProperty<>(runShooter, true)

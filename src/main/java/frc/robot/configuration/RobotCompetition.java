@@ -13,6 +13,7 @@ import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterModelProvider;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.Joystick.ButtonType;
+import frc.robot.base.command.CancelCommand;
 import frc.robot.base.command.ProxySequentialCommandGroup;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.RobotConfiguration;
@@ -30,7 +31,7 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 
 import frc.robot.commands.indexer.IndexerIntakeActive;
-import frc.robot.commands.indexer.ReverseIntakeIndexer;
+import frc.robot.commands.indexer.RunIndexer;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.commands.shooter.*;
 import frc.robot.subsystems.*;
@@ -89,10 +90,10 @@ public class RobotCompetition implements RobotConfiguration {
         drivetrainSpeed       = new ValueProperty<>(1.0);
         shooterEnabled        = new ValueProperty<>(false);
         climberActive         = robot.climberActive;
-        shooterOffset         = new ValueProperty<>(0.0);
+        shooterOffset         = new ValueProperty<>(Constants.Shooter.INITIAL_SHOOTER_OFFSET);
         shooterState          = new CommandProperty<>(ShooterState.kOff);
         
-        defaultDrive        = new DefaultDrive(DriveTrain, joystickPrimary.getController(), new ValueProperty<>(1.0));
+        defaultDrive        = new DefaultDrive(DriveTrain, joystickPrimary.getController(), drivetrainSpeed);
 
         autoCommandSelector = new SendableChooser<Command>();
 
@@ -177,13 +178,16 @@ public class RobotCompetition implements RobotConfiguration {
                 new ProxySequentialCommandGroup(
                     indexerArmedState.configureTo(IndexerArmedState.kActive),
                     shooterState.notEqualTo(ShooterState.kRun),
-                    new ReverseIntakeIndexer(Intake, Indexer)
+                    new RunIndexer(Indexer, -0.5)
                 )
             );
         
+        Command yes = new PrimeShooter(Indexer, indexerArmedState);
+
         joystickPrimary.getButton(ButtonType.kX)
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
+                    new CancelCommand(yes),
                     indexerArmedState.configureTo(IndexerArmedState.kActive),
                     shooterState.notEqualTo(ShooterState.kRun), 
                     new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary)
@@ -191,10 +195,10 @@ public class RobotCompetition implements RobotConfiguration {
             );
         
         joystickPrimary.getButton(ButtonType.kX)
-            .whenReleased(new PrimeShooter(Indexer, indexerArmedState).withTimeout(Constants.Shooter.ARMING_TIME));
+            .whenReleased(yes);
 
         joystickSecondary.getButton(ButtonType.kStart)
-            .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, DriveTrain, Flywheel, Indexer, Climber))
+            .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, Flywheel, Indexer, Climber))
             .beforeStarting(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear)));
 
         joystickSecondary.getButton(ButtonType.kX)

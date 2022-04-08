@@ -168,7 +168,7 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
             new IndexerIntakeActive(indexer, intake).withTimeout(0.75),
             
             // Prime shooter
-            new PrimeShooter(indexer, indexerArmedState).withTimeout(Constants.Shooter.ARMING_TIME),
+            new PrimeShooter(indexer, indexerArmedState),
 
             // Simulate run shooter trigger
             new ConfigureProperty<>(runShooter, true),
@@ -205,7 +205,7 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
                 )
             ),
             // Prime shooter
-            new PrimeShooter(indexer, indexerArmedState).withTimeout(Constants.Shooter.ARMING_TIME),
+            new PrimeShooter(indexer, indexerArmedState),
 
             // Simulate run shooter trigger
             new ConfigureProperty<>(runShooter, true),

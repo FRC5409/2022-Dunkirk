@@ -95,7 +95,7 @@ public class TwoBallsAuto extends SequentialCommandGroup{
                         r1
                     ),
                     new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1),
-                    new RunIndexerBack(m_intake, m_indexer).withTimeout(Constants.Shooter.ARMING_TIME)
+                    new RunIndexerBack(m_intake, m_indexer)
                 ),
                 new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
             ),
