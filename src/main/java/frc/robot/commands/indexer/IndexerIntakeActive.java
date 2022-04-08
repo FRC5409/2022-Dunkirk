@@ -49,7 +49,7 @@ public class IndexerIntakeActive extends CommandBase {
         intake.solenoidsDown();
         
 
-        tofEnter = false;
+        tofEnter = indexer.getSensorState(SensorType.kEnter);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -60,8 +60,10 @@ public class IndexerIntakeActive extends CommandBase {
         boolean tofExit = indexer.getSensorState(SensorType.kExit);
 
         if (rumbleCommand != null) {
-            if (this.tofEnter != tofEnter && tofEnter)
-                rumbleCommand.schedule();
+            if (this.tofEnter != tofEnter && tofEnter) {
+                if (!rumbleCommand.isScheduled())
+                    rumbleCommand.schedule();
+            }
         }
         
         if (tofBall1 && tofExit) {
