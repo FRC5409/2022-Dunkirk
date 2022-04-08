@@ -221,12 +221,12 @@ public final class Constants {
         public static final double kPDriveVel = 5.7255;
         
         // all units in meters and seconds
-        public static final double kMaxSpeed = 2.4; 
+        public static final double kMaxSpeed = 2.5; 
         // work fine in 2.5, gives error when generating trajectory when exceed that value
-        public static final double kMaxAcceleration = 4.5; // TODO: increase this value
+        public static final double kMaxAcceleration = 4.5;
 
-        public static final double kMaxSpeedSlow = 1;
-        public static final double kMaxAccelerationSlow = 1;
+        public static final double kMaxSpeedSlow = 0.75;
+        public static final double kMaxAccelerationSlow = 0.5;
 
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
         // works for most robots, if needs to be tuned: 
@@ -361,7 +361,7 @@ public final class Constants {
                 HoodPosition.kUp,
                 VisionPipeline.FAR_TARGETING,
                 new ShooterOdometryModel(
-                    90.0 - 61.5,
+                    90.0 - 54.8,
                     41.5 / 12.0,
                     0,
                     new Vector2(59.6, 49.7)
@@ -371,7 +371,7 @@ public final class Constants {
                     0.5686905980110168,
                     -0.6887820363044739,
                     0.3927091360092163,
-                    2d,
+                    0d,
                     Constants.Shooter.DISTANCE_RANGE,
                     Constants.Shooter.SPEED_RANGE
                 )

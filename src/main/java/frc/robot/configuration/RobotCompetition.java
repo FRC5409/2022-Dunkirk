@@ -37,6 +37,7 @@ import frc.robot.commands.autonomous.trajectory.trajectoryAuto.FourBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.Test;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto.AltThreeBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto.DeprecatedThreeBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto.SynchronizedThreeBallsAuto;
 
@@ -115,6 +116,10 @@ public class RobotCompetition implements RobotConfiguration {
 
         autoCommandSelector.setDefaultOption("Three",
             new SynchronizedThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+                shooterConfiguration, shooterSweepDirection, shooterOffset, shooterArmed));
+
+        autoCommandSelector.setDefaultOption("Three Alt",
+            new AltThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterConfiguration, shooterSweepDirection, shooterOffset, shooterArmed));
 
         autoCommandSelector.addOption("Four",

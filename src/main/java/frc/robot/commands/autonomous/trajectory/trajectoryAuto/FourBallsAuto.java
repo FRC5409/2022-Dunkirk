@@ -84,26 +84,40 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
         left x meter: -x*Math.cos(Math.PI*13/36), +x*Math.sin(Math.PI*13/36)
         right x meter: +x*Math.cos(Math.PI*13/36), -x*Math.sin(Math.PI*13/36)
         */
+
+        Pose2d p1 = createPose(0, 0, 0);
+
+        Pose2d p2 = createPose(1.5, 0, 0);
+
+        Pose2d p3 = createPose(
+            (5.14 + 0.75*Math.cos(Math.PI*13/36)), 
+            (-0.45 - 0.75*Math.sin(Math.PI*13/36)), 
+            Math.PI*5/36);
+
+        Pose2d p4 = createPose(
+            (5.14 + 0.75*Math.cos(Math.PI*13/36) - 1*Math.sin(Math.PI*13/36)), 
+            (-0.45 - 0.75*Math.sin(Math.PI*13/36) - 0.5*Math.sin(Math.PI*13/36)), 
+            Math.PI*5/36);
+
+        Pose2d p5 = createPose(1.7, 0, 0);
+
         
-        Trajectory t1 = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-                                                                   List.of(),
-                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
-                                                                   kAuto.configForwards);
+        Trajectory t1 = TrajectoryGenerator.generateTrajectory(
+            p1, List.of(), p2, kAuto.configForwards
+        );
 
-        Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
-                                                                   List.of(),
-                                                                   new Pose2d((5.14+0.75*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
-                                                                   kAuto.configForwards);
+        Trajectory t2 = TrajectoryGenerator.generateTrajectory(
+            p2, List.of(), p3, kAuto.configForwards
+        );
 
-        Trajectory t3 = TrajectoryGenerator.generateTrajectory(new Pose2d((5.14+0.75*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
-                                                                   List.of(),
-                                                                   new Pose2d((4.64+0.75*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(0)),
-                                                                   kAuto.configBackwardsSlow);
+        Trajectory t3 = TrajectoryGenerator.generateTrajectory(
+            p3, List.of(), p4, kAuto.configBackwardsSlow
+        );
 
-        Trajectory t4 = TrajectoryGenerator.generateTrajectory(new Pose2d((4.64+0.75*Math.cos(Math.PI*13/36))/kAuto.kDistanceRatio, (-0.45-0.75*Math.sin(Math.PI*13/36))/kAuto.kDistanceRatio, new Rotation2d(Math.PI*5/36)),
-                                                                   List.of(),
-                                                                   new Pose2d(1.7/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
-                                                                   kAuto.configBackwards);
+        Trajectory t4 = TrajectoryGenerator.generateTrajectory(
+            p4, List.of(), p5, kAuto.configBackwards
+        );
+        
 
         RamseteCommand r1 = createRamseteCommand(t1);
         RamseteCommand r2 = createRamseteCommand(t2);
@@ -190,7 +204,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
 
                 new SequentialCommandGroup(
                     new ParallelCommandGroup(
-                        new WaitCommand(1.5), // TODO: change this value smaller
+                        new WaitCommand(0.5), // time stopped at the terminal
                         // Reset Odometry to next position
                         new ResetOdometry(t3.getInitialPose(), drive)
                     ),
@@ -242,5 +256,9 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
             drive::tankDriveVolts, 
             drive
         ); 
+    }
+
+    private Pose2d createPose(double x, double y, double rotation) {
+        return new Pose2d(x / kAuto.kDistanceRatio, y / kAuto.kDistanceRatio, new Rotation2d(rotation));
     }
 }
