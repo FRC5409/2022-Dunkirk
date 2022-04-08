@@ -55,7 +55,7 @@ public class Limelight extends SubsystemBase implements Toggleable {
     private final NetworkTable data;
 
     private final NetworkTableEntry targetPositionX, targetPositionY, pipelineIndex,
-        targetStatus, targetArea, cameraMode, ledMode;
+        targetStatus, targetArea, cameraMode, ledMode, viewMode;
 
     private TargetType type;
     private Vector2 position;
@@ -76,7 +76,9 @@ public class Limelight extends SubsystemBase implements Toggleable {
         targetArea      = data.getEntry("ta");
         cameraMode      = data.getEntry("camMode");
         ledMode         = data.getEntry("ledMode");
-        data.getEntry("stream").setNumber(0);
+        viewMode = data.getEntry("stream");
+        viewMode.setNumber(0);
+        
         
         position = new Vector2();
         area = 0.0;
@@ -200,5 +202,14 @@ public class Limelight extends SubsystemBase implements Toggleable {
                 type = TargetType.kNone;
             }
         }
+    }
+
+    /**
+     * Changes the view mode of the limelight and webcam on SmartDashboard.
+     * Cycles between side by side, limelight and webcam in the corner, 
+     * and webcam and limelight in the corner.
+     */
+    public void nextViewMode() {
+        viewMode.setNumber((viewMode.getDouble(0) + 1) % 3);
     }
 }

@@ -74,7 +74,7 @@ public class IndexerIntakeActive extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        System.out.println("Endedddddd");
+        //System.out.println("Endedddddd");
         indexer.disable();
         
         intake.intakeOn(0);
