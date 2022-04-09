@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
@@ -306,7 +305,7 @@ public final class Constants {
         // ============================================================== \\
         //               NICOLE TUNE THIS PURR - Keith
 
-        // The shooter Pitch (observed with the inclinometere)
+        // The shooter Pitch (observed with the inclinometer)
         public static final double SHOOTER_PITCH = 54.8;
 
         // The initial flywheel offset (rpm)
@@ -314,9 +313,13 @@ public final class Constants {
 
         // The turret rotation range
         public static final Range ROTATION_RANGE = new Range(-110, 110);
+        
+        // The threshold required to align to a target (and shoot) during tracking
+        // between [2, 8]
+        public static final double TRACKING_ALIGNMENT_THRESHOLD = 4.83333;
 
-        // The target alignment threshold 
-        public static final double ALIGNMENT_THRESHOLD = 3.83333;
+        // How long to run the indexer back, and arm the shooter.
+        public static final double ARMING_TIME = 0.32;
         
         //                                                                //
         // ============================================================== \\
@@ -356,14 +359,6 @@ public final class Constants {
             public double calculate(double x) {
                  return SHOOTER_SWEEP_PERIOD * Math.acos(2d * (x-ROTATION_RANGE.min()) / ROTATION_RANGE.magnitude() - 1d) / (Math.PI*2d);
             }
-        };
-
-        public static final Equation FLYWHEEL_OFFSET_MAPPING = x -> {
-            return x * SmartDashboard.getNumber("Flywheel Offset Factor", 0);
-        };
-
-        public static final Equation TURRET_OFFSET_MAPPING = x -> {
-            return x * SmartDashboard.getNumber("Turret Offset Factor", 0);
         };
     
         public static final Gains TURRET_ROTATION_GAINS = new Gains(
@@ -453,8 +448,8 @@ public final class Constants {
         public static final int OFFSET_INCREMENT = 25;
 
         public static final double INDEXER_SPEED = 0.5;
-
-        public static final double ARMING_TIME = 0.32;
+        
+        public static final double ALIGNMENT_THRESHOLD = 1.83333;
     }
     
     public static final class Vision {

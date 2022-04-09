@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.command.InterruptType;
 import frc.robot.base.command.StateBase;
@@ -100,7 +101,7 @@ public class OperateShooterState extends StateBase {
             turret.setReference(controller.getReference(), controller.getFeedForward(), ReferenceType.kRotation);
         }
         
-        if (odometry.getTarget() != null && turret.isTargetReached())
+        if (odometry.getTarget() != null && turret.isTargetReached(Constants.Shooter.TRACKING_ALIGNMENT_THRESHOLD))
             shooterConditions.addCondition(ShooterConditionType.kTurretReached);
         else
             shooterConditions.removeCondition(ShooterConditionType.kTurretReached);
