@@ -82,6 +82,8 @@ public class RunShooterState extends StateBase {
         executionModel = shooterModelProvider.getExecutionModel();
         odometry = sharedOdometry.get();
         active = false;
+
+        System.out.println("RUN SHOOTER PURRRRRRR");
     }
 
     @Override

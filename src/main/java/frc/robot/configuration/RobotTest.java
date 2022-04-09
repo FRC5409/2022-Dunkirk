@@ -36,7 +36,6 @@ import java.util.Map;
 
 import edu.wpi.first.wpilibj.GenericHID;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Indexer;

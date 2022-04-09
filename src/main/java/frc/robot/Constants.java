@@ -306,11 +306,17 @@ public final class Constants {
         // ============================================================== \\
         //               NICOLE TUNE THIS PURR - Keith
 
+        // The shooter Pitch (observed with the inclinometere)
         public static final double SHOOTER_PITCH = 54.8;
 
+        // The initial flywheel offset (rpm)
         public static final double INITIAL_SHOOTER_OFFSET = 0;
 
+        // The turret rotation range
         public static final Range ROTATION_RANGE = new Range(-110, 110);
+
+        // The target alignment threshold 
+        public static final double ALIGNMENT_THRESHOLD = 3.83333;
         
         //                                                                //
         // ============================================================== \\
@@ -449,8 +455,6 @@ public final class Constants {
         public static final double INDEXER_SPEED = 0.5;
 
         public static final double ARMING_TIME = 0.32;
-
-        public static final double ALIGNMENT_THRESHOLD = 0.83333;
     }
     
     public static final class Vision {

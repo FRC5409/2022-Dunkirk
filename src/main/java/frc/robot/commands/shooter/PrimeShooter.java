@@ -1,6 +1,5 @@
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.base.Property;
 import frc.robot.base.command.TimedCommand;
@@ -30,10 +29,9 @@ public class PrimeShooter extends TimedCommand {
 
     @Override
     public void end(boolean interrupted) {
-        if (!interrupted) {
+        if (!interrupted)
             indexerArmedState.set(IndexerArmedState.kArmed);
-        } else 
-            System.out.println("Shooter armed interrupted - " + interrupted);
+
         indexer.disable();
     }
 
