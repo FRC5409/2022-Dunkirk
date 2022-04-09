@@ -114,16 +114,13 @@ public class RunShooterState extends StateBase {
 
     @Override
     public void end(InterruptType interrupt) {
-        if (interrupt == InterruptType.kCancel || getNextState() == null) {
-            flywheel.disable();
-        } else if (getNextState().equals("dormant")) {
+        if (interrupt == InterruptType.kCancel || getNextState() == null || getNextState().equals("dormant")) {
             flywheel.disable();
         } else {
             flywheel.stopFeeder();
         }
 
         driveSpeed.set(1.0);
-
         indexer.disable();
     }
 
