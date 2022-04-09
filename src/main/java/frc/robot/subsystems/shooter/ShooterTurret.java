@@ -21,7 +21,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import frc.robot.Constants;
 import frc.robot.base.shooter.HoodPosition;
 import frc.robot.utils.MotorUtils;
-import frc.robot.utils.Range;
 import frc.robot.utils.Toggleable;
 
 /**
@@ -62,11 +61,6 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
     private double                                   target;
     private double                                   rotation;
 
-    private double kF;
-    private double kP;
-    private double kI;
-    private double kD;
-
     /**
      * Constructor for the turret.
      */
@@ -105,16 +99,6 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         rotation = 0;
         enabled = false;
         target = 0;
-
-        this.kP = Constants.Shooter.TURRET_TRACKING_GAINS.kP;
-        this.kI = Constants.Shooter.TURRET_TRACKING_GAINS.kI;
-        this.kD = Constants.Shooter.TURRET_TRACKING_GAINS.kD;
-        this.kF = Constants.Shooter.TURRET_TRACKING_GAINS.kF;
-
-        SmartDashboard.setDefaultNumber("Shooter Turret - P", kP);
-        SmartDashboard.setDefaultNumber("Shooter Turret - I", kI);
-        SmartDashboard.setDefaultNumber("Shooter Turret - D", kD);
-        SmartDashboard.setDefaultNumber("Shooter Turret - FF", kF);
     }
 
     /**
@@ -174,30 +158,6 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
         }
         
         fields.get("rotation").setNumber(rotation);
-        
-        double newP = SmartDashboard.getNumber("Shooter Turret - P", kP);
-        if (kP != newP) {
-            ctr_main.setFF(newP, ReferenceType.kTracking.idx);
-            kP = newP;
-        }
-        
-        double newI = SmartDashboard.getNumber("Shooter Turret - I", kI);
-        if (kI != newI) {
-            ctr_main.setFF(newI, ReferenceType.kTracking.idx);
-            kI = newI;
-        }
-        
-        double newD = SmartDashboard.getNumber("Shooter Turret - D", kD);
-        if (kD != newD) {
-            ctr_main.setFF(newD, ReferenceType.kTracking.idx);
-            kD = newD;
-        }
-        
-        double newFF = SmartDashboard.getNumber("Shooter Turret - FF", kF);
-        if (kF != newFF) {
-            ctr_main.setFF(Range.clamp(0, newFF, 1), ReferenceType.kTracking.idx);
-            kF = newFF;
-        }
     }
     
     /**
@@ -265,8 +225,18 @@ public class ShooterTurret extends SubsystemBase implements Toggleable {
      * @return True if its aligned, false if not.
      */
     public boolean isTargetReached() {
-        return enabled ? Math.abs(rotation - target) < Constants.Shooter.ALIGNMENT_THRESHOLD : false;
+        return isTargetReached(Constants.Shooter.ALIGNMENT_THRESHOLD);
     }
+    
+    /**
+     * Method for getting if the turret is aligned with its target.
+     * 
+     * @return True if its aligned, false if not.
+     */
+    public boolean isTargetReached(double threshold) {
+        return enabled ? Math.abs(rotation - target) < threshold : false;
+    }
+    
     
     /**
      * Method for getting if the turret has been enabled. 
