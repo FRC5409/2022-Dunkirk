@@ -171,7 +171,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
                 ),
 
                 // Run indexer, while moving trough trajectory #2
-                new RunIntake(intake).withTimeout(2.5),
+                new RunIntake(intake).withTimeout(3.5), // TODO: tune
                 new SequentialCommandGroup(
                     new WaitCommand(0.35),
                     r1 // Race Condition
