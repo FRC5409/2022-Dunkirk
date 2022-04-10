@@ -9,7 +9,7 @@ import frc.robot.base.Property;
 import frc.robot.base.command.InterruptType;
 import frc.robot.base.command.StateBase;
 import frc.robot.base.drive.DriveOdometry;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.shooter.ShooterConditionType;
 import frc.robot.base.shooter.ShooterConditions;
 import frc.robot.base.shooter.TrackingController;
@@ -34,7 +34,7 @@ import frc.robot.utils.Toggleable;
 public class OperateShooterState extends StateBase {
     private final Property<DriveShooterOdometry> sharedOdometry;
     private final Property<TrackingController> sharedController;
-    private final Property<IndexerArmedState> indexerArmedState;
+    private final Property<IndexerState> indexerArmedState;
     
     private final ShooterConditions shooterConditions;
     
@@ -52,7 +52,7 @@ public class OperateShooterState extends StateBase {
         ShooterConditions shooterConditions,
         Property<TrackingController> sharedController,
         Property<DriveShooterOdometry> sharedOdometry,
-        Property<IndexerArmedState> indexerArmedState
+        Property<IndexerState> indexerArmedState
     ) {
         this.indexerArmedState = indexerArmedState;
         this.shooterConditions = shooterConditions;
@@ -106,7 +106,7 @@ public class OperateShooterState extends StateBase {
         else
             shooterConditions.removeCondition(ShooterConditionType.kTurretReached);
     
-        if (indexerArmedState.isEqual(IndexerArmedState.kArmed))
+        if (indexerArmedState.isEqual(IndexerState.kArmed))
             shooterConditions.addCondition(ShooterConditionType.kIndexerArmed);
         else
             shooterConditions.removeCondition(ShooterConditionType.kIndexerArmed);

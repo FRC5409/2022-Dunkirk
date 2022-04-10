@@ -22,7 +22,7 @@ import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.DelayedCancelCommand;
 import frc.robot.base.command.ProxySequentialCommandGroup;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterModelProvider;
@@ -59,7 +59,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
         ShooterModelProvider shooterModelProvider,
         Property<ShooterConfiguration> shooterConfiguration, 
         Property<SweepDirection> shooterSweepDirection,
-        Property<IndexerArmedState> indexerArmedState,
+        Property<IndexerState> indexerArmedState,
         Property<ShooterState> shooterState,
         Property<Double> shooterOffset
     ) {
@@ -163,7 +163,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
                 new ScheduleCommand(
                     new SequentialCommandGroup(
                         new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft),
-                        new ConfigureProperty<>(indexerArmedState, IndexerArmedState.kArmed),
+                        new ConfigureProperty<>(indexerArmedState, IndexerState.kArmed),
                         new ConfigureProperty<>(runShooter, true),
                         new WaitCommand(0.4), // TODO: tune
                         runShooterCommand
@@ -185,7 +185,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
             new ResetOdometry(t2.getInitialPose(), drivetrain),
 
             new ConfigureProperty<>(runShooter, false),
-            new ConfigureProperty<>(indexerArmedState, IndexerArmedState.kActive),
+            new ConfigureProperty<>(indexerArmedState, IndexerState.kActive),
             
             // Run indexer and intake, while moving through trajectory #2
             new ParallelRaceGroup(

@@ -24,7 +24,7 @@ import frc.robot.base.command.DelayedCancelCommand;
 import frc.robot.base.command.ProxySequentialCommandGroup;
 import frc.robot.base.drive.DriveOdometry;
 import frc.robot.base.drive.MockDriveOdometry;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterModelProvider;
@@ -60,7 +60,7 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
         ShooterModelProvider shooterModelProvider,
         Property<ShooterConfiguration> shooterConfiguration, 
         Property<SweepDirection> shooterSweepDirection,
-        Property<IndexerArmedState> indexerArmedState,
+        Property<IndexerState> indexerArmedState,
         Property<ShooterState> shooterState,
         Property<Double> shooterOffset
     ) {

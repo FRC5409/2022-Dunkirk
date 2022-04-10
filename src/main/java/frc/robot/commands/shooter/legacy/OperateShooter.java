@@ -8,7 +8,7 @@ import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.drive.DriveOdometry;
 import frc.robot.base.drive.MockDriveOdometry;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.shooter.ConstantModelProvider;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterModelProvider;
@@ -73,7 +73,7 @@ public class OperateShooter extends ParallelCommandGroup {
         );
         
         // Mock Properties
-        Property<IndexerArmedState> mockIndexerArmedState = new ConstantProperty<>(IndexerArmedState.kArmed);
+        Property<IndexerState> mockIndexerArmedState = new ConstantProperty<>(IndexerState.kArmed);
         Property<ShooterState> mockShooterState = new ValueProperty<>(ShooterState.kOff);
         Property<Double> mockDriveSpeed = new ValueProperty<>(1.0);
 

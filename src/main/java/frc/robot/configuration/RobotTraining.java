@@ -17,7 +17,7 @@ import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.ShooterTrainingModel4;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.command.ProxySequentialCommandGroup;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.RobotConfiguration;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.Joystick;
@@ -66,7 +66,7 @@ public class RobotTraining implements RobotConfiguration {
     private       TrainerDashboard               trainerDashboard;
     private       NetworkClient                  trainerClient;
     
-    private final CommandProperty<IndexerArmedState> indexerArmedState;
+    private final CommandProperty<IndexerState> indexerArmedState;
     private final CommandProperty<ShooterState> shooterState;
     private final ValueProperty<ShooterConfiguration> shooterConfiguration;
     private final ValueProperty<SweepDirection> shooterSweepDirection;
@@ -83,19 +83,19 @@ public class RobotTraining implements RobotConfiguration {
     public RobotTraining(RobotContainer robot) {
         joystickSecondary = robot.joystickSecondary;
         joystickPrimary   = robot.joystickPrimary;
-        DriveTrain        = robot.DriveTrain;
+        DriveTrain        = robot.driveTrain;
         limelight         = robot.limelight;
-        Flywheel          = robot.Flywheel;
-        Climber           = robot.Climber;
+        Flywheel          = robot.flywheel;
+        Climber           = robot.climber;
      // Pigeon            = robot.Pigeon
-        Intake            = robot.Intake;
-        Indexer           = robot.Indexer;
+        Intake            = robot.intake;
+        Indexer           = robot.indexer;
         turret            = robot.turret;
 
         // Init controller
         shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
         shooterConfiguration  = new ValueProperty<>(Constants.Shooter.CONFIGURATIONS.getConfiguration(ShooterMode.kFar));
-        indexerArmedState     = new CommandProperty<>(IndexerArmedState.kArmed);
+        indexerArmedState     = new CommandProperty<>(IndexerState.kArmed);
         drivetrainSpeed       = new ValueProperty<>(1.0);
         shooterEnabled        = new ValueProperty<>(false);
         shooterOffset         = new ValueProperty<>(0.0);
@@ -208,7 +208,7 @@ public class RobotTraining implements RobotConfiguration {
         joystickPrimary.getButton(ButtonType.kB)
             .whileHeld(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
+                    indexerArmedState.configureTo(IndexerState.kActive),
                     shooterState.notEqualTo(ShooterState.kRun),
                     new ReverseIntakeIndexer(Intake, Indexer)
                 )
@@ -217,7 +217,7 @@ public class RobotTraining implements RobotConfiguration {
         joystickPrimary.getButton(ButtonType.kX)
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
+                    indexerArmedState.configureTo(IndexerState.kActive),
                     shooterState.notEqualTo(ShooterState.kRun), 
                     new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary)
                 )

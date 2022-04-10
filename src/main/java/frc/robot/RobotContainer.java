@@ -27,13 +27,13 @@ import frc.robot.subsystems.Climber;
 
 public final class RobotContainer {
     public final ValueProperty<Boolean> climberActive;
-    public final ShooterFlywheel Flywheel;
+    public final ShooterFlywheel flywheel;
     public final ShooterTurret   turret;
-    public final DriveTrain      DriveTrain;
+    public final DriveTrain      driveTrain;
     public final Limelight       limelight;
-    public final Indexer         Indexer;
-    public final Intake          Intake;
-    public final Climber         Climber;
+    public final Indexer         indexer;
+    public final Intake          intake;
+    public final Climber         climber;
     public final Pneumatics         pneumatics;
     
     public final Joystick        joystickSecondary;
@@ -44,12 +44,12 @@ public final class RobotContainer {
     public RobotContainer() {
         climberActive = new ValueProperty<Boolean>(false);
 
-        DriveTrain  = new DriveTrain();
+        driveTrain  = new DriveTrain();
         limelight   = new Limelight();
-        Flywheel    = new ShooterFlywheel();
-        Climber     = new Climber(climberActive);
-        Indexer     = new Indexer();
-        Intake      = new Intake();
+        flywheel    = new ShooterFlywheel();
+        climber     = new Climber(climberActive);
+        indexer     = new Indexer();
+        intake      = new Intake();
     //  Pigeon      = new Pigeon();
         turret      = new ShooterTurret();
         pneumatics  = new Pneumatics();

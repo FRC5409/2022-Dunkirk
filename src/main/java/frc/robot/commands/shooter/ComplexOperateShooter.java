@@ -5,7 +5,7 @@ import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.ProxyStateGroupCommand;
 import frc.robot.base.drive.DriveOdometry;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.shooter.ShooterConditions;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterModelProvider;
@@ -51,7 +51,7 @@ public class ComplexOperateShooter extends ProxyStateGroupCommand {
         Trigger shooterTrigger,
         ShooterModelProvider shooterModelProvider,
         Property<ShooterConfiguration> shooterConfiguration,
-        Property<IndexerArmedState> indexerArmedState,
+        Property<IndexerState> indexerArmedState,
         Property<SweepDirection> shooterSweepDirection,
         Property<ShooterState> shooterState,
         Property<Double> shooterOffset,

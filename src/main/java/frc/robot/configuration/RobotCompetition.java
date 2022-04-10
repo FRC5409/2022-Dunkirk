@@ -15,7 +15,7 @@ import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.command.CancelCommand;
 import frc.robot.base.command.ProxySequentialCommandGroup;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.RobotConfiguration;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.CommandProperty;
@@ -32,6 +32,7 @@ import frc.robot.subsystems.Intake;
 
 import frc.robot.commands.indexer.IndexerIntakeActive;
 import frc.robot.commands.indexer.RunIndexer;
+import frc.robot.commands.indexer.experimental.IndexerIntakeActive2;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.commands.shooter.*;
 import frc.robot.subsystems.*;
@@ -43,20 +44,20 @@ import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto.Al
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto.SynchronizedThreeBallsAuto;
 
 public class RobotCompetition implements RobotConfiguration {
-    private final ShooterFlywheel      Flywheel;
+    private final ShooterFlywheel      flywheel;
     private final ShooterTurret        turret;
-    private final DriveTrain           DriveTrain;
+    private final DriveTrain           driveTrain;
     private final Limelight            limelight;
-    private final Indexer              Indexer;
-    private final Intake               Intake;
-    private final Climber              Climber;
+    private final Indexer              indexer;
+    private final Intake               intake;
+    private final Climber              climber;
 
     private final Joystick             joystickPrimary; // = new XboxController(0);
     private final Joystick             joystickSecondary;
 
     private final DefaultDrive         defaultDrive;
 
-    private final CommandProperty<IndexerArmedState> indexerArmedState;
+    private final CommandProperty<IndexerState> indexerState;
     private final CommandProperty<ShooterState> shooterState;
     private final ValueProperty<ShooterConfiguration> shooterConfiguration;
     private final ValueProperty<SweepDirection> shooterSweepDirection;
@@ -75,25 +76,24 @@ public class RobotCompetition implements RobotConfiguration {
     public RobotCompetition(RobotContainer robot) {
         joystickSecondary = robot.joystickSecondary;
         joystickPrimary   = robot.joystickPrimary;
-        DriveTrain        = robot.DriveTrain;
+        driveTrain        = robot.driveTrain;
         limelight         = robot.limelight;
-        Flywheel          = robot.Flywheel;
-        Climber           = robot.Climber;
-     // Pigeon            = robot.Pigeon
-        Intake            = robot.Intake;
-        Indexer           = robot.Indexer;
+        flywheel          = robot.flywheel;
+        climber           = robot.climber;
+        intake            = robot.intake;
+        indexer           = robot.indexer;
         turret            = robot.turret;
 
         shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
         shooterConfiguration  = new ValueProperty<>(Constants.Shooter.CONFIGURATIONS.getConfiguration(ShooterMode.kFar));
-        indexerArmedState     = new CommandProperty<>(IndexerArmedState.kArmed);
+        indexerState     = new CommandProperty<>(IndexerState.kArmed);
         drivetrainSpeed       = new ValueProperty<>(1.0);
         shooterEnabled        = new ValueProperty<>(false);
         climberActive         = robot.climberActive;
         shooterOffset         = new ValueProperty<>(Constants.Shooter.INITIAL_SHOOTER_OFFSET);
         shooterState          = new CommandProperty<>(ShooterState.kOff);
         
-        defaultDrive        = new DefaultDrive(DriveTrain, joystickPrimary.getController(), drivetrainSpeed);
+        defaultDrive        = new DefaultDrive(driveTrain, joystickPrimary.getController(), drivetrainSpeed);
 
         autoCommandSelector = new SendableChooser<Command>();
 
@@ -110,26 +110,26 @@ public class RobotCompetition implements RobotConfiguration {
 
     private void configureDashboard() {
         autoCommandSelector.addOption("One",
-            new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, 
+            new OneBallAuto(driveTrain, indexer, limelight, turret, flywheel, 
                 shooterConfiguration, shooterSweepDirection, Property.cast(shooterOffset)));
         
         autoCommandSelector.addOption("Two",
-            new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+            new TwoBallsAuto(driveTrain, intake, indexer, limelight, turret, flywheel,
                 shooterConfiguration, shooterSweepDirection, Property.cast(shooterOffset)));
 
         autoCommandSelector.setDefaultOption("Three",
-            new SynchronizedThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerArmedState,
+            new SynchronizedThreeBallsAuto(driveTrain, intake, indexer, limelight, turret, flywheel,
+                shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerState,
                 shooterState, shooterOffset));
 
         autoCommandSelector.setDefaultOption("Three Alt",
-            new AltThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerArmedState,
+            new AltThreeBallsAuto(driveTrain, intake, indexer, limelight, turret, flywheel,
+                shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerState,
                 shooterState, shooterOffset));
 
         autoCommandSelector.addOption("Four",
-            new FourBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerArmedState,
+            new FourBallsAuto(driveTrain, intake, indexer, limelight, turret, flywheel,
+                shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerState,
                 shooterState, shooterOffset));
 
         SmartDashboard.putData("Auto Chooser", autoCommandSelector);
@@ -143,8 +143,8 @@ public class RobotCompetition implements RobotConfiguration {
     }
 
     private void configureCommands() {
-        DriveTrain.setDefaultCommand(defaultDrive);
-        Climber.setDefaultCommand(new DefaultElevator(Climber, joystickSecondary.getController()));
+        driveTrain.setDefaultCommand(defaultDrive);
+        climber.setDefaultCommand(new DefaultElevator(climber, joystickSecondary.getController()));
     }
 
     public void teleopPeriodic(){
@@ -165,53 +165,51 @@ public class RobotCompetition implements RobotConfiguration {
         Trigger shooterModeTrigger = new Trigger(() -> shooterConfiguration.get().getMode() == ShooterMode.kNear);
         
         joystickPrimary.getButton(ButtonType.kStart)
-            .whenPressed(DriveTrain::cycleDriveMode);
+            .whenPressed(driveTrain::cycleDriveMode);
 
         joystickPrimary.getButton(ButtonType.kRightBumper)
-            .whenPressed(new FastGear(DriveTrain));
+            .whenPressed(new FastGear(driveTrain));
 
         joystickPrimary.getButton(ButtonType.kRightBumper)
-            .whenReleased(new SlowGear(DriveTrain));
+            .whenReleased(new SlowGear(driveTrain));
 
         joystickPrimary.getButton(ButtonType.kB)
             .whileHeld(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
+                    indexerState.configureTo(IndexerState.kActive),
                     shooterState.notEqualTo(ShooterState.kRun),
-                    new RunIndexer(Indexer, -0.5)
+                    new RunIndexer(indexer, -0.5)
                 )
             );
         
-        Command yes = new PrimeShooter(Indexer, indexerArmedState);
+        Command primeShooter = new PrimeShooter(indexer, indexerState);
 
         joystickPrimary.getButton(ButtonType.kX)
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    new CancelCommand(yes),
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
-                    shooterState.notEqualTo(ShooterState.kRun), 
-                    new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary)
+                    new CancelCommand(primeShooter), 
+                    new IndexerIntakeActive2(indexer, intake, joystickPrimary, shooterState, indexerState)
                 )
             );
         
         joystickPrimary.getButton(ButtonType.kX)
-            .whenReleased(yes);
+            .whenReleased(primeShooter);
 
         joystickSecondary.getButton(ButtonType.kStart)
-            .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, Flywheel, Indexer, Climber))
+            .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, flywheel, indexer, climber))
             .beforeStarting(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear)));
 
         joystickSecondary.getButton(ButtonType.kX)
             .and(climberToggleTrigger)
-            .whenActive(new AutoAlign(Climber, DriveTrain, 180));
+            .whenActive(new AutoAlign(climber, driveTrain, 180));
 
         joystickSecondary.getButton(ButtonType.kB)
             .and(climberToggleTrigger)
-            .whenActive(DriveTrain::resetGyro);
+            .whenActive(driveTrain::resetGyro);
 
         joystickSecondary.getButton(ButtonType.kY)
             .and(climberToggleTrigger)
-            .whenActive(Climber::zeroEncoder);
+            .whenActive(climber::zeroEncoder);
         
         joystickSecondary.getButton(ButtonType.kLeftBumper)
             .and(climberToggleTrigger.negate())
@@ -220,9 +218,9 @@ public class RobotCompetition implements RobotConfiguration {
 
         shooterEnabledTrigger.whileActiveOnce(
             new ComplexOperateShooter(
-                Flywheel, turret, DriveTrain, limelight, Indexer,
+                flywheel, turret, driveTrain, limelight, indexer,
                 new Trigger(joystickSecondary.getController()::getRightBumper),
-                shooterModelProvider, shooterConfiguration, indexerArmedState, shooterSweepDirection, 
+                shooterModelProvider, shooterConfiguration, indexerState, shooterSweepDirection, 
                 shooterState, shooterOffset, drivetrainSpeed
             )
         );
@@ -235,9 +233,9 @@ public class RobotCompetition implements RobotConfiguration {
             .and(shooterModeTrigger)
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
+                    indexerState.configureTo(IndexerState.kActive),
                     shooterState.equalTo(ShooterState.kOff), 
-                    new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85)
+                    new RunShooter(flywheel, indexer, shooterState, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85)
                 )
             ).whenInactive(new RotateTurret(turret, 0));
             
@@ -265,10 +263,10 @@ public class RobotCompetition implements RobotConfiguration {
             .and(climberToggleTrigger.negate())
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.equalTo(IndexerArmedState.kArmed),
+                    indexerState.equalTo(IndexerState.kArmed),
                     new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kLow),
                     new RotateTurret(turret, 0),
-                    new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.LOW_FLYWHEEL_VELOCITY, 0.5)
+                    new RunShooter(flywheel, indexer, shooterState, Constants.Shooter.LOW_FLYWHEEL_VELOCITY, 0.5)
                 )
             );
 
@@ -276,10 +274,10 @@ public class RobotCompetition implements RobotConfiguration {
             .and(climberToggleTrigger.negate())
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.equalTo(IndexerArmedState.kArmed),
+                    indexerState.equalTo(IndexerState.kArmed),
                     new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kGuard),
                     new RotateTurret(turret, 0),
-                    new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.GUARD_FLYWHEEL_VELOCITY, 0.5)
+                    new RunShooter(flywheel, indexer, shooterState, Constants.Shooter.GUARD_FLYWHEEL_VELOCITY, 0.5)
                 )
             );        
     }
@@ -291,7 +289,7 @@ public class RobotCompetition implements RobotConfiguration {
     public Command getTeleopCommand() {
         return new ParallelCommandGroup(
             new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
-            new FindElevatorZero(Climber),
+            new FindElevatorZero(climber),
 
             new ConfigureProperty<>(shooterEnabled, false)
         );
