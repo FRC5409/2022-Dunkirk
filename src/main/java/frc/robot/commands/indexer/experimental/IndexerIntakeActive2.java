@@ -13,6 +13,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Indexer;
 
 public class IndexerIntakeActive2 extends ProxyStateGroupCommand {
+    private final Property<ShooterState> shooterState;
     private final Property<IndexerState> indexerState;
 
     public IndexerIntakeActive2(
@@ -22,6 +23,7 @@ public class IndexerIntakeActive2 extends ProxyStateGroupCommand {
         Property<ShooterState> shooterState,
         Property<IndexerState> indexerState
     ) {
+        this.shooterState = shooterState;
         this.indexerState = indexerState;
 
         addStates(
@@ -32,8 +34,19 @@ public class IndexerIntakeActive2 extends ProxyStateGroupCommand {
                 )
         );
 
-        setDefaultState("frc.robot.indexer.intake");
+        // setDefaultState("frc.robot.indexer.intake");
     }
+
+    @Override
+    public void initialize() {
+        if (shooterState.isEqual(ShooterState.kRun))
+            setActiveState("frc.robot.indexer.intake:pipe");
+        else
+            setActiveState("frc.robot.indexer.intake:index");
+
+        super.initialize();
+    }
+
 
     @Override
     public void end(boolean interrupted) {

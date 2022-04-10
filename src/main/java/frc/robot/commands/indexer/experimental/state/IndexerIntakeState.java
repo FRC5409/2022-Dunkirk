@@ -23,11 +23,6 @@ public class IndexerIntakeState extends StateBase {
     @Override
     public void initialize() {
         intake.solenoidsDown();
-
-        if (shooterState.isEqual(ShooterState.kRun))
-            next("pipe");
-        else
-            next("index");
     }
 
     @Override
