@@ -1,5 +1,6 @@
 package frc.robot.base.command;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,15 +26,16 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
  * @see StateCommand, StateCommandGroup
  */
 public abstract class ProxyStateGroupCommand extends CommandBase {
-    protected Map<String, State> m_states;
     protected StateExecutionStack m_stack;
-    protected State m_default;
+    protected Map<String, State> m_states;
+    protected List<State> m_defaults;
+    protected boolean m_active;
 
     /**
      * Construct an empty {@link ProxyStateGroupCommand}.
      */
     public ProxyStateGroupCommand() {
-        m_default = null;
+        m_defaults = null;
         m_states = new HashMap<>();
         m_stack = null;
     }
@@ -56,21 +58,25 @@ public abstract class ProxyStateGroupCommand extends CommandBase {
      * @param commands         The states included in the group.
      * @param defaultStateName The default state name.
      */
-    public ProxyStateGroupCommand(String defaultStateName, State... commands) {
+    public ProxyStateGroupCommand(String defaultStatePath, State... commands) {
         this();
         addStates(commands);
-        m_default = getState(defaultStateName);
+        setDefaultState(defaultStatePath);
     }
 
     @Override
     public void initialize() {
-        if (m_default == null) {
-            System.err.println("No initial state specified");
-            return;
+        if (m_stack == null) {
+            if (m_defaults == null) {
+                System.err.println("No initial state specified");
+                return;
+            } else {
+                m_stack = new StateExecutionStack(m_defaults);
+            }
         }
         
-        m_stack = new StateExecutionStack(m_default);
         m_stack.schedule();
+        m_active = true;
     }
 
     @Override
@@ -91,7 +97,7 @@ public abstract class ProxyStateGroupCommand extends CommandBase {
 
                 State baseState = getState(path[0]);
                 if (path.length > 1) {
-                    List<State> nextStates = StateCommandManager.getInstance()
+                    List<State> nextStates = StateManager.getInstance()
                         .getStatesOnPath(baseState, path, 1);
 
                     nextStates.add(0, baseState);
@@ -110,11 +116,12 @@ public abstract class ProxyStateGroupCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println(String.valueOf(m_stack));
         if (m_stack != null) {
             m_stack.cancel();
             m_stack = null;
         }
+
+        m_active = false;
     }
 
     /**
@@ -152,8 +159,8 @@ public abstract class ProxyStateGroupCommand extends CommandBase {
      * 
      * @throws UnknownStateException If no command with {@code name} exists. 
      */
-    public void setDefaultState(String name) throws UnknownStateException {
-        m_default = getState(name);
+    public void setDefaultState(String path) throws UnknownStateException {
+        m_defaults = getStates(StateNameFormat.parsePath(path));
     }
     
     /**
@@ -166,27 +173,51 @@ public abstract class ProxyStateGroupCommand extends CommandBase {
      * 
      * @throws UnknownStateException If no command with {@code name} exists. 
      */
-    public boolean setActiveState(String name) {
-        if (m_stack == null)
-            return false;
-            
-        State state = getState(name);
+    public boolean setActiveState(String path) {
+        StateExecutionStack stack = new StateExecutionStack(
+            getStates(StateNameFormat.parsePath(path))
+        );
 
-        // Interrupt the active stack
-        m_stack.cancel();
+        if (m_active) {
+            // Interrupt the active stack
+            m_stack.cancel();
 
-        // Start new stack
-        m_stack = new StateExecutionStack(state);
-        m_stack.schedule();
+            // Start new stack
+            stack.schedule();
+        }
+
+        m_stack = stack;
 
         return true;
     }
 
-    public State getState(String name) throws UnknownStateException {
-        State command = m_states.get(name);
-        if (command == null)
+    protected State getState(String name) throws UnknownStateException {
+        State state = m_states.get(name);
+        if (state == null)
             throw new UnknownStateException("Command state '" + name + "' does not exist.");
-        return command;
+        return state;
+    }
+
+    protected List<State> getStates(String[] path) throws UnknownStateException {
+        if (path.length == 0)
+            throw new UnknownStateException("Cannot find state with empty path");
+
+        State base = m_states.get(path[0]);
+        if (base == null)
+            throw new UnknownStateException("Command state '" + path[0] + "' does not exist.");
+    
+        List<State> states;
+
+        if (path.length > 1) {
+            states = StateManager.getInstance()
+                .getStatesOnPath(base, path, 1);
+        } else {
+            states = new ArrayList<>();
+        }
+
+        states.add(0, base);
+
+        return states;
     }
 
     public Map<String, State> getStates() {
