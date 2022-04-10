@@ -102,7 +102,7 @@ class StateExecutionStack implements Command {
                 String[] path = StateNameFormat.parsePath(nextStatePath);
 
                 // Get next states
-                List<State> nextStates = StateCommandManager.getInstance()
+                List<State> nextStates = StateManager.getInstance()
                     .getStatesOnPath(exitorState, path);
                 
                 // Check if the state we are transitioning from contains
@@ -114,7 +114,7 @@ class StateExecutionStack implements Command {
                     for (int i = m_exitor; i >= 0; i--) {
                         State state = m_states.get(i);
 
-                        nextStates = StateCommandManager.getInstance()
+                        nextStates = StateManager.getInstance()
                             .getStatesOnPath(state, path);
 
                         // Check if state path exists within its local ancestry

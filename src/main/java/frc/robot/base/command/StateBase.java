@@ -12,7 +12,7 @@ public abstract class StateBase implements State {
 
 
     protected StateBase() {
-        StateCommandManager.getInstance().addState(this);
+        StateManager.getInstance().addState(this);
     }
         
     public final void addRequirements(Subsystem... requirements) {

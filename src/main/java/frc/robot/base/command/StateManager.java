@@ -9,10 +9,10 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
-public class StateCommandManager {
-    private static final StateCommandManager m_instance = new StateCommandManager();
+public class StateManager {
+    private static final StateManager m_instance = new StateManager();
     
-    public static final StateCommandManager getInstance() {
+    public static final StateManager getInstance() {
         return m_instance;
     }
 
@@ -21,7 +21,7 @@ public class StateCommandManager {
     private final Map<State, State> m_parent;
     private final Map<State, String> m_path;
 
-    public StateCommandManager() {
+    public StateManager() {
         m_ancestor = new WeakHashMap<>();
         m_children = new WeakHashMap<>();
         m_parent = new WeakHashMap<>();

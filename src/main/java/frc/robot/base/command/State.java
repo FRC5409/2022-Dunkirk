@@ -40,7 +40,7 @@ public interface State extends Sendable {
     void reset();
 
     default State addStates(State... states) {
-        StateCommandManager.getInstance().addStateChildren(this, states);
+        StateManager.getInstance().addStateChildren(this, states);
         return this;
     }
 
@@ -48,11 +48,11 @@ public interface State extends Sendable {
 
     @Nullable
     default State getParent() {
-        return StateCommandManager.getInstance().getStateParent(this);
+        return StateManager.getInstance().getStateParent(this);
     }
 
     default Map<String, State> getChildren() {
-        return StateCommandManager.getInstance().getStateChildren(this);
+        return StateManager.getInstance().getStateChildren(this);
     }
     
     @Nullable
@@ -62,7 +62,7 @@ public interface State extends Sendable {
     String getName();
 
     default String getPath() {
-        return StateCommandManager.getInstance().getStatePath(this);
+        return StateManager.getInstance().getStatePath(this);
     }
 
     int getExecutionIndex();
