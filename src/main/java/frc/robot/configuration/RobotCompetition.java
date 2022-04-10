@@ -193,7 +193,10 @@ public class RobotCompetition implements RobotConfiguration {
             );
         
         joystickPrimary.getButton(ButtonType.kX)
-            .whenReleased(primeShooter);
+            .whenReleased(() -> {
+                if (!shooterState.isEqual(ShooterState.kRun))
+                    primeShooter.schedule();
+            });
 
         joystickSecondary.getButton(ButtonType.kStart)
             .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, flywheel, indexer, climber))
