@@ -96,7 +96,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
         // Odometry Trajectories
         
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(
-            p1, List.of(), p2, kAuto.configForwards
+            p1, List.of(), p2, kAuto.configForwardsSlow
         );
 
         Trajectory t2 = TrajectoryGenerator.generateTrajectory(

@@ -259,6 +259,13 @@ public final class Constants {
             .setEndVelocity(0)
             .setReversed(false);
 
+        public static final TrajectoryConfig configForwardsSlow = 
+            new TrajectoryConfig(kMaxSpeedSlow, kMaxAccelerationSlow)
+            .setKinematics(kDriveKinematics)
+            .addConstraint(autoVoltageConstraint)    
+            .setEndVelocity(1)
+            .setReversed(true);
+
         public static final TrajectoryConfig configBackwardsSlow = 
             new TrajectoryConfig(kMaxSpeedSlow, kMaxAccelerationSlow)
             .setKinematics(kDriveKinematics)
