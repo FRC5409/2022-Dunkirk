@@ -5,35 +5,39 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
+import frc.robot.Constants.ClimberDestination;
 import frc.robot.subsystems.Climber;
 
 /** An example command that uses an example subsystem. */
 public class ElevateTo extends CommandBase {
     @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
     // private final XboxController m_joystick;
+    private final XboxController joystick;
     private final Climber climber;
     private double toPos;
     private boolean useVelForEnd = false;
     private boolean lockOnDescend = false;
+    private Constants.ClimberDestination destination;
 
     boolean started = false;
     private final Timer timer = new Timer();
 
     /**
-     * Creates a new instance of 
+     * Creates a new instance of
+     * 
      * @param subsystem
      * @param endPos
      * @param _lockOnDescend
      */
-    public ElevateTo(Climber subsystem, double endPos, boolean _lockOnDescend) {
-        climber = subsystem;
-        toPos = endPos;
-        // Use addRequirements() here to declare subsystem dependencies.
+    public ElevateTo(XboxController _joystick, Climber subsystem, Constants.ClimberDestination _destination,
+            boolean _lockOnDescend) {
+        this(_joystick, subsystem, _destination);
+
         lockOnDescend = _lockOnDescend;
-
-        addRequirements(subsystem);
     }
 
     /**
@@ -41,21 +45,10 @@ public class ElevateTo extends CommandBase {
      *
      * @param subsystem The subsystem used by this command.
      */
-    public ElevateTo(Climber subsystem, double endPos) {
+    public ElevateTo(XboxController _joystick, Climber subsystem, Constants.ClimberDestination _destination) {
+        joystick = _joystick;
         climber = subsystem;
-        toPos = endPos;
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(subsystem);
-    }
-
-    /**
-     * Creates a new ExampleCommand.
-     *
-     * @param subsystem The subsystem used by this command.
-     */
-    public ElevateTo(Climber subsystem) {
-        climber = subsystem;
-        toPos = -1;
+        destination = _destination;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(subsystem);
     }
@@ -63,8 +56,17 @@ public class ElevateTo extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        if (toPos < 0)
+
+        if (destination == Constants.ClimberDestination.slider)
             toPos = climber.getSliderPosition();
+        else if (destination == Constants.ClimberDestination.lowRung)
+            toPos = Constants.kClimber.TO_LOW_RUNG;
+        else if (destination == Constants.ClimberDestination.midRung)
+            toPos = Constants.kClimber.TO_MID_RUNG;
+        else if (destination == Constants.ClimberDestination.lockLow)
+            toPos = Constants.kClimber.TO_MIN_LOW;
+        else if (destination == Constants.ClimberDestination.lockMid)
+            toPos = Constants.kClimber.TO_MIN_MID;
 
         climber.unlockArm();
 
@@ -78,6 +80,23 @@ public class ElevateTo extends CommandBase {
 
     @Override
     public void execute() {
+        int pov = joystick.getPOV();
+
+        if (pov == 0 && destination != Constants.ClimberDestination.midRung) { // Go to mid rung
+            CommandScheduler.getInstance().schedule(true, new ElevateTo(joystick, climber, ClimberDestination.midRung));
+        } else if (pov == 180 && (destination != Constants.ClimberDestination.lockLow
+                || destination != Constants.ClimberDestination.lockMid)) { // Send elevator down to position based on
+                                                                           // previous held position
+            CommandScheduler.getInstance().schedule(true,
+                    new ElevateTo(joystick, climber,
+                            (climber.getPrevMove() == Constants.kClimber.TO_LOW_RUNG)
+                                    ? ClimberDestination.lockLow
+                                    : ClimberDestination.lockMid,
+                            true));
+        } else if (pov == 270 && destination != ClimberDestination.lowRung) { // Go to low rung
+            CommandScheduler.getInstance().schedule(true, new ElevateTo(joystick, climber, ClimberDestination.lowRung));
+        }
+
         if (!useVelForEnd && Math.abs(climber.getRPM()) >= 1.0)
             useVelForEnd = true;
 
