@@ -22,8 +22,6 @@ import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.DelayedCancelCommand;
 import frc.robot.base.command.ProxySequentialCommandGroup;
-import frc.robot.base.drive.DriveOdometry;
-import frc.robot.base.drive.MockDriveOdometry;
 import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
@@ -34,6 +32,7 @@ import frc.robot.commands.ConfigureProperty;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.autonomous.trajectory.ResetOdometry;
 import frc.robot.commands.indexer.IndexerIntakeActive;
+import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.shooter.ComplexOperateShooter;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.PrimeShooter;
@@ -79,7 +78,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
         
         Pose2d p1 = createPose(0, 0, 0);
 
-        Pose2d p2 = createPose(1.5, 0, 0);
+        Pose2d p2 = createPose(2.75, 0, 0);
 
         Pose2d p3 = createPose(
             (5.14 + 0.75*Math.cos(Math.PI*13/36)), 
@@ -89,7 +88,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
         Pose2d p4 = createPose(
             (5.14 + 0.75*Math.cos(Math.PI*13/36) - 1*Math.sin(Math.PI*13/36)), 
             (-0.45 - 0.75*Math.sin(Math.PI*13/36) - 0.5*Math.sin(Math.PI*13/36)), 
-            Math.PI*5/36);
+            Math.PI*5/36); // TODO: tune
 
         Pose2d p5 = createPose(1.7, 0, 0);
 
@@ -123,7 +122,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
         // =====================================================================
         // Shooter Commands
 
-        DriveOdometry mockDrivetrain = new MockDriveOdometry();
+        // DriveOdometry mockDrivetrain = new MockDriveOdometry();
 
         Property<Boolean> runShooter = new ValueProperty<>(false);
         Property<Double> mockDriveSpeed = new ValueProperty<>(0.0);
@@ -131,7 +130,7 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
         Trigger runShooterTrigger = new Trigger(runShooter::get);
 
         ComplexOperateShooter runShooterCommand = new ComplexOperateShooter(
-            flywheel, turret, mockDrivetrain, limelight, indexer, runShooterTrigger, 
+            flywheel, turret, drivetrain, limelight, indexer, runShooterTrigger, 
             shooterModelProvider, shooterConfiguration, indexerArmedState, 
             shooterSweepDirection, shooterState, shooterOffset, mockDriveSpeed);
 
@@ -159,32 +158,24 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
             new ResetOdometry(t1.getInitialPose(), drivetrain),
 
             new ParallelCommandGroup(
-                // Run indexer, while moving trough trajectory #2
-                new IndexerIntakeActive(indexer, intake).withTimeout(2),
-                new SequentialCommandGroup(
-                    new WaitCommand(0.35),
-                    r1 // Race Condition
-                ),
-                
+
                 // Schedule shooter  
                 new ScheduleCommand(
                     new SequentialCommandGroup(
-                        new WaitCommand(1.5), // Delay
                         new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft),
+                        new ConfigureProperty<>(indexerArmedState, IndexerArmedState.kArmed),
+                        new ConfigureProperty<>(runShooter, true),
+                        new WaitCommand(0.4), // TODO: tune
                         runShooterCommand
                     )
+                ),
+
+                // Run indexer, while moving trough trajectory #2
+                new RunIntake(intake).withTimeout(2.5),
+                new SequentialCommandGroup(
+                    new WaitCommand(0.35),
+                    r1 // Race Condition
                 )
-            ),
-
-            // Run indexer for additional time
-            new IndexerIntakeActive(indexer, intake).withTimeout(0.5),
-            
-            new ParallelCommandGroup(
-                // Prime shooter
-                new PrimeShooter(indexer, indexerArmedState),
-
-                // Simulate run shooter trigger
-                new ConfigureProperty<>(runShooter, true)
             ),
 
             // Shooter is shooting (eiow)
@@ -193,9 +184,8 @@ public class FourBallsAuto extends ProxySequentialCommandGroup {
             // Reset Odometry to next position
             new ResetOdometry(t2.getInitialPose(), drivetrain),
 
-            new WaitCommand(2.0),
-
             new ConfigureProperty<>(runShooter, false),
+            new ConfigureProperty<>(indexerArmedState, IndexerArmedState.kActive),
             
             // Run indexer and intake, while moving through trajectory #2
             new ParallelRaceGroup(
