@@ -10,7 +10,23 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /** An example command that uses an example subsystem. */
 public class ToggleClimberLockCommand extends CommandBase {
     @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
-    private final Climber m_subsystem;
+    private final Climber climber;
+    private boolean lockState = false;
+    private boolean passedLockState = false;
+
+    /**
+     * Creates a new ExampleCommand.
+     *
+     * @param subsystem The subsystem used by this command.
+     */
+    public ToggleClimberLockCommand(Climber _climber, boolean _lockState) {
+        climber = _climber;
+        lockState = _lockState;
+        passedLockState = true;
+
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(climber);
+    }
 
     /**
      * Creates a new ExampleCommand.
@@ -18,7 +34,7 @@ public class ToggleClimberLockCommand extends CommandBase {
      * @param subsystem The subsystem used by this command.
      */
     public ToggleClimberLockCommand(Climber subsystem) {
-        m_subsystem = subsystem;
+        climber = subsystem;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(subsystem);
     }
@@ -26,7 +42,14 @@ public class ToggleClimberLockCommand extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_subsystem.toggleLock();
+        if (!passedLockState)
+            climber.toggleLock();
+        else {
+            if (lockState)
+                climber.lockArm();
+            else
+                climber.unlockArm();
+        }
     }
 
     // Called every time the scheduler runs while the command is scheduled.
