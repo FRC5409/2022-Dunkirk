@@ -122,8 +122,8 @@ public abstract class ProxyStateGroupCommand extends CommandBase {
      * 
      * @param commands The states to add.
      */
-    public void addStates(State... commands) {
-        for (State cmd : Set.of(commands)) {
+    public void addStates(State... states) {
+        for (State cmd : Set.of(states)) {
             final String name = cmd.getName();
             StateNameFormat.assertName(name);
 
