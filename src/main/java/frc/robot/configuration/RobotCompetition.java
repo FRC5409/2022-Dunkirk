@@ -36,12 +36,12 @@ import frc.robot.subsystems.shooter.*;
 import frc.robot.commands.shooter.*;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
-import frc.robot.commands.autonomous.trajectory.trajectoryAuto.AdvancedTwoBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.FourBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
-import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto.AltThreeBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto.SynchronizedThreeBallsAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto.AdvancedTwoBallsAuto;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto.TwoBallsAuto;
 
 public class RobotCompetition implements RobotConfiguration {
     private final ShooterFlywheel      Flywheel;

@@ -1,4 +1,4 @@
-package frc.robot.commands.autonomous.trajectory.trajectoryAuto;
+package frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
 
 import java.util.List;
 
