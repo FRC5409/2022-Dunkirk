@@ -67,11 +67,15 @@ public class OperateShooterState extends StateBase {
 
     @Override
     public void initialize() {
-        if (!limelight.isEnabled())
+        if (!limelight.isEnabled()) {
+            getLogger().severe("Limelight was unexpectedly disabled, enabling...");
             limelight.enable();
+        }
 
-        if (!turret.isEnabled())
+        if (!turret.isEnabled()) {
+            getLogger().severe("Turret was unexpectedly disabled, enabling...");
             turret.enable();
+        }
 
         // Initialize odometry
         controller = sharedController.get();

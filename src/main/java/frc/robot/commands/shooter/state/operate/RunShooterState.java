@@ -13,7 +13,6 @@ import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.utils.Equation;
-import frc.robot.utils.Toggleable;
 import frc.robot.Constants;
 
 // TODO update doc
@@ -65,9 +64,12 @@ public class RunShooterState extends StateBase {
 
     @Override
     public void initialize() {
-        if (!flywheel.isEnabled())
-            flywheel.enable(); //throw new RuntimeException("Cannot run shooter when requirements are not enabled.");
-        else if (sharedOdometry.get() == null)
+        if (!flywheel.isEnabled()) {
+            getLogger().severe("Flywheel was unexpectedly disabled, enabling...");
+            flywheel.enable();
+        }
+        
+        if (sharedOdometry.get() == null)
             throw new RuntimeException("Cannot run shooter when odometry is not initialized");
 
         if (!indexer.isEnabled())
@@ -83,7 +85,7 @@ public class RunShooterState extends StateBase {
         odometry = sharedOdometry.get();
         active = false;
 
-        System.out.println("RUN SHOOTER PURRRRRRR");
+        getLogger().info("RUN SHOOTER PURRRRRRR");
     }
 
     @Override

@@ -59,11 +59,15 @@ public class SweepShooterState extends TimedStateCommand {
     public void initialize() {
         super.initialize();
 
-        if (!limelight.isEnabled())
+        if (!limelight.isEnabled()) {
+            getLogger().severe("Limelight was unexpectedly disabled, enabling...");
             limelight.enable();
+        }
 
-        if (!turret.isEnabled())
+        if (!turret.isEnabled()) {
+            getLogger().severe("Turret was unexpectedly disabled, enabling...");
             turret.enable();
+        }
 
         odometry = sharedOdometry.get();
 
