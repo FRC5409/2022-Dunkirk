@@ -17,16 +17,8 @@ public class IndexerIntakeActive extends CommandBase {
 
     private boolean tofEnter;
 
-    public IndexerIntakeActive(Indexer indexer, Intake intake, Joystick joystickMain, Joystick joystickSecondary) {
-        this.indexer = indexer;
-        this.intake = intake;
-
-        rumbleCommand = new JoystickRumble(0.5)
-            .addJoysticks(joystickMain)
-            .withDebounce(0.1)
-            .withTimeout(0.5);
-
-        addRequirements(indexer, intake);
+    public IndexerIntakeActive(Indexer indexer, Intake intake, Joystick joystick) {
+        this(indexer, intake, joystick);
     }
 
     public IndexerIntakeActive(Indexer indexer, Intake intake) {
