@@ -15,7 +15,7 @@ import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.command.CancelCommand;
 import frc.robot.base.command.ProxySequentialCommandGroup;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.RobotConfiguration;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.CommandProperty;
@@ -57,8 +57,9 @@ public class RobotCompetition implements RobotConfiguration {
 
     private final DefaultDrive         defaultDrive;
 
-    private final CommandProperty<IndexerArmedState> indexerArmedState;
+    private final CommandProperty<IndexerState> indexerState;
     private final CommandProperty<ShooterState> shooterState;
+    
     private final ValueProperty<ShooterConfiguration> shooterConfiguration;
     private final ValueProperty<SweepDirection> shooterSweepDirection;
     private final ValueProperty<Boolean> climberActive;
@@ -87,7 +88,7 @@ public class RobotCompetition implements RobotConfiguration {
 
         shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
         shooterConfiguration  = new ValueProperty<>(Constants.Shooter.CONFIGURATIONS.getConfiguration(ShooterMode.kFar));
-        indexerArmedState     = new CommandProperty<>(IndexerArmedState.kArmed);
+        indexerState     = new CommandProperty<>(IndexerState.kArmed);
         drivetrainSpeed       = new ValueProperty<>(1.0);
         shooterEnabled        = new ValueProperty<>(false);
         climberActive         = robot.climberActive;
@@ -120,21 +121,21 @@ public class RobotCompetition implements RobotConfiguration {
 
         autoCommandSelector.setDefaultOption("Advanced Two",
             new AdvancedTwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterConfiguration, shooterSweepDirection, Property.cast(shooterOffset), shooterState, indexerArmedState));
+                shooterConfiguration, shooterSweepDirection, Property.cast(shooterOffset), shooterState, indexerState));
 
         autoCommandSelector.addOption("Three",
             new SynchronizedThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerArmedState,
+                shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerState,
                 shooterState, shooterOffset));
 
         autoCommandSelector.addOption("Three Alt",
             new AltThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerArmedState,
+                shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerState,
                 shooterState, shooterOffset));
 
         autoCommandSelector.addOption("Four",
             new FourBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
-                shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerArmedState,
+                shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerState,
                 shooterState, shooterOffset));
 
         SmartDashboard.putData("Auto Chooser", autoCommandSelector);
@@ -181,19 +182,19 @@ public class RobotCompetition implements RobotConfiguration {
         joystickPrimary.getButton(ButtonType.kB)
             .whileHeld(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
+                    indexerState.configureTo(IndexerState.kActive),
                     shooterState.notEqualTo(ShooterState.kRun),
                     new RunIndexer(Indexer, -0.5)
                 )
             );
         
-        Command yes = new PrimeShooter(Indexer, indexerArmedState);
+        Command yes = new PrimeShooter(Indexer, indexerState);
 
         joystickPrimary.getButton(ButtonType.kX)
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
                     new CancelCommand(yes),
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
+                    indexerState.configureTo(IndexerState.kActive),
                     shooterState.notEqualTo(ShooterState.kRun), 
                     new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary)
                 )
@@ -227,7 +228,7 @@ public class RobotCompetition implements RobotConfiguration {
             new ComplexOperateShooter(
                 Flywheel, turret, DriveTrain, limelight, Indexer,
                 new Trigger(joystickSecondary.getController()::getRightBumper),
-                shooterModelProvider, shooterConfiguration, indexerArmedState, shooterSweepDirection, 
+                shooterModelProvider, shooterConfiguration, indexerState, shooterSweepDirection, 
                 shooterState, shooterOffset, drivetrainSpeed
             )
         );
@@ -240,7 +241,7 @@ public class RobotCompetition implements RobotConfiguration {
             .and(shooterModeTrigger)
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
+                    indexerState.configureTo(IndexerState.kActive),
                     shooterState.equalTo(ShooterState.kOff), 
                     new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85)
                 )
@@ -270,7 +271,7 @@ public class RobotCompetition implements RobotConfiguration {
             .and(climberToggleTrigger.negate())
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.equalTo(IndexerArmedState.kArmed),
+                    indexerState.equalTo(IndexerState.kArmed),
                     new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kLow),
                     new RotateTurret(turret, 0),
                     new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.LOW_FLYWHEEL_VELOCITY, 0.5)
@@ -281,7 +282,7 @@ public class RobotCompetition implements RobotConfiguration {
             .and(climberToggleTrigger.negate())
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.equalTo(IndexerArmedState.kArmed),
+                    indexerState.equalTo(IndexerState.kArmed),
                     new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kGuard),
                     new RotateTurret(turret, 0),
                     new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.GUARD_FLYWHEEL_VELOCITY, 0.5)

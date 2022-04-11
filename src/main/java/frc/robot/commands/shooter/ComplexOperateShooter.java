@@ -5,7 +5,7 @@ import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.ProxyStateGroupCommand;
 import frc.robot.base.drive.DriveOdometry;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.shooter.ShooterConditions;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterModelProvider;
@@ -51,7 +51,7 @@ public class ComplexOperateShooter extends ProxyStateGroupCommand {
         Trigger shooterTrigger,
         ShooterModelProvider shooterModelProvider,
         Property<ShooterConfiguration> shooterConfiguration,
-        Property<IndexerArmedState> indexerArmedState,
+        Property<IndexerState> indexerState,
         Property<SweepDirection> shooterSweepDirection,
         Property<ShooterState> shooterState,
         Property<Double> shooterOffset,
@@ -66,17 +66,17 @@ public class ComplexOperateShooter extends ProxyStateGroupCommand {
             new SearchShooterState(limelight, shooterState),
             new SweepShooterState(turret, limelight, Property.cast(sharedOdometry), shooterSweepDirection, shooterState),
             new OperateShooterState(turret, drivetrain, limelight, shooterConditions, 
-                sharedController, sharedOdometry, indexerArmedState)
+                sharedController, sharedOdometry, indexerState)
                 .addStates(
                     new DormantShooterState(shooterTrigger, sharedOdometry, 
                         shooterState, shooterTriggerDebounce, driveSpeed),
                     
                     new ArmShooterState(flywheel, shooterConditions, shooterTrigger, shooterModelProvider,
-                        sharedOdometry, indexerArmedState, shooterState, shooterTriggerDebounce, 
+                        sharedOdometry, indexerState, shooterState, shooterTriggerDebounce, 
                         shooterOffset, driveSpeed),
 
                     new RunShooterState(flywheel, indexer, shooterTrigger, shooterModelProvider, sharedOdometry,
-                        indexerArmedState, shooterState, shooterTriggerDebounce, 
+                        indexerState, shooterState, shooterTriggerDebounce, 
                         shooterOffset, driveSpeed)
                 )
         ); 

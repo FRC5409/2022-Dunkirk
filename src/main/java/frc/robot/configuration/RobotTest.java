@@ -22,7 +22,7 @@ import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.Joystick.ButtonType;
 import frc.robot.base.command.CancelCommand;
 import frc.robot.base.command.ProxySequentialCommandGroup;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.RobotConfiguration;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.Joystick;
@@ -76,7 +76,7 @@ public class RobotTest implements RobotConfiguration {
 
     private final DefaultDrive         defaultDrive;
 
-    private final CommandProperty<IndexerArmedState> indexerArmedState;
+    private final CommandProperty<IndexerState> indexerArmedState;
     private final CommandProperty<ShooterState> shooterState;
     private final ValueProperty<ShooterConfiguration> shooterConfiguration;
     private final ValueProperty<SweepDirection> shooterSweepDirection;
@@ -107,7 +107,7 @@ public class RobotTest implements RobotConfiguration {
 
         shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
         shooterConfiguration  = new ValueProperty<>(Constants.Shooter.CONFIGURATIONS.getConfiguration(ShooterMode.kFar));
-        indexerArmedState     = new CommandProperty<>(IndexerArmedState.kArmed);
+        indexerArmedState     = new CommandProperty<>(IndexerState.kArmed);
         drivetrainSpeed       = new ValueProperty<>(1.0);
         shooterEnabled        = new ValueProperty<>(false);
         climberActive         = robot.climberActive;
@@ -230,7 +230,7 @@ public class RobotTest implements RobotConfiguration {
         joystickPrimary.getButton(ButtonType.kB)
             .whileHeld(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
+                    indexerArmedState.configureTo(IndexerState.kActive),
                     shooterState.notEqualTo(ShooterState.kRun),
                     new RunIndexer(Indexer, -0.5)
                 )
@@ -242,7 +242,7 @@ public class RobotTest implements RobotConfiguration {
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
                     new CancelCommand(yes),
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
+                    indexerArmedState.configureTo(IndexerState.kActive),
                     shooterState.notEqualTo(ShooterState.kRun), 
                     new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary)
                 )
@@ -289,7 +289,7 @@ public class RobotTest implements RobotConfiguration {
             .and(shooterModeTrigger)
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.configureTo(IndexerArmedState.kActive),
+                    indexerArmedState.configureTo(IndexerState.kActive),
                     shooterState.equalTo(ShooterState.kOff), 
                     new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85)
                 )
@@ -319,7 +319,7 @@ public class RobotTest implements RobotConfiguration {
             .and(climberToggleTrigger.negate())
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.equalTo(IndexerArmedState.kArmed),
+                    indexerArmedState.equalTo(IndexerState.kArmed),
                     new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kLow),
                     new RotateTurret(turret, 0),
                     new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.LOW_FLYWHEEL_VELOCITY, 0.5)
@@ -330,7 +330,7 @@ public class RobotTest implements RobotConfiguration {
             .and(climberToggleTrigger.negate())
             .whileActiveOnce(
                 new ProxySequentialCommandGroup(
-                    indexerArmedState.equalTo(IndexerArmedState.kArmed),
+                    indexerArmedState.equalTo(IndexerState.kArmed),
                     new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kGuard),
                     new RotateTurret(turret, 0),
                     new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.GUARD_FLYWHEEL_VELOCITY, 0.5)

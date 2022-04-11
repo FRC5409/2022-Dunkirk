@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.base.Property;
 import frc.robot.base.command.InterruptType;
 import frc.robot.base.command.StateBase;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.shooter.ShooterModelProvider;
 import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.odometry.DriveShooterOdometry;
@@ -23,7 +23,7 @@ import frc.robot.Constants;
  */
 public class RunShooterState extends StateBase {
     private final Property<DriveShooterOdometry> sharedOdometry;
-    private final Property<IndexerArmedState> indexerArmedState;
+    private final Property<IndexerState> indexerState;
     private final Property<ShooterState> shooterState;
     private final Property<Boolean> shooterTriggerDebounce;
     private final Property<Double> shooterOffset;
@@ -45,7 +45,7 @@ public class RunShooterState extends StateBase {
         Trigger shooterTrigger,
         ShooterModelProvider shooterModelProvider,
         Property<DriveShooterOdometry> sharedOdometry,
-        Property<IndexerArmedState> indexerArmedState,
+        Property<IndexerState> indexerState,
         Property<ShooterState> shooterState,
         Property<Boolean> shooterTriggerDebounce,
         Property<Double> shooterOffset,
@@ -53,7 +53,7 @@ public class RunShooterState extends StateBase {
     ) {
         this.shooterTriggerDebounce = shooterTriggerDebounce;
         this.shooterModelProvider = shooterModelProvider;
-        this.indexerArmedState = indexerArmedState;
+        this.indexerState = indexerState;
         this.sharedOdometry = sharedOdometry;
         this.shooterTrigger = shooterTrigger;
         this.shooterOffset = shooterOffset;
@@ -106,7 +106,7 @@ public class RunShooterState extends StateBase {
         if (!shooterTrigger.get()) {
             shooterTriggerDebounce.set(true);
             next("dormant");
-        } else if (!indexerArmedState.isEqual(IndexerArmedState.kArmed)) {
+        } else if (!indexerState.isEqual(IndexerState.kArmed)) {
             next("arm");
         }
 

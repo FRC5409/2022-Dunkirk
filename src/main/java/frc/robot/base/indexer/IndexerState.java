@@ -1,5 +1,5 @@
 package frc.robot.base.indexer;
 
-public enum IndexerArmedState {
+public enum IndexerState {
     kOff, kActive, kArmed
 }

@@ -24,7 +24,7 @@ import frc.robot.base.command.DelayedCancelCommand;
 import frc.robot.base.command.ProxySequentialCommandGroup;
 import frc.robot.base.drive.DriveOdometry;
 import frc.robot.base.drive.MockDriveOdometry;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterModelProvider;
@@ -60,7 +60,7 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
         ShooterModelProvider shooterModelProvider,
         Property<ShooterConfiguration> shooterConfiguration, 
         Property<SweepDirection> shooterSweepDirection,
-        Property<IndexerArmedState> indexerArmedState,
+        Property<IndexerState> indexerState,
         Property<ShooterState> shooterState,
         Property<Double> shooterOffset
     ) {
@@ -122,7 +122,7 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
 
         ComplexOperateShooter runShooterCommand = new ComplexOperateShooter(
             flywheel, turret, mockDrivetrain, limelight, indexer, runShooterTrigger, 
-            shooterModelProvider, shooterConfiguration, indexerArmedState, 
+            shooterModelProvider, shooterConfiguration, indexerState, 
             shooterSweepDirection, shooterState, shooterOffset, mockDriveSpeed);
 
         // =====================================================================
@@ -170,7 +170,7 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
             new IndexerIntakeActive(indexer, intake).withTimeout(0.75),
             
             // Prime shooter
-            new PrimeShooter(indexer, indexerArmedState),
+            new PrimeShooter(indexer, indexerState),
 
             // Simulate run shooter trigger
             new ConfigureProperty<>(runShooter, true),
@@ -207,7 +207,7 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
                 )
             ),
             // Prime shooter
-            new PrimeShooter(indexer, indexerArmedState),
+            new PrimeShooter(indexer, indexerState),
 
             // Simulate run shooter trigger
             new ConfigureProperty<>(runShooter, true),

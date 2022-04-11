@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.base.Property;
 import frc.robot.base.command.InterruptType;
 import frc.robot.base.command.StateBase;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.shooter.ShooterConditionType;
 import frc.robot.base.shooter.ShooterConditions;
 import frc.robot.base.shooter.ShooterModelProvider;
@@ -42,7 +42,7 @@ public class ArmShooterState extends StateBase {
         Trigger shooterTrigger,
         ShooterModelProvider shooterModelProvider,
         Property<DriveShooterOdometry> sharedOdometry,
-        Property<IndexerArmedState> indexerArmedState,
+        Property<IndexerState> indexerState,
         Property<ShooterState> shooterState,
         Property<Boolean> shooterTriggerDebounce,
         Property<Double> shooterOffset,

@@ -17,7 +17,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.kAuto;
 import frc.robot.base.Property;
 import frc.robot.base.command.ProxySequentialCommandGroup;
-import frc.robot.base.indexer.IndexerArmedState;
+import frc.robot.base.indexer.IndexerState;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.ShooterState;
@@ -61,7 +61,7 @@ public class AdvancedTwoBallsAuto extends ProxySequentialCommandGroup {
         Property<SweepDirection> shooterSweepDirection,
         Property<Integer> shooterOffset,
         Property<ShooterState> shooterState,
-        Property<IndexerArmedState> indexerArmedState
+        Property<IndexerState> indexerState
     ){
 
         m_drive   = drive;
@@ -131,7 +131,7 @@ public class AdvancedTwoBallsAuto extends ProxySequentialCommandGroup {
                 r2
             ),
             new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1),
-            new PrimeShooter(indexer, indexerArmedState),
+            new PrimeShooter(indexer, indexerState),
             new RunShooter(flywheel, indexer, shooterState, 800).withTimeout(3)
         );
     }
