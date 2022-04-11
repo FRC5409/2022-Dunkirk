@@ -67,8 +67,8 @@ public class OperateShooterState extends StateBase {
 
     @Override
     public void initialize() {
-        if (!Toggleable.isEnabled(limelight))
-            throw new RuntimeException("Cannot operate shooter when requirements are not enabled.");
+        if (!limelight.isEnabled())
+            limelight.enable();
 
         if (!turret.isEnabled())
             turret.enable();

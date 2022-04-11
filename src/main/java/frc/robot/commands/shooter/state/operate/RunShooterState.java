@@ -65,8 +65,8 @@ public class RunShooterState extends StateBase {
 
     @Override
     public void initialize() {
-        if (!Toggleable.isEnabled(flywheel))
-            throw new RuntimeException("Cannot run shooter when requirements are not enabled.");
+        if (!flywheel.isEnabled())
+            flywheel.enable(); //throw new RuntimeException("Cannot run shooter when requirements are not enabled.");
         else if (sharedOdometry.get() == null)
             throw new RuntimeException("Cannot run shooter when odometry is not initialized");
 
