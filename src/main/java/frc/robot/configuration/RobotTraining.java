@@ -83,13 +83,13 @@ public class RobotTraining implements RobotConfiguration {
     public RobotTraining(RobotContainer robot) {
         joystickSecondary = robot.joystickSecondary;
         joystickPrimary   = robot.joystickPrimary;
-        DriveTrain        = robot.DriveTrain;
+        DriveTrain        = robot.drivetrain;
         limelight         = robot.limelight;
-        Flywheel          = robot.Flywheel;
-        Climber           = robot.Climber;
+        Flywheel          = robot.flywheel;
+        Climber           = robot.climber;
      // Pigeon            = robot.Pigeon
-        Intake            = robot.Intake;
-        Indexer           = robot.Indexer;
+        Intake            = robot.intake;
+        Indexer           = robot.indexer;
         turret            = robot.turret;
 
         // Init controller
@@ -219,7 +219,7 @@ public class RobotTraining implements RobotConfiguration {
                 new ProxySequentialCommandGroup(
                     indexerArmedState.configureTo(IndexerState.kActive),
                     shooterState.notEqualTo(ShooterState.kRun), 
-                    new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary)
+                    new IndexerIntakeActive(Indexer, Intake, joystickPrimary)
                 )
             );
         
