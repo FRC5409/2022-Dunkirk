@@ -302,34 +302,35 @@ public final class Constants {
     }
     
     public static final class Shooter {
-        // ============================================================== \\
+                // ============================================================== \\
         //               NICOLE TUNE THIS PURR - Keith
 
         // The shooter Pitch (observed with the inclinometer)
         public static final double SHOOTER_PITCH = 54.8;
 
         // The initial flywheel offset (rpm)
-        public static final double INITIAL_SHOOTER_OFFSET = 0;
+        public static final double INITIAL_SHOOTER_OFFSET = 200;
 
         // The turret rotation range
-        public static final Range ROTATION_RANGE = new Range(-110, 110);
+        public static final Range ROTATION_RANGE = new Range(-90, 90);
         
         // The threshold required to align to a target (and shoot) during tracking
         // between [2, 8]
-        public static final double TRACKING_ALIGNMENT_THRESHOLD = 4.83333;
+        public static final double TRACKING_ALIGNMENT_THRESHOLD = 22.83333;
 
         // How long to run the indexer back, and arm the shooter.
         public static final double ARMING_TIME = 0.32;
         
+
+        public static final int FLYWHEEL_TOLERANCE = 175;//25;
+
         //                                                                //
         // ============================================================== \\
-
         public static final boolean ZERO_LIMIT_POLARITY = false;
 
         public static final int HOOD_FORWARD_CHANNEL = 13;
         public static final int HOOD_REVERSE_CHANNEL = 12;
 
-        public static final int FLYWHEEL_TOLERANCE = 25;
         public static final int FEEDER_TOLERANCE = 150;
 
         public static final Gains FEEDER_GAINS = new Gains(0.0001, 0.0, 0.0, 0.000188,0,0);

@@ -36,6 +36,7 @@ import frc.robot.subsystems.shooter.*;
 import frc.robot.commands.shooter.*;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.commands.autonomous.trajectory.trajectoryAuto.AdvancedTwoBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.FourBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto;
@@ -113,16 +114,20 @@ public class RobotCompetition implements RobotConfiguration {
             new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, 
                 shooterConfiguration, shooterSweepDirection, Property.cast(shooterOffset)));
         
-        autoCommandSelector.addOption("Two",
+        autoCommandSelector.setDefaultOption("Two",
             new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterConfiguration, shooterSweepDirection, Property.cast(shooterOffset)));
 
-        autoCommandSelector.setDefaultOption("Three",
+        autoCommandSelector.setDefaultOption("Advanced Two",
+            new AdvancedTwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+                shooterConfiguration, shooterSweepDirection, Property.cast(shooterOffset), shooterState, indexerArmedState));
+
+        autoCommandSelector.addOption("Three",
             new SynchronizedThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerArmedState,
                 shooterState, shooterOffset));
 
-        autoCommandSelector.setDefaultOption("Three Alt",
+        autoCommandSelector.addOption("Three Alt",
             new AltThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
                 shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerArmedState,
                 shooterState, shooterOffset));
