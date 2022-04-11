@@ -26,33 +26,33 @@ import frc.robot.configuration.RobotTraining;
 import frc.robot.subsystems.Climber;
 
 public final class RobotContainer {
+    private final RobotConfiguration configuration;
+
     public final ValueProperty<Boolean> climberActive;
-    public final ShooterFlywheel Flywheel;
+
+    public final ShooterFlywheel flywheel;
     public final ShooterTurret   turret;
-    public final DriveTrain      DriveTrain;
+    public final DriveTrain      drivetrain;
+    public final Pneumatics      pneumatics;
     public final Limelight       limelight;
-    public final Indexer         Indexer;
-    public final Intake          Intake;
-    public final Climber         Climber;
-    public final Pneumatics         pneumatics;
+    public final Indexer         indexer;
+    public final Intake          intake;
+    public final Climber         climber;
     
     public final Joystick        joystickSecondary;
     public final Joystick        joystickPrimary;
-
-    private final RobotConfiguration configuration;
     
     public RobotContainer() {
         climberActive = new ValueProperty<Boolean>(false);
 
-        DriveTrain  = new DriveTrain();
-        limelight   = new Limelight();
-        Flywheel    = new ShooterFlywheel();
-        Climber     = new Climber(climberActive);
-        Indexer     = new Indexer();
-        Intake      = new Intake();
-    //  Pigeon      = new Pigeon();
-        turret      = new ShooterTurret();
+        drivetrain  = new DriveTrain();
         pneumatics  = new Pneumatics();
+        limelight   = new Limelight();
+        flywheel    = new ShooterFlywheel();
+        climber     = new Climber(climberActive);
+        indexer     = new Indexer();
+        intake      = new Intake();
+        turret      = new ShooterTurret();
 
         joystickPrimary = new Joystick(0);
         joystickSecondary = new Joystick(1);
@@ -86,6 +86,7 @@ public final class RobotContainer {
     private static RobotConfiguration getConfiguration(RobotContainer robot) {
         switch (Constants.General.ROBOT_CONFIGURATION) {
             case kCompetition: return new RobotCompetition(robot);
+            case kCompetition: return new RobotTest3();//RobotCompetition(robot);
             case kTraining:    return new RobotTraining(robot);
             case kTest:        return new RobotTest(robot);
         }
