@@ -29,9 +29,9 @@ public class StateCommandManager {
     }
 
     public void addState(State state) {
-        m_parent.put(state, null);
         m_ancestor.put(state, state);
         m_children.put(state, new HashMap<>());
+        m_parent.put(state, null);
     }
 
     public void addStateChildren(State parent, State[] states) {
