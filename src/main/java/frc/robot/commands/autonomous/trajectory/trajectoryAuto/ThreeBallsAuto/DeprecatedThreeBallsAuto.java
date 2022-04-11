@@ -25,7 +25,7 @@ import frc.robot.commands.autonomous.trajectory.ResetOdometry;
 import frc.robot.commands.indexer.IndexerIntakeActive;
 import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.commands.shooter.ConfigureShooter;
-import frc.robot.commands.shooter.OperateShooter;
+import frc.robot.commands.shooter.legacy.OperateShooter;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -33,6 +33,9 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
+/**
+ * @author Nicole Jin
+ */
 public class DeprecatedThreeBallsAuto extends SequentialCommandGroup{
 
     DriveTrain m_drive;

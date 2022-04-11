@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -17,22 +17,25 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 import frc.robot.Constants.kAuto;
 import frc.robot.base.Property;
 import frc.robot.base.ValueProperty;
 import frc.robot.base.command.DelayedCancelCommand;
-import frc.robot.base.command.DelayedCommand;
 import frc.robot.base.command.ProxySequentialCommandGroup;
+import frc.robot.base.drive.DriveOdometry;
+import frc.robot.base.drive.MockDriveOdometry;
+import frc.robot.base.indexer.IndexerArmedState;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
+import frc.robot.base.shooter.ShooterModelProvider;
+import frc.robot.base.shooter.ShooterState;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.ConfigureProperty;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.autonomous.trajectory.ResetOdometry;
 import frc.robot.commands.indexer.IndexerIntakeActive;
+import frc.robot.commands.shooter.ComplexOperateShooter;
 import frc.robot.commands.shooter.ConfigureShooter;
-import frc.robot.commands.shooter.OperateShooterDelayed;
 import frc.robot.commands.shooter.PrimeShooter;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
@@ -41,40 +44,28 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
+/**
+ * @author Nicole Jin
+ */
 public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
-
-    DriveTrain drive;
-    Intake intake;
-    Indexer indexer;
-    Limelight limelight;
-    ShooterTurret turret;
-    ShooterFlywheel flywheel;
-    Property<ShooterConfiguration> shooterConfiguration;
-    Property<SweepDirection> shooterSweepDirection;
-    Property<Integer> shooterOffset;
+    private final DriveTrain drivetrain;
 
     public AltThreeBallsAuto(
-        DriveTrain drive, 
+        DriveTrain drivetrain, 
         Intake intake, 
         Indexer indexer, 
         Limelight limelight, 
         ShooterTurret turret, 
-        ShooterFlywheel shooterFlywheel, 
+        ShooterFlywheel flywheel, 
+        ShooterModelProvider shooterModelProvider,
         Property<ShooterConfiguration> shooterConfiguration, 
         Property<SweepDirection> shooterSweepDirection,
-        Property<Integer> shooterOffset,
-        Property<Boolean> shooterArmed
+        Property<IndexerArmedState> indexerArmedState,
+        Property<ShooterState> shooterState,
+        Property<Double> shooterOffset
     ) {
 
-        this.drive   = drive;
-        this.intake  = intake;
-        this.indexer = indexer;
-        this.limelight = limelight;
-        this.turret = turret;
-        this.flywheel = shooterFlywheel;
-        this.shooterConfiguration = shooterConfiguration;
-        this.shooterSweepDirection = shooterSweepDirection;
-        this.shooterOffset = shooterOffset;
+        this.drivetrain   = drivetrain;
 
         /*
         Adjustment of robot position at the terminal
@@ -85,6 +76,9 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
         right x meter: +x*Math.cos(Math.PI*3/20), -x*Math.sin(Math.PI*3/20)
         */
 
+        // =====================================================================
+        // Poses
+
         Pose2d p1 = createPose(0, 0, 0);
 
         Pose2d p2 = createPose(1.35, 0, Math.PI/4);
@@ -94,6 +88,9 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
         Pose2d p4 = createPose(2.75, 2, Math.PI*7/20);
 
         
+        // =====================================================================
+        // Trajectories
+
         Trajectory t1 = TrajectoryGenerator.generateTrajectory(
             p1, List.of(), p2, kAuto.configForwards
         );
@@ -106,36 +103,49 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
             p3, List.of(), p4, kAuto.configBackwards
         );
 
+        // =====================================================================
+        // Ramsete Commands
 
         RamseteCommand r1 = createRamseteCommand(t1);
         RamseteCommand r2 = createRamseteCommand(t2);
         RamseteCommand r3 = createRamseteCommand(t3);
+        
+        // =====================================================================
+        // Shooter Commands
+
+        DriveOdometry mockDrivetrain = new MockDriveOdometry();
 
         Property<Boolean> runShooter = new ValueProperty<>(false);
+        Property<Double> mockDriveSpeed = new ValueProperty<>(0.0);
+
         Trigger runShooterTrigger = new Trigger(runShooter::get);
 
-        drive.setBrakeMode(true);
+        ComplexOperateShooter runShooterCommand = new ComplexOperateShooter(
+            flywheel, turret, mockDrivetrain, limelight, indexer, runShooterTrigger, 
+            shooterModelProvider, shooterConfiguration, indexerArmedState, 
+            shooterSweepDirection, shooterState, shooterOffset, mockDriveSpeed);
 
-        Command runShooterCommand1 = new OperateShooterDelayed(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration, shooterOffset, shooterArmed, runShooterTrigger);
-        Command runShooterCommand2 = new OperateShooterDelayed(limelight, turret, flywheel, indexer, shooterSweepDirection, shooterConfiguration, shooterOffset, shooterArmed, runShooterTrigger);
+        // =====================================================================
 
         addCommands(
 
             // // trajectory testing
-            // new ResetOdometry(t1.getInitialPose(), drive),
+            // new ResetOdometry(t1.getInitialPose(), drivetrain),
             // r1, 
-            // new ResetOdometry(t2.getInitialPose(), drive),
+            // new ResetOdometry(t2.getInitialPose(), drivetrain),
             // r2,
-            // new ResetOdometry(t3.getInitialPose(), drive),
+            // new ResetOdometry(t3.getInitialPose(), drivetrain),
             // r3
+
+            new InstantCommand(() -> drivetrain.setBrakeMode(true), drivetrain),
 
             new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
 
             // V1: run intake while getting to the human station
-            new SlowGear(drive),
+            new SlowGear(drivetrain),
 
             // Reset Odometry to initial position
-            new ResetOdometry(t1.getInitialPose(), drive),
+            new ResetOdometry(t1.getInitialPose(), drivetrain),
 
 
             new ParallelCommandGroup(
@@ -148,12 +158,10 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
                 
                 // Schedule shooter  
                 new ScheduleCommand(
-                    new DelayedCommand(1.5, 
-                        new SequentialCommandGroup(
-                            new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight),
-                            new ConfigureProperty<>(shooterArmed, false),
-                            runShooterCommand1
-                        )
+                    new SequentialCommandGroup(
+                        new WaitCommand(1.5), // Delay
+                        new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft),
+                        runShooterCommand
                     )
                 )
             ),
@@ -162,19 +170,19 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
             new IndexerIntakeActive(indexer, intake).withTimeout(0.75),
             
             // Prime shooter
-            new PrimeShooter(indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME),
+            new PrimeShooter(indexer, indexerArmedState),
 
             // Simulate run shooter trigger
             new ConfigureProperty<>(runShooter, true),
 
             // Shooter is shooting (eiow)
             // ...
-
-            // Stop shooter from shooting after one second
-            new DelayedCancelCommand(2, runShooterCommand1),
             
             // Reset Odometry to next position
-            new ResetOdometry(t2.getInitialPose(), drive),
+            new ResetOdometry(t2.getInitialPose(), drivetrain),
+
+            new WaitCommand(2.0),
+            
             new ConfigureProperty<>(runShooter, false),
             
             // Run indexer and intake, while moving through trajectory #2
@@ -191,39 +199,28 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
                     new ParallelCommandGroup(
                         new WaitCommand(0.5), // TODO: change this value smaller
                         // Reset Odometry to next position
-                        new ResetOdometry(t3.getInitialPose(), drive)
+                        new ResetOdometry(t3.getInitialPose(), drivetrain)
                     ),
 
                     // Run indexer and intake, while moving through trajectory #2
-                    new ParallelCommandGroup(
-                        r3,
-                        // Schedule shooter  
-                        new ScheduleCommand(
-                            new SequentialCommandGroup(
-                                new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight),
-                                new ConfigureProperty<>(shooterArmed, false),
-                                runShooterCommand2
-                            )
-                        )
-                    )
+                    r3
                 )
             ),
             // Prime shooter
-            new PrimeShooter(indexer, shooterArmed).withTimeout(Constants.Shooter.ARMING_TIME),
+            new PrimeShooter(indexer, indexerArmedState),
 
             // Simulate run shooter trigger
             new ConfigureProperty<>(runShooter, true),
 
             // Stop shooter from shooting after one second
-            new DelayedCancelCommand(2, runShooterCommand2)
+            new DelayedCancelCommand(2, runShooterCommand)
 
             // // Finish
-
         );
     }
 
     private RamseteCommand createRamseteCommand(Trajectory trajectory) {
-        return new RamseteCommand(trajectory, drive::getPose,
+        return new RamseteCommand(trajectory, drivetrain::getPose,
             new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
             new SimpleMotorFeedforward(
                 kAuto.ksVolts, 
@@ -231,11 +228,11 @@ public class AltThreeBallsAuto extends ProxySequentialCommandGroup {
                 kAuto.kaVoltSecondsSquaredPerMeter
             ),
             kAuto.kDriveKinematics,
-            drive::getWheelSpeeds,
+            drivetrain::getWheelSpeeds,
             new PIDController(kAuto.kPDriveVel, 0, 0), 
             new PIDController(kAuto.kPDriveVel, 0, 0),
-            drive::tankDriveVolts, 
-            drive
+            drivetrain::tankDriveVolts, 
+            drivetrain
         ); 
     }
 

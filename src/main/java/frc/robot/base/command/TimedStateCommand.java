@@ -2,7 +2,7 @@ package frc.robot.base.command;
 
 import edu.wpi.first.wpilibj.Timer;
 
-public abstract class TimedStateCommand extends StateCommandBase {
+public abstract class TimedStateCommand extends StateBase {
     private double m_start;
 
     @Override
