@@ -32,6 +32,14 @@ public final class Range implements Sendable {
         return (value > max) ? max : ((value < min) ? min : value);
     }
     
+    public static double normalize(double min, double value, double max) {
+        return (value > max) ? 1 : ((value < min) ? -1 : (value-min)/(max-min));
+    }
+    
+    public static double normalizeField(double min, double value, double max) {
+        return (value > max) ? 1 : ((value < min) ? -1 : (2*value-min-max)/(max-min));
+    }
+    
     /**
      * Constructs a range.
      * 
@@ -58,7 +66,11 @@ public final class Range implements Sendable {
     public double normalize(double value) {
         return (value > _max) ? 1.0 : ((value < _min) ? 0.0 : (value - _min) / (_max - _min));
     }
-
+    
+    public double normalizeField(double value) {
+        return (value > _max) ? 1.0 : ((value < _min) ? -1.0 : (2*value-_min-_max)/(_max-_min));
+    }
+   
     /**
      * Normalizes a value [0, 1] to this range [min, max]
      * 

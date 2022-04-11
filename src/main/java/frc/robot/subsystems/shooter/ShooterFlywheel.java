@@ -75,6 +75,7 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
     /**
      * Method for enabing the flywheel.
      */
+    @Override
     public void enable() {
         enabled = true;
     }
@@ -82,6 +83,7 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
     /**
      * Method for disabling the flywheel.
      */
+    @Override
     public void disable() {
         enabled = false;
 
@@ -107,7 +109,7 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
      * 
      * @param target Target RPM.
      */
-    public void spinFeeder(double target) {
+    public void setFeederOutput(double target) {
 
         if(!enabled) return;
 
@@ -120,11 +122,11 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
      * Spins the feeder at a setpoint speed from [-1.0,1.0]
      * @param setpoint
      */
-    public void spinFeederSetpoint(double setpoint){
+    public void setFeederVelocity(double setpoint){
         if(!enabled) return;
 
 
-        ctr_feeder.setReference(-1*setpoint, CANSparkMax.ControlType.kDutyCycle);
+        ctr_feeder.setReference(-setpoint, CANSparkMax.ControlType.kDutyCycle);
     }
 
     /**
@@ -137,6 +139,25 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
     }
 
     /**
+     * Method for stopping the feeder wheel by calling stop motor.
+     */
+    public void stopFeeder() {
+        mot_feeder.stopMotor();
+    }
+
+    /**
+     * Method for getting the feeder wheel rpm. 
+     * @return The feeder RPM. 
+     */
+    public double getFeederVelocity() {
+        return enc_feeder.getVelocity();
+    }
+
+    public double getFeederTarget() {
+        return feederTarget;
+    }
+
+    /**
      * Method for getting if the flywheel wheels have reached the target velocity. 
      * @return true if the target has been reached, false if not.
      */
@@ -145,39 +166,20 @@ public final class ShooterFlywheel extends SubsystemBase implements Toggleable {
     }
 
     /**
+     * Method for seeing if the feeder target was reached. 
+     * @return returns true if it has reached the feeder target speed, false if not.
+     */
+    public boolean isFeederTargetReached() {
+        return Math.abs(feederTarget - getFeederVelocity()) <= Constants.Shooter.FEEDER_TOLERANCE;
+    }
+
+    /**
      * Method for getting if the subsystem is enabled.
      * 
      * @return True if the subsystem is enabled, false if not.
      */
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
-
-    /**
-     * Method for stopping the feeder wheel by calling stop motor.
-     */
-    public void stopFeeder() {
-        mot_feeder.stopMotor();
-    }
-
-    /**
-     * Method for seeing if the feeder target was reached. 
-     * @return returns true if it has reached the feeder target speed, false if not.
-     */
-    public boolean feederReachedTarget() {
-        return Math.abs(feederTarget - getFeederRpm()) <= Constants.Shooter.FEEDER_TOLERANCE;
-    }
-
-    /**
-     * Method for getting the feeder wheel rpm. 
-     * @return The feeder RPM. 
-     */
-    public double getFeederRpm() {
-        return enc_feeder.getVelocity();
-    }
-
-    public double getFeederTarget() {
-        return feederTarget;
-    }
-
 }

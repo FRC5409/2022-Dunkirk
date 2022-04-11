@@ -119,9 +119,9 @@ public class Indexer extends SubsystemBase implements Toggleable {
     }
 
     public void setSpeed(double speed) {
-        if(!enabled || target == speed) return;
+        if (!enabled || target == speed) return;
 
-        mot_indexerBelt.set(target);
+        mot_indexerBelt.set(speed);
         target = speed;
 
     }

@@ -3,6 +3,10 @@ package frc.robot.base;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public interface RobotConfiguration {
+    default public void teleopPeriodic() {
+        
+    }
+
     /**
      * Use this to pass the teleop command to the main {@link Robot} class.
      *
@@ -20,6 +24,4 @@ public interface RobotConfiguration {
     default Command getAutonomousCommand() {
         return null;
     }
-
-    public void teleopPeriodic();
 }

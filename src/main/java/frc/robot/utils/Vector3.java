@@ -116,6 +116,22 @@ public class Vector3 implements Sendable {
         double k = 1-i;
         return new Vector3(x*k + other.x*i, y*k + other.y*i, z*k + other.z*i);
     }
+
+    public Vector3 add(Vector3 other) {
+        return new Vector3(
+            x + other.x,
+            y + other.y,
+            z + other.z
+        );
+    }
+
+    public Vector3 sub(Vector3 other) {
+        return new Vector3(
+            x + other.x,
+            y + other.y,
+            z + other.z
+        );
+    }
     
     @Override
     public void initSendable(SendableBuilder builder) {
