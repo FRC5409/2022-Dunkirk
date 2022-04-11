@@ -60,6 +60,8 @@ public class RunShooterState extends StateBase {
         this.driveSpeed = driveSpeed;
         this.flywheel = flywheel;
         this.indexer = indexer;
+
+        addRequirements(flywheel, indexer);
     }
 
     @Override
