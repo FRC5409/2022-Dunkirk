@@ -2,13 +2,17 @@ package frc.robot.base.command;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public abstract class StateBase implements State {
     protected Set<Subsystem> m_requirements = new HashSet<>();
+
     protected String m_next = null;
     protected int    m_executionIndex = -1;
+
+    private Logger m_logger = null;
 
 
     protected StateBase() {
@@ -19,6 +23,12 @@ public abstract class StateBase implements State {
         m_requirements.addAll(Set.of(requirements));
     }
     
+    protected Logger getLogger() {
+        if (m_logger == null)
+            m_logger = Logger.getLogger(getPath());
+        return m_logger;
+    }
+
     @Override
     public void next(String name) {
         m_next = name;
