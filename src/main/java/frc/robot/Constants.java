@@ -312,7 +312,7 @@ public final class Constants {
         public static final double INITIAL_SHOOTER_OFFSET = 200;
 
         // The turret rotation range
-        public static final Range ROTATION_RANGE = new Range(-90, 90);
+        public static final Range ROTATION_RANGE = new Range(-100, 100);
         
         // The threshold required to align to a target (and shoot) during tracking
         // between [2, 8]
@@ -342,10 +342,9 @@ public final class Constants {
         public static final Range SPEED_RANGE = new Range(0, 5500);
         public static final Range DISTANCE_RANGE = new Range(0, 25);
         public static final Range TURRET_OUTPUT_RANGE = new Range(-1, 1);
-        public static final Range MANUAL_ROTATION_RANGE = new Range(-110, 110);
         
         // Smooth Sweep Constants
-        public static final double   SHOOTER_SWEEP_PERIOD = 2.75;
+        public static final double   SHOOTER_SWEEP_PERIOD = 2.05;
         public static final double   SHOOTER_MAX_SWEEEP = 2;
 
         public static final Equation SHOOTER_SWEEP_FUNCTION = new Equation() {
@@ -397,7 +396,7 @@ public final class Constants {
             new Model3(
                 0.1357190569153385, -1.3929300904057553, 1.1600000296421455, 
                 new Range(-3.0, 3.0),
-                new Range(-30, 30)
+                new Range(-50, 50)
             )
         );
 
