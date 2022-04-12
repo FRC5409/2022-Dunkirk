@@ -24,41 +24,35 @@ public class Intake extends SubsystemBase{
      * solenoids for the intake. This is used to prevent
      * flooding of the CAN bus. 
      */
-    public static enum kIntakeStates{
+    public static enum IntakeState {
         kExtended, kRetracted;
     }
 
 
     private WPI_TalonFX mot_intake;
-    private CANSparkMax mot_intakeIn;
-    private DoubleSolenoid intakeSolenoid_left;
-    private DoubleSolenoid intakeSolenoid_right;
+    private CANSparkMax mot_sequencer;
+    private DoubleSolenoid sol_intake;
 
-    private kIntakeStates state;
+    private IntakeState state;
+
     private double target;
     private double targetIn;
 
     public Intake() {
-        mot_intakeIn = new CANSparkMax(kIntake.kIntakeMotorIn, MotorType.kBrushless);
-        mot_intakeIn.setSmartCurrentLimit(20);
-        mot_intakeIn.setIdleMode(IdleMode.kBrake);
-        mot_intakeIn.setInverted(true);
-        MotorUtils.lowerLeaderStatusPeriod(mot_intakeIn);
+        mot_sequencer = new CANSparkMax(kIntake.kIntakeMotorIn, MotorType.kBrushless);
+            mot_sequencer.setSmartCurrentLimit(20);
+            mot_sequencer.setIdleMode(IdleMode.kBrake);
+            mot_sequencer.setInverted(true);
 
-        mot_intakeIn.burnFlash();
-
-        //intakeSolenoid_left = new DoubleSolenoid(PneumaticsModuleType.REVPH, kIntake.kLeftIntakeSolenoid1, kIntake.kLeftIntakeSolenoid2);
-        //intakeSolenoid_right = new DoubleSolenoid(PneumaticsModuleType.REVPH, kIntake.kRightIntakeSolenoid1, kIntake.kRightIntakeSolenoid2);
+        MotorUtils.lowerLeaderStatusPeriod(mot_sequencer);
+        mot_sequencer.burnFlash();
 
         mot_intake = new WPI_TalonFX(kIntake.kIntakeMotor);
         mot_intake.setInverted(true);
         MotorUtils.lowerNonImportantPeriods(mot_intake);
-        // mot_intake.setSmartCurrentLimit(20);
-        // mot_intake.setIdleMode(IdleMode.kBrake);
-        // mot_intake.burnFlash();
-
-        //intakeSolenoid_left = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kIntake.kLeftIntakeSolenoid1, kIntake.kLeftIntakeSolenoid2);
-        intakeSolenoid_right = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kIntake.kRightIntakeSolenoid1, kIntake.kRightIntakeSolenoid2);
+        
+        sol_intake = new DoubleSolenoid(
+            kID.PneumaticHub, PneumaticsModuleType.REVPH, kIntake.kRightIntakeSolenoid1, kIntake.kRightIntakeSolenoid2);
 
         solenoidsUp();
     }
@@ -80,43 +74,43 @@ public class Intake extends SubsystemBase{
 
     public void intakeIn(double speed){
         if (speed == targetIn) return;
-        mot_intakeIn.set(speed);
+        mot_sequencer.set(speed);
         targetIn = speed;
     }
 
     public void reverseIntakeIn(double speed){
         speed *= -1;
         if(speed == targetIn) return;
-        mot_intakeIn.set(speed);
+        mot_sequencer.set(speed);
         targetIn = speed;
     }
 
 
     public void solenoidsDown() {
-        //intakeSolenoid_left.set(DoubleSolenoid.Value.kForward);
-        if(state == kIntakeStates.kExtended) return;
-        intakeSolenoid_right.set(DoubleSolenoid.Value.kForward);
-        state = kIntakeStates.kExtended;
-        //System.out.println("Intake down");
+        if (state == IntakeState.kExtended)
+            return;
+
+        sol_intake.set(DoubleSolenoid.Value.kForward);
+        state = IntakeState.kExtended;
     }
 
     public void solenoidsUp() {
-        //intakeSolenoid_left.set(DoubleSolenoid.Value.kReverse);
-        if(state == kIntakeStates.kRetracted) return;
-        intakeSolenoid_right.set(DoubleSolenoid.Value.kReverse);
-        state = kIntakeStates.kRetracted;
-        //System.out.println("Intake up");
+        if (state == IntakeState.kRetracted)
+            return;
+
+        sol_intake.set(DoubleSolenoid.Value.kReverse);
+        state = IntakeState.kRetracted;
 
     }
 
     public boolean isExtended() {
-        return (intakeSolenoid_right.get() == DoubleSolenoid.Value.kForward);
+        return (sol_intake.get() == DoubleSolenoid.Value.kForward);
     }
 
     /**
      * Method for getting the current state of the intake solenoids. 
      */
-    public kIntakeStates getIntakeState(){
+    public IntakeState getIntakeState(){
         return state;
     }
     
