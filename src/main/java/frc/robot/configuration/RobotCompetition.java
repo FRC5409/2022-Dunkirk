@@ -17,6 +17,8 @@ import frc.robot.base.Joystick;
 
 // Misc
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.GenericHID;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -31,6 +33,7 @@ import frc.robot.commands.indexer.IntakeActive;
 import frc.robot.commands.indexer.ReverseIntakeIndexer;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.commands.shooter.*;
+import frc.robot.plugins.datatypes.ChangePos;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.FourBallsAuto;
@@ -65,6 +68,8 @@ public class RobotCompetition implements RobotConfiguration {
     private final ValueProperty<Boolean> shooterArmed;
 
     private final SendableChooser<Command> autoCommandSelector;
+
+    //private ChangePos robotLoc = new ChangePos(1, 1);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -141,6 +146,9 @@ public class RobotCompetition implements RobotConfiguration {
 
         SmartDashboard
             .putData("Shooter Offset - Decrement", new ConfigureProperty<Integer>(shooterOffset, p -> p.set(p.get() - Constants.Shooter.OFFSET_INCREMENT)));
+        
+        /*SendableRegistry.add(robotLoc, "ChangePos");
+        SmartDashboard.putData("ChangePos", robotLoc);*/
     }
 
 
@@ -150,6 +158,11 @@ public class RobotCompetition implements RobotConfiguration {
     }
 
     public void teleopPeriodic(){
+        /*robotLoc.setAngle(1 + robotLoc.getAngle());
+        robotLoc.setDist(1 + robotLoc.getDist());
+        System.out.println("angle: " + robotLoc.getAngle());
+        System.out.println("dist: " + robotLoc.getDist());*/
+        //SmartDashboard.putData("ChangePos", robotLoc);
         SmartDashboard.putNumber("Shooter Offset", shooterOffset.get());
     }
 
@@ -281,4 +294,6 @@ public class RobotCompetition implements RobotConfiguration {
     public Command getAutonomousCommand() {
         return autoCommandSelector.getSelected(); 
     }
+
+    
 }
