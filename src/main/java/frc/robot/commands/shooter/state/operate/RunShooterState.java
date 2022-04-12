@@ -13,7 +13,6 @@ import frc.robot.base.shooter.odometry.DriveShooterOdometry;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.utils.Equation;
-import frc.robot.utils.Toggleable;
 import frc.robot.Constants;
 
 // TODO update doc
@@ -61,6 +60,8 @@ public class RunShooterState extends StateBase {
         this.driveSpeed = driveSpeed;
         this.flywheel = flywheel;
         this.indexer = indexer;
+
+        addRequirements(flywheel, indexer);
     }
 
     @Override
