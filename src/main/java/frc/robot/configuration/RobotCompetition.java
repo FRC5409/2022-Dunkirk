@@ -203,7 +203,7 @@ public class RobotCompetition implements RobotConfiguration {
         joystickPrimary.getButton(ButtonType.kX)
             .whenReleased(yes);
 
-            joystickSecondary.getButton(ButtonType.kStart)
+        joystickSecondary.getButton(ButtonType.kStart)
             .whenPressed((new ParallelCommandGroup(
                 new ToggleShooterElevator(climberActive, limelight, Flywheel, Indexer),
                 new TurretOnToggle(climberActive, turret)
