@@ -55,7 +55,6 @@ public class ToggleShooterElevator extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        // return turret.isTargetReached();
-        return true;
+        return turret.isTargetReached();
     }
 }
