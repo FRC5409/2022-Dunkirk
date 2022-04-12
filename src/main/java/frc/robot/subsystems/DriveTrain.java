@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -471,6 +472,14 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
      */
     public double getHeading() {
         return data.getHeading();
+    }
+
+    public Rotation2d getRotation2d() {
+        return data.getRotation2d();
+    }
+
+    public Vector3 getAcceleration() {
+        return data.getAcceleration();
     }
 
     public Pose2d getPose() { 
