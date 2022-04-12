@@ -68,6 +68,8 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
     public double y_acceleration;
     public double z_acceleration;
 
+    private boolean odometryEnabled;
+
     public DriveTrain() {
         // Left Front Drive
         mot_leftFrontDrive = new WPI_TalonFX(kID.LeftFrontDrive);
@@ -83,6 +85,7 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
 
         configMotors();
 
+        odometryEnabled = false;
         m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
         // dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.REVPH,
@@ -118,6 +121,14 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
         // tof_front.setRangingMode(RangingMode.Medium, 1000);
         // 6630
         timer.start();
+    }
+
+    public void enableOdometry() {
+        odometryEnabled = true;
+    }
+
+    public void disableOdometry() {
+        odometryEnabled = false;
     }
 
     private void configPigeon(){
@@ -273,11 +284,11 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
         updateAll();
         //displayAngle();
 
-        m_odometry.update(
-            gyro_pigeon.getRotation2d(), getEncoderPositionLeft(), getEncoderPositionRight());
+        if (odometryEnabled)
+            m_odometry.update(gyro_pigeon.getRotation2d(), getEncoderPositionLeft(), getEncoderPositionRight());
 
         SmartDashboard.putNumber("Turn Rate", TurnRate());
-        }
+    }
 
 
     @Override
