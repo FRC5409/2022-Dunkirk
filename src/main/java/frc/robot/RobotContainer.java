@@ -86,7 +86,6 @@ public final class RobotContainer {
     private static RobotConfiguration getConfiguration(RobotContainer robot) {
         switch (Constants.General.ROBOT_CONFIGURATION) {
             case kCompetition: return new RobotCompetition(robot);
-            case kCompetition: return new RobotTest3();//RobotCompetition(robot);
             case kTraining:    return new RobotTraining(robot);
             case kTest:        return new RobotTest(robot);
         }
