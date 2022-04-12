@@ -3,6 +3,7 @@ package frc.robot.configuration;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.RobotContainer;
 import frc.robot.Constants;
 import frc.robot.base.shooter.ConstantModelProvider;
@@ -295,6 +296,7 @@ public class RobotCompetition implements RobotConfiguration {
     @Override
     public Command getTeleopCommand() {
         return new ParallelCommandGroup(
+            new InstantCommand(DriveTrain::disableOdometry),
             new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
             new FindElevatorZero(Climber),
 
@@ -309,6 +311,12 @@ public class RobotCompetition implements RobotConfiguration {
      */
     @Override
     public Command getAutonomousCommand() {
-        return autoCommandSelector.getSelected(); 
+        Command command = autoCommandSelector.getSelected(); 
+        if (command == null) return null;
+
+        return new ProxySequentialCommandGroup(
+            new InstantCommand(DriveTrain::enableOdometry),
+            command
+        );
     }
 }
