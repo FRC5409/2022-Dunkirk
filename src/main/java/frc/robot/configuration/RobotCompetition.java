@@ -24,6 +24,8 @@ import frc.robot.base.Joystick;
 import frc.robot.base.Property;
 // Misc
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.GenericHID;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -35,6 +37,7 @@ import frc.robot.commands.indexer.IndexerIntakeActive;
 import frc.robot.commands.indexer.RunIndexer;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.commands.shooter.*;
+import frc.robot.plugins.datatypes.ChangePos;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.FourBallsAuto;
@@ -69,8 +72,8 @@ public class RobotCompetition implements RobotConfiguration {
 
     private final SendableChooser<Command> autoCommandSelector;
 
-    private final ShooterModelProvider shooterModelProvider;
 
+    private final ShooterModelProvider shooterModelProvider;
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -144,8 +147,7 @@ public class RobotCompetition implements RobotConfiguration {
         SmartDashboard
             .putData("Shooter Offset - Increment", new ConfigureProperty<Double>(shooterOffset, () -> shooterOffset.get() + Constants.Shooter.OFFSET_INCREMENT));
 
-        SmartDashboard
-            .putData("Shooter Offset - Decrement", new ConfigureProperty<Double>(shooterOffset, () -> shooterOffset.get() - Constants.Shooter.OFFSET_INCREMENT));
+        SmartDashboard.putData("Shooter Offset - Decrement", new ConfigureProperty<Double>(shooterOffset, () -> shooterOffset.get() - Constants.Shooter.OFFSET_INCREMENT));
     }
 
     private void configureCommands() {
@@ -154,6 +156,11 @@ public class RobotCompetition implements RobotConfiguration {
     }
 
     public void teleopPeriodic(){
+        /*robotLoc.setAngle(1 + robotLoc.getAngle());
+        robotLoc.setDist(1 + robotLoc.getDist());
+        System.out.println("angle: " + robotLoc.getAngle());
+        System.out.println("dist: " + robotLoc.getDist());*/
+        //SmartDashboard.putData("ChangePos", robotLoc);
         SmartDashboard.putNumber("Shooter Offset", shooterOffset.get());
     }
 
@@ -294,6 +301,10 @@ public class RobotCompetition implements RobotConfiguration {
                     new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.GUARD_FLYWHEEL_VELOCITY, 0.5)
                 )
             );        
+  
+          joystickSecondary.getButton(ButtonType.kX).and(climberToggleTrigger.negate()).whenActive(new RotateTurret(turret, 0));
+
+        joystickSecondary.getButton(ButtonType.kLeftBumper).and(climberToggleTrigger).whenActive(new FindElevatorZero(Climber));   
     }
 
     /**
@@ -325,4 +336,6 @@ public class RobotCompetition implements RobotConfiguration {
             command
         );
     }
+
+    
 }
