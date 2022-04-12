@@ -100,7 +100,18 @@ public final class Constants {
         kStarted, kEnded, kAny
     }
 
+    public static enum ClimberDestination {
+        lockLow,
+        lockMid,
+
+        lowRung,
+        midRung,
+        
+        slider
+    };
+
     public final class kClimber {
+
         public static final int CAN_MASTER_MOT = 20;
         public static final int CAN_FOLLOWER_MOT = 21;
 
@@ -129,7 +140,6 @@ public final class Constants {
         public static final double TO_LOW_RUNG = 55.0;
         public static final double TO_MIN_MID = 10.0;
         public static final double TO_MIN_LOW = 4.0;
-
     }
 
     public static final class kIntake{

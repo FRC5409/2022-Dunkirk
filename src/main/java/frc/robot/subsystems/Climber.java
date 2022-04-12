@@ -92,13 +92,14 @@ public class Climber extends SubsystemBase {
     ShuffleboardLayout setPoints = Shuffleboard.getTab("Climber").getLayout("Setpoints", BuiltInLayouts.kList);
     ShuffleboardLayout extras = Shuffleboard.getTab("Climber").getLayout("Extras", BuiltInLayouts.kList);
 
-    sliders.add("ELEVATE", new ElevateTo(this)).withWidget(BuiltInWidgets.kCommand);
+    // TODO: Fix later
+    // sliders.add("ELEVATE", new ElevateTo(this)).withWidget(BuiltInWidgets.kCommand);
 
-    setPoints.add("ELEVATE TO MID", new ElevateTo(this, Constants.kClimber.TO_MID_RUNG))
-        .withWidget(BuiltInWidgets.kCommand);
-    setPoints.add("ELEVATE TO LOW", new ElevateTo(this, Constants.kClimber.TO_LOW_RUNG))
-        .withWidget(BuiltInWidgets.kCommand);
-    setPoints.add("ELEVATE TO MIN", new ElevateTo(this, Constants.kClimber.TO_MIN_MID)).withWidget(BuiltInWidgets.kCommand);
+    // setPoints.add("ELEVATE TO MID", new ElevateTo(this, Constants.kClimber.TO_MID_RUNG))
+    //     .withWidget(BuiltInWidgets.kCommand);
+    // setPoints.add("ELEVATE TO LOW", new ElevateTo(this, Constants.kClimber.TO_LOW_RUNG))
+    //     .withWidget(BuiltInWidgets.kCommand);
+    // setPoints.add("ELEVATE TO MIN", new ElevateTo(this, Constants.kClimber.TO_MIN_MID)).withWidget(BuiltInWidgets.kCommand);
 
     shuffleboardFields.put("toPosition", sliders.add("TO POSITION", 0).withWidget(BuiltInWidgets.kNumberSlider)
         .withProperties(Map.of("min", 0.5, "max", 104)).getEntry());
@@ -172,11 +173,11 @@ public class Climber extends SubsystemBase {
    * Method for retracting or extending the climber arm.
    */
   public void moveArm(double target) {
-    if (!locked) {
+    // if (!locked) {
       controller_main.setReference(target, ControlType.kPosition);
-    } else {
-      disableMotors();
-    }
+    // } else {
+    //   disableMotors();
+    // }
   }
 
   public void moveArm(double acceleration, double deceleration) {
