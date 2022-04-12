@@ -5,7 +5,7 @@ import frc.robot.Constants.kDriveTrain;
 
 public final class Convert {
     
-    public static double EncoderUnitsToInches(float encoderUnits){
+    public static double EncoderUnitsToInches(double encoderUnits){
         if(SmartDashboard.getBoolean("LowGear", true)){
             return encoderUnits / kDriveTrain.encoderCPR * kDriveTrain.lowGearConversionFactor * kDriveTrain.wheelCircumferenceInches;
         }

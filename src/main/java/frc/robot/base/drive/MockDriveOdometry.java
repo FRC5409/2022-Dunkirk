@@ -7,7 +7,7 @@ public class MockDriveOdometry implements DriveOdometry {
     }
 
     @Override
-    public double TurnRate() {
+    public double getTurnRate() {
         return 0.0;
     }
     

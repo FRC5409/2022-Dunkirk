@@ -14,293 +14,97 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.base.drive.DriveOdometry;
 import frc.robot.utils.Convert;
 import frc.robot.utils.MotorUtils;
+import frc.robot.utils.Vector3;
 import frc.robot.Constants.kID;
+import frc.robot.base.drive.DriveOdometry;
+import frc.robot.base.drive.PigeonData;
 import frc.robot.Constants;
 import frc.robot.Constants.kDriveTrain;
 
 public class DriveTrain extends SubsystemBase implements DriveOdometry {
+    public static enum DriveMode {
+        kAadilDrive("AADIL DRIVE"), 
+        kTankDrive("TANK DRIVE");
+
+        private final String label;
+
+        private DriveMode(String label) {
+            this.label = label;
+        }
+
+        public String label() {
+            return this.label;
+        }
+    }
+
+    public static enum DriveState {
+        kForward, kReverse, kForwardTurn, kReverseTurn
+    }
+
+    public static enum DriveGear {
+        kLowGear, kHighGear
+    }
 
     private final WPI_TalonFX mot_leftFrontDrive;
     private final WPI_TalonFX mot_leftRearDrive;
     private final WPI_TalonFX mot_rightFrontDrive;
     private final WPI_TalonFX mot_rightRearDrive;
 
-    private final Timer timer = new Timer();
-    private final double refreshSeconds = 2.0;
-
-    private double lmRPM = 0;
-    private double rmRPM = 0;
-
-    private int driveMode;
-
-    public final DifferentialDrive m_drive;
-
+    private final WPI_Pigeon2 gyro_pigeon;
     private final DoubleSolenoid dsl_gear;
+    private final DifferentialDrive ctr_drive;
 
-    private boolean applyAntiTip;
+    private final DifferentialDriveOdometry odometry;
 
-    private String drive_state;
-
-    public final WPI_Pigeon2 gyro_pigeon;
-
-    public DifferentialDriveOdometry m_odometry;
-
-    // The robot's RPY
-    public double roll;
-    public double pitch;
-    public double yaw;
-
-    // The robot's angular velocity
-    public double turn_rate;
-
-    // The robot's heading
-    public double heading;
-
-    // XYZ acceleration relative to the robot
-    public double x_acceleration;
-    public double y_acceleration;
-    public double z_acceleration;
+    private DriveState state;
+    private PigeonData data;
+    private DriveMode mode;
+    private boolean odometryEnabled;
 
     public DriveTrain() {
-        // Left Front Drive
         mot_leftFrontDrive = new WPI_TalonFX(kID.LeftFrontDrive);
-
-        // Left Rear Drive
         mot_leftRearDrive = new WPI_TalonFX(kID.LeftRearDrive);
-
-        // Right Front Drive
         mot_rightFrontDrive = new WPI_TalonFX(kID.RightFrontDrive);
-
-        // Right Rear Drive
         mot_rightRearDrive = new WPI_TalonFX(kID.RightRearDrive);
 
-        configMotors();
-
-        m_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
-
-        // dsl_gear = new DoubleSolenoid(0, PneumaticsModuleType.REVPH,
-        // kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
-
-        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, kDriveTrain.ForwardChannel,
-                kDriveTrain.ReverseChannel);
-
-        driveMode = kDriveTrain.InitialDriveMode;
-
-        applyAntiTip = kDriveTrain.startWithAntiTip;
-
-        setBrakeMode(true);
-
-        zeroEncoders();
+        dsl_gear = new DoubleSolenoid(kID.PneumaticHub, PneumaticsModuleType.REVPH, 
+            kDriveTrain.ForwardChannel, kDriveTrain.ReverseChannel);
 
         gyro_pigeon = new WPI_Pigeon2(kID.Pigeon);
-        gyro_pigeon.reset();
-        configPigeon();
-        
-        if(Constants.kConfig.DEBUG){
-            SmartDashboard.putBoolean("Manual Override Enabled", false);
+            gyro_pigeon.reset();
+            gyro_pigeon.configMountPose(
+                kDriveTrain.gyroMountYaw, kDriveTrain.gyroMountPitch, kDriveTrain.gyroMountRoll);
 
-            SmartDashboard.putNumber("manual roll", 0);
-            SmartDashboard.putNumber("manual pitch", 0);
-            SmartDashboard.putNumber("manual yaw", 0);
-        }
+        ctr_drive = new DifferentialDrive(mot_leftFrontDrive, mot_rightFrontDrive);
 
-        m_odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
+        odometryEnabled = false;
+        odometry = new DifferentialDriveOdometry(gyro_pigeon.getRotation2d());
+        data = new PigeonData();
+        mode = kDriveTrain.DEFAULT_DRIVE_MODE;
 
-
-        // tof_front = new TimeOfFlight(Constants.kID.TOF_CLIMBER);
-        // tof_front.setRangingMode(RangingMode.Medium, 1000);
-        // 6630
-        timer.start();
-    }
-
-    private void configPigeon(){
-        gyro_pigeon.configMountPose(kDriveTrain.gyroMountYaw,
-                                    kDriveTrain.gyroMountPitch, 
-                                    kDriveTrain.gyroMountRoll  );
-    }
-
-    private void configMotors() {
-        // Left Front Drive
-        mot_leftFrontDrive.configFactoryDefault();
-        mot_leftFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
-                kDriveTrain.kPIDLoopIdx,
-                kDriveTrain.kTimeoutMs);
-        mot_leftFrontDrive.setSensorPhase(kDriveTrain.kSensorPhase);
-        mot_leftFrontDrive.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,
-                kDriveTrain.CurrentLimit,
-                kDriveTrain.TriggerThresholdCurrent,
-                kDriveTrain.triggerThresholdTime));
-        mot_leftFrontDrive.setInverted(kDriveTrain.Clockwise);
-
-        mot_leftFrontDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
-        mot_leftFrontDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
-        mot_leftFrontDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
-        mot_leftFrontDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
-        mot_leftFrontDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
-
-        mot_leftFrontDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
-        mot_leftFrontDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
-        mot_leftFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
-        mot_leftFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
-
-        // mot_leftFrontDrive.setSensorPhase(true);
-
-        // Left Rear Drive
-        mot_leftRearDrive.configFactoryDefault();
-        mot_leftRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
-                kDriveTrain.kPIDLoopIdx,
-                kDriveTrain.kTimeoutMs);
-        mot_leftRearDrive.setSensorPhase(kDriveTrain.kSensorPhase);
-
-        mot_leftRearDrive.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,
-                kDriveTrain.CurrentLimit,
-                kDriveTrain.TriggerThresholdCurrent,
-                kDriveTrain.triggerThresholdTime));
-        mot_leftRearDrive.follow(mot_leftFrontDrive);
-        mot_leftRearDrive.setInverted(InvertType.FollowMaster);
-        MotorUtils.lowerFollowerStatusPeriod(mot_leftRearDrive);
-
-        mot_leftRearDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
-        mot_leftRearDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
-        mot_leftRearDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
-        mot_leftRearDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
-        mot_leftRearDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
-
-        mot_leftRearDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
-        mot_leftRearDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
-        mot_leftRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
-        mot_leftRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
-
-        // mot_leftRearDrive.setSensorPhase(true);
-
-        // Right Front Drive
-        mot_rightFrontDrive.configFactoryDefault();
-        mot_rightFrontDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
-                kDriveTrain.kPIDLoopIdx,
-                kDriveTrain.kTimeoutMs);
-        mot_rightFrontDrive.setSensorPhase(kDriveTrain.kSensorPhase);
-        mot_rightFrontDrive.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,
-                kDriveTrain.CurrentLimit,
-                kDriveTrain.TriggerThresholdCurrent,
-                kDriveTrain.triggerThresholdTime));
-
-        mot_rightFrontDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
-        mot_rightFrontDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
-        mot_rightFrontDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
-        mot_rightFrontDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
-        mot_rightFrontDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
-
-        mot_rightFrontDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
-        mot_rightFrontDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
-        mot_rightFrontDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
-        mot_rightFrontDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
-        mot_rightFrontDrive.setInverted(kDriveTrain.CounterClockwise);
-
-        // mot_rightFrontDrive.setSensorPhase(true);
-
-        // Right Rear Drive
-        mot_rightRearDrive.configFactoryDefault();
-        mot_rightRearDrive.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
-                kDriveTrain.kPIDLoopIdx,
-                kDriveTrain.kTimeoutMs);
-        mot_rightRearDrive.setSensorPhase(kDriveTrain.kSensorPhase);
-        mot_rightRearDrive.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,
-                kDriveTrain.CurrentLimit,
-                kDriveTrain.TriggerThresholdCurrent,
-                kDriveTrain.triggerThresholdTime));
-        mot_rightRearDrive.follow(mot_rightFrontDrive);
-        mot_rightRearDrive.setInverted(InvertType.FollowMaster);
-        MotorUtils.lowerFollowerStatusPeriod(mot_rightRearDrive);
-
-        mot_rightRearDrive.configNominalOutputForward(0, kDriveTrain.kTimeoutMs);
-        mot_rightRearDrive.configNominalOutputReverse(0, kDriveTrain.kTimeoutMs);
-        mot_rightRearDrive.configPeakOutputForward(1, kDriveTrain.kTimeoutMs);
-        mot_rightRearDrive.configPeakOutputReverse(-1, kDriveTrain.kTimeoutMs);
-        mot_rightRearDrive.configAllowableClosedloopError(0, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
-
-        mot_rightRearDrive.config_kF(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kF, kDriveTrain.kTimeoutMs);
-        mot_rightRearDrive.config_kP(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kP, kDriveTrain.kTimeoutMs);
-        mot_rightRearDrive.config_kI(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kI, kDriveTrain.kTimeoutMs);
-        mot_rightRearDrive.config_kD(kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains.kD, kDriveTrain.kTimeoutMs);
-
-        // mot_rightRearDrive.setSensorPhase(true);
-
-        driveMode = kDriveTrain.InitialDriveMode;
-
-        applyAntiTip = kDriveTrain.startWithAntiTip;
-
-        drive_state = "";
-
-        setBrakeMode(true);
-
+        setNeutralMode(kDriveTrain.DEFAULT_NEUTRAL_MODE);
         zeroEncoders();
-
-        // tof_front = new TimeOfFlight(Constants.kID.TOF_CLIMBER);
-        // tof_front.setRangingMode(RangingMode.Medium, 1000);
-        // 6630
+        configMotors();
     }
-
     /**
      * This method is called once per scheduler run and is used to update smart
      * dashboard data.
      */
     public void periodic() {
+        data.update(gyro_pigeon);
 
-        //SmartDashboard.putNumber("getRotation2D", gyro_pigeon.getRotation2d().getDegrees());
-        if(Constants.kConfig.DEBUG){
-            displayEncoder();
-        }
+        if (odometryEnabled)
+            odometry.update(data.getRotation2d(), getEncoderPositionLeft(), getEncoderPositionRight());
 
         displayTemperatures();
-        //displayHeading();
-        //displayEncoder();
-
-        if (timer.hasElapsed(refreshSeconds)) {
-            if (mot_leftFrontDrive.hasResetOccurred()) {
-                configMotors();
-            }
-
-            timer.reset();
-        }
-
-        updateAll();
-        //displayAngle();
-
-        m_odometry.update(
-            gyro_pigeon.getRotation2d(), getEncoderPositionLeft(), getEncoderPositionRight());
-
-        SmartDashboard.putNumber("Turn Rate", TurnRate());
-        }
-
-
-    @Override
-    public void simulationPeriodic() {
-        // displayEncoder();
-        // displayDriveMode();
-        // displayAngle();
+        if (Constants.kConfig.DEBUG)
+            displayEncoder();
     }
-
-
-    /**
-     * sets the ramp rate
-     * 
-     * @param rampRate time to full throttle
-     * 
-     */
-    public void setRampRate(double rampRate){
-        mot_leftFrontDrive.configOpenloopRamp(rampRate, kDriveTrain.kTimeoutMs);
-        mot_rightFrontDrive.configOpenloopRamp(rampRate, kDriveTrain.kTimeoutMs);
-    }
-
-
-    // ------------------------- Drive Modes ------------------------- //
 
     /**
      * @param acceleration the robot's forward speed
@@ -310,30 +114,22 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
      * @param turn         the robot's angular speed about the z axis
      * 
      */
-    public void aadilDrive(final double acceleration, final double deceleration, final double turn) {
+    public void aadilDrive(double acceleration, double deceleration, double turn) {
         double accelerate = (acceleration - deceleration);
 
-
-        //double rampRateAdjustment = (dsl_gear.get() == DoubleSolenoid.Value.kForward ? kDriveTrain.highGearRampRate : 0);
-
-        if(accelerate > 0 && turn == 0 && drive_state != "forward"){
-            drive_state = "forward";
-            setRampRate(kDriveTrain.forwardRampRate);
+        if(accelerate > 0) {
+            if (turn == 0)
+                setDriveState(DriveState.kForward);
+            else
+                setDriveState(DriveState.kForwardTurn);
+        } else {
+            if (turn == 0)
+                setDriveState(DriveState.kReverse);
+            else
+                setDriveState(DriveState.kReverseTurn);
         }
-        else if(accelerate < 0 && turn == 0 && drive_state != "backwards"){
-            drive_state = "backwards";
-            setRampRate(kDriveTrain.backwardRampRate);
-        }
-        if(accelerate > 0 && turn != 0 && drive_state != "forward_turn"){
-            drive_state = "forward_turn";
-            setRampRate(kDriveTrain.forwardTurnRampRate);
-        }
-        else if(accelerate < 0 && turn != 0 && drive_state != "backward_turn"){
-            drive_state = "backward_turn";
-            setRampRate(kDriveTrain.backwardTurnRampRate);
-        }
-
-        m_drive.arcadeDrive(accelerate, turn, true);
+        
+        ctr_drive.arcadeDrive(accelerate, turn, true);
     }
 
     /**
@@ -345,48 +141,49 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
      * 
      */
     public void tankDrive(double leftSpeed, double rightSpeed) {
-        m_drive.tankDrive(leftSpeed, rightSpeed);
+        ctr_drive.tankDrive(leftSpeed, rightSpeed);
     }
 
     /**
-     * @return the current drive mode as an int
+     * Tank drive that takes voltage inputs
      * 
+     * @param voltsLeft  voltage for left wheels
+     * @param voltsRight voltage for right wheels
      */
-    public int getDriveMode() {
-        return driveMode;
+    public void tankDriveVolts(double voltsLeft, double voltsRight) {
+        mot_leftFrontDrive.setVoltage(voltsLeft);
+        mot_rightFrontDrive.setVoltage(voltsRight);
+        ctr_drive.feed();
+    }
+
+    public void stopMotors() {
+        mot_rightFrontDrive.stopMotor();
+        mot_rightRearDrive.stopMotor();
+        mot_leftFrontDrive.stopMotor();
+        mot_leftRearDrive.stopMotor();
     }
 
     /**
-     * @return the current drive mode as a String
-     * 
+     * resets the GyroSystem's heading 
      */
-    private String getDriveModeString() {
-        switch (driveMode) {
-            case kDriveTrain.AADIL_DRIVE:
-                return "AADIL DRIVE";
+    public void resetGyro() {
+        gyro_pigeon.reset();
+    }
 
-            case kDriveTrain.TANK_DRIVE:
-                return "TANK DRIVE";
-
-            default:
-                return "NONE";
-        }
+    public void resetOdometry(Pose2d pose) {
+        odometry.resetPosition(pose, data.getRotation2d());
+        zeroEncoders();
     }
 
     /**
-     * Puts the current drive mode into SmartDashboard
+     * Sets all encoders to 0
+     * 
+     * call this function when reading positions relative to the robot's current
+     * position.
      * 
      */
-    public void displayDriveMode() {
-        SmartDashboard.putString("Drive Mode", getDriveModeString());
-    }
-
-    /**
-     * directly set the drive mode to the specified int
-     * 
-     */
-    public void setDriveMode(int newDriveMode) {
-        driveMode = newDriveMode;
+    public void zeroEncoders() {
+        setEncoderPosition(0, 0);
     }
 
     /**
@@ -398,76 +195,103 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
      * REPEAT
      */
     public void cycleDriveMode() {
-        System.out.println("Cycling drive mode");
-        switch (driveMode) {
-            case kDriveTrain.AADIL_DRIVE:
-                driveMode = kDriveTrain.TANK_DRIVE;
+        switch (mode) {
+            case kAadilDrive:
+                mode = DriveMode.kTankDrive;
                 break;
-
-            case kDriveTrain.TANK_DRIVE:
-                driveMode = kDriveTrain.AADIL_DRIVE;
+            case kTankDrive:
+                mode = DriveMode.kAadilDrive;
                 break;
         }
+
+        if (Constants.kConfig.DEBUG)
+            System.out.println("Cycling drive mode");
+    }
+
+    public void setOdometryEnabled(boolean enabled) {
+        odometryEnabled = enabled;
+    }
+
+    /**
+     * Sets the ramp rate
+     * 
+     * @param rampRate time to full throttle
+     * 
+     */
+    public void setRampRate(double rampRate) {
+        mot_leftFrontDrive.configOpenloopRamp(rampRate);
+        mot_rightFrontDrive.configOpenloopRamp(rampRate);
+    }
+  
+    public void setNeutralMode(NeutralMode mode) {
+        mot_rightFrontDrive.setNeutralMode(mode);
+        mot_rightRearDrive.setNeutralMode(mode);
+        mot_leftFrontDrive.setNeutralMode(mode);
+        mot_leftRearDrive.setNeutralMode(mode);
+    }
+
+    public void setDeadband(double deadband) {
+        ctr_drive.setDeadband(deadband);
+    }
+
+    /**
+     * directly set the drive mode to the specified int
+     * 
+     */
+    public void setDriveMode(DriveMode mode) {
+        this.mode = mode;
     }
 
     /**
      * @param enable if true sets all motors to brake, if false sets all motors to
      *               coast.
      * 
+     * @deprecated use {@link #setNeutralMode(NeutralMode)}
      */
+    @Deprecated
     public void setBrakeMode(boolean enable) {
-        if (enable) {
-            mot_leftFrontDrive.setNeutralMode(NeutralMode.Brake);
-            mot_leftRearDrive.setNeutralMode(NeutralMode.Brake);
-            mot_rightFrontDrive.setNeutralMode(NeutralMode.Brake);
-            mot_rightRearDrive.setNeutralMode(NeutralMode.Brake);
-        } else {
-            mot_leftFrontDrive.setNeutralMode(NeutralMode.Coast);
-            mot_leftRearDrive.setNeutralMode(NeutralMode.Coast);
-            mot_rightFrontDrive.setNeutralMode(NeutralMode.Coast);
-            mot_rightRearDrive.setNeutralMode(NeutralMode.Coast);
-        }
-
+        setNeutralMode(enable ? NeutralMode.Brake : NeutralMode.Coast);
     }
 
-    // -------------------------- Temperature --------------------------- //
+    public void setEncoderPosition(double position) {
+        setEncoderPosition(position, position);
+    }
 
-    void displayTemperatures() {
+    public void setEncoderPosition(double leftPosition, double rightPosition) {
+        mot_rightFrontDrive.setSelectedSensorPosition(leftPosition);
+        mot_rightRearDrive.setSelectedSensorPosition(leftPosition);
+        mot_leftFrontDrive.setSelectedSensorPosition(rightPosition);
+        mot_leftRearDrive.setSelectedSensorPosition(rightPosition);
+    }
+
+    public void setControlMode(TalonFXControlMode mode, double value) {
+        setControlMode(mode, value, value);
+    }
+
+    public void setControlMode(TalonFXControlMode mode, double leftValue, double rightValue) {
+        mot_leftFrontDrive.set(mode, leftValue);
+        mot_leftRearDrive.set(mode, leftValue);
+        mot_rightFrontDrive.set(mode, rightValue);
+        mot_rightRearDrive.set(mode, rightValue);
+    }
+
+    public void setGearShift(DriveGear gear) {
+        switch (gear) {
+            case kHighGear:
+                dsl_gear.set(DoubleSolenoid.Value.kForward);
+                break;
+            case kLowGear:
+                dsl_gear.set(DoubleSolenoid.Value.kReverse);
+                break;
+        }
+    }
+
+    public void displayTemperatures() {
         SmartDashboard.putNumber("Temp LF", mot_leftFrontDrive.getTemperature());
         SmartDashboard.putNumber("Temp LB", mot_leftRearDrive.getTemperature());
         SmartDashboard.putNumber("Temp RF", mot_rightFrontDrive.getTemperature());
         SmartDashboard.putNumber("Temp RB", mot_rightRearDrive.getTemperature());
     }
-
-    // ---------------------------- Anti Tip ---------------------------- //
-
-    /**
-     * @return true if the anti tip should be applied
-     * 
-     */
-    public boolean getAntiTip() {
-        return applyAntiTip;
-    }
-
-    /**
-     * @param boolean the new state of applyAntiTip
-     * 
-     *                Sets applyAntiTip
-     * 
-     */
-    public void setAntiTip(boolean _applyAntiTip) {
-        applyAntiTip = !_applyAntiTip;
-    }
-
-    /**
-     * toggles the anti-tip
-     * 
-     */
-    public void toggleAntiTip() {
-        applyAntiTip = !applyAntiTip;
-    }
-
-    // ---------------------------- Encoders ---------------------------- //
 
     /**
      * Puts the positions and velocities of the left and right encoders into
@@ -475,23 +299,43 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
      * 
      */
     public void displayEncoder() {
-        if (Math.abs(getRPMRight()) > rmRPM)
-            rmRPM = Math.abs(getRPMRight());
-
-        if (Math.abs(getRPMLeft()) > lmRPM)
-            lmRPM = Math.abs(getRPMLeft());
-
         SmartDashboard.putNumber("Left Position", getEncoderPositionLeft());
         SmartDashboard.putNumber("Left Velocity", getEncoderVelocityLeft());
         SmartDashboard.putNumber("Left RPM", getRPMLeft());
-        SmartDashboard.putNumber("Left MAX RPM", lmRPM);
 
         SmartDashboard.putNumber("Right Position", getEncoderPositionRight());
         SmartDashboard.putNumber("Right Velocity", getEncoderVelocityRight());
         SmartDashboard.putNumber("Right RPM", getRPMRight());
-        SmartDashboard.putNumber("Right MAX RPM", rmRPM);
     }
 
+    /**
+     * Puts the Roll-Pitch-Yaw into SmartDashboard 
+     * 
+     */
+    public void displayAngle() {
+        SmartDashboard.putNumber("Roll",  getRoll());
+        SmartDashboard.putNumber("Pitch", getPitch());
+        SmartDashboard.putNumber("Yaw",   getYaw());
+    }
+
+    /**
+     * Puts the angle and rate into SmartDashboard 
+     * 
+     */
+    public void displayHeading() {
+        SmartDashboard.putNumber("Angle", getHeading());
+        SmartDashboard.putNumber("Rate", getTurnRate());
+        SmartDashboard.putNumber("Rotation2d", gyro_pigeon.getRotation2d().getRadians());
+    }
+
+    /**
+     * @return the current drive mode as an int
+     * 
+     */
+    public DriveMode getDriveMode() {
+        return mode;
+    }
+  
     /**
      * @return the average position of all four encoders
      * 
@@ -505,7 +349,9 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
      * 
      */
     public double getEncoderPositionLeft() {
-        double position = Convert.EncoderUnitsToInches((float)(mot_leftFrontDrive.getSelectedSensorPosition()+mot_leftRearDrive.getSelectedSensorPosition())/2);
+        double position = Convert.EncoderUnitsToInches(
+            (mot_leftFrontDrive.getSelectedSensorPosition()+mot_leftRearDrive.getSelectedSensorPosition()) / 2.0);
+
         return Units.inchesToMeters(position);
     }
 
@@ -514,7 +360,9 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
      * 
      */
     public double getEncoderPositionRight() {
-        double position = Convert.EncoderUnitsToInches((float)(mot_rightFrontDrive.getSelectedSensorPosition()+mot_rightRearDrive.getSelectedSensorPosition())/2);
+        double position = Convert.EncoderUnitsToInches(
+            (mot_rightFrontDrive.getSelectedSensorPosition()+mot_rightRearDrive.getSelectedSensorPosition()) / 2.0);
+
         return Units.inchesToMeters(position);
     }
 
@@ -531,7 +379,9 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
      * 
      */
     public double getEncoderVelocityLeft() {
-        double velocity = 10*Convert.EncoderUnitsToInches((float)(mot_leftFrontDrive.getSelectedSensorVelocity()+mot_leftRearDrive.getSelectedSensorVelocity())/2);
+        double velocity = 10 * Convert.EncoderUnitsToInches(
+            (mot_leftFrontDrive.getSelectedSensorVelocity() + mot_leftRearDrive.getSelectedSensorVelocity()) / 2.0);
+
         return Units.inchesToMeters(velocity);
     }
 
@@ -540,8 +390,14 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
      * 
      */
     public double getEncoderVelocityRight() {
-        double velocity = 10*Convert.EncoderUnitsToInches((float)(mot_rightFrontDrive.getSelectedSensorVelocity()+mot_rightRearDrive.getSelectedSensorVelocity())/2);
+        double velocity = 10 * Convert.EncoderUnitsToInches(
+            (mot_rightFrontDrive.getSelectedSensorVelocity() + mot_rightRearDrive.getSelectedSensorVelocity()) / 2.0);
+
         return Units.inchesToMeters(velocity);
+    }
+
+    public double getRPM() {
+        return (getRPMLeft() + getRPMRight()) / 2.0;
     }
 
     public double getRPMRight() {
@@ -557,192 +413,24 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
     }
 
     /**
-     * Sets all encoders to 0
-     * 
-     * call this function when reading positions relative to the robot's current
-     * position.
-     * 
-     */
-    public void zeroEncoders() {
-        mot_rightFrontDrive.setSelectedSensorPosition(0);
-        mot_rightRearDrive.setSelectedSensorPosition(0);
-        mot_leftFrontDrive.setSelectedSensorPosition(0);
-        mot_leftRearDrive.setSelectedSensorPosition(0);
-    }
-
-    public void setAllEncoders(double position) {
-        mot_rightFrontDrive.setSelectedSensorPosition(position);
-        mot_rightRearDrive.setSelectedSensorPosition(position);
-        mot_leftFrontDrive.setSelectedSensorPosition(position);
-        mot_leftRearDrive.setSelectedSensorPosition(position);
-    }
-
-    public void setEncodersSplit(double position_left, double position_right){
-        mot_rightFrontDrive.setSelectedSensorPosition(position_right);
-        mot_rightRearDrive.setSelectedSensorPosition(position_right);
-        mot_leftFrontDrive.setSelectedSensorPosition(position_left);
-        mot_leftRearDrive.setSelectedSensorPosition(position_left);
-    }
-
-    // ------------------------ Setpoint Controls ------------------------ //
-
-    public void setControlMode(TalonFXControlMode mode, double value) {
-        mot_leftFrontDrive.set(mode, value);
-        mot_leftRearDrive.set(mode, value);
-        mot_rightFrontDrive.set(mode, value);
-        mot_rightRearDrive.set(mode, value);
-    }
-
-    public void setControlMode(TalonFXControlMode mode, double value_l, double value_r) {
-        mot_leftFrontDrive.set(mode, value_l);
-        mot_leftRearDrive.set(mode, value_l);
-        mot_rightFrontDrive.set(mode, value_r);
-        mot_rightRearDrive.set(mode, value_r);
-    }
-
-    public void setDefaultControlMode(double value){
-        mot_leftFrontDrive.set(TalonFXControlMode.PercentOutput, value);
-        mot_leftFrontDrive.setInverted(false);
-
-        mot_leftRearDrive.set(TalonFXControlMode.Follower, value);
-        mot_leftRearDrive.follow(mot_leftFrontDrive);
-        mot_leftRearDrive.setInverted(InvertType.FollowMaster);
-
-        mot_rightFrontDrive.set(TalonFXControlMode.PercentOutput, value);
-        mot_rightFrontDrive.setInverted(true);
-
-        mot_rightRearDrive.set(TalonFXControlMode.Follower, value);
-        mot_rightRearDrive.follow(mot_rightFrontDrive);
-        mot_rightRearDrive.setInverted(InvertType.FollowMaster);
-    }
-
-    public void setDefaultControlMode(){
-        setDefaultControlMode(0);
-    }
-
-    // ---------------------------- Solenoids ---------------------------- //
-
-    /**
-     * shifts the gear shift to fast
-     */
-    public void fastShift() {
-        if(Constants.kConfig.DEBUG){
-            SmartDashboard.putString("Solenoid", "Fast");
-        }
-        //SmartDashboard.putBoolean("isLowGear", false);
-        dsl_gear.set(DoubleSolenoid.Value.kForward);
-
-    }
-
-    /**
-     * shifts the gear shift to slow
-     */
-    public void slowShift() {
-        if(Constants.kConfig.DEBUG){
-            SmartDashboard.putString("Solenoid", "Slow");
-        }
-        //SmartDashboard.putBoolean("isLowGear", true);
-        dsl_gear.set(DoubleSolenoid.Value.kReverse);
-    }
-
-    // ---------------------------- Pigeon ---------------------------- //
-
-    // getters
-    public double Roll(){
-        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual roll", 0) : roll;
-    }
-
-    public double Pitch(){
-        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual pitch", 0) : pitch;
-    }
-
-    public double Yaw(){
-        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual yaw", 0) : yaw;
-    }
-
-    public double Heading(){
-        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual heading", 0) : heading;
-    }
-
-    public double TurnRate(){
-        return turn_rate;
-        // return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual turn_rate", 0) : turn_rate;
-    }
-
-    public double X_Acelleration(){
-        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual x_acceleration", 0) : x_acceleration;
-    }
-
-    public double Y_Acelleration(){
-        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual y_acceleration", 0) : y_acceleration;
-    }
-
-    public double Z_Acelleration(){
-        return SmartDashboard.getBoolean("Manual Override Enabled", false) ? SmartDashboard.getNumber("manual x_acceleration", 0) : x_acceleration;
-    }
-
-    private void updateAll(){
-        updateRPY();
-        updateAcceleration();
-        updateTurnAngle();
-    }
-
-    /**
-     * Updates the roll pitch and yaw members
-     */
-    private void updateRPY(){
-        double [] rpy = new double[3];
-        gyro_pigeon.getYawPitchRoll(rpy);
-        roll  = rpy[0];
-        pitch = rpy[1];
-        yaw   = rpy[2];
-    }
-
-    /**
-     * Updates the heading and turn rate
-     */
-    private void updateTurnAngle(){
-        heading   = getAngle();
-        turn_rate = getRate();
-    }
-
-    /**
-     * Updates the xyz acceleration members
-     */
-    private void updateAcceleration(){
-        short [] xyz = new short[3];
-        gyro_pigeon.getBiasedAccelerometer(xyz);
-        x_acceleration = xyz[0];
-        y_acceleration = xyz[1];
-        z_acceleration = xyz[2];
-    }
-
-    /**
-     * resets the GyroSystem's heading 
-     */
-    public void resetGyro(){
-        gyro_pigeon.reset();
-    }
-
-    /**
      * @return double the GyroSystem's roll
      */
-    public double getRoll(){
-        return gyro_pigeon.getRoll();
+    public double getRoll() {
+        return data.getRoll();
     }
     
     /**
      * @return double the GyroSystem's yaw
      */
-    public double getYaw(){
-        return gyro_pigeon.getYaw();
+    public double getYaw() {
+        return data.getYaw();
     }
 
     /**
      * @return double the GyroSystem's pitch
      */
-    public double getPitch(){
-        return gyro_pigeon.getPitch();
+    public double getPitch() {
+        return data.getPitch();
     }
 
     /**
@@ -760,8 +448,8 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
      *     output as it sweeps past from 360 to 0 on the second time around."
      *      
      */
-    public double getAngle(){
-        return gyro_pigeon.getAngle();
+    public double getAngle() {
+        return data.getAngle();
     }
     
     /**
@@ -771,28 +459,9 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
      *  - Follows North-East-Down convention
      *      
      */
-    public double getRate(){
-        return gyro_pigeon.getRate();
-    }
-
-    /**
-     * Puts the Roll-Pitch-Yaw into SmartDashboard 
-     * 
-     */
-    public void displayAngle(){
-        SmartDashboard.putNumber("Roll",  Roll());
-        SmartDashboard.putNumber("Pitch", Pitch());
-        SmartDashboard.putNumber("Yaw",   Yaw());
-    }
-
-    /**
-     * Puts the angle and rate into SmartDashboard 
-     * 
-     */
-    public void displayHeading(){
-        SmartDashboard.putNumber("Angle",  Heading());
-        SmartDashboard.putNumber("Rate", TurnRate());
-        SmartDashboard.putNumber("Rotation2d", gyro_pigeon.getRotation2d().getRadians());
+    @Override
+    public double getTurnRate() {
+        return data.getTurnRate();
     }
 
     /**
@@ -801,10 +470,16 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
      * @return the robot's heading in degrees, from -180 to 180
      */
     public double getHeading() {
-        return gyro_pigeon.getRotation2d().getDegrees();
+        return data.getHeading();
     }
 
-    // ---------------------------- Auto ---------------------------- //
+    public Pose2d getPose() { 
+        return odometry.getPoseMeters();
+    } 
+
+    public DifferentialDriveOdometry getOdometry() {
+        return odometry;
+    }
 
     /**
      * Method gets the wheel speeds using the encoders get velocity methods.
@@ -812,29 +487,84 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
         return new DifferentialDriveWheelSpeeds(getEncoderVelocityLeft(), getEncoderVelocityRight());
     }
+   
+    private void configMotors() {
+        SupplyCurrentLimitConfiguration currentLimitConfiguration = new SupplyCurrentLimitConfiguration(
+            true, kDriveTrain.CurrentLimit, kDriveTrain.TriggerThresholdCurrent, kDriveTrain.triggerThresholdTime);
 
-    /**
-     * Tank drive that takes voltage inputs
-     * 
-     * @param voltsLeft  voltage for left wheels
-     * @param voltsRight voltage for right wheels
-     */
-    public void tankDriveVolts(double voltsLeft, double voltsRight) {
-        mot_leftFrontDrive.setVoltage(voltsLeft);
-        mot_rightFrontDrive.setVoltage(voltsRight);
-        m_drive.feed();
+        // Left Front Drive
+        mot_leftFrontDrive.configFactoryDefault();
+        mot_leftFrontDrive.setInverted(kDriveTrain.Clockwise);
+        mot_leftFrontDrive.setSensorPhase(kDriveTrain.kSensorPhase);
+        mot_leftFrontDrive.configSupplyCurrentLimit(currentLimitConfiguration);
+
+        mot_leftFrontDrive.configSelectedFeedbackSensor(
+            TalonFXFeedbackDevice.IntegratedSensor, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
+
+        MotorUtils.setGains(mot_leftFrontDrive, kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains);
+
+        // mot_leftFrontDrive.setSensorPhase(true);
+
+        // Left Rear Drive
+        mot_leftRearDrive.configFactoryDefault();
+        mot_leftRearDrive.follow(mot_leftFrontDrive);
+        mot_leftRearDrive.setInverted(InvertType.FollowMaster);
+        mot_leftRearDrive.setSensorPhase(kDriveTrain.kSensorPhase);
+        mot_leftRearDrive.configSupplyCurrentLimit(currentLimitConfiguration);
+        
+        mot_leftRearDrive.configSelectedFeedbackSensor(
+            TalonFXFeedbackDevice.IntegratedSensor, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
+
+        MotorUtils.lowerFollowerStatusPeriod(mot_leftRearDrive);
+        MotorUtils.setGains(mot_leftRearDrive, kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains);
+
+        // mot_leftRearDrive.setSensorPhase(true);
+
+        // Right Front Drive
+        mot_rightFrontDrive.configFactoryDefault();
+        mot_rightFrontDrive.setInverted(kDriveTrain.CounterClockwise);
+        mot_rightFrontDrive.setSensorPhase(kDriveTrain.kSensorPhase);
+        mot_rightFrontDrive.configSupplyCurrentLimit(currentLimitConfiguration);
+
+        mot_rightFrontDrive.configSelectedFeedbackSensor(
+            TalonFXFeedbackDevice.IntegratedSensor, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
+
+        MotorUtils.setGains(mot_rightFrontDrive, kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains);
+
+        // mot_rightFrontDrive.setSensorPhase(true);
+
+        // Right Rear Drive
+        mot_rightRearDrive.configFactoryDefault();
+        mot_rightRearDrive.follow(mot_rightFrontDrive);
+        mot_rightRearDrive.setInverted(InvertType.FollowMaster);
+        mot_rightRearDrive.setSensorPhase(kDriveTrain.kSensorPhase);
+        mot_rightRearDrive.configSupplyCurrentLimit(currentLimitConfiguration);
+
+        mot_rightRearDrive.configSelectedFeedbackSensor(
+            TalonFXFeedbackDevice.IntegratedSensor, kDriveTrain.kPIDLoopIdx, kDriveTrain.kTimeoutMs);
+
+        MotorUtils.lowerFollowerStatusPeriod(mot_rightRearDrive);
+        MotorUtils.setGains(mot_rightRearDrive, kDriveTrain.kPIDLoopIdx, kDriveTrain.kDistanceGains);
     }
 
-    public Pose2d getPose(){
-        return m_odometry.getPoseMeters();
-    }
+    private void setDriveState(DriveState state) {
+        if (state != this.state) {
+            switch (state) {
+                case kForward:
+                    setRampRate(kDriveTrain.forwardRampRate);
+                    break;
+                case kForwardTurn:
+                    setRampRate(kDriveTrain.forwardTurnRampRate);
+                    break;
+                case kReverse:
+                    setRampRate(kDriveTrain.backwardRampRate);
+                    break;
+                case kReverseTurn:
+                    setRampRate(kDriveTrain.backwardTurnRampRate);
+                    break;
+            }
 
-    public DifferentialDriveOdometry getOdometry(){
-        return m_odometry;
-    }
-
-    public void resetOdometry(Pose2d pose) {
-        zeroEncoders();
-        m_odometry.resetPosition(pose, gyro_pigeon.getRotation2d());
+            this.state = state;
+        }
     }
 }

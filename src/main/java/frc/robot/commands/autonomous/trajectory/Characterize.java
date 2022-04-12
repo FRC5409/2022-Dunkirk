@@ -27,10 +27,10 @@ public class Characterize extends CommandBase {
     public void initialize() {
         // reset gyro and encoders
         // set timeperiod to .005
-        m_drivebase.m_drive.setDeadband(0.0);
+        m_drivebase.setDeadband(0.0);
         // The following is called for the side-effect of resetting the 
         // drivebase odometers.
-        m_gyro.resetOdometry(m_drivebase.m_odometry.getPoseMeters()); 
+        m_gyro.resetOdometry(m_drivebase.getOdometry().getPoseMeters()); 
         m_logger = new SysIdDrivetrainLogger();
         m_logger.updateThreadPriority();
         m_logger.initLogging();

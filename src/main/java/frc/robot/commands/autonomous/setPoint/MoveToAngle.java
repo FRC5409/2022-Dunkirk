@@ -13,7 +13,7 @@ public class MoveToAngle extends PIDCommand{
     public MoveToAngle(DriveTrain _drive, double targetAngle) {
         super(
             new PIDController(kDriveTrain.kAngleGains.kP, kDriveTrain.kAngleGains.kI, kDriveTrain.kAngleGains.kD), 
-            _drive::Heading, 
+            _drive::getHeading, 
             targetAngle, 
             (output) -> _drive.tankDrive(limitSpeed(output), -limitSpeed(output))
               );
@@ -45,6 +45,6 @@ public class MoveToAngle extends PIDCommand{
     @Override
     public boolean isFinished() {
       // End when the controller is at the reference.
-      return Math.abs(Math.abs(drive.Heading() - getController().getSetpoint()) / getController().getSetpoint()) <= 0.05;
+      return Math.abs(Math.abs(drive.getHeading() - getController().getSetpoint()) / getController().getSetpoint()) <= 0.05;
     }
 }

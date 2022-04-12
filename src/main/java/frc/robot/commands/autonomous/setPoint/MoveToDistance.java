@@ -46,7 +46,7 @@ public class MoveToDistance extends CommandBase {
 
     @Override
     public void end(boolean interrupted){
-        drive.setDefaultControlMode();
+        drive.stopMotors();
         SmartDashboard.putString("mode", "PercentOutput");
     }
 

@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.DriveTrain.DriveGear;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -49,7 +50,7 @@ public class SlowGear extends CommandBase {
 
     if (rpmLeft < Constants.kDriveTrain.MAX_RPM_FOR_LOW_GEAR
         && rpmRight < Constants.kDriveTrain.MAX_RPM_FOR_LOW_GEAR && !hasShift) {
-      sys_drive.slowShift();
+      sys_drive.setGearShift(DriveGear.kLowGear);
       hasShift = true;
       if(Constants.kConfig.DEBUG) SmartDashboard.putBoolean("Slow Shift True", true);
     } else {
