@@ -1,41 +1,48 @@
 package frc.robot.configuration;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import frc.robot.base.shooter.ConstantModelProvider;
-//Constants
+import frc.robot.base.shooter.ShooterModelProvider;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.base.shooter.ShooterMode;
-import frc.robot.base.shooter.ShooterModelProvider;
 import frc.robot.base.shooter.ShooterState;
+
 import frc.robot.base.Joystick.ButtonType;
-import frc.robot.base.command.CancelCommand;
+
 import frc.robot.base.command.ProxySequentialCommandGroup;
+import frc.robot.base.command.CommandLock;
+
 import frc.robot.base.indexer.IndexerState;
+
 import frc.robot.base.RobotConfiguration;
-import frc.robot.base.ValueProperty;
 import frc.robot.base.CommandProperty;
+import frc.robot.base.TriggerProperty;
+import frc.robot.base.ValueProperty;
 import frc.robot.base.Joystick;
 import frc.robot.base.Property;
-// Misc
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.shooter.ShooterFlywheel;
+import frc.robot.subsystems.shooter.ShooterTurret;
+
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 
-import frc.robot.commands.indexer.IndexerIntakeActive;
-import frc.robot.commands.indexer.RunIndexer;
-import frc.robot.subsystems.shooter.*;
+
+import frc.robot.RobotContainer;
+import frc.robot.Constants;
+
 import frc.robot.commands.shooter.*;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.commands.autonomous.trajectory.ConfigureOdometry;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.FourBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.OneBallAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto.AltThreeBallsAuto;
@@ -43,29 +50,36 @@ import frc.robot.commands.autonomous.trajectory.trajectoryAuto.ThreeBallsAuto.Sy
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto.AdvancedTwoBallsAuto;
 import frc.robot.commands.autonomous.trajectory.trajectoryAuto.TwoBallsAuto.TwoBallsAuto;
 
+import frc.robot.commands.compound.IndexActive;
+import frc.robot.commands.compound.ReverseIndexer;
+import frc.robot.commands.compound.SimpleShooter;
+import frc.robot.commands.drive.DefaultDrive;
+
 public class RobotCompetition implements RobotConfiguration {
-    private final ShooterFlywheel      Flywheel;
+    private final ShooterFlywheel      flywheel;
     private final ShooterTurret        turret;
-    private final DriveTrain           DriveTrain;
+    private final DriveTrain           drivetrain;
     private final Limelight            limelight;
-    private final Indexer              Indexer;
-    private final Intake               Intake;
-    private final Climber              Climber;
+    private final Indexer              indexer;
+    private final Intake               intake;
+    private final Climber              climber;
 
     private final Joystick             joystickPrimary; // = new XboxController(0);
     private final Joystick             joystickSecondary;
-
-    private final DefaultDrive         defaultDrive;
-
+    
     private final CommandProperty<IndexerState> indexerState;
     private final CommandProperty<ShooterState> shooterState;
     
-    private final ValueProperty<ShooterConfiguration> shooterConfiguration;
-    private final ValueProperty<SweepDirection> shooterSweepDirection;
-    private final ValueProperty<Boolean> climberActive;
-    private final ValueProperty<Boolean> shooterEnabled;
-    private final ValueProperty<Double> shooterOffset;
-    private final ValueProperty<Double> drivetrainSpeed;
+    private final TriggerProperty shooterActiveToggle;
+    private final TriggerProperty shooterEnabled;
+    private final TriggerProperty indexerEnabled;
+    private final TriggerProperty climberEnabled;
+
+    private final Property<ShooterConfiguration> shooterConfiguration;
+    private final Property<SweepDirection> shooterSweepDirection;
+    private final Property<Boolean> climberActive;
+    private final Property<Double> shooterOffset;
+    private final Property<Double> drivetrainSpeed;
 
     private final SendableChooser<Command> autoCommandSelector;
 
@@ -75,30 +89,38 @@ public class RobotCompetition implements RobotConfiguration {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotCompetition(RobotContainer robot) {
-        joystickSecondary = robot.joystickSecondary;
-        joystickPrimary   = robot.joystickPrimary;
-        DriveTrain        = robot.DriveTrain;
+        // Robot Subsystems
+        drivetrain        = robot.drivetrain;
         limelight         = robot.limelight;
-        Flywheel          = robot.Flywheel;
-        Climber           = robot.Climber;
-     // Pigeon            = robot.Pigeon
-        Intake            = robot.Intake;
-        Indexer           = robot.Indexer;
+        flywheel          = robot.flywheel;
+        climber           = robot.climber;
+        intake            = robot.intake;
+        indexer           = robot.indexer;
         turret            = robot.turret;
 
+        // Robot Joysticks
+        joystickSecondary = robot.joystickSecondary;
+        joystickPrimary   = robot.joystickPrimary;
+
+        // Robot Properties
         shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
         shooterConfiguration  = new ValueProperty<>(Constants.Shooter.CONFIGURATIONS.getConfiguration(ShooterMode.kFar));
-        indexerState     = new CommandProperty<>(IndexerState.kArmed);
         drivetrainSpeed       = new ValueProperty<>(1.0);
-        shooterEnabled        = new ValueProperty<>(false);
         climberActive         = robot.climberActive;
         shooterOffset         = new ValueProperty<>(Constants.Shooter.INITIAL_SHOOTER_OFFSET);
         shooterState          = new CommandProperty<>(ShooterState.kOff);
-        
-        defaultDrive        = new DefaultDrive(DriveTrain, joystickPrimary.getController(), drivetrainSpeed);
+        indexerState          = new CommandProperty<>(IndexerState.kArmed);
 
+        // Robot Trigger Properties
+        shooterActiveToggle = new TriggerProperty(false);
+        shooterEnabled = new TriggerProperty(true);
+        indexerEnabled = new TriggerProperty(true);
+        climberEnabled = new TriggerProperty(false);
+
+        // Autonomous Selector
         autoCommandSelector = new SendableChooser<Command>();
 
+        // Shooter Properties
         shooterModelProvider = new ConstantModelProvider(
             Constants.Shooter.ODOMETRY_MODEL,
             Constants.Shooter.TRACKING_MODEL,
@@ -111,183 +133,238 @@ public class RobotCompetition implements RobotConfiguration {
     }
 
     private void configureDashboard() {
-        autoCommandSelector.addOption("One",
-            new OneBallAuto(DriveTrain, Indexer, limelight, turret, Flywheel, 
+        autoCommandSelector.addOption(
+            "One",
+            new OneBallAuto(drivetrain, indexer, limelight, turret, flywheel, 
                 shooterConfiguration, shooterSweepDirection, Property.cast(shooterOffset)));
         
-        autoCommandSelector.setDefaultOption("Two",
-            new TwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+        autoCommandSelector.setDefaultOption(
+            "Two",
+            new TwoBallsAuto(drivetrain, intake, indexer, limelight, turret, flywheel,
                 shooterConfiguration, shooterSweepDirection, Property.cast(shooterOffset)));
 
-        autoCommandSelector.setDefaultOption("Advanced Two",
-            new AdvancedTwoBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+        autoCommandSelector.setDefaultOption(
+            "Advanced Two",
+            new AdvancedTwoBallsAuto(drivetrain, intake, indexer, limelight, turret, flywheel,
                 shooterConfiguration, shooterSweepDirection, Property.cast(shooterOffset), shooterState, indexerState));
 
-        autoCommandSelector.addOption("Three",
-            new SynchronizedThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+        autoCommandSelector.addOption(
+            "Three",
+            new SynchronizedThreeBallsAuto(drivetrain, intake, indexer, limelight, turret, flywheel,
                 shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerState,
                 shooterState, shooterOffset));
 
-        autoCommandSelector.addOption("Three Alt",
-            new AltThreeBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+        autoCommandSelector.addOption(
+            "Three Alt",
+            new AltThreeBallsAuto(drivetrain, intake, indexer, limelight, turret, flywheel,
                 shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerState,
                 shooterState, shooterOffset));
 
-        autoCommandSelector.addOption("Four",
-            new FourBallsAuto(DriveTrain, Intake, Indexer, limelight, turret, Flywheel,
+        autoCommandSelector.addOption(
+            "Four",
+            new FourBallsAuto(drivetrain, intake, indexer, limelight, turret, flywheel,
                 shooterModelProvider, shooterConfiguration, shooterSweepDirection, indexerState,
                 shooterState, shooterOffset));
 
         SmartDashboard.putData("Auto Chooser", autoCommandSelector);
 
         //SmartDashboard.putData("Cycle Limelight View", new ChangeLimelightView(limelight));
-        SmartDashboard
-            .putData("Shooter Offset - Increment", new ConfigureProperty<Double>(shooterOffset, () -> shooterOffset.get() + Constants.Shooter.OFFSET_INCREMENT));
+        SmartDashboard.putData(
+            "Shooter Offset - Increment", 
+            new ConfigureProperty<Double>(shooterOffset, () -> shooterOffset.get() + Constants.Shooter.OFFSET_INCREMENT));
 
-        SmartDashboard
-            .putData("Shooter Offset - Decrement", new ConfigureProperty<Double>(shooterOffset, () -> shooterOffset.get() - Constants.Shooter.OFFSET_INCREMENT));
+        SmartDashboard.putData(
+            "Shooter Offset - Decrement", 
+            new ConfigureProperty<Double>(shooterOffset, () -> shooterOffset.get() - Constants.Shooter.OFFSET_INCREMENT));
     }
 
     private void configureCommands() {
-        DriveTrain.setDefaultCommand(defaultDrive);
-        Climber.setDefaultCommand(new DefaultElevator(Climber, joystickSecondary.getController()));
+        drivetrain.setDefaultCommand(
+            new DefaultDrive(drivetrain, joystickPrimary.getController(), drivetrainSpeed));
+
+        climber.setDefaultCommand(
+            new DefaultElevator(climber, joystickSecondary.getController()));
     }
 
-    public void teleopPeriodic(){
-        SmartDashboard.putNumber("Shooter Offset", shooterOffset.get());
-    }
-
-    /**
-     * Use this method to define your button->command mappings. Buttons can be
-     * created by
-     * instantiating a {@link GenericHID} or one of its subclasses ({@link
-     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-     * it to a {@link
-     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
     private void configureButtonBindings() {
-        Trigger shooterEnabledTrigger = new Trigger(shooterEnabled::get);
+        TriggerProperty shooterRunning = new TriggerProperty(false);
+        Trigger shooterModeToggle = new Trigger(() -> shooterConfiguration.get().getMode() == ShooterMode.kNear);
+
         Trigger climberToggleTrigger = new Trigger(climberActive::get);
-        Trigger shooterModeTrigger = new Trigger(() -> shooterConfiguration.get().getMode() == ShooterMode.kNear);
+
+        CommandLock indexerLock = new CommandLock();
+        CommandLock shooterLock = new CommandLock();
         
+        Command primeShooter = new PrimeShooter(indexer, indexerState);
+
+        // Cycle drive mode
         joystickPrimary.getButton(ButtonType.kStart)
-            .whenPressed(DriveTrain::cycleDriveMode);
+            .whenActive(drivetrain::cycleDriveMode);
 
+        // Switch drivetrain to fast gear
         joystickPrimary.getButton(ButtonType.kRightBumper)
-            .whenPressed(new FastGear(DriveTrain));
-
+            .whenActive(new FastGear(drivetrain));
+        
+        // Switch drivetrain to slow gear
         joystickPrimary.getButton(ButtonType.kRightBumper)
-            .whenReleased(new SlowGear(DriveTrain));
+            .whenInactive(new SlowGear(drivetrain));
 
+        // Reverse indexer
         joystickPrimary.getButton(ButtonType.kB)
-            .whileHeld(
-                new ProxySequentialCommandGroup(
-                    indexerState.configureTo(IndexerState.kActive),
-                    shooterState.notEqualTo(ShooterState.kRun),
-                    new RunIndexer(Indexer, -0.5)
-                )
-            );
-        
-        Command yes = new PrimeShooter(Indexer, indexerState);
+            .and(indexerEnabled)
+            .whileActiveOnce(new ReverseIndexer(indexer, primeShooter, indexerLock, indexerState, shooterState));
 
+        // Run intake and indexer
         joystickPrimary.getButton(ButtonType.kX)
-            .whileActiveOnce(
-                new ProxySequentialCommandGroup(
-                    new CancelCommand(yes),
-                    indexerState.configureTo(IndexerState.kActive),
-                    shooterState.notEqualTo(ShooterState.kRun), 
-                    new IndexerIntakeActive(Indexer, Intake, joystickPrimary, joystickSecondary)
-                )
-            );
+            .and(indexerEnabled)
+            .whileActiveOnce(new IndexActive(indexer, intake, joystickPrimary, primeShooter, indexerLock, indexerState, shooterState));
         
+        // Prime shooter
         joystickPrimary.getButton(ButtonType.kX)
-            .whenReleased(yes);
-
+            .and(indexerEnabled)
+            .whenInactive(primeShooter);
+            
+        // Enter climber mode
         joystickSecondary.getButton(ButtonType.kStart)
-            .whenPressed((new ToggleShooterElevator(climberActive, turret, limelight, Flywheel, Indexer, Climber))
-            .beforeStarting(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear)));
+            .and(climberEnabled.negate())
+            .whenActive(
+                new ProxySequentialCommandGroup(
+                    new InstantCommand(() -> {
+                        // Disable indexer
+                        indexerEnabled.set(false);
 
+                        // Disable shooter
+                        shooterEnabled.set(false);
+                        shooterRunning.set(false);
+                        shooterActiveToggle.set(false);
+
+                        // Enable climber
+                        climberEnabled.set(true);
+                    }),
+
+                    // Configure shooter to near
+                    new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear),
+
+                    // Interrupt any commands requiring these subsystems
+                    new RequireCommand(turret, flywheel, indexer, intake)
+                )
+            );
+
+        // Exit climber mode
+        joystickSecondary.getButton(ButtonType.kStart)
+            .and(climberEnabled.negate())
+            .whenActive(
+                new ProxySequentialCommandGroup(
+                    new InstantCommand(() -> {
+                        // Enable indexer
+                        indexerEnabled.set(true);
+
+                        // Enable shooter
+                        shooterEnabled.set(true);
+                        shooterRunning.set(true);
+                        shooterActiveToggle.set(true);
+
+                        // Disable climber
+                        climberEnabled.set(false);
+                    }),
+
+                    // Configure shooter to near
+                    new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear),
+
+                    // Interrupt any commands requiring these subsystems
+                    new RequireCommand(turret, flywheel, indexer, intake)
+                )
+            );
+
+        // Auto align drivetrain (when climbing)
         joystickSecondary.getButton(ButtonType.kX)
-            .and(climberToggleTrigger)
-            .whenActive(new AutoAlign(Climber, DriveTrain, 180));
+            .and(climberEnabled)
+            .whenActive(new AutoAlign(climber, drivetrain, 180));
 
+        // Reset gyro (when climbing)
         joystickSecondary.getButton(ButtonType.kB)
-            .and(climberToggleTrigger)
-            .whenActive(DriveTrain::resetGyro);
+            .and(climberEnabled)
+            .whenActive(drivetrain::resetGyro);
 
+        // Zero encoder (when climbing)
         joystickSecondary.getButton(ButtonType.kY)
-            .and(climberToggleTrigger)
-            .whenActive(Climber::zeroEncoder);
+            .and(climberEnabled)
+            .whenActive(climber::zeroEncoder);
         
+        // Toggle shooter
         joystickSecondary.getButton(ButtonType.kLeftBumper)
-            .and(climberToggleTrigger.negate())
-            .and(shooterModeTrigger.negate())
-            .whenActive(new ConfigureProperty<Boolean>(shooterEnabled, () -> !shooterEnabled.get()));
+            .and(shooterEnabled)
+            .and(shooterModeToggle)
+            .whenActive(shooterActiveToggle.getProperty().configureTo(() -> !shooterActiveToggle.get()));
 
-        shooterEnabledTrigger.whileActiveOnce(
-            new ComplexOperateShooter(
-                Flywheel, turret, DriveTrain, limelight, Indexer,
-                new Trigger(joystickSecondary.getController()::getRightBumper),
-                shooterModelProvider, shooterConfiguration, indexerState, shooterSweepDirection, 
-                shooterState, shooterOffset, drivetrainSpeed
+        // Run complex shooter
+        shooterActiveToggle.whileActiveOnce(
+            new ProxySequentialCommandGroup(
+                new ConfigureProperty<>(shooterRunning.getProperty(), true),
+                
+                new ComplexOperateShooter(flywheel, turret, drivetrain, limelight, indexer,
+                    new Trigger(joystickSecondary.getController()::getRightBumper),
+                    shooterModelProvider, shooterConfiguration, indexerState, shooterSweepDirection, 
+                    shooterState, shooterOffset, drivetrainSpeed
+                )
             )
         );
 
-        shooterEnabledTrigger.negate()
-            .whileActiveOnce(new RotateTurret(turret, 0));
-
-        joystickSecondary.getButton(ButtonType.kRightBumper)
-            .and(climberToggleTrigger.negate())
-            .and(shooterModeTrigger)
+        // Zero turret at end of complex shooter
+        shooterActiveToggle.negate()
+            .and(shooterRunning)
             .whileActiveOnce(
-                new ProxySequentialCommandGroup(
-                    indexerState.configureTo(IndexerState.kActive),
-                    shooterState.equalTo(ShooterState.kOff), 
-                    new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85)
-                )
-            ).whenInactive(new RotateTurret(turret, 0));
-            
-        joystickSecondary.getButton(ButtonType.kUpPov)
-            .and(joystickSecondary.getButton(ButtonType.kA).negate())
-            .and(climberToggleTrigger.negate())
-            .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar));
-
-        joystickSecondary.getButton(ButtonType.kDownPov)
-            .and(joystickSecondary.getButton(ButtonType.kA).negate())
-            .and(climberToggleTrigger.negate())
-            .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear));
-        
-        joystickSecondary.getButton(ButtonType.kLeftPov)
-            .and(joystickSecondary.getButton(ButtonType.kA).negate())
-            .and(climberToggleTrigger.negate())
-            .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft));
-
-        joystickSecondary.getButton(ButtonType.kRightPov)
-            .and(joystickSecondary.getButton(ButtonType.kA).negate())
-            .and(climberToggleTrigger.negate())
-            .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight));
-
-        joystickSecondary.getButton(ButtonType.kA)
-            .and(climberToggleTrigger.negate())
-            .whileActiveOnce(
-                new ProxySequentialCommandGroup(
-                    indexerState.equalTo(IndexerState.kArmed),
-                    new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kLow),
-                    new RotateTurret(turret, 0),
-                    new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.LOW_FLYWHEEL_VELOCITY, 0.5)
-                )
+                new SequentialCommandGroup(    
+                    new ConfigureProperty<>(shooterRunning.getProperty(), false),
+                    new RotateTurret(turret, 0)
+                )        
             );
 
-        joystickSecondary.getButton(ButtonType.kB)
-            .and(climberToggleTrigger.negate())
+        // Configure shooter to far configuration
+        joystickSecondary.getButton(ButtonType.kUpPov)
+            .and(shooterEnabled)
+            .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar));
+
+        // Configure shooter to near configuration
+        joystickSecondary.getButton(ButtonType.kDownPov)
+            .and(shooterEnabled)
+            .whenActive(new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kNear));
+        
+        // Configure shooter sweep direction to left
+        joystickSecondary.getButton(ButtonType.kLeftPov)
+            .and(shooterEnabled)
+            .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft));
+
+        // Configure shooter sweep direction to right
+        joystickSecondary.getButton(ButtonType.kRightPov)
+            .and(shooterEnabled)
+            .whenActive(new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kRight));
+
+        // Run shooter at low configuration
+        joystickSecondary.getButton(ButtonType.kA)
+            .and(shooterEnabled)
             .whileActiveOnce(
-                new ProxySequentialCommandGroup(
-                    indexerState.equalTo(IndexerState.kArmed),
-                    new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kGuard),
-                    new RotateTurret(turret, 0),
-                    new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.GUARD_FLYWHEEL_VELOCITY, 0.5)
-                )
-            );        
+                new SimpleShooter(flywheel, turret, limelight, indexer, shooterLock, 
+                    shooterActiveToggle.getProperty(), shooterRunning.getProperty(), 
+                    indexerState, shooterState, shooterConfiguration,
+                    ShooterMode.kLow, Constants.Shooter.LOW_FLYWHEEL_VELOCITY, 0.5)
+            );  
+            
+        // Run shooter at near configuration
+        joystickSecondary.getButton(ButtonType.kRightBumper)
+        .and(shooterEnabled)
+        .whileActiveOnce(
+            new SimpleShooter(flywheel, turret, limelight, indexer, shooterLock, 
+                shooterActiveToggle.getProperty(), shooterRunning.getProperty(), 
+                indexerState, shooterState, shooterConfiguration,
+                ShooterMode.kNear, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85)
+        );
+    }
+
+
+    @Override
+    public void teleopPeriodic() {
+        SmartDashboard.putNumber("Shooter Offset", shooterOffset.get());
     }
 
     /**
@@ -297,9 +374,9 @@ public class RobotCompetition implements RobotConfiguration {
     public Command getTeleopCommand() {
         return new ParallelCommandGroup(
             new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
-            new FindElevatorZero(Climber),
+            new FindElevatorZero(climber),
 
-            new ConfigureProperty<>(shooterEnabled, false)
+            shooterActiveToggle.getProperty().configureTo(false)
         );
     }
 
@@ -310,6 +387,19 @@ public class RobotCompetition implements RobotConfiguration {
      */
     @Override
     public Command getAutonomousCommand() {
-        return autoCommandSelector.getSelected(); 
+        Command command = autoCommandSelector.getSelected();
+        if (command == null)
+            return null;
+
+        return new SequentialCommandGroup(
+            // Enable odometry
+            new ConfigureOdometry(drivetrain, true),
+            
+            // Run autonomous command
+            command,
+
+            // Disable odometry
+            new ConfigureOdometry(drivetrain, false)
+        );
     }
 }
