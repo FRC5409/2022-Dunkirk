@@ -77,7 +77,6 @@ public class RobotCompetition implements RobotConfiguration {
 
     private final Property<ShooterConfiguration> shooterConfiguration;
     private final Property<SweepDirection> shooterSweepDirection;
-    private final Property<Boolean> climberActive;
     private final Property<Double> shooterOffset;
     private final Property<Double> drivetrainSpeed;
 
@@ -106,7 +105,6 @@ public class RobotCompetition implements RobotConfiguration {
         shooterSweepDirection = new ValueProperty<>(SweepDirection.kLeft);
         shooterConfiguration  = new ValueProperty<>(Constants.Shooter.CONFIGURATIONS.getConfiguration(ShooterMode.kFar));
         drivetrainSpeed       = new ValueProperty<>(1.0);
-        climberActive         = robot.climberActive;
         shooterOffset         = new ValueProperty<>(Constants.Shooter.INITIAL_SHOOTER_OFFSET);
         shooterState          = new CommandProperty<>(ShooterState.kOff);
         indexerState          = new CommandProperty<>(IndexerState.kArmed);
@@ -187,13 +185,11 @@ public class RobotCompetition implements RobotConfiguration {
     }
 
     private void configureButtonBindings() {
-        TriggerProperty shooterRunning = new TriggerProperty(false);
-        Trigger shooterModeToggle = new Trigger(() -> shooterConfiguration.get().getMode() == ShooterMode.kNear);
-
-        Trigger climberToggleTrigger = new Trigger(climberActive::get);
-
         CommandLock indexerLock = new CommandLock();
         CommandLock shooterLock = new CommandLock();
+
+        TriggerProperty shooterRunning = new TriggerProperty(false);
+        Trigger shooterModeToggle = new Trigger(() -> shooterConfiguration.get().getMode() == ShooterMode.kNear);
         
         Command primeShooter = new PrimeShooter(indexer, indexerState);
 
@@ -261,8 +257,8 @@ public class RobotCompetition implements RobotConfiguration {
 
                         // Enable shooter
                         shooterEnabled.set(true);
-                        shooterRunning.set(true);
-                        shooterActiveToggle.set(true);
+                        shooterRunning.set(false);
+                        shooterActiveToggle.set(false);
 
                         // Disable climber
                         climberEnabled.set(false);
