@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.Constants;
+import frc.robot.Constants.ClimberDestination;
 import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -65,19 +66,19 @@ public class DefaultElevator extends CommandBase {
 
             int pov = joystick.getPOV();
 
-            if (pov == 0) {
-                CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_MID_RUNG));
-            } else if (pov == 90) {
+            if (pov == 0) { // Go to mid rung
+                CommandScheduler.getInstance().schedule(true, new ElevateTo(joystick, climber, ClimberDestination.midRung));
+            } else if (pov == 90) { // Lock / unlock elevator 
                 CommandScheduler.getInstance().schedule(false, new ToggleClimberLockCommand(climber));
-            } else if (pov == 180) {
+            } else if (pov == 180) { // Send elevator down to position based on previous held position
                 CommandScheduler.getInstance().schedule(true,
-                        new ElevateTo(climber,
+                        new ElevateTo(joystick, climber,
                                 (climber.getPrevMove() == Constants.kClimber.TO_LOW_RUNG)
-                                        ? Constants.kClimber.TO_MIN_LOW
-                                        : Constants.kClimber.TO_MIN_MID,
+                                        ? ClimberDestination.lockLow
+                                        : ClimberDestination.lockMid,
                                 true));
-            } else if (pov == 270) {
-                CommandScheduler.getInstance().schedule(true, new ElevateTo(climber, Constants.kClimber.TO_LOW_RUNG));
+            } else if (pov == 270) { // Go to low rung
+                CommandScheduler.getInstance().schedule(true, new ElevateTo(joystick, climber, ClimberDestination.lowRung));
             }
         }
     }
