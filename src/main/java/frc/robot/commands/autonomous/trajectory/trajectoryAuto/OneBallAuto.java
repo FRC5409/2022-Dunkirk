@@ -11,23 +11,23 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.kAuto;
 import frc.robot.base.Property;
+import frc.robot.base.command.ProxySequentialCommandGroup;
 import frc.robot.base.shooter.ShooterConfiguration;
 import frc.robot.base.shooter.ShooterMode;
 import frc.robot.base.shooter.SweepDirection;
 import frc.robot.commands.SlowGear;
 import frc.robot.commands.autonomous.trajectory.ResetOdometry;
 import frc.robot.commands.shooter.ConfigureShooter;
-import frc.robot.commands.shooter.OperateShooter;
+import frc.robot.commands.shooter.legacy.OperateShooter;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
 
-public class OneBallAuto extends SequentialCommandGroup{
+public class OneBallAuto extends ProxySequentialCommandGroup {
 
     DriveTrain m_drive;
     Indexer m_indexer;

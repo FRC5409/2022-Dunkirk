@@ -1,29 +1,37 @@
 package frc.robot.base.shooter.odometry;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.utils.Vector2;
 import frc.robot.utils.Vector3;
 
 /**
  * Experimental shooter position relative odometry.
  */
-public class ActiveShooterOdometry extends OdometryBase {
+public class ActiveShooterOdometry extends SimpleShooterOdometry {
     protected double  kLastSpeed;
-    protected Vector2 kLastTarget;
-    protected Vector2 kLastVelocity;
-    protected double  kLastDistance;
     protected double  kLastRotation;
+    protected Vector2 kLastVelocity;
     protected Vector2 kLastDirection;
+    protected Vector2 kLastViewDirection;
+    protected double  kLastPrediction;
 
-    public ActiveShooterOdometry(ShooterOdometryModel model) {
-        super(model);
+    public ActiveShooterOdometry(
+        ShooterOdometryModel odometryModel,
+        ShooterTrackingModel trackingModel
+    ) {
+        super(odometryModel, trackingModel);
         
+        kLastViewDirection = new Vector2();
         kLastDirection = new Vector2();
         kLastVelocity = new Vector2();
-        kLastDistance = 0;
         kLastRotation = 0;
-        kLastTarget = new Vector2();
         kLastSpeed = 0;
+    }
+
+    @Override
+    public void update(Vector2 target) {
+        update(target, kLastSpeed, kLastRotation);
     }
 
     /**
@@ -33,37 +41,75 @@ public class ActiveShooterOdometry extends OdometryBase {
      * @param rotation The observed view rotation
      */
     public void update(Vector2 target, double speed, double rotation) {
-        Vector3 observerVector = calculateTargetProjection(target);
+        Vector3 observerVector = calculateTargetProjection(kFilter.update(target));
+        kLastDistance = safe(odometryModel.kHeight / Math.tan(Math.asin(observerVector.z))) + odometryModel.kOffset;
+
+        Vector3 tempVector = observerVector.scale(kLastDistance)
+           .add(odometryModel.kViewOffset).unit();
 
         rotation = Math.toRadians(rotation);
 
-        double cx = Math.cos(-rotation);
-        double cy = Math.sin(-rotation);
+        kLastViewDirection = new Vector2(tempVector.x, tempVector.y).unit();
+        kLastDirection = rotate(kLastViewDirection, rotation).unit();
 
-        kLastDirection = new Vector2(
-            observerVector.x * cx - observerVector.y * cy,
-            observerVector.x * cy + observerVector.y * cx
-        ).unit();
-
-        kLastDistance = safe(model.kHeight / Math.tan(Math.asin(observerVector.z)));
+        kLastPrediction = Timer.getFPGATimestamp();
         kLastRotation = safe(Math.acos(kLastDirection.x)) * Math.signum(kLastDirection.y);
         kLastVelocity = kLastDirection.scale(speed);
+        kLastUpdate = kLastPrediction;
         kLastTarget = new Vector2(target);
         kLastSpeed = speed;
+        
+    }
+
+    public void update(double speed, double rotation, double turnRate) {
+        if (kLastTarget == null)
+            return;
+
+        double now = Timer.getFPGATimestamp();
+        double delta = (now - kLastPrediction);
+
+        Vector2 nextPosition;
+        if (turnRate == 0) {
+            nextPosition = kLastDirection.scale(speed * delta);
+        } else {
+            double rotationAmount = turnRate * delta;
+
+            double cx = Math.cos(rotationAmount);
+            double cy = Math.sin(rotationAmount);
+
+            double lx = kLastDirection.x * speed / turnRate;
+            double ly = kLastDirection.y * speed / turnRate;
+
+            nextPosition = new Vector2(
+                lx * cx + ly * (cx - 1),
+                ly * cy - lx * (cx - 1)
+            );
+
+            kLastDirection = new Vector2(
+                kLastDirection.x * cx - kLastDirection.y * cy,
+                kLastDirection.x * cy + kLastDirection.y * cx
+            );
+
+            kLastRotation += rotationAmount;
+        }
+
+        kLastViewDirection = nextPosition.unit();
+        kLastPrediction = now;
+        kLastVelocity = kLastDirection.scale(speed);
     }
 
     @Override
     public void reset() {
+        super.reset();
+        kLastViewDirection = new Vector2();
         kLastDirection = new Vector2();
         kLastVelocity = new Vector2();
-        kLastDistance = 0;
         kLastRotation = 0;
-        kLastTarget = new Vector2();
         kLastSpeed = 0;
     }
 
-    public Vector2 getTarget() {
-        return kLastTarget;
+    public Vector2 getViewDirection() {
+        return kLastViewDirection;
     }
 
     public Vector2 getVelocity() {
@@ -74,16 +120,8 @@ public class ActiveShooterOdometry extends OdometryBase {
         return kLastDirection;
     }
 
-    public double getDistance() {
-        return kLastDistance;
-    }
-
     public double getRotation() {
-        return kLastRotation;
-    }
-
-    public ShooterOdometryModel getModel() {
-        return model;
+        return Math.toDegrees(kLastRotation);
     }
 
     public double getSpeed() {
@@ -92,10 +130,9 @@ public class ActiveShooterOdometry extends OdometryBase {
 
     @Override
     public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
         builder.addStringProperty("Velocity", () -> getVelocity().toString(), null);
         builder.addStringProperty("Direction", () -> getDirection().toString(), null);
-        builder.addStringProperty("Target", () -> getTarget().toString(), null);
-        builder.addDoubleProperty("Distance", this::getDistance, null);
         builder.addDoubleProperty("Speed", this::getSpeed, null);
         builder.addDoubleProperty("Rotation", () -> Math.toDegrees(this.getRotation()), null);
     }
@@ -104,5 +141,15 @@ public class ActiveShooterOdometry extends OdometryBase {
         if (!Double.isFinite(x))
             return 0;
         return x;
+    }
+
+    protected Vector2 rotate(Vector2 vector, double rotation) {
+        double cx = Math.cos(rotation);
+        double cy = Math.sin(rotation);
+
+        return new Vector2(
+            vector.x * cx - vector.y * cy,
+            vector.x * cy + vector.y * cx
+        );
     }
 }

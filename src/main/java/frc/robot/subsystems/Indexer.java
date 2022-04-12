@@ -119,12 +119,11 @@ public class Indexer extends SubsystemBase implements Toggleable {
     }
 
     public void setSpeed(double speed) {
-        if(!enabled) return;
+        if (!enabled || target == speed) return;
 
-        if(target != speed){
-            mot_indexerBelt.set(target);
-            target = speed;
-        }
+        mot_indexerBelt.set(speed);
+        target = speed;
+
     }
 
     public void setControlMode(double setpoint, ControlType mode) {
@@ -136,6 +135,7 @@ public class Indexer extends SubsystemBase implements Toggleable {
      */
     public void stop() {
         mot_indexerBelt.stopMotor();
+        target = 0;
     }
 
     public int getCargoCount() {

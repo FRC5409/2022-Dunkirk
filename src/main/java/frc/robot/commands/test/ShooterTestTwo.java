@@ -1,6 +1,7 @@
 package frc.robot.commands.test;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.base.shooter.HoodPosition;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.shooter.ShooterFlywheel;
 import frc.robot.subsystems.shooter.ShooterTurret;
@@ -28,9 +29,9 @@ public class ShooterTestTwo extends CommandBase{
     @Override
     public void execute() {
         flywheel.setVelocity(4000);
-        flywheel.spinFeederSetpoint(0.8);
+        flywheel.setFeederVelocity(0.8);
 
-        turret.hoodUpPosition();
+        turret.setHoodPosition(HoodPosition.kUp);
         
         indexer.setSpeed(0.5);
     }

@@ -109,6 +109,20 @@ public class Vector2 implements Sendable {
         return new Vector2(x*k + other.x*i, y*k + other.y*i);
     }
 
+    public Vector2 add(Vector2 other) {
+        return new Vector2(
+            x + other.x,
+            y + other.y
+        );
+    }
+
+    public Vector2 sub(Vector2 other) {
+        return new Vector2(
+            x + other.x,
+            y + other.y
+        );
+    }
+
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.addDoubleProperty("x", () -> x, _x -> x = _x);

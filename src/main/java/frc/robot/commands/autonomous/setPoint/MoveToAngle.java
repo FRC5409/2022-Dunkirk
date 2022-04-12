@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants.kDriveTrain;
 
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Pigeon;
 
 public class MoveToAngle extends PIDCommand{
     public DriveTrain drive;

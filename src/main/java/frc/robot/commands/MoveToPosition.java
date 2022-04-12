@@ -1,11 +1,6 @@
 package frc.robot.commands;
 
-import javax.swing.text.Position;
-
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.kDriveTrain;
