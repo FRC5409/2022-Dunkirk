@@ -98,7 +98,7 @@ public class OperateShooterState extends StateBase {
                 odometry.getViewDirection(),
                 odometry.getRotation(),
                 odometry.getTurretOffset(),
-                drivetrain.TurnRate(),
+                drivetrain.getTurnRate(),
                 odometry.getVelocity().y
             );
 

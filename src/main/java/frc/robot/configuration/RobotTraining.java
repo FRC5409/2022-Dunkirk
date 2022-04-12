@@ -48,6 +48,7 @@ import frc.robot.commands.shooter.*;
 import frc.robot.commands.training.shooter.*;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.commands.drive.DefaultDrive;
 
 public class RobotTraining implements RobotConfiguration {
     private final ShooterFlywheel      Flywheel;

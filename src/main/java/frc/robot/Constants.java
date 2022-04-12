@@ -8,6 +8,9 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 import frc.robot.base.shooter.ShooterConfiguration;
@@ -17,6 +20,7 @@ import frc.robot.base.shooter.odometry.ShooterOdometryModel;
 import frc.robot.base.shooter.odometry.ShooterTrackingModel;
 import frc.robot.base.shooter.target.FilterFactory;
 import frc.robot.base.shooter.target.TargetFiltering;
+import frc.robot.subsystems.DriveTrain.DriveMode;
 import frc.robot.base.Model3;
 import frc.robot.base.Model4;
 import frc.robot.base.shooter.HoodPosition;
@@ -167,7 +171,7 @@ public final class Constants {
         public static final int ReverseChannel = 9;
 
         // Drive Modes
-        public static final int InitialDriveMode = 0;
+        public static final DriveMode DEFAULT_DRIVE_MODE = DriveMode.kAadilDrive;
 
         public static final int AADIL_DRIVE = 0;
         public static final int TANK_DRIVE = 1;
@@ -210,6 +214,8 @@ public final class Constants {
         public static final double MAX_RPM_FOR_LOW_GEAR = 1000;
         public static final double DISTANCE_TO_MID_RUN_FROM_WALL = 2.2098;
         public static final double METERS_TO_RSU = 12_832.0802;
+
+        public static final NeutralMode DEFAULT_NEUTRAL_MODE = NeutralMode.Brake;
     }
 
     public static final class kAuto{

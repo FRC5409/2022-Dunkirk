@@ -21,8 +21,10 @@ public class PrimeShooter extends TimedCommand {
     @Override
     public void initialize() {
         super.initialize();
+
         indexer.enable();
         indexer.setSpeed(-0.5);
+        
         indexerState.set(IndexerState.kActive);
     }
 
