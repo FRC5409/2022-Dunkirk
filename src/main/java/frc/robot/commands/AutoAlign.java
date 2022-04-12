@@ -15,8 +15,12 @@ public class AutoAlign extends SequentialCommandGroup {
                 new TurnToAngleGyro(driveTrain, toAngle),
                 new DriveToMidRung(climber, driveTrain),
                 new MoveToPosition(climber, driveTrain),
-                new ElevateTo(climber, Constants.kClimber.TO_MAX),
-                new MoveToPosition(climber, driveTrain, 0.2),
-                new ElevateTo(climber, Constants.kClimber.TO_MIN_MID));
+
+               
+
+                // TODO: Fix later
+                // new ElevateTo(climber, Constants.kClimber.TO_MAX),
+                new MoveToPosition(climber, driveTrain, 0.2));
+                // new ElevateTo(climber, Constants.kClimber.TO_MIN_MID));
     }
 }

@@ -172,11 +172,11 @@ public class Climber extends SubsystemBase {
    * Method for retracting or extending the climber arm.
    */
   public void moveArm(double target) {
-    if (!locked) {
+    // if (!locked) {
       controller_main.setReference(target, ControlType.kPosition);
-    } else {
-      disableMotors();
-    }
+    // } else {
+    //   disableMotors();
+    // }
   }
 
   public void moveArm(double acceleration, double deceleration) {
