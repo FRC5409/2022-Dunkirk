@@ -322,7 +322,7 @@ public final class Constants {
         public static final double INITIAL_SHOOTER_OFFSET = 200;
 
         // The turret rotation range
-        public static final Range ROTATION_RANGE = new Range(-90, 90);
+        public static final Range ROTATION_RANGE = new Range(-110, 110);
         
         // The threshold required to align to a target (and shoot) during tracking
         // between [2, 8]
@@ -351,8 +351,7 @@ public final class Constants {
         // Range Configurations
         public static final Range SPEED_RANGE = new Range(0, 5500);
         public static final Range DISTANCE_RANGE = new Range(0, 25);
-        public static final Range TURRET_OUTPUT_RANGE = new Range(-1, 1);
-        public static final Range MANUAL_ROTATION_RANGE = new Range(-110, 110);
+        public static final Range TURRET_OUTPUT_RANGE = new Range(-0.8, 0.8);
         
         // Smooth Sweep Constants
         public static final double   SHOOTER_SWEEP_PERIOD = 2.75;
@@ -393,7 +392,7 @@ public final class Constants {
             new TrackingGains(-0.95, 0, -24.8, 1.0, -1.0, 2.0, -2.0, 1.8),
             Constants.Vision.TARGET_LOST_TIME,
 
-            0.85,
+            0.90,
             0.15,
             
             // flywheel_offset
