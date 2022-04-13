@@ -167,6 +167,7 @@ public final class Constants {
         // Encoders
         public static final double encoderToMeterConversionFactor = 1;
 
+
         public static final double encoderCPR = 2048;
         public static final double wheelCircumferenceInches = 4 * Math.PI;
         public static final double lowGearConversionFactor = 1/15.32;
