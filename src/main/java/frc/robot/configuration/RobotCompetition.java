@@ -245,7 +245,11 @@ public class RobotCompetition implements RobotConfiguration {
                     new RunShooter(Flywheel, Indexer, shooterState, Constants.Shooter.NEAR_FLYWHEEL_VELOCITY, 0.85)
                 )
             ).whenInactive(new RotateTurret(turret, 0));
-            
+          
+        joystickSecondary.getButton(ButtonType.kX)
+            .and(climberToggleTrigger.negate())
+            .whenActive(new RotateTurret(turret, 0));
+
         joystickSecondary.getButton(ButtonType.kUpPov)
             .and(joystickSecondary.getButton(ButtonType.kA).negate())
             .and(climberToggleTrigger.negate())
