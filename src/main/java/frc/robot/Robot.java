@@ -4,7 +4,10 @@
 
 package frc.robot;
 
+import java.sql.Time;
+
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -20,6 +23,8 @@ public class Robot extends TimedRobot {
     private RobotContainer m_robotContainer;
     private Command m_autonomousCommand;
     private Command m_teleopCommand;
+    private Command m_climberLockCommand;
+    private boolean lockedClimber = false;
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -73,6 +78,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        lockedClimber = false;
+
         m_teleopCommand = m_robotContainer.getTeleopCommand();
 
         if (m_teleopCommand != null) {
@@ -90,6 +97,11 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         m_robotContainer.teleopPeriodic();
+
+        if (Timer.getMatchTime() <= 0.1 && !lockedClimber) {
+            m_climberLockCommand.schedule();
+            lockedClimber = true;
+        }
     }
 
     @Override
