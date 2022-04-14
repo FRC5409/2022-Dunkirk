@@ -25,6 +25,7 @@ public class ElevateTo extends CommandBase {
 
     boolean started = false;
     private final Timer timer = new Timer();
+    private boolean isPressed = true;
     private boolean overriden = false;
 
     /**
@@ -94,50 +95,59 @@ public class ElevateTo extends CommandBase {
     public void execute() {
         int pov = joystick.getPOV();
 
-        if (pov == 0 && destination != Constants.ClimberDestination.midRung) { // Go to mid rung
-            lockOnDescend = false;
-            // CommandScheduler.getInstance().schedule(true, new ElevateTo(joystick,
-            // climber, ClimberDestination.midRung));
-            destination = ClimberDestination.midRung;
-            toPos = getPos();
+        if (!isPressed) {
+            if (pov == 0 && destination != Constants.ClimberDestination.midRung) { // Go to mid rung
+                lockOnDescend = false;
+                // CommandScheduler.getInstance().schedule(true, new ElevateTo(joystick,
+                // climber, ClimberDestination.midRung));
+                destination = ClimberDestination.midRung;
+                toPos = getPos();
 
-            climber.unlockArm();
-            timer.reset();
+                climber.unlockArm();
+                timer.reset();
 
-            climber.setPrevMove(toPos);
-            started = false;
+                started = false;
 
-        } else if (pov == 180 && (destination != Constants.ClimberDestination.lockLow
-                || destination != Constants.ClimberDestination.lockMid)) { // Send elevator down to position based on
-                                                                           // previous held position
-            // overriden = true;
-            // CommandScheduler.getInstance().schedule(true,
-            // new ElevateTo(joystick, climber,
-            // (climber.getPrevMove() == Constants.kClimber.TO_LOW_RUNG)
-            // ? ClimberDestination.lockLow
-            // : ClimberDestination.lockMid,
-            // true));
-            destination = (climber.getPrevMove() == Constants.kClimber.TO_LOW_RUNG)
-                    ? ClimberDestination.lockLow
-                    : ClimberDestination.lockMid;
-            toPos = getPos();
+                isPressed = true;
 
-            climber.lockArm();
-            climber.setPrevMove(toPos);
-            climber.moveArm(toPos);
-        } else if (pov == 270 && destination != ClimberDestination.lowRung) { // Go to low rung
-            overriden = true;
+            } else if (pov == 180 && (destination != Constants.ClimberDestination.lockLow
+                    || destination != Constants.ClimberDestination.lockMid)) { // Send elevator down to position based
+                                                                               // on
+                                                                               // previous held position
+                // overriden = true;
+                // CommandScheduler.getInstance().schedule(true,
+                // new ElevateTo(joystick, climber,
+                // (climber.getPrevMove() == Constants.kClimber.TO_LOW_RUNG)
+                // ? ClimberDestination.lockLow
+                // : ClimberDestination.lockMid,
+                // true));
+                System.out.println(destination);
+                destination = (destination == ClimberDestination.lowRung)
+                        ? ClimberDestination.lockLow
+                        : ClimberDestination.lockMid;
+                toPos = getPos();
 
-            // CommandScheduler.getInstance().schedule(true, new ElevateTo(joystick,
-            // climber, ClimberDestination.lowRung));
-            destination = ClimberDestination.lowRung;
-            toPos = getPos();
+                climber.lockArm();
+                climber.moveArm(toPos);
+                isPressed = true;
 
-            climber.unlockArm();
-            timer.reset();
+            } else if (pov == 270 && destination != ClimberDestination.lowRung) { // Go to low rung
+                overriden = true;
 
-            climber.setPrevMove(toPos);
-            started = false;
+                // CommandScheduler.getInstance().schedule(true, new ElevateTo(joystick,
+                // climber, ClimberDestination.lowRung));
+                destination = ClimberDestination.lowRung;
+                toPos = getPos();
+
+                climber.unlockArm();
+                timer.reset();
+
+                started = false;
+                isPressed = true;
+
+            }
+        } else if (pov == -1) {
+            isPressed = false;
         }
 
         if (!useVelForEnd && Math.abs(climber.getRPM()) >= 1.0)
@@ -146,7 +156,7 @@ public class ElevateTo extends CommandBase {
         if (started)
             return;
 
-        if (destination == ClimberDestination.lockMid || destination == ClimberDestination.lockLow){
+        if (destination == ClimberDestination.lockMid || destination == ClimberDestination.lockLow) {
             climber.moveArm(toPos);
             started = true;
         } else if (timer.hasElapsed(0.2) || !climber.getLocked()) {
@@ -160,11 +170,12 @@ public class ElevateTo extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         climber.disableMotors();
+        climber.setPrevMove(toPos);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(climber.getPosition() - toPos) < 2;
+        return Math.abs(climber.getPosition() - toPos) < 1.0;
     }
 }
