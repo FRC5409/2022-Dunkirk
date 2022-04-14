@@ -132,91 +132,91 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
         
         addCommands(
             // // trajectory testing
-            new ResetOdometry(t1.getInitialPose(), drivetrain),
-            r1, 
-            new ResetOdometry(t2.getInitialPose(), drivetrain),
-            r2
+            // new ResetOdometry(t1.getInitialPose(), drivetrain),
+            // r1, 
+            // new ResetOdometry(t2.getInitialPose(), drivetrain),
+            // r2
             // new ResetOdometry(t3.getInitialPose(), drivetrain),
             // r3
 
-            // new InstantCommand(() -> drivetrain.setBrakeMode(true), drivetrain),
+            new InstantCommand(() -> drivetrain.setBrakeMode(true), drivetrain),
 
-            // new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
+            new ConfigureShooter(turret, limelight, shooterConfiguration, ShooterMode.kFar),
 
-            // // V1: run intake while getting to the human station
-            // new SlowGear(drivetrain),
+            // V1: run intake while getting to the human station
+            new SlowGear(drivetrain),
 
-            // // Reset Odometry to initial position
-            // new ResetOdometry(t1.getInitialPose(), drivetrain),
+            // Reset Odometry to initial position
+            new ResetOdometry(t1.getInitialPose(), drivetrain),
 
 
-            // new ParallelCommandGroup(
-            //     // Run indexer, while moving trough trajectory #2
-            //     new IndexerIntakeActive(indexer, intake).withTimeout(2),
-            //     new SequentialCommandGroup(
-            //         new WaitCommand(0.35),
-            //         r1 // Race Condition
-            //     ),
+            new ParallelCommandGroup(
+                // Run indexer, while moving trough trajectory #2
+                new IndexerIntakeActive(indexer, intake).withTimeout(2),
+                new SequentialCommandGroup(
+                    new WaitCommand(0.35),
+                    r1 // Race Condition
+                ),
                 
-            //     // Schedule shooter  
-            //     new ScheduleCommand(
-            //         new SequentialCommandGroup(
-            //             new WaitCommand(1.5), // Delay
-            //             new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft),
-            //             runShooterCommand
-            //         )
-            //     )
-            // ),
+                // Schedule shooter  
+                new ScheduleCommand(
+                    new SequentialCommandGroup(
+                        new WaitCommand(1.5), // Delay
+                        new ConfigureProperty<>(shooterSweepDirection, SweepDirection.kLeft),
+                        runShooterCommand
+                    )
+                )
+            ),
 
-            // // Run indexer for additional time
-            // new IndexerIntakeActive(indexer, intake).withTimeout(0.5),
+            // Run indexer for additional time
+            new IndexerIntakeActive(indexer, intake).withTimeout(0.5),
             
-            // // Prime shooter
-            // new PrimeShooter(indexer, indexerArmedState),
+            // Prime shooter
+            new PrimeShooter(indexer, indexerArmedState),
 
-            // // Simulate run shooter trigger
-            // new ConfigureProperty<>(runShooter, true),
+            // Simulate run shooter trigger
+            new ConfigureProperty<>(runShooter, true),
 
-            // // Shooter is shooting (eiow)
-            // // ...
+            // Shooter is shooting (eiow)
+            // ...
             
-            // // Reset Odometry to next position
-            // new ResetOdometry(t2.getInitialPose(), drivetrain),
+            // Reset Odometry to next position
+            new ResetOdometry(t2.getInitialPose(), drivetrain),
 
-            // new WaitCommand(2.0),
+            new WaitCommand(2.0),
             
-            // new ConfigureProperty<>(runShooter, false),
+            new ConfigureProperty<>(runShooter, false),
             
-            // // Run indexer and intake, while moving through trajectory #2
-            // new ParallelRaceGroup(
-            //     new IndexerIntakeActive(indexer, intake),
-            //     r2 // Race Condition
-            // ),
+            // Run indexer and intake, while moving through trajectory #2
+            new ParallelRaceGroup(
+                new IndexerIntakeActive(indexer, intake),
+                r2 // Race Condition
+            ),
                 
-            // new ParallelCommandGroup(
-            //     // Run indexer for additional time
-            //     new IndexerIntakeActive(indexer, intake).withTimeout(2.0),
+            new ParallelCommandGroup(
+                // Run indexer for additional time
+                new IndexerIntakeActive(indexer, intake).withTimeout(2.0),
 
-            //     new SequentialCommandGroup(
-            //         new ParallelCommandGroup(
-            //             new WaitCommand(0.5),
-            //             // Reset Odometry to next position
-            //             new ResetOdometry(t3.getInitialPose(), drivetrain)
-            //         ),
+                new SequentialCommandGroup(
+                    new ParallelCommandGroup(
+                        new WaitCommand(0.5),
+                        // Reset Odometry to next position
+                        new ResetOdometry(t3.getInitialPose(), drivetrain)
+                    ),
 
-            //         // Run indexer and intake, while moving through trajectory #2
-            //         r3
-            //     )
-            // ),
+                    // Run indexer and intake, while moving through trajectory #2
+                    r3
+                )
+            ),
 
-            // // Prime shooter
-            // new PrimeShooter(indexer, indexerArmedState),
+            // Prime shooter
+            new PrimeShooter(indexer, indexerArmedState),
 
-            // // Simulate run shooter trigger
-            // new ConfigureProperty<>(runShooter, true),
+            // Simulate run shooter trigger
+            new ConfigureProperty<>(runShooter, true),
 
-            // // Stop shooter from shooting after one second
-            // new DelayedCancelCommand(2, runShooterCommand)
+            // Stop shooter from shooting after one second
+            new DelayedCancelCommand(2, runShooterCommand)
 
         //     // // Finish
         );
