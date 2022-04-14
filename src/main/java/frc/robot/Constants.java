@@ -234,7 +234,7 @@ public final class Constants {
         public static final double kPDriveVel = 5.7255;
         
         // all units in meters and seconds
-        public static final double kMaxSpeed = 2.5; 
+        public static final double kMaxSpeed = 2.4; 
         // work fine in 2.5, gives error when generating trajectory when exceed that value
         public static final double kMaxAcceleration = 4.5;
 
@@ -396,6 +396,9 @@ public final class Constants {
             0.90,
             0.15,
             
+            x -> 0,
+            x -> 0
+            /*
             // flywheel_offset
             new Model3(
                 //-0.06823772956504384, -1.3965513908806815, 1.18121626304908,
@@ -410,6 +413,7 @@ public final class Constants {
                 new Range(-3.0, 3.0),
                 new Range(-50, 50)
             )
+            */
         );
 
         public static final ShooterOdometryModel ODOMETRY_MODEL = new ShooterOdometryModel(
