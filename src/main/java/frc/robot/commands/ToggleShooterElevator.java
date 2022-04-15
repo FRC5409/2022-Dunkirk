@@ -16,7 +16,6 @@ public class ToggleShooterElevator extends CommandBase {
 
     @Override
     public void initialize() {
-        climberActive.set(!climberActive.get());
     }
 
     @Override

@@ -393,7 +393,7 @@ public final class Constants {
             new TrackingGains(-0.95, 0, -24.8, 1.0, -1.0, 2.0, -2.0, 1.8),
             Constants.Vision.TARGET_LOST_TIME,
 
-            0.90,
+            1.00,
             0.15,
             
             x -> 0,

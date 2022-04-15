@@ -19,7 +19,8 @@ public class TurretOnToggle extends CommandBase {
     @Override
     public void initialize() {
         turret.enable();
-        turret.setReference(climberActive.get() ? 0.0 : 90.0, ReferenceType.kRotation);         
+        turret.setReference(climberActive.get() ? 0.0 : 90.0, ReferenceType.kRotation);       
+        climberActive.set(!climberActive.get());
     }
 
     @Override
