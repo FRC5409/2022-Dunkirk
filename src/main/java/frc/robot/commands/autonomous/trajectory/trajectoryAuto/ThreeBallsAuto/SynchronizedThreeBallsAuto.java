@@ -89,7 +89,7 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
 
             //(5.14 + 0.75*Math.cos(Math.PI*13/36)), (-0.45 - 0.75*Math.sin(Math.PI*13/36)), Math.PI*5/36);
 
-        Pose2d p4 = createPose(1.7, 0, 0);
+        Pose2d p4 = createPose(1.4, 0, 0);
 
         // =====================================================================
         // Trajectories
@@ -195,11 +195,11 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
                 
             new ParallelCommandGroup(
                 // Run indexer for additional time
-                new IndexerIntakeActive(indexer, intake).withTimeout(2.0),
+                new IndexerIntakeActive(indexer, intake).withTimeout(1.8), // 2.0
 
                 new SequentialCommandGroup(
                     new ParallelCommandGroup(
-                        new WaitCommand(0.5),
+                        new WaitCommand(0.1), // 0.5
                         // Reset Odometry to next position
                         new ResetOdometry(t3.getInitialPose(), drivetrain)
                     ),

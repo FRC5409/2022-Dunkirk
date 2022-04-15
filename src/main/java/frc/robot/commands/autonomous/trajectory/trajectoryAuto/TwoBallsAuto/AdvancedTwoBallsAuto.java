@@ -29,6 +29,7 @@ import frc.robot.commands.indexer.IndexerIntakeActive;
 import frc.robot.commands.indexer.RunIndexerBack;
 import frc.robot.commands.shooter.ConfigureShooter;
 import frc.robot.commands.shooter.PrimeShooter;
+import frc.robot.commands.shooter.RotateTurret;
 import frc.robot.commands.shooter.RunShooter;
 import frc.robot.commands.shooter.legacy.OperateShooter;
 import frc.robot.subsystems.DriveTrain;
@@ -81,8 +82,8 @@ public class AdvancedTwoBallsAuto extends ProxySequentialCommandGroup {
 
         Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    List.of(),
-                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, -1.3/kAuto.kDistanceRatio, new Rotation2d(Math.PI*130/180)),
-                                                                   kAuto.configForwards);
+                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, -1.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI*235/180)),
+                                                                   kAuto.configAdvTwoForwards);
 
         RamseteCommand r1 = new RamseteCommand(t1, m_drive::getPose,
         new RamseteController(kAuto.kRamseteB, kAuto.kRamseteZeta),
@@ -109,6 +110,13 @@ public class AdvancedTwoBallsAuto extends ProxySequentialCommandGroup {
         m_drive.setBrakeMode(true);
 
         addCommands(
+            // // trajectory testing
+            // new SlowGear(m_drive),
+            // new ResetOdometry(t1.getInitialPose(), m_drive),
+            // r1,
+            // new ResetOdometry(t2.getInitialPose(), m_drive),
+            // r2
+
             new SlowGear(m_drive),
             new ResetOdometry(t1.getInitialPose(), m_drive),
             new ParallelCommandGroup(
@@ -128,7 +136,10 @@ public class AdvancedTwoBallsAuto extends ProxySequentialCommandGroup {
             new ResetOdometry(t2.getInitialPose(), m_drive),
             new ParallelRaceGroup(
                 new IndexerIntakeActive(m_indexer, m_intake),
-                r2
+                new ParallelCommandGroup(
+                    r2,
+                    new RotateTurret(m_turret, 0)
+                )
             ),
             new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1),
             new PrimeShooter(indexer, indexerArmedState),

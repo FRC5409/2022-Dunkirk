@@ -234,16 +234,19 @@ public final class Constants {
         public static final double kPDriveVel = 5.7255;
         
         // all units in meters and seconds
-        public static final double kMaxSpeed = 2.4; 
+        public static final double kMaxSpeed = 2.5; 
         // work fine in 2.5, gives error when generating trajectory when exceed that value
         public static final double kMaxAcceleration = 4.5;
+
+        public static final double kMaxAdvTwoSpeed = 1.9;
+        public static final double kMaxAdvTwoAcceleration = 4.5;
 
         public static final double kMaxSpeedSlow = 0.75;
         public static final double kMaxAccelerationSlow = 0.5;
 
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
         // works for most robots, if needs to be tuned: 
-        // https://docs.wpilib.org/en/latest/docs/software/advanced-controls/trajectories/ramsete.html#constructing-the-ramsete-controller-object
+        // https://docs.wpilib.org/en/latest/docssoftware/advanced-controls/trajectories/ramsete.html#constructing-the-ramsete-controller-object
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
 
@@ -258,6 +261,13 @@ public final class Constants {
 
         public static final TrajectoryConfig configForwards = 
             new TrajectoryConfig(kMaxSpeed, kMaxAcceleration)
+            .setKinematics(kDriveKinematics)
+            .addConstraint(autoVoltageConstraint)
+            .setEndVelocity(0)
+            .setReversed(true);
+
+        public static final TrajectoryConfig configAdvTwoForwards = 
+            new TrajectoryConfig(kMaxAdvTwoSpeed, kMaxAdvTwoAcceleration)
             .setKinematics(kDriveKinematics)
             .addConstraint(autoVoltageConstraint)
             .setEndVelocity(0)
