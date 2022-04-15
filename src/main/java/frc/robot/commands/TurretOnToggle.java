@@ -1,4 +1,5 @@
 package frc.robot.commands;
+
 import frc.robot.base.Property;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -7,19 +8,34 @@ import frc.robot.subsystems.shooter.ShooterTurret.ReferenceType;
 
 public class TurretOnToggle extends CommandBase {
     private final Property<Boolean> climberActive;
+    // private final boolean climberActive;
     private final ShooterTurret turret;
 
-    public TurretOnToggle(Property<Boolean> _climberActive, ShooterTurret _turret) {
-        turret = _turret;
-        climberActive = _climberActive;
+    public TurretOnToggle(Property<Boolean> _climberActive, ShooterTurret
+    _turret) {
+    turret = _turret;
+    climberActive = _climberActive;
 
-        addRequirements(_turret);
+    addRequirements(_turret);
     }
+
+    // public TurretOnToggle(boolean _climberActive, ShooterTurret _turret) {
+    //     turret = _turret;
+    //     climberActive = _climberActive;
+
+    //     addRequirements(_turret);
+    // }
 
     @Override
     public void initialize() {
         turret.enable();
-        turret.setReference(climberActive.get() ? 0.0 : 90.0, ReferenceType.kRotation);         
+        // turret.setReference(climberActive.get() ? 0.0 : 90.0,
+        // ReferenceType.kRotation);
+        if (!climberActive.get()) {
+            turret.setReference(0, ReferenceType.kRotation);
+        } else {
+            turret.setReference(90, ReferenceType.kRotation);
+        }
     }
 
     @Override

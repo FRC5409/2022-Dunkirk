@@ -75,11 +75,12 @@ public class DefaultElevator extends CommandBase {
                     CommandScheduler.getInstance().schedule(false, new ToggleClimberLockCommand(climber));
                 } else if (pov == 180) { // Send elevator down to position based on previous held position
                     CommandScheduler.getInstance().schedule(true,
-                            new ElevateTo(joystick, climber,
-                                    (climber.getPrevMove() == Constants.kClimber.TO_LOW_RUNG)
-                                            ? ClimberDestination.lockLow
-                                            : ClimberDestination.lockMid,
-                                    true));
+                            // new ElevateTo(joystick, climber,
+                            //         (climber.getPrevMove() == Constants.kClimber.TO_LOW_RUNG)
+                            //                 ? ClimberDestination.lockLow
+                            //                 : ClimberDestination.lockMid,
+                            //         true));
+                            new ElevateTo(joystick, climber, ClimberDestination.lockLow, true));
                 } else if (pov == 270) { // Go to low rung
                     CommandScheduler.getInstance().schedule(true,
                             new ElevateTo(joystick, climber, ClimberDestination.lowRung));

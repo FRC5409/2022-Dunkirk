@@ -89,7 +89,7 @@ public class SynchronizedThreeBallsAuto extends ProxySequentialCommandGroup {
 
             //(5.14 + 0.75*Math.cos(Math.PI*13/36)), (-0.45 - 0.75*Math.sin(Math.PI*13/36)), Math.PI*5/36);
 
-        Pose2d p4 = createPose(1.7, 0, 0);
+        Pose2d p4 = createPose(1.4, 0, 0);
 
         // =====================================================================
         // Trajectories

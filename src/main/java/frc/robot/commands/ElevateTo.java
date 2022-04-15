@@ -122,9 +122,10 @@ public class ElevateTo extends CommandBase {
                 // : ClimberDestination.lockMid,
                 // true));
                 System.out.println(destination);
-                destination = (destination == ClimberDestination.lowRung)
-                        ? ClimberDestination.lockLow
-                        : ClimberDestination.lockMid;
+                // destination = (destination == ClimberDestination.lowRung)
+                //         ? ClimberDestination.lockLow
+                //         : ClimberDestination.lockMid;
+                destination = ClimberDestination.lockLow;
                 toPos = getPos();
 
                 climber.lockArm();
