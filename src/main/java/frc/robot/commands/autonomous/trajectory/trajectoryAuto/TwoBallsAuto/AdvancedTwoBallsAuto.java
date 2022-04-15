@@ -131,7 +131,7 @@ public class AdvancedTwoBallsAuto extends ProxySequentialCommandGroup {
                 ),
                 new ConfigureShooter(m_turret, m_limelight, m_shooterConfiguration, ShooterMode.kFar)
             ),
-            new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(3),
+            new OperateShooter(m_limelight, m_turret, m_flywheel, m_indexer, m_shooterSweepDirection, m_shooterConfiguration, m_shooterOffset).withTimeout(2),
 
             new ResetOdometry(t2.getInitialPose(), m_drive),
             new ParallelRaceGroup(
@@ -143,7 +143,7 @@ public class AdvancedTwoBallsAuto extends ProxySequentialCommandGroup {
             ),
             new IndexerIntakeActive(m_indexer, m_intake).withTimeout(1),
             new PrimeShooter(indexer, indexerArmedState),
-            new RunShooter(flywheel, indexer, shooterState, 800).withTimeout(3)
+            new RunShooter(flywheel, indexer, shooterState, 800).withTimeout(2)
         );
     }
 }
