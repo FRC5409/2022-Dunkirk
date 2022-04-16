@@ -82,7 +82,7 @@ public class AdvancedTwoBallsAuto extends ProxySequentialCommandGroup {
 
         Trajectory t2 = TrajectoryGenerator.generateTrajectory(new Pose2d(1.5/kAuto.kDistanceRatio, 0, new Rotation2d(0)),
                                                                    List.of(),
-                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, -1.5/kAuto.kDistanceRatio, new Rotation2d(Math.PI*235/180)),
+                                                                   new Pose2d(1.5/kAuto.kDistanceRatio, -1.35/kAuto.kDistanceRatio, new Rotation2d(Math.PI*235/180)),
                                                                    kAuto.configAdvTwoForwards);
 
         RamseteCommand r1 = new RamseteCommand(t1, m_drive::getPose,
