@@ -40,14 +40,15 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
 
         UsbCamera camera_wide = CameraServer.startAutomaticCapture();
-        int[] cw_defaultRes = { 1920, 1080 };
-        camera_wide.setVideoMode(PixelFormat.kMJPEG, cw_defaultRes[0],
-        cw_defaultRes[1], 30);
-        camera_wide.setResolution(-cw_defaultRes[0], cw_defaultRes[1]);
-        camera_wide.setFPS(15);
-
-        String config = "{ \"properties \": [{ \"name \":  \"connect_verbose \", \"value \": 1},{ \"name \":  \"raw_brightness \", \"value \": 2},{ \"name \":  \"brightness \", \"value \": 52},{ \"name \":  \"raw_contrast \", \"value \": 32},{ \"name \":  \"contrast \", \"value \": 50},{ \"name \":  \"raw_saturation \", \"value \": 64},{ \"name \":  \"saturation \", \"value \": 49},{ \"name \":  \"raw_hue \", \"value \": 0},{ \"name \":  \"hue \", \"value \": 50},{ \"name \":  \"white_balance_temperature_auto \", \"value \": true},{ \"name \":  \"gamma \", \"value \": 79},{ \"name \":  \"raw_gain \", \"value \": 0},{ \"name \":  \"gain \", \"value \": 0},{ \"name \":  \"power_line_frequency \", \"value \": 1},{ \"name \":  \"white_balance_temperature \", \"value \": 4600},{ \"name \":  \"raw_sharpness \", \"value \": 5},{ \"name \":  \"sharpness \", \"value \": 83},{ \"name \":  \"backlight_compensation \", \"value \": 1},{ \"name \":  \"exposure_auto \", \"value \": 1},{ \"name \":  \"raw_exposure_absolute \", \"value \": 625},{ \"name \":  \"exposure_absolute \", \"value \": 12},{ \"name \":  \"exposure_auto_priority \", \"value \": true}], \"width \": -1920}";
+        int[] cw_defaultRes = { 1280, 720 };
+        // int[] cw_defaultRes = { 1024, 768 };
+        String config = "{\"properties\": [{\"name\": \"connect_verbose\",\"value\": 0},{\"name\": \"raw_brightness\",\"value\": 2},{\"name\": \"brightness\",\"value\": 0},{\"name\": \"raw_contrast\",\"value\": 99},{\"name\": \"contrast\",\"value\": 50},{\"name\": \"raw_saturation\",\"value\": 64},{\"name\": \"saturation\",\"value\": 49},{\"name\": \"raw_hue\",\"value\": 0},{\"name\": \"hue\",\"value\": 50},{\"name\": \"white_balance_temperature_auto\",\"value\": true},{\"name\": \"gamma\",\"value\": 79},{\"name\": \"raw_gain\",\"value\": 0},{\"name\": \"gain\",\"value\": 0},{\"name\": \"power_line_frequency\",\"value\": 1},{\"name\": \"white_balance_temperature\",\"value\": 4600},{\"name\": \"raw_sharpness\",\"value\": 5},{\"name\": \"sharpness\",\"value\": 83},{\"name\": \"backlight_compensation\",\"value\": 1},{\"name\": \"exposure_auto\",\"value\": 1},{\"name\": \"raw_exposure_absolute\",\"value\": 625},{\"name\": \"exposure_absolute\",\"value\": 12},{\"name\": \"exposure_auto_priority\",\"value\": true}]}";
         camera_wide.setConfigJson(config);
+
+        camera_wide.setVideoMode(PixelFormat.kMJPEG, cw_defaultRes[0],
+                cw_defaultRes[1], 10);
+        camera_wide.setResolution(-cw_defaultRes[0], cw_defaultRes[1]);
+        camera_wide.setFPS(10);
     }
 
     /**
