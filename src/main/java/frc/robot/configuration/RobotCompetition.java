@@ -24,6 +24,7 @@ import frc.robot.base.Joystick;
 import frc.robot.base.Property;
 // Misc
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -209,6 +210,11 @@ public class RobotCompetition implements RobotConfiguration {
         
         joystickPrimary.getButton(ButtonType.kX)
             .whenReleased(yes);
+
+
+        // toggle training mode
+        joystickSecondary.getButton(ButtonType.kBack)
+            .whenPressed(() -> DriveTrain.toggleTrainingMode());
 
         joystickSecondary.getButton(ButtonType.kStart)
             .whenPressed((new ParallelCommandGroup(

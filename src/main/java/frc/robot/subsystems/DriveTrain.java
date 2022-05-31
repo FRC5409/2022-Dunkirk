@@ -52,6 +52,9 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
 
     public DifferentialDriveOdometry m_odometry;
 
+    // training wheels
+    private boolean jasonLiMode = false;
+
     // The robot's RPY
     public double roll;
     public double pitch;
@@ -324,7 +327,9 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
     public void aadilDrive(final double acceleration, final double deceleration, final double turn) {
         double accelerate = (acceleration - deceleration);
 
-
+        if(jasonLiMode){
+            accelerate *= kDriveTrain.trainingModeMultiplier;
+        }
         //double rampRateAdjustment = (dsl_gear.get() == DoubleSolenoid.Value.kForward ? kDriveTrain.highGearRampRate : 0);
 
         if(accelerate > 0 && turn == 0 && drive_state != "forward"){
@@ -640,6 +645,7 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
         if(Constants.kConfig.DEBUG){
             SmartDashboard.putString("Solenoid", "Fast");
         }
+        if(jasonLiMode) return;
         //SmartDashboard.putBoolean("isLowGear", false);
         dsl_gear.set(DoubleSolenoid.Value.kForward);
 
@@ -654,6 +660,16 @@ public class DriveTrain extends SubsystemBase implements DriveOdometry {
         }
         //SmartDashboard.putBoolean("isLowGear", true);
         dsl_gear.set(DoubleSolenoid.Value.kReverse);
+    }
+
+    // ---------------------------- Lock High Shifting ---------------------------- //
+
+    /**
+     * toggles the fast gear locking
+     */
+    public void toggleTrainingMode() {
+        jasonLiMode = !jasonLiMode;
+        SmartDashboard.putBoolean("Training Mode Enabled ?", jasonLiMode);
     }
 
     // ---------------------------- Pigeon ---------------------------- //

@@ -159,6 +159,8 @@ public final class Constants {
 
     public static final class kDriveTrain{
         
+        public static final double trainingModeMultiplier = 0.75d;
+
         // Current Limits
         public static final double CurrentLimit = 65;
         public static final double TriggerThresholdCurrent = 65;
